@@ -28,6 +28,7 @@ app.use(cors(corsOptions));
 const userRoute = require("../routes/test_routes");
 const brandRoute = require("../routes/brand_routes");
 const makeModalRoute = require("../routes/make_modal_routes");
+const saveModalRoute = require("../routes/save_listing_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -38,6 +39,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", userRoute);
 app.use("/api/v1", brandRoute);
 app.use("/api/v1", makeModalRoute);
+app.use("/api/v1", saveModalRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
