@@ -3,7 +3,7 @@ const validator = require('validator');
 
 const brandSchema = new mongoose.Schema({
     displayOrder: {
-        type: Number,
+        type: Number || String,
         required: true,
     }, 
     make: {

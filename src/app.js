@@ -26,6 +26,7 @@ app.use(morgan("dev"));
 app.use(cors(corsOptions));
 
 const userRoute = require("../routes/test_routes");
+const brandRoute = require("../routes/brand_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -34,6 +35,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1", userRoute);
+app.use("/api/v1", brandRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);

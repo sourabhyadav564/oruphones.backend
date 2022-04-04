@@ -10,7 +10,7 @@ router.get("/test", async (req, res) => {
     res.status(200).json({ message: "Users found", getUser });
   } catch (error) {
     console.log(error);
-    res.status(400).json(err);
+    res.status(400).json(error);
   }
 });
 
