@@ -3,15 +3,23 @@ require("dotenv").config();
 const morgan = require("morgan");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
-  origin: "http://localhost:3000",
-  credentials: true,
+  // origin: "http://localhost:3000",
+  // credentials: true,
 };
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// parse application/json
+app.use(bodyParser.json());
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
@@ -21,7 +29,7 @@ const userRoute = require("../routes/test_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "Running Successfully",
+    message: "Backend Server Running Successfully",
   });
 });
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const userSchema = new mongoose.Schema({
+const testSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -36,6 +36,6 @@ const userSchema = new mongoose.Schema({
     }
 },{ timestamps: true })
 
-const userModal = new mongoose.model('data_data', userSchema);
+const testModal = new mongoose.model('data_data', testSchema);
 
-module.exports = userModal;
+module.exports = testModal;
