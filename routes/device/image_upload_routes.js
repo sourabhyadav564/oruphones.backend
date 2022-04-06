@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-// require("../../src/database/connection");
+require("../../src/database/connection");
 // const saveListingModal = require("../../src/database/connection");
 
 const fs = require("fs");
@@ -34,8 +34,8 @@ const fileFilter = (req, file, next) => {
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5 },
-  fileFilter: fileFilter,
+  // limits: { fileSize: 1024 * 1024 * 5 },
+  // fileFilter: fileFilter,
 });
 
 router.get("/uploadimage/:key", (req, res) => {
@@ -44,9 +44,9 @@ router.get("/uploadimage/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", upload.single("file"), async (req, res) => {
+router.post("/uploadimage", upload.single("image"), async (req, res) => {
   const file = req.file;
-  // console.log(file);
+  console.log(typeof file);
   try {
     const result = await uploadFile(file);
     // console.log(result);
