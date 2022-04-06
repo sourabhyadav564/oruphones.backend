@@ -50,7 +50,7 @@ router.post("/uploadimage", upload.single("file"), async (req, res) => {
   try {
     const result = await uploadFile(file);
     // console.log(result);
-    await unlinkFile(file.path);
+    // await unlinkFile(file.path);
     const dataObject = {
       imagePath: `${result.Location}`,
       thumbnailImagePath: `${result.Location}`,
