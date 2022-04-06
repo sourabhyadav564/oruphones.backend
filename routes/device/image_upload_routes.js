@@ -14,7 +14,7 @@ const { uploadFile, getFileStream } = require("../../src/s3");
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
-    next(null, "./uploads/");
+    next(null, "/uploads/");
   },
   filename: function (req, file, next) {
     next(null, Date.now() + "-" + file.originalname);
