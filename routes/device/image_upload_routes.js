@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-// const saveListingModal = require("../../src/database/connection");
+const imageUploadModal = require("../../src/database/modals/device/image_upload");
 
 const fs = require("fs");
 const util = require("util");
@@ -28,14 +28,14 @@ const fileFilter = (req, file, next) => {
   ) {
     next(null, true);
   } else {
-    next(new Error("file type not supported"), false);
+    next(new Error("File type not supported"), false);
   }
 };
 
 const upload = multer({
   storage: storage,
-  // limits: { fileSize: 1024 * 1024 * 5 },
-  // fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 5 },
+  fileFilter: fileFilter,
 });
 
 router.get("/uploadimage/:key", (req, res) => {
@@ -46,17 +46,30 @@ router.get("/uploadimage/:key", (req, res) => {
 
 router.post("/uploadimage", upload.single("image"), async (req, res) => {
 
-  const file = req.file;
-  console.log(typeof file);
   try {
+    const file = req.file;
     const result = await uploadFile(file);
-    // console.log(result);
     await unlinkFile(file.path);
+
+    const imageInfo ={
+      deviceFace: req.query.deviceFace,
+      deviceStorage: req.query.deviceStorage,
+      make: req.query.make,
+      model: req.query.model,
+      userUniqueId: req.query.userUniqueId,
+      imagePath: result.Location
+    }
+
+    const saveData = new imageUploadModal(imageInfo);
+
+    const createdObject = await saveData.save();
+
     const dataObject = {
       imagePath: `${result.Location}`,
       thumbnailImagePath: `${result.Location}`,
       imageKey: `${result.Key}`,
     };
+
     res.status(200).json({
       reason: "Image uploaded successfully",
       statusCode: 201,
