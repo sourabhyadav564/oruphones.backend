@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 
-require("../src/database/connection");
-const brandModal = require("../src/database/modals/master_brands");
+require("../../src/database/connection");
+const brandModal = require("../../src/database/modals/master/make_modal_list");
 
-router.get("/master/brands", async (req, res) => {
+router.get("/makemodellist", async (req, res) => {
   try {
     const dataObject = await brandModal.find();
     console.log(dataObject);
     res
       .status(200)
       .json({
-        reason: "Brands found",
+        reason: "Modals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject,

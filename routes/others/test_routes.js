@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-require("../src/database/connection");
-const testModal = require("../src/database/modals/test_modal");
+require("../../src/database/connection");
+const testModal = require("../../src/database/modals/others/test_modal");
 
 router.get("/test", async (req, res) => {
   try {

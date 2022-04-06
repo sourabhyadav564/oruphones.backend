@@ -25,10 +25,12 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
 
-const userRoute = require("../routes/test_routes");
-const brandRoute = require("../routes/brand_routes");
-const makeModalRoute = require("../routes/make_modal_routes");
-const saveModalRoute = require("../routes/save_listing_routes");
+const testRoute = require("../routes/others/test_routes");
+const brandRoute = require("../routes/master/master_brand_routes");
+const makeModalRoute = require("../routes/master/make_modal_routes");
+const saveModalRoute = require("../routes/device/save_listing_routes");
+const eventRoute = require("../routes/others/event_routes");
+const imageRoute = require("../routes/device/image_upload_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -36,10 +38,12 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/v1", userRoute);
-app.use("/api/v1", brandRoute);
-app.use("/api/v1", makeModalRoute);
-app.use("/api/v1", saveModalRoute);
+app.use("/api/v1", testRoute);
+app.use("/api/v1/master", brandRoute);
+app.use("/api/v1/master", makeModalRoute);
+app.use("/api/v1/device", saveModalRoute);
+app.use("/api/v1/device", imageRoute);
+app.use("/api/v1/api/auth", eventRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
