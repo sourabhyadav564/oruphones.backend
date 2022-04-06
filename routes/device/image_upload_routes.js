@@ -35,7 +35,7 @@ const fileFilter = (req, file, next) => {
 const upload = multer({
   storage: storage,
   limits: { fileSize: 1024 * 1024 * 5 },
-  fileFilter: fileFilter,
+  // fileFilter: fileFilter,
 });
 
 router.get("/uploadimage/:key", (req, res) => {
@@ -62,6 +62,7 @@ router.post("/uploadimage", upload.single("image"), async (req, res) => {
 
     const saveData = new imageUploadModal(imageInfo);
 
+    //TODO: for future use
     const createdObject = await saveData.save();
 
     const dataObject = {
