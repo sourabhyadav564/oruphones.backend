@@ -45,17 +45,18 @@ router.get("/uploadimage/:key", (req, res) => {
 });
 
 router.post("/uploadimage", upload.single("image"), async (req, res) => {
+
   const file = req.file;
   console.log(typeof file);
   try {
     const result = await uploadFile(file);
     // console.log(result);
     await unlinkFile(file.path);
-    const dataObject = [{
+    const dataObject = {
       imagePath: `${result.Location}`,
       thumbnailImagePath: `${result.Location}`,
       imageKey: `${result.Key}`,
-    }];
+    };
     res.status(200).json({
       reason: "Image uploaded successfully",
       statusCode: 201,
