@@ -31,6 +31,7 @@ const makeModalRoute = require("../routes/master/make_modal_routes");
 const saveModalRoute = require("../routes/device/save_listing_routes");
 const eventRoute = require("../routes/others/event_routes");
 const imageRoute = require("../routes/device/image_upload_routes");
+const questionRoute = require("../routes/master/get_question_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -41,6 +42,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1", testRoute);
 app.use("/api/v1/master", brandRoute);
 app.use("/api/v1/master", makeModalRoute);
+app.use("/api/v1/master", questionRoute);
 app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/api/auth", eventRoute);
