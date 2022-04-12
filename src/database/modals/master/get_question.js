@@ -1,30 +1,66 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const makeModalSchema = new mongoose.Schema({
-    make: {
+const questionSchema = new mongoose.Schema({
+    question: {
         type: String,
         required: true,
     }, 
-    models: {
+    questionId: {
+        type: Number,
+        required: true,
+    },
+    componentType: {
+        type: String,
+        required: true,
+    },
+    componenetOptions: {
         type: [{
-            marketingname: {
+            optionName: {
                 type: String,
                 required: true,
             },
-            storage: [{
+            optionMessage: {
                 type: String,
                 required: true,
-            }],
-            color: [{
-                type: String,
-                required: true,
-            }]
+            },
         }],
         required: true,
+    },
+    infoTemplateUrl: {
+        type: String,
+    },
+    childQuestionTitile: {
+        type: String,
+    },
+    childQuestions: {
+        type: [{
+            question: {
+                type: String,
+            },
+            componentType: {
+                type: String,
+            },
+            questionId: {
+                type: Number,
+            },
+            infoTemplateUrl: {
+                type: String,
+            },
+            componenetOptions: {
+                type: [{
+                    optionName: {
+                        type: String,
+                    },
+                    optionMessage: {
+                        type: String,
+                    }
+                }]
+            }
+        }]
     }
 },{ timestamps: true })
 
-const makeBrandModal = new mongoose.model('make_modal', makeModalSchema);
+const questionModal = new mongoose.model('device_condition_questions', questionSchema);
 
-module.exports = makeBrandModal
+module.exports = questionModal

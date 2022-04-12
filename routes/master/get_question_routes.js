@@ -1,0 +1,25 @@
+const express = require("express");
+const router = express.Router();
+
+require("../../src/database/connection");
+const questionModal = require("../../src/database/modals/master/get_question");
+
+router.get("/getQuestions", async (req, res) => {
+  try {
+    const dataObject = await questionModal.find().sort({ questionId: 1});
+    console.log(dataObject);
+    res
+      .status(200)
+      .json({
+        reason: "Questions found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+module.exports = router;
