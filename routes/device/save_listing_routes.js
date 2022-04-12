@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-const saveListingModal = require("../../src/database/connection");
+const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 
 router.get("/listing", async (req, res) => {
   try {
@@ -28,7 +28,6 @@ router.get("/listing", async (req, res) => {
 
 router.post("/listing/save", async (req, res) => {
     const modalInfo = new saveListingModal(req.body);
-    console.log(req.body);
     try {
         const dataObject = await modalInfo.save();
         res
