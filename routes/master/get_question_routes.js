@@ -7,7 +7,6 @@ const questionModal = require("../../src/database/modals/master/get_question");
 router.get("/getQuestions", async (req, res) => {
   try {
     const dataObject = await questionModal.find().sort({ questionId: 1});
-    console.log(dataObject);
     res
       .status(200)
       .json({
