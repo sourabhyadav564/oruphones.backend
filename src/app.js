@@ -33,6 +33,7 @@ const eventRoute = require("../routes/others/event_routes");
 const imageRoute = require("../routes/device/image_upload_routes");
 const questionRoute = require("../routes/master/get_question_routes");
 const citiesRoute = require("../routes/global/cities_route");
+const bestDealHomeRoute = require("../routes/home/best_deal_home_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -47,6 +48,7 @@ app.use("/api/v1/master", questionRoute);
 app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/global", citiesRoute);
+app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/api/auth", eventRoute);
 
 app.listen(port, () => {
