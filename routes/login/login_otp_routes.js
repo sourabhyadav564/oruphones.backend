@@ -50,16 +50,16 @@ router.post("/otp/generate", async (req, res) => {
 });
 
 router.post("/otp/validate", async (req, res) => {
-  const mobileNumber = req.query.mobileNumber;
+  const mobileNumber = req.query.mobileNumber?.toString();
   const countryCode = req.query.countryCode;
-  const otp = parseInt(req.query.otp?.toString());
+  const otp = req.query.otp?.toString();
 
   try {
     const getOtp = await userModal.find({
       mobileNumber: mobileNumber,
       otp: otp,
     });
-    savedOtp = parseInt(getOtp[0]?.otp?.toString());
+    savedOtp = getOtp[0]?.otp?.toString();
     if (savedOtp === otp) {
       res.status(200).json({
         reason: "OTP verified successfully",
