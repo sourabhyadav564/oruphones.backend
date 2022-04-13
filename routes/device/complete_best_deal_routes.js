@@ -35,9 +35,11 @@ router.get("/listings/best/nearall", async (req, res) => {
   try {
     let defaultDataObject;
     if (location === "India") {
-      defaultDataObject = await bestDealHomeModel.find({
-        listingLocation: citiesForIndia,
-      });
+      defaultDataObject = await bestDealHomeModel.find(
+    //       {
+    //     listingLocation: citiesForIndia,
+    //   }
+      );
     } else {
       defaultDataObject = await bestDealHomeModel.find({
         listingLocation: location,
