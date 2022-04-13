@@ -28,7 +28,8 @@ router.get("/listings/best/nearme", async (req, res) => {
     "Kolkata",
   ];
 
-  let dataObject = [];
+  let bestDeals = [];
+  let otherListings = [];
 
   try {
     let defaultDataObject;
@@ -96,13 +97,13 @@ router.get("/listings/best/nearme", async (req, res) => {
       let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
       // console.log("item", {...item._doc, currentPercentage: currentPercentage});
       let newDataObject = {...item._doc, notionalPercentage: currentPercentage};
-      dataObject.push(newDataObject);
+      bestDeals.push(newDataObject);
       // console.log("newDataObject", newDataObject);
     });
 
-    dataObject.sort((a, b) => {
+    bestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
-    })
+    })?.slice(0,5);
 
 
     // const new1 = saveData.filter((item) => {
@@ -129,7 +130,10 @@ router.get("/listings/best/nearme", async (req, res) => {
       reason: "Best deals found",
       statusCode: 200,
       status: "SUCCESS",
-      dataObject,
+      dataObject: {
+        otherListings: otherListings,
+        bestDeals: bestDeals,
+      }
     });
   } catch (error) {
     console.log(error);
