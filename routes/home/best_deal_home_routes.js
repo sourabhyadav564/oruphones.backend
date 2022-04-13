@@ -30,6 +30,7 @@ router.get("/listings/best/nearme", async (req, res) => {
 
   let bestDeals = [];
   let otherListings = [];
+  let finalBestDeals = [];
 
   try {
     let defaultDataObject;
@@ -99,11 +100,17 @@ router.get("/listings/best/nearme", async (req, res) => {
       bestDeals.push(newDataObject);
     });
 
-    bestDeals.sort((a, b) => {
+    bestDeals.forEach((item, index) => {
+      if(item.notionalPercentage > 0) {
+        finalBestDeals.push(item);
+      }
+    });
+
+    finalBestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
-    bestDeals.length = bestDeals.length >= 5 ? 5 : bestDeals.length;
+    finalBestDeals.length = finalBestDeals.length >= 5 ? 5 : finalBestDeals.length;
 
     res.status(200).json({
       reason: "Best deals found",
@@ -111,7 +118,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       status: "SUCCESS",
       dataObject: {
         otherListings: otherListings,
-        bestDeals: bestDeals,
+        bestDeals: finalBestDeals,
       }
     });
   } catch (error) {

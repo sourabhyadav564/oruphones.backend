@@ -96,7 +96,10 @@ router.get("/listings/best/nearall", async (req, res) => {
       }
 
       let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
-      let newDataObject = {...item._doc, notionalPercentage: currentPercentage};
+      let newDataObject = {
+        ...item._doc,
+        notionalPercentage: currentPercentage,
+      };
       bestDeals.push(newDataObject);
     });
 
@@ -105,11 +108,11 @@ router.get("/listings/best/nearall", async (req, res) => {
     });
 
     bestDeals.forEach((item, index) => {
-        if (index < 5) {
-            finalBestDeals.push(item);
-        } else {
-            otherListings.push(item);
-        }
+      if (index < 5 && item.notionalPercentage > 0) {
+        finalBestDeals.push(item);
+      } else {
+        otherListings.push(item);
+      }
     });
 
     res.status(200).json({
@@ -119,14 +122,12 @@ router.get("/listings/best/nearall", async (req, res) => {
       dataObject: {
         otherListings: otherListings,
         bestDeals: finalBestDeals,
-      }
+      },
     });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
   }
 });
-
-
 
 module.exports = router;
