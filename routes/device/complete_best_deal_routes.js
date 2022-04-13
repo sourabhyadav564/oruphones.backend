@@ -4,8 +4,8 @@ const router = express.Router();
 require("../../src/database/connection");
 const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 
-router.get("/listings/best/nearme", async (req, res) => {
-  const location = req.query.location;
+router.get("/listings/best/nearall", async (req, res) => {
+  const location = req.query.userLocation;
   const userUniqueId = req.query.userUniqueId;
 
   let basePrice;
@@ -30,6 +30,7 @@ router.get("/listings/best/nearme", async (req, res) => {
 
   let bestDeals = [];
   let otherListings = [];
+  let finalBestDeals = [];
 
   try {
     let defaultDataObject;
@@ -103,7 +104,13 @@ router.get("/listings/best/nearme", async (req, res) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
-    bestDeals.length = bestDeals.length >= 5 ? 5 : bestDeals.length;
+    bestDeals.forEach((item, index) => {
+        if (index < 5) {
+            finalBestDeals.push(item);
+        } else {
+            otherListings.push(item);
+        }
+    });
 
     res.status(200).json({
       reason: "Best deals found",
@@ -111,7 +118,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       status: "SUCCESS",
       dataObject: {
         otherListings: otherListings,
-        bestDeals: bestDeals,
+        bestDeals: finalBestDeals,
       }
     });
   } catch (error) {
