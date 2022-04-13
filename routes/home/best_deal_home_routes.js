@@ -103,8 +103,9 @@ router.get("/listings/best/nearme", async (req, res) => {
 
     bestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
-    })?.slice(0,5);
+    });
 
+    bestDeals.length = bestDeals.length >= 5 ? 5 : bestDeals.length;
 
     // const new1 = saveData.filter((item) => {
     //     let tempItem;
