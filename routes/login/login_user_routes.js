@@ -37,7 +37,7 @@ router.get("/user/details", async (req, res) => {
 
 router.post("/user/create", async (req, res) => {
   const email = req.body.email;
-  const mobileNumber = req.body.mobileNumber;
+  const mobileNumber = parseInt(req.body.mobileNumber);
   const profilePicPath = req.body.profilePicPath;
   const countryCode = req.body.countryCode;
   const userName = req.body.userName;
@@ -60,7 +60,7 @@ router.post("/user/create", async (req, res) => {
     if (getUser) {
       res.status(401).json({
         reason: "User Already Available",
-        statusCode: 401,
+        statusCode: 1,
         status: "SUCCESS",
       });
       return;
