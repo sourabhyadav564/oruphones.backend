@@ -58,7 +58,7 @@ router.post("/user/create", async (req, res) => {
     const getUser = await createUserModal.findOne({ mobileNumber });
 
     if (getUser) {
-      res.status(401).json({
+      res.status(200).json({
         reason: "User Already Available",
         statusCode: 1,
         status: "SUCCESS",
@@ -71,7 +71,7 @@ router.post("/user/create", async (req, res) => {
     } else {
       const data = new createUserModal(createUserData);
       const saveData = await data.save();
-      res.status(200).json({
+      res.status(201).json({
         reason: "UserCreated Successfully",
         statusCode: 200,
         status: "SUCCESS",
