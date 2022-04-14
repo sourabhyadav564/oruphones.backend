@@ -62,6 +62,10 @@ router.post("/user/create", async (req, res) => {
         reason: "User Already Available",
         statusCode: 1,
         status: "SUCCESS",
+        dataObject: {
+          userUniqueId: getUser.userUniqueId,
+          userdetails: getUser,
+        },
       });
       return;
     } else {
