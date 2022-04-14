@@ -61,7 +61,7 @@ router.post("/user/create", async (req, res) => {
       res.status(401).json({
         reason: "User Already Available",
         statusCode: 401,
-        status: "FAILURE",
+        status: "SUCCESS",
       });
       return;
     } else {
