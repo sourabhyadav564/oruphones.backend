@@ -25,7 +25,7 @@ router.post("/otp/generate", async (req, res) => {
 
     var options = {
       authorization: process.env.API_KEY,
-      message: `Your OTP is ${clientOTP}`,
+      message: `${clientOTP} is your OTP for login`,
       numbers: [mobileNumber],
     };
 

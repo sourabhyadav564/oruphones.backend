@@ -36,7 +36,8 @@ const citiesRoute = require("../routes/global/cities_route");
 const bestDealHomeRoute = require("../routes/home/best_deal_home_routes");
 const bestDealCompletedRoute = require("../routes/device/complete_best_deal_routes");
 const loginOtpRoute = require("../routes/login/login_otp_routes");
-const createUserRoute = require("../routes/login/login_user_routes")
+const createUserRoute = require("../routes/login/login_user_routes");
+const saveNotificationTokenRoute = require("../routes/notification/notification_save_token_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -56,6 +57,7 @@ app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
+app.use("/api/v1/notification", saveNotificationTokenRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
