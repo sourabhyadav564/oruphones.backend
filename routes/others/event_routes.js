@@ -6,12 +6,18 @@ const eventModal = require("../../src/database/modals/others/event_logs");
 
 router.post("/sessionid", async (req, res) => {
 
+  const userUniqueId = req.headers.useruniqueid;
+  const eventName = req.headers.eventname;
+  const srcFrom = req.headers.srcfrom;
+  const sessionId = req.headers.sessionid;
+
   const headerInfo = {
-    userUniqueId: req.headers.useruniqueid,
-    events: req.headers.eventname,
-    srcFrom: req.headers.srcfrom,
-    sessionId
+    userUniqueId: userUniqueId,
+    events: eventName,
+    srcFrom: srcFrom,
+    sessionId: sessionId,
   };
+
   const eventModalObject = new eventModal(headerInfo);
 
   try {

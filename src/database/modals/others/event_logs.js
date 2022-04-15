@@ -14,7 +14,8 @@ const eventSchema = new mongoose.Schema(
           default: "NA"
         },
       ],
-      required: true,
+      default: "NA"
+      // required: true,
     },
     srcFrom: {
         type: String,
@@ -22,7 +23,7 @@ const eventSchema = new mongoose.Schema(
     },
     sessionId: {
         type: String || Number,
-        required: true,
+        // required: true,
     }
   },
   { timestamps: true }
