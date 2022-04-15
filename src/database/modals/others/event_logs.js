@@ -11,6 +11,7 @@ const eventSchema = new mongoose.Schema(
       type: [
         {
           type: String,
+          default: "NA"
         },
       ],
       required: true,
@@ -26,6 +27,12 @@ const eventSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+eventSchema.pre('save', async function (next) {
+  this.sessionId = this._id;
+  next();
+});
+
 
 const eventModal = new mongoose.model("event_loggings", eventSchema);
 
