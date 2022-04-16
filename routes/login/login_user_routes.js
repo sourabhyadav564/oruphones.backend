@@ -98,7 +98,6 @@ router.post("/user/update", async (req, res) => {
     userUniqueId: req.body.userUniqueId,
   }
 
-
   const createUserData = {
     email: email,
     profilePicPath: profilePicPath,
