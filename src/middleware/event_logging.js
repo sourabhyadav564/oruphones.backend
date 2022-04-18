@@ -8,7 +8,7 @@ const logEvent = async (req, res, next) => {
   const sessionId = req.headers.sessionid;
 
   const getEvent = await eventModal.findOne({sessionId: sessionId});
-  const createdTime = moment(getEvent.createdAt).format("LTS");
+  const createdTime = moment(getEvent?.createdAt).format("LTS");
   const expirationTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = moment(Date.now()).format("LTS");
 

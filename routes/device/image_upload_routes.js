@@ -50,7 +50,7 @@ router.post("/uploadimage", logEvent, upload.single("image"), async (req, res) =
   try {
     const file = req.file;
     const result = await uploadFile(file);
-    await unlinkFile(file.path);
+    await unlinkFile(file?.path);
 
     const imageInfo ={
       deviceFace: req.query.deviceFace,
