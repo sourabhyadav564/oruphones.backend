@@ -21,11 +21,12 @@ const logEvent = async (req, res, next) => {
   try {
     if (getEvent) {
       if (currentTime > updatedCreatedTime) {
-        res.status(401).send({
+        res.status(202).send({
           status: "SESSION_EXPIRED",
           statusCode: 401,
           reason: "User session expired",
         });
+        console.log("hello");
         return;
       } else {
         const arr = [];
