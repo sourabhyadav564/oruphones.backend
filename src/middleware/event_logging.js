@@ -33,14 +33,17 @@ const logEvent = async (req, res, next) => {
         arr.push({ eventName: events });
         // console.log("arr2", arr);
         let eventData = {};
-        if (
-          userUniqueId !== "Guest" &&
-          userUniqueId !== getEvent.userUniqueId
-        ) {
-          eventData = {
-            userUniqueId: userUniqueId,
-            events: arr,
-          };
+        if (userUniqueId !== "Guest") {
+          if (userUniqueId !== getEvent.userUniqueId) {
+            eventData = {
+              userUniqueId: userUniqueId,
+              events: arr,
+            };
+          } else {
+            eventData = {
+              events: arr,
+            };
+          }
         } else {
           eventData = {
             events: arr,
