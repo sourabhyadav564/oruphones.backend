@@ -2,22 +2,22 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-const connection = require("../../src/database/mysql_connection");
+// const connection = require("../../src/database/mysql_connection");
 const testModal = require("../../src/database/modals/others/test_modal");
 
-router.get("/test1", async (req, res) => {
-  try {
-    pool.query(
-      "SELECT * FROM wordpress.web_scraper_brandwisescraping;",
-      (err, res) => {
-        res.status(200).json({ message: "Users found", res });
-      }
-    );
-  } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
-  }
-})
+// router.get("/test1", async (req, res) => {
+//   try {
+//     pool.query(
+//       "SELECT * FROM wordpress.web_scraper_brandwisescraping;",
+//       (err, res) => {
+//         res.status(200).json({ message: "Users found", res });
+//       }
+//     );
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).json(error);
+//   }
+// })
 
 router.get("/test", async (req, res) => {
   try {
