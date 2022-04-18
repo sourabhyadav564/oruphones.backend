@@ -49,11 +49,13 @@ const logEvent = async (req, res, next) => {
               events: arr,
             };
             console.log("inside", false);
+            return;
           }
         } else {
           eventData = {
             events: arr,
           };
+          return;
         }
 
         // console.log("eventData", eventData);
