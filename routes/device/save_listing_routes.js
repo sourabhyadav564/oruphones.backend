@@ -3,8 +3,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/listing", async (req, res) => {
+router.get("/listing", logEvent, async (req, res) => {
   try {
     const listingId = req.query.userUniqueId;
     const dataObject = await saveListingModal.findById(listingId);

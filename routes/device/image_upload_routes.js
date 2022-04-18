@@ -3,6 +3,7 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const imageUploadModal = require("../../src/database/modals/device/image_upload");
+const logEvent = require("../../src/middleware/event_logging");
 
 const fs = require("fs");
 const util = require("util");
@@ -38,13 +39,13 @@ const upload = multer({
   // fileFilter: fileFilter,
 });
 
-router.get("/uploadimage/:key", (req, res) => {
+router.get("/uploadimage/:key", logEvent, (req, res) => {
   const key = req.params.key;
   const readStream = getFileStream(key);
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", upload.single("image"), async (req, res) => {
+router.post("/uploadimage", logEvent, upload.single("image"), async (req, res) => {
 
   try {
     const file = req.file;

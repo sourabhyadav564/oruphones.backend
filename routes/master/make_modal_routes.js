@@ -3,8 +3,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const brandModal = require("../../src/database/modals/master/make_modal_list");
+const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/makemodellist", async (req, res) => {
+router.get("/makemodellist", logEvent, async (req, res) => {
   try {
     const dataObject = await brandModal.find();
     console.log(dataObject);

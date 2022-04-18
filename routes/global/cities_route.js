@@ -3,8 +3,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const cityModal = require("../../src/database/modals/global/cities_modal");
+const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/cities", async (req, res) => {
+router.get("/cities", logEvent, async (req, res) => {
   try {
     const dataObject = await cityModal.find();
     res

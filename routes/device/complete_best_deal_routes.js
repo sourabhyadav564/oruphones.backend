@@ -3,8 +3,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
+const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/listings/best/nearall", async (req, res) => {
+router.get("/listings/best/nearall", logEvent, async (req, res) => {
   const location = req.query.userLocation;
   const userUniqueId = req.query.userUniqueId;
 
