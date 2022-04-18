@@ -33,7 +33,7 @@ const createUserSchema = new mongoose.Schema({
         default: "",
     },
     mobileNumber: {
-        type: Number || String,
+        type: String,
         required: true,
         default: "",
     },
