@@ -7,10 +7,7 @@ const logEvent = async (req, res, next) => {
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
 
-  console.log("userUniqueId", req.headers.sessionId);
-
   const getEvent = await eventModal.findOne({sessionId: sessionId});
-  // console.log("getEvent", getEvent);
   const updatedCreatedTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = new Date().toLocaleTimeString();
 

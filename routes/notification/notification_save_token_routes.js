@@ -6,7 +6,18 @@ require("../../src/database/connection");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 
 router.post("/save/token", logEvent, async (req, res) => {
-  const notificationInfo = new saveNotificationModel(req.body);
+  const userUniqueId = req.body.userUniqueId;
+  const deviceId = req.body.deviceId;
+  const tokenId = req.body.tokenId;
+
+  const notification_data = {
+    userUniqueId: userUniqueId,
+    deviceId: deviceId,
+    tokenId: tokenId,
+  }
+
+  console.log("first", notification_data);
+  const notificationInfo = new saveNotificationModel(notification_data);
   try {
     const dataObject = await notificationInfo.save();
     res.status(201).json({
