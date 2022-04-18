@@ -7,11 +7,12 @@ const logEvent = async (req, res, next) => {
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
 
-  console.log("userUniqueId", req.headers.sessionId);
+  // console.log("userUniqueId", req.headers.sessionId);
 
-  const getEvent = await eventModal.findOne({sessionId: sessionId});
-  console.log("getEvent", getEvent);
-  const updatedCreatedTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
+  const getEvent = await eventModal.findOne({ sessionId: sessionId });
+  const updatedCreatedTime = moment(
+    getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)
+  ).format("LTS");
   const currentTime = new Date().toLocaleTimeString();
 
   try {
@@ -28,14 +29,25 @@ const logEvent = async (req, res, next) => {
         getEvent.events.forEach((item) => {
           arr.push(item);
         });
-        console.log("arr", arr);
-        arr.push({eventName: events});
-        console.log("arr2", arr);
-        const eventData = {
-          events: arr,
-        };
+        // console.log("arr", arr);
+        arr.push({ eventName: events });
+        // console.log("arr2", arr);
+        let eventData = {};
+        if (
+          userUniqueId !== "Guest" &&
+          userUniqueId !== getEvent.userUniqueId
+        ) {
+          eventData = {
+            userUniqueId: userUniqueId,
+            events: arr,
+          };
+        } else {
+          eventData = {
+            events: arr,
+          };
+        }
 
-        console.log("eventData", eventData);
+        // console.log("eventData", eventData);
 
         const updateEvent = await eventModal.findOneAndUpdate(
           sessionId,
@@ -45,7 +57,7 @@ const logEvent = async (req, res, next) => {
           }
         );
 
-        console.log("updateEvent", updateEvent);
+        // console.log("updateEvent", updateEvent);
         next();
       }
     } else {
@@ -56,8 +68,8 @@ const logEvent = async (req, res, next) => {
       });
       return;
     }
-
   } catch (error) {
+    res.status(400).json(error);
     console.log(error);
   }
 };
