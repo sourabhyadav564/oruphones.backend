@@ -23,10 +23,9 @@ const logEvent = async (req, res, next) => {
       if (currentTime > updatedCreatedTime) {
         res.status(202).send({
           status: "SESSION_EXPIRED",
-          statusCode: 401,
+          statusCode: 202,
           reason: "User session expired",
         });
-        console.log("hello");
         return;
       } else {
         const arr = [];
@@ -36,27 +35,23 @@ const logEvent = async (req, res, next) => {
         // console.log("arr", arr);
         arr.push({ eventName: events });
         // console.log("arr2", arr);
-        let eventData = {};
-        if (userUniqueId !== "Guest") {
-          if (userUniqueId !== getEvent.userUniqueId) {
-            eventData = {
-              userUniqueId: userUniqueId,
-              events: arr,
-            };
-            console.log("inside", true);
-          } else {
-            eventData = {
-              events: arr,
-            };
-            console.log("inside", false);
-            return;
-          }
-        } else {
+        // let eventData = {};
+        // if (userUniqueId !== "Guest") {
+        //   if (userUniqueId === getEvent.userUniqueId) {
+        //     eventData = {
+        //       events: arr,
+        //     };
+        //   } else {
+        //     eventData = {
+        //       userUniqueId: userUniqueId,
+        //       events: arr,
+        //     };
+        //   }
+        // } else {
           eventData = {
             events: arr,
           };
-          return;
-        }
+        // }
 
         // console.log("eventData", eventData);
 
