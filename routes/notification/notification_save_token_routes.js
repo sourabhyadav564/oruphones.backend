@@ -33,10 +33,10 @@ router.post("/delete/token", async (req, res) => {
     );
 
     if (!deleteNotification) {
-      res.status(404).json({
+      res.status(202).json({
         reason: "Notification not found",
-        statusCode: 404,
-        status: "FAILURE",
+        statusCode: 202,
+        status: "ACCEPTED",
       });
       return;
     } else {
