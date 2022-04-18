@@ -15,6 +15,9 @@ const logEvent = async (req, res, next) => {
   ).format("LTS");
   const currentTime = new Date().toLocaleTimeString();
 
+  console.log("currentTime", currentTime);
+  console.log("updatedCreatedTime", updatedCreatedTime);
+
   try {
     if (getEvent) {
       if (currentTime > updatedCreatedTime) {
@@ -39,10 +42,12 @@ const logEvent = async (req, res, next) => {
               userUniqueId: userUniqueId,
               events: arr,
             };
+            console.log("inside", true);
           } else {
             eventData = {
               events: arr,
             };
+            console.log("inside", false);
           }
         } else {
           eventData = {
