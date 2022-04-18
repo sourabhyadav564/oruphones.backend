@@ -11,6 +11,9 @@ const logEvent = async (req, res, next) => {
   const updatedCreatedTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = new Date().toLocaleTimeString();
 
+  console.log("expiration time", updatedCreatedTime);
+  console.log("currentTime", currentTime);
+
   try {
     if (getEvent) {
       // if (currentTime > updatedCreatedTime) {
@@ -28,9 +31,13 @@ const logEvent = async (req, res, next) => {
         // console.log("arr", arr);
         arr.push({eventName: events});
         // console.log("arr2", arr);
-        const eventData = {
+        let eventData = {
           events: arr,
         };
+
+        if(userUniqueId !== "Guest" && userUniqueId !== getEvent.userUniqueId) {
+          eventData = {...eventData, userUniqueId: userUniqueId};
+        }
 
         console.log("eventData", eventData);
 
