@@ -33,7 +33,7 @@ router.post("/save/token", logEvent, async (req, res) => {
   }
 });
 
-router.post("/delete/token", async (req, res) => {
+router.post("/delete/token", logEvent, async (req, res) => {
   const tokenId = req.body.tokenId;
   const deviceId = req.body.deviceId;
   const userUniqueId = req.body.userUniqueId;
