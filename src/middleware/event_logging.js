@@ -13,14 +13,14 @@ const logEvent = async (req, res, next) => {
 
   try {
     if (getEvent) {
-      if (currentTime > updatedCreatedTime) {
-        res.status(301).send({
-          status: "SESSION_EXPIRED",
-          statusCode: 301,
-          reason: "User session expired",
-        });
-        return;
-      } else {
+      // if (currentTime > updatedCreatedTime) {
+      //   res.status(301).send({
+      //     status: "SESSION_EXPIRED",
+      //     statusCode: 301,
+      //     reason: "User session expired",
+      //   });
+      //   return;
+      // } else {
         const arr = [];
         getEvent.events.forEach((item) => {
           arr.push(item);
@@ -44,7 +44,7 @@ const logEvent = async (req, res, next) => {
 
         console.log("updateEvent", updateEvent);
         next();
-      }
+      // }
     } else {
       res.status(301).send({
         status: "SESSION_INVALID",
