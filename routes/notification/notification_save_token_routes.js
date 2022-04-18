@@ -5,7 +5,7 @@ const logEvent = require("../../src/middleware/event_logging");
 require("../../src/database/connection");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 
-router.post("/save/token", logEvent, async (req, res) => {
+router.post("/save/token", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const deviceId = req.body.deviceId;
   const tokenId = req.body.tokenId;
