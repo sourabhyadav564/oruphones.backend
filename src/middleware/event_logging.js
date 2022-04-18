@@ -10,7 +10,7 @@ const logEvent = async (req, res, next) => {
   console.log("userUniqueId", req.headers.sessionId);
 
   const getEvent = await eventModal.findOne({sessionId: sessionId});
-  console.log("getEvent", getEvent);
+  // console.log("getEvent", getEvent);
   const updatedCreatedTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = new Date().toLocaleTimeString();
 
@@ -28,9 +28,9 @@ const logEvent = async (req, res, next) => {
         getEvent.events.forEach((item) => {
           arr.push(item);
         });
-        console.log("arr", arr);
+        // console.log("arr", arr);
         arr.push({eventName: events});
-        console.log("arr2", arr);
+        // console.log("arr2", arr);
         const eventData = {
           events: arr,
         };
