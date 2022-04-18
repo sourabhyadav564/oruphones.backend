@@ -27,7 +27,7 @@ router.get("/listing", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/save", async (req, res) => {
+router.post("/listing/save", logEvent, async (req, res) => {
     const modalInfo = new saveListingModal(req.body);
     try {
         const dataObject = await modalInfo.save();
