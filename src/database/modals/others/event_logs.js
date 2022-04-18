@@ -11,11 +11,11 @@ const eventSchema = new mongoose.Schema(
       type: [{
           eventName: {
             type: String,
-            default: "NA",
+            default: "SESSION_CREATED",
           },
         }],
       default: [{
-        eventName: "NA",
+        eventName: "SESSION_CREATED",
       }],
       // required: true,
     },
