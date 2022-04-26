@@ -5,7 +5,7 @@ const logEvent = require("../../src/middleware/event_logging");
 require("../../src/database/connection");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 
-router.post("/save/token", logEvent, async (req, res) => {
+router.post("/save/token", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const deviceId = req.body.deviceId;
   const tokenId = req.body.tokenId;
@@ -16,7 +16,6 @@ router.post("/save/token", logEvent, async (req, res) => {
     tokenId: tokenId,
   }
 
-  console.log("first", notification_data);
   const notificationInfo = new saveNotificationModel(notification_data);
   try {
     const dataObject = await notificationInfo.save();
@@ -33,7 +32,7 @@ router.post("/save/token", logEvent, async (req, res) => {
   }
 });
 
-router.post("/delete/token", logEvent, async (req, res) => {
+router.post("/delete/token", async (req, res) => {
   const tokenId = req.body.tokenId;
   const deviceId = req.body.deviceId;
   const userUniqueId = req.body.userUniqueId;

@@ -39,13 +39,13 @@ const upload = multer({
   // fileFilter: fileFilter,
 });
 
-router.get("/uploadimage/:key", logEvent, (req, res) => {
+router.get("/uploadimage/:key", (req, res) => {
   const key = req.params.key;
   const readStream = getFileStream(key);
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", logEvent, upload.single("image"), async (req, res) => {
+router.post("/uploadimage", upload.single("image"), async (req, res) => {
 
   try {
     const file = req.file;

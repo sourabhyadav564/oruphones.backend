@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/listings/best/nearme", logEvent, async (req, res) => {
+router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
   const userUniqueId = req.query.userUniqueId;
 

@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/user/details", logEvent, async (req, res) => {
+router.get("/user/details", async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
   const countryCode = req.query.countryCode;
 
@@ -36,7 +36,7 @@ router.get("/user/details", logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/create", logEvent, async (req, res) => {
+router.post("/user/create", async (req, res) => {
   const email = req.body.email;
   const mobileNumber = parseInt(req.body.mobileNumber);
   const profilePicPath = req.body.profilePicPath;
@@ -88,7 +88,7 @@ router.post("/user/create", logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/update", logEvent, async (req, res) => {
+router.post("/user/update", async (req, res) => {
   const city = req.body.city;
   const email = req.body.email;
   const mobileNumber = req.body.mobileNumber;
