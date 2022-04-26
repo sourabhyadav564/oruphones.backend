@@ -28,7 +28,54 @@ router.get("/listing", async (req, res) => {
 });
 
 router.post("/listing/save", async (req, res) => {
-    const modalInfo = new saveListingModal(req.body);
+
+  const charger = req.body.charger;
+  const color = req.body.color;
+  const deviceCondition = req.body.deviceCondition;
+  const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
+  const deviceFinalGrade = req.body.deviceFinalGrade;
+  const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
+  const listedBy = req.body.listedBy;
+  const deviceStorage = req.body.deviceStorage;
+  const earphone = req.body.earphone;
+  const images = req.body.images;
+  const imei = req.body.imei;
+  const listingLocation = req.body.listingLocation;
+  const listingPrice = req.body.listingPrice;
+  const make = req.body.make;
+  const marketingName = req.body.marketingName;
+  const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
+  const model = req.body.model;
+  const originalbox = req.body.originalbox;
+  const platform = req.body.platform;
+  const recommendedPriceRange = req.body.recommendedPriceRange;
+  const userUniqueId = req.body.userUniqueId;
+
+  const data = {
+    charger,
+    color,
+    deviceCondition,
+    deviceCosmeticGrade,
+    deviceFinalGrade,
+    deviceFunctionalGrade,
+    listedBy,
+    deviceStorage,
+    earphone,
+    images,
+    imei,
+    listingLocation,
+    listingPrice,
+    make,
+    marketingName,
+    mobileNumber,
+    model,
+    originalbox,
+    platform,
+    recommendedPriceRange,
+    userUniqueId,
+  };
+
+    const modalInfo = new saveListingModal(data);
     try {
         const dataObject = await modalInfo.save();
         res
