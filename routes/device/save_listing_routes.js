@@ -27,6 +27,28 @@ router.get("/listing", async (req, res) => {
   }
 });
 
+router.get("/listings", async (req, res) => {
+  try {
+    const userUniqueId = req.query.userUniqueId;
+    const dataObject = await saveListingModal.find({userUniqueId});
+
+    if (!dataObject) {
+      res.status(404).json({ message: "User unique ID not found" });
+      return;
+    } else {
+      res.status(200).json({
+        reason: "Listings found successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 router.post("/listing/save", async (req, res) => {
 
   const charger = req.body.charger;
