@@ -39,9 +39,17 @@ const saveListingSchema = new mongoose.Schema({
             thumbnailImage: {
                 type: String,
             },
-            fullImage: [{
+            fullImage: {
                 type: String,
-            }],
+            },
+        }],
+    },
+    defaultImage: {
+        type: [{
+            fullImage: {
+                type: String,
+                default: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
+            },
         }],
     },
     imei: {
@@ -86,6 +94,14 @@ const saveListingSchema = new mongoose.Schema({
     userUniqueId: {
         type: String,
         required: true,
+    },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+    deviceUniqueId: {
+        type: String,
+        default: 'NA',
     }
 },{ timestamps: true })
 

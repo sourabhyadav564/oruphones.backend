@@ -5,27 +5,27 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/listing", async (req, res) => {
-  try {
-    const listingId = req.query.userUniqueId;
-    const dataObject = await saveListingModal.findById(listingId);
+// router.get("/listing", async (req, res) => {
+//   try {
+//     const listingId = req.query.userUniqueId;
+//     const dataObject = await saveListingModal.findById(listingId);
 
-    if (!dataObject) {
-      res.status(404).json({ message: "Listing not found" });
-      return;
-    } else {
-      res.status(200).json({
-        reason: "Listing found successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-});
+//     if (!dataObject) {
+//       res.status(404).json({ message: "Listing not found" });
+//       return;
+//     } else {
+//       res.status(200).json({
+//         reason: "Listing found successfully",
+//         statusCode: 200,
+//         status: "SUCCESS",
+//         dataObject,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json(error);
+//   }
+// });
 
 router.get("/listings", async (req, res) => {
   try {
