@@ -48,12 +48,12 @@ const saveListingSchema = new mongoose.Schema({
         type: [{
             fullImage: {
                 type: String,
-                default: "NA"
+                // default: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
             },
-            default: [{
-                type: String,
-                default: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
-            }],
+        }],
+        default: [{
+            type: String,
+            default: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
         }],
     },
     imei: {
