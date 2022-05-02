@@ -90,4 +90,45 @@ router.post("/otp/validate", async (req, res) => {
   }
 });
 
+router.post("/otp/resend", async (req, res) => {
+  const mobileNumber = req.query.mobileNumber;
+  const countryCode = req.query.countryCode;
+  const clientOTP = generateOTP();
+
+  const userDatas = {
+    countryCode: countryCode,
+    mobileNumber: mobileNumber,
+    otp: clientOTP,
+  };
+
+  try {
+    const data = new userModal(userDatas);
+    const saveData = await data.save();
+
+    var options = {
+      authorization: process.env.API_KEY,
+      message: `${clientOTP} is your OTP for login`,
+      numbers: [mobileNumber],
+    };
+
+    const response = await fast2sms.sendMessage(options); //Asynchronous Function.
+
+    res.status(200).json({
+      reason: "OTP generated successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      response,
+      dataObject: {
+        maxTime: 120,
+        submitCountIncrement: 0,
+        maxRetryCount: "3",
+        mobileNumber: `${countryCode} ${mobileNumber}`,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
 module.exports = router;
