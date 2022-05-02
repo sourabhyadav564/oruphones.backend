@@ -103,7 +103,7 @@ router.post("/listing/save", async (req, res) => {
         res
       .status(201)
       .json({
-        reason: "Modal list created",
+        reason: "Listing saved successfully",
         statusCode: 201,
         status: "SUCCESS",
         dataObject,
