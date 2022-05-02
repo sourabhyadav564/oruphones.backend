@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
+// const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
+const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearall", async (req, res) => {
@@ -20,14 +21,14 @@ router.get("/listings/best/nearall", async (req, res) => {
   let has_earphone_percentage = 0;
   const has_original_box_percentage = 3;
 
-  const citiesForIndia = [
-    "Delhi",
-    "Mumbai",
-    "Bangalore",
-    "Hyderabad",
-    "Chennai",
-    "Kolkata",
-  ];
+  // const citiesForIndia = [
+  //   "Delhi",
+  //   "Mumbai",
+  //   "Bangalore",
+  //   "Hyderabad",
+  //   "Chennai",
+  //   "Kolkata",
+  // ];
 
   let bestDeals = [];
   let otherListings = [];
@@ -36,13 +37,15 @@ router.get("/listings/best/nearall", async (req, res) => {
   try {
     let defaultDataObject;
     if (location === "India") {
-      defaultDataObject = await bestDealHomeModel.find(
+      // defaultDataObject = await bestDealHomeModel.find(
+      defaultDataObject = await saveListingModal.find(
     //       {
     //     listingLocation: citiesForIndia,
     //   }
       );
     } else {
-      defaultDataObject = await bestDealHomeModel.find({
+      // defaultDataObject = await bestDealHomeModel.find({
+      defaultDataObject = await saveListingModal.find({
         listingLocation: location,
       });
     }
