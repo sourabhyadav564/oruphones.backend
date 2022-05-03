@@ -104,8 +104,21 @@ const saveListingSchema = new mongoose.Schema({
     deviceUniqueId: {
         type: String,
         default: 'NA',
+    },
+    listingId: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        default: 'Active',
     }
 },{ timestamps: true })
+
+createUserSchema.pre('save', async function (next) {
+    this.listingId = this._id;
+    next();
+});
 
 const saveListingModal = new mongoose.model('saved_listings', saveListingSchema);
 

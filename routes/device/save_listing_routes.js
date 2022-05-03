@@ -73,6 +73,13 @@ router.post("/listing/save", async (req, res) => {
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const userUniqueId = req.body.userUniqueId;
 
+// let imageMake = make.toString()
+// switch (imageMake) {
+//   case "":
+
+// }
+//   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
+
   const data = {
     charger,
     color,

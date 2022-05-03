@@ -57,7 +57,6 @@ const createUserSchema = new mongoose.Schema({
 },{ timestamps: true })
 
 createUserSchema.pre('save', async function (next) {
-    console.log("hello")
     this.userUniqueId = this._id;
     next();
 });
