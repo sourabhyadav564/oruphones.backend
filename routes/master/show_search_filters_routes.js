@@ -8,7 +8,9 @@ const logEvent = require("../../src/middleware/event_logging");
 router.get("/showserchFilters", async (req, res) => {
   try {
     // Data object for the search filters
-    const dataObject = await filterModal.find();
+    const data = await filterModal.find();
+    const dataObject = data[0]
+    // console.log(dataObject);
     res
       .status(200)
       .json({
