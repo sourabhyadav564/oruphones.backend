@@ -72,6 +72,7 @@ router.post("/listing/save", async (req, res) => {
   const platform = req.body.platform;
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const userUniqueId = req.body.userUniqueId;
+  const deviceImagesAvailable = images.length ? true : false;
 
 // let imageMake = make.toString()
 // switch (imageMake) {
@@ -102,6 +103,7 @@ router.post("/listing/save", async (req, res) => {
     platform,
     recommendedPriceRange,
     userUniqueId,
+    deviceImagesAvailable
   };
 
     const modalInfo = new saveListingModal(data);

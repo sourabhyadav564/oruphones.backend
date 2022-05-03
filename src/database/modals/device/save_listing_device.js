@@ -112,6 +112,9 @@ const saveListingSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'Active',
+    },
+    deviceImagesAvailable: {
+        type: Boolean,
     }
 },{ timestamps: true })
 
