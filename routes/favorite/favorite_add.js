@@ -126,7 +126,7 @@ router.post("/deactivate", async (req, res) => {
   }
 });
 
-router.get("/fetch", async (req, res) => {
+router.post("/fetch", async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
 
   try {
