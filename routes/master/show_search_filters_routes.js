@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const filterModal = require("../../src/database/modals/master/show_search_filters");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/showsearchFilters", async (req, res) => {
+router.get("/showserchFilters", async (req, res) => {
   try {
     // Data object for the search filters
     const dataObject = await filterModal.find();
