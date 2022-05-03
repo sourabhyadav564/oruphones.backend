@@ -45,11 +45,11 @@ const saveListingSchema = new mongoose.Schema({
         }],
     },
     defaultImage: {
-        type: [{
+        type: {
             fullImage: {
                 type: String,
             },
-        }],
+        },
         default: {
             fullImage: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
         },
