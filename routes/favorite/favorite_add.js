@@ -24,13 +24,19 @@ router.post("/add", async (req, res) => {
       getFavObject.fav_listings.forEach((item) => {
         arr.push(item);
       });
-      //   console.log(arr);
-      arr.push(listingId);
-      //   console.log(arr);
+
+      if(!arr.includes(listingId)){
+          arr.push(listingId);
+      } else {
+        res.status(200).json({
+            reason: "Listing already exists in your favorite list",
+            statusCode: 200,
+            status: "SUCCESS",
+          });
+      }
       let listingArray = {
         fav_listings: arr,
       };
-      //   console.log("listingArray", getFavObject._id);
       const updateList = await favoriteModal.findByIdAndUpdate(
         getFavObject._id,
         listingArray,
