@@ -144,20 +144,20 @@ router.post("/fetch", async (req, res) => {
       let arr = [];
       arr = getFavObject.fav_listings;
 
-      let listings = [];
+      let dateObject = [];
 
       arr.forEach(async (item, index) => {
         //   console.log("item", item);
         const single_listing = await saveListingModal.findOne({
           listingId: item,
         })
-        listings.push(single_listing);
-        if(listings.length === arr.length) {
+        dateObject.push(single_listing);
+        if(dateObject.length === arr.length) {
             res.status(200).json({
               reason: "Favorite listings fetched successfully",
               statusCode: 200,
               status: "SUCCESS",
-              listings,
+              dateObject,
             });
           }
       });
@@ -173,7 +173,7 @@ router.post("/fetch", async (req, res) => {
         reason: "Favorite listing does not exist",
         statusCode: 200,
         status: "SUCCESS",
-        listings,
+        dateObject,
       });
     }
   } catch (error) {
