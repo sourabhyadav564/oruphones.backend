@@ -118,7 +118,7 @@ const saveListingSchema = new mongoose.Schema({
     }
 },{ timestamps: true })
 
-createUserSchema.pre('save', async function (next) {
+saveListingSchema.pre('save', async function (next) {
     this.listingId = this._id;
     next();
 });
