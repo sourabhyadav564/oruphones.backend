@@ -38,6 +38,8 @@ const bestDealCompletedRoute = require("../routes/device/complete_best_deal_rout
 const loginOtpRoute = require("../routes/login/login_otp_routes");
 const createUserRoute = require("../routes/login/login_user_routes");
 const saveNotificationTokenRoute = require("../routes/notification/notification_save_token_routes");
+const diagnosticsConfigRoute = require("../routes/diagnostics/diagnostics_config_routes");
+const searchFilterRoute = require("../routes/master/show_search_filters_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -49,12 +51,14 @@ app.use("/api/v1", testRoute);
 app.use("/api/v1/master", brandRoute);
 app.use("/api/v1/master", makeModalRoute);
 app.use("/api/v1/master", questionRoute);
+app.use("/api/v1/master", searchFilterRoute);
 app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/device", bestDealCompletedRoute);
 app.use("/api/v1/global", citiesRoute);
 app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/api/auth", eventRoute);
+app.use("/api/v1/api", diagnosticsConfigRoute);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
