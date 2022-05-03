@@ -25,14 +25,14 @@ router.post("/add", async (req, res) => {
         arr.push(item);
       });
 
-      if(!arr.includes(listingId)){
-          arr.push(listingId);
+      if (!arr.includes(listingId)) {
+        arr.push(listingId);
       } else {
         res.status(200).json({
-            reason: "Listing already exists in your favorite list",
-            statusCode: 200,
-            status: "SUCCESS",
-          });
+          reason: "Listing already exists in your favorite list",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
       }
       let listingArray = {
         fav_listings: arr,
@@ -144,36 +144,36 @@ router.post("/fetch", async (req, res) => {
       let arr = [];
       arr = getFavObject.fav_listings;
 
-      let dateObject = [];
+      let dataObject = [];
 
       arr.forEach(async (item, index) => {
         //   console.log("item", item);
         const single_listing = await saveListingModal.findOne({
           listingId: item,
-        })
-        dateObject.push(single_listing);
-        if(dateObject.length === arr.length) {
-            res.status(200).json({
-              reason: "Favorite listings fetched successfully",
-              statusCode: 200,
-              status: "SUCCESS",
-              dateObject,
-            });
-          }
+        });
+        dataObject.push(single_listing);
+        if (dataObject.length === arr.length) {
+          res.status(200).json({
+            reason: "Favorite listings fetched successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        }
       });
 
-    //   res.status(200).json({
-    //     reason: "Favorite listing fetched successfully",
-    //     statusCode: 200,
-    //     status: "SUCCESS",
-    //     listings,
-    // });
+      //   res.status(200).json({
+      //     reason: "Favorite listing fetched successfully",
+      //     statusCode: 200,
+      //     status: "SUCCESS",
+      //     listings,
+      // });
     } else {
       res.status(200).json({
         reason: "Favorite listing does not exist",
         statusCode: 200,
         status: "SUCCESS",
-        dateObject,
+        dataObject,
       });
     }
   } catch (error) {
