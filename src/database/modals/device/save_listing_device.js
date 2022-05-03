@@ -107,7 +107,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     listingId: {
         type: String,
-        required: true,
+        // required: true,
     },
     status: {
         type: String,
