@@ -40,6 +40,7 @@ const createUserRoute = require("../routes/login/login_user_routes");
 const saveNotificationTokenRoute = require("../routes/notification/notification_save_token_routes");
 const diagnosticsConfigRoute = require("../routes/diagnostics/diagnostics_config_routes");
 const searchFilterRoute = require("../routes/master/show_search_filters_routes");
+const favoriteRoute = require("../routes/favorite/favorite_add");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -62,6 +63,7 @@ app.use("/api/v1/api", diagnosticsConfigRoute);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
+app.use("/api/v1/favorite", favoriteRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
