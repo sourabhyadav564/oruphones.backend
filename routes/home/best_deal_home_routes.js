@@ -9,7 +9,7 @@ const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
-  const userUniqueId = req.query.userUniqueId;
+  const userUniqueId = req.headers.userUniqueId;
 
   let basePrice;
   let notionalPrice;
@@ -167,7 +167,5 @@ router.get("/listings/best/nearme", async (req, res) => {
     res.status(400).json(error);
   }
 });
-
-
 
 module.exports = router;
