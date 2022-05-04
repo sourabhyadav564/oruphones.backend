@@ -138,9 +138,9 @@ router.get("/listings/best/nearall", async (req, res) => {
     // add favorite listings to the final list
     bestDeals.forEach((item, index) => {
       if (favList.includes(item.listingId)) {
-        bestDeals[index].favorite = true;
+        bestDeals[index].favourite = true;
       } else {
-        bestDeals[index].favorite = false;
+        bestDeals[index].favourite = false;
       }
     });
 
