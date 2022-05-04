@@ -156,4 +156,94 @@ router.post("/listing/delete", async (req, res) => {
   }
 });
 
+router.post("/listing/pause", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const listingId = req.body.listingId;
+
+  try {
+    const activateListing = await saveListingModal.findOne({
+      listingId: listingId,
+    });
+
+    if(!activateListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      if (activateListing.userUniqueId === userUniqueId) {
+        const pausedListing = await saveListingModal.findOneAndUpdate(listingId,
+          {
+            status: "Paused"
+          },
+          {
+            new: true,
+          });
+        res.status(200).json({
+          reason: "Listing paused successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          pausedListing
+        });
+      } else {
+        res.status(200).json({
+          reason: "You are not authorized to pause this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.post("/listing/activate", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const listingId = req.body.listingId;
+
+  try {
+    const activateListing = await saveListingModal.findOne({
+      listingId: listingId,
+    });
+
+    if(!activateListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      if (activateListing.userUniqueId === userUniqueId) {
+        const activatedListing = await saveListingModal.findOneAndUpdate(listingId,
+          {
+            status: "Active"
+          },
+          {
+            new: true,
+          });
+        res.status(200).json({
+          reason: "Listing activated successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          activatedListing
+        });
+      } else {
+        res.status(200).json({
+          reason: "You are not authorized to activate this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
 module.exports = router;
