@@ -45,11 +45,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     if(getFavObject) {
       favList = getFavObject.fav_listings;
     } else {
-      // res.status(200).json({
-      //   reason: "Favorite listing does not exist",
-      //   statusCode: 200,
-      //   status: "SUCCESS",
-      // });
       favList = [];
     }
 
@@ -137,6 +132,15 @@ router.get("/listings/best/nearme", async (req, res) => {
     });
 
     finalBestDeals.length = finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+
+    // adding image path to each listing
+    finalBestDeals.forEach((item, index) => {
+      if(!item.images.length) {
+        finalBestDeals[index].imagePath = item.defaultImage.fullImage;
+      } else {
+        finalBestDeals[index].imagePath = item.images[0].fullImage;
+      }
+    });
 
     // add favorite listings to the final list
     finalBestDeals.forEach((item, index) => {

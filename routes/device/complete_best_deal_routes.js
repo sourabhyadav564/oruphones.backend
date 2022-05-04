@@ -4,6 +4,7 @@ const router = express.Router();
 require("../../src/database/connection");
 // const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearall", async (req, res) => {
@@ -35,14 +36,26 @@ router.get("/listings/best/nearall", async (req, res) => {
   let finalBestDeals = [];
 
   try {
+    const getFavObject = await favoriteModal.findOne({
+      userUniqueId: userUniqueId,
+    });
+
+    let favList = [];
+    if (getFavObject) {
+      favList = getFavObject.fav_listings;
+    } else {
+      favList = [];
+    }
+
     let defaultDataObject;
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
-      defaultDataObject = await saveListingModal.find(
-    //       {
-    //     listingLocation: citiesForIndia,
-    //   }
-      );
+      defaultDataObject = await saveListingModal
+        .find
+        //       {
+        //     listingLocation: citiesForIndia,
+        //   }
+        ();
     } else {
       // defaultDataObject = await bestDealHomeModel.find({
       defaultDataObject = await saveListingModal.find({
@@ -111,6 +124,24 @@ router.get("/listings/best/nearall", async (req, res) => {
 
     bestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
+    });
+
+    // adding image path to each listing
+    bestDeals.forEach((item, index) => {
+      if(!item.images.length) {
+        bestDeals[index].imagePath = item.defaultImage.fullImage;
+      } else {
+        bestDeals[index].imagePath = item.images[0].fullImage;
+      }
+    });
+
+    // add favorite listings to the final list
+    bestDeals.forEach((item, index) => {
+      if (favList.includes(item.listingId)) {
+        bestDeals[index].favorite = true;
+      } else {
+        bestDeals[index].favorite = false;
+      }
     });
 
     bestDeals.forEach((item, index) => {
