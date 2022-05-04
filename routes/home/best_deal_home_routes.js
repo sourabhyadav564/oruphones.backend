@@ -9,7 +9,10 @@ const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
-  const userUniqueId = req.headers.userUniqueId;
+  // Put keys always in lower case when get data from headers
+  const userUniqueId = req.headers.useruniqueid;
+
+  console.log("userUniqueId", userUniqueId);
 
   let basePrice;
   let notionalPrice;
