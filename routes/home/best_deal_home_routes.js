@@ -45,14 +45,15 @@ router.get("/listings/best/nearme", async (req, res) => {
     if(getFavObject) {
       favList = getFavObject.fav_listings;
     } else {
-      res.status(200).json({
-        reason: "Favorite listing does not exist",
-        statusCode: 200,
-        status: "SUCCESS",
-      });
+      // res.status(200).json({
+      //   reason: "Favorite listing does not exist",
+      //   statusCode: 200,
+      //   status: "SUCCESS",
+      // });
+      favList = [];
     }
 
-    console.log("Favorite listings", favList);
+    // console.log("Favorite listings", favList);
 
     let defaultDataObject;
     if (location === "India") {
@@ -137,6 +138,7 @@ router.get("/listings/best/nearme", async (req, res) => {
 
     finalBestDeals.length = finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
 
+    // add favorite listings to the final list
     finalBestDeals.forEach((item, index) => {
       if(favList.includes(item.listingId)) {
         finalBestDeals[index].favorite = true;
@@ -145,7 +147,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       }
     });
 
-    console.log("finalbestdeals", finalBestDeals);
+    // console.log("finalbestdeals", finalBestDeals);
 
     res.status(200).json({
       reason: "Best deals found",
