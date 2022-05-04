@@ -30,7 +30,7 @@ const logEvent = require("../../src/middleware/event_logging");
 router.get("/listings", async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
-    const dataObject = await saveListingModal.find({userUniqueId});
+    const dataObject = await saveListingModal.find({ userUniqueId });
 
     if (!dataObject) {
       res.status(404).json({ message: "User unique ID not found" });
@@ -50,7 +50,6 @@ router.get("/listings", async (req, res) => {
 });
 
 router.post("/listing/save", async (req, res) => {
-
   const charger = req.body.charger;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
@@ -74,12 +73,8 @@ router.post("/listing/save", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const deviceImagesAvailable = images.length ? true : false;
 
-// let imageMake = make.toString()
-// switch (imageMake) {
-//   case "":
-
-// }
-//   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
+  //TODO - Add the exact default image as the model image
+  //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
 
   const data = {
     charger,
@@ -103,25 +98,62 @@ router.post("/listing/save", async (req, res) => {
     platform,
     recommendedPriceRange,
     userUniqueId,
-    deviceImagesAvailable
+    deviceImagesAvailable,
   };
 
-    const modalInfo = new saveListingModal(data);
-    try {
-        const dataObject = await modalInfo.save();
-        res
-      .status(201)
-      .json({
-        reason: "Listing saved successfully",
-        statusCode: 201,
-        status: "SUCCESS",
-        dataObject,
-      });
+  const modalInfo = new saveListingModal(data);
+  try {
+    const dataObject = await modalInfo.save();
+    res.status(201).json({
+      reason: "Listing saved successfully",
+      statusCode: 201,
+      status: "SUCCESS",
+      dataObject,
+    });
     return;
-    } catch (error) {
-        console.log(error);
+  } catch (error) {
+    console.log(error);
     res.status(400).json(error);
+  }
+});
+
+router.post("/listing/delete", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const listingId = req.body.listingId;
+
+  try {
+    const deleteListing = await saveListingModal.findOne({
+      listingId: listingId,
+    });
+
+    if(!deleteListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      if (deleteListing.userUniqueId === userUniqueId) {
+        await saveListingModal.findOneAndDelete({listingId: listingId});
+        res.status(200).json({
+          reason: "Listing deleted successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          deleteListing
+        });
+      } else {
+        res.status(200).json({
+          reason: "You are not authorized to delete this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
     }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
 });
 
 module.exports = router;
