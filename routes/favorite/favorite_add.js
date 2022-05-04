@@ -120,9 +120,9 @@ router.post("/deactivate", async (req, res) => {
         });
       }
     } else {
-      res.status(201).json({
+      res.status(200).json({
         reason: "Favorite listing does not exist",
-        statusCode: 201,
+        statusCode: 200,
         status: "SUCCESS",
       });
     }

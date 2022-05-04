@@ -4,6 +4,7 @@ const router = express.Router();
 require("../../src/database/connection");
 // const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearme", async (req, res) => {
@@ -35,6 +36,24 @@ router.get("/listings/best/nearme", async (req, res) => {
   let finalBestDeals = [];
 
   try {
+
+    const getFavObject = await favoriteModal.findOne({
+      userUniqueId: userUniqueId,
+    });
+
+    let favList = [];
+    if(getFavObject) {
+      favList = getFavObject.fav_listings;
+    } else {
+      res.status(200).json({
+        reason: "Favorite listing does not exist",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+    }
+
+    console.log("Favorite listings", favList);
+
     let defaultDataObject;
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
@@ -116,7 +135,17 @@ router.get("/listings/best/nearme", async (req, res) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
-    finalBestDeals.length = finalBestDeals.length >= 5 ? 5 : finalBestDeals.length;
+    finalBestDeals.length = finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+
+    finalBestDeals.forEach((item, index) => {
+      if(favList.includes(item.listingId)) {
+        finalBestDeals[index].favorite = true;
+      } else {
+        finalBestDeals[index].favorite = false;
+      }
+    });
+
+    console.log("finalbestdeals", finalBestDeals);
 
     res.status(200).json({
       reason: "Best deals found",
