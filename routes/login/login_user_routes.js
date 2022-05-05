@@ -29,7 +29,6 @@ router.get("/user/details", async (req, res) => {
         status: "FAILURE",
       });
     }
-
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -38,7 +37,9 @@ router.get("/user/details", async (req, res) => {
 
 router.post("/user/create", async (req, res) => {
   const email = req.body.email;
-  const mobileNumber = parseInt(req.body.mobileNumber);
+  const mobileNumber = req.body.mobileNumber
+    ? parseInt(req.body.mobileNumber)
+    : req.body.mobileNumber;
   const profilePicPath = req.body.profilePicPath;
   const countryCode = req.body.countryCode;
   const userName = req.body.userName;
@@ -97,7 +98,7 @@ router.post("/user/update", async (req, res) => {
   const userName = req.body.userName;
   const userUniqueId = {
     userUniqueId: req.body.userUniqueId,
-  }
+  };
 
   const createUserData = {
     email: email,
@@ -138,6 +139,168 @@ router.post("/user/update", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
+  }
+});
+
+router.get("/address/addSearchLocation", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const city = req.body.city;
+  const locationId = req.body.locationId;
+
+  try {
+    const getUser = await createUserModal.findOne({ userUniqueId });
+    if (getUser) {
+      const userAddress = getUser.address;
+      let bool = false;
+
+      userAddress.forEach(async (element, i) => {
+        if (element.addressType == "SearchLocation") {
+          userAddress[i].city = city;
+          bool = true;
+        }
+      });
+      if (!bool && locationId == -1) {
+        userAddress.push({
+          addressType: "SearchLocation",
+          city: city,
+          locationId: getUser._id,
+        });
+      }
+      const dataObject = {
+        address: userAddress,
+      };
+      await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+        new: true,
+      });
+      res.status(200).json({
+        reason: "Profile location added successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+
+      // const dataObject = {
+      //   address: [
+      //     {
+      //       addressType: "SearchLocation",
+      //       city: city,
+      //       locationId: getUser._id,
+      //     },
+      //   ],
+      // };
+
+      // if (locationId == -1) {
+      //   await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+      //     new: true,
+      //   });
+      //   res.status(200).json({
+      //     reason: "Search location added successfully",
+      //     statusCode: 200,
+      //     status: "SUCCESS",
+      //     dataObject,
+      //   });
+      // } else {
+      //   await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+      //     new: true,
+      //   });
+      //   res.status(200).json({
+      //     reason: "Search location found and updated successfully",
+      //     statusCode: 200,
+      //     status: "SUCCESS",
+      //     dataObject,
+      //   });
+      // }
+    } else {
+      res.status(200).json({
+        reason: "User not found",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/address/addProfileLocation", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const city = req.body.city;
+
+  try {
+    const getUser = await createUserModal.findOne({ userUniqueId });
+    if (getUser) {
+      const userAddress = getUser.address;
+      let bool = false;
+      userAddress.forEach(async (element, i) => {
+        if (element.addressType == "ProfileLocation") {
+          userAddress[i].city = city;
+          bool = true;
+        }
+      });
+      if (!bool) {
+        userAddress.push({
+          addressType: "ProfileLocation",
+          city: city,
+        });
+      }
+      const dataObject = {
+        address: userAddress,
+      };
+      await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+        new: true,
+      });
+      res.status(200).json({
+        reason: "Profile location added successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+
+      // const dataObject = {
+      //   address: userAddress,
+      // }
+      // const dataObject = {
+      //   address: [
+      //     {
+      //       addressType: "ProfileLocation",
+      //       city: city,
+      //       // locationId: getUser._id,
+      //     },
+      //   ],
+      // };
+
+      // if (locationId == -1) {
+      // await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+      //   new: true,
+      // });
+      // res.status(200).json({
+      //   reason: "Profile location added successfully",
+      //   statusCode: 200,
+      //   status: "SUCCESS",
+      //   dataObject,
+      // });
+      // } else {
+      //   await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+      //     new: true,
+      //   });
+      //   res.status(200).json({
+      //     reason: "location found and updated successfully",
+      //     statusCode: 200,
+      //     status: "SUCCESS",
+      //     dataObject,
+      //   });
+      // }
+    } else {
+      res.status(200).json({
+        reason: "User not found",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 

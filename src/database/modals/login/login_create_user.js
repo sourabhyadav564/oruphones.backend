@@ -35,16 +35,25 @@ const createUserSchema = new mongoose.Schema({
     mobileNumber: {
         type: String,
         required: true,
-        default: "",
+        unique: true,
     },
     countryCode: {
         type: String,
         required: true,
-        default: "",
     },
     address: {
-        type: String,
-        default: "",
+        type: [{
+            addressType: {
+                type: String,
+            },
+            city: {
+                type: String,
+            },
+            locationId: {
+                type: String,
+            }
+        }],
+        default: [],
     },
     city: {
         type: String,
