@@ -11,16 +11,22 @@ router.get("/listingsbymake", async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
   const listingLocation = req.query.listingLocation;
 
+  let dataObject = {}
+
   try {
     const listings = await saveListingModal.find({
       make: make,
       listingLocation: listingLocation,
     });
+    dataObject = {
+      bestDeals: listings,
+      otherListings: [] //TODO: other Listing should be added soon
+    }
     res.status(200).json({
       reason: "Listings by make",
       statusCode: 200,
       status: "SUCCESS",
-      listings,
+      dataObject,
     });
   } catch (error) {
     console.log(error);
