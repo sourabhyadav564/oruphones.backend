@@ -41,6 +41,7 @@ const saveNotificationTokenRoute = require("../routes/notification/notification_
 const diagnosticsConfigRoute = require("../routes/diagnostics/diagnostics_config_routes");
 const searchFilterRoute = require("../routes/master/show_search_filters_routes");
 const favoriteRoute = require("../routes/favorite/favorite_add");
+const marketingNameByModel = require("../routes/master/marketing_name_by_model_routes")
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -53,6 +54,7 @@ app.use("/api/v1/master", brandRoute);
 app.use("/api/v1/master", makeModalRoute);
 app.use("/api/v1/master", questionRoute);
 app.use("/api/v1/master", searchFilterRoute);
+app.use("/api/v1/master", marketingNameByModel);
 app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/device", bestDealCompletedRoute);
