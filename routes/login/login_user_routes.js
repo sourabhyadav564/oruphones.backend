@@ -142,7 +142,7 @@ router.post("/user/update", async (req, res) => {
   }
 });
 
-router.get("/address/addSearchLocation", async (req, res) => {
+router.post("/address/addSearchLocation", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const city = req.body.city;
   const locationId = req.body.locationId;
@@ -223,7 +223,7 @@ router.get("/address/addSearchLocation", async (req, res) => {
   }
 });
 
-router.get("/address/addProfileLocation", async (req, res) => {
+router.post("/address/addProfileLocation", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const city = req.body.city;
 
