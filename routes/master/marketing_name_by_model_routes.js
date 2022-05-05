@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/marketingNameByModel", async (req, res) => {
+router.post("/marketingNameByModel", async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   const make = req.body.make;

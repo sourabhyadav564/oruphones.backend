@@ -41,7 +41,7 @@ router.post("/otp/generate", async (req, res) => {
         maxTime: 120,
         submitCountIncrement: 0,
         maxRetryCount: "3",
-        mobileNumber: `${countryCode} ${mobileNumber}`,
+        mobileNumber: `${countryCode}${mobileNumber}`,
       },
     });
   } catch (error) {
