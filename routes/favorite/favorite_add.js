@@ -147,7 +147,6 @@ router.post("/fetch", async (req, res) => {
       let dataObject = [];
 
       arr.forEach(async (item, index) => {
-        //   console.log("item", item);
         const single_listing = await saveListingModal.findOne({
           listingId: item,
         });
@@ -162,12 +161,30 @@ router.post("/fetch", async (req, res) => {
         }
       });
 
-      //   res.status(200).json({
-      //     reason: "Favorite listing fetched successfully",
-      //     statusCode: 200,
-      //     status: "SUCCESS",
-      //     listings,
-      // });
+      //TODO - PENDING TO  ADD IMAGE PATH TO THE LISTING OBJECT
+
+      // if (dataObject.length === arr.length) {
+      //   let j = 1;
+      //   dataObject.forEach(async (item2, index) => {
+      //     if (!item2.images.length) {
+      //       dataObject[index].imagePath = await item2.defaultImage.fullImage;
+      //     } else {
+      //       dataObject[index].imagePath = await item2.images[0].fullImage;
+      //     }
+      //     // console.log("j", j);
+      //     // console.log("dataObject", dataObject.length);
+      //     if (j === dataObject.length) {
+      //       console.log("dataObject", dataObject);
+      //       res.status(200).json({
+      //         reason: "Favorite listings fetched successfully",
+      //         statusCode: 200,
+      //         status: "SUCCESS",
+      //         dataObject,
+      //       });
+      //     }
+      //     j++;
+      //   });
+      // }
     } else {
       res.status(200).json({
         reason: "Favorite listing does not exist",
