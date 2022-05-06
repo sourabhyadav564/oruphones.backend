@@ -3,6 +3,7 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const createUserModal = require("../../src/database/modals/login/login_create_user");
 const logEvent = require("../../src/middleware/event_logging");
 
 // router.get("/listing", async (req, res) => {
@@ -122,11 +123,11 @@ router.post("/listing/delete", async (req, res) => {
   const listingId = req.body.listingId;
 
   try {
-    const deleteListing = await saveListingModal.findOne({
+    const updateListing = await saveListingModal.findOne({
       listingId: listingId,
     });
 
-    if(!deleteListing) {
+    if (!updateListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
         statusCode: 200,
@@ -134,17 +135,58 @@ router.post("/listing/delete", async (req, res) => {
       });
       return;
     } else {
-      if (deleteListing.userUniqueId === userUniqueId) {
-        await saveListingModal.findOneAndDelete({listingId: listingId});
+      if (updateListing.userUniqueId === userUniqueId) {
+        await saveListingModal.findOneAndDelete({ listingId: listingId });
         res.status(200).json({
           reason: "Listing deleted successfully",
           statusCode: 200,
           status: "SUCCESS",
-          deleteListing
+          updateListing,
         });
       } else {
         res.status(200).json({
           reason: "You are not authorized to delete this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.post("/listing/update", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const listingId = req.body.listingId;
+
+  try {
+    const updateListing = await saveListingModal.findOne({
+      listingId: listingId,
+    });
+
+    if (!updateListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      if (updateListing.userUniqueId === userUniqueId) {
+        const dataObject = await saveListingModal.findByIdAndUpdate(updateListing._id, req.body, {
+          new: true,
+        });
+        res.status(200).json({
+          reason: "Listing updated successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject,
+        });
+      } else {
+        res.status(200).json({
+          reason: "You are not authorized to update this listing",
           statusCode: 200,
           status: "SUCCESS",
         });
@@ -165,7 +207,7 @@ router.post("/listing/pause", async (req, res) => {
       listingId: listingId,
     });
 
-    if(!activateListing) {
+    if (!activateListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
         statusCode: 200,
@@ -174,18 +216,20 @@ router.post("/listing/pause", async (req, res) => {
       return;
     } else {
       if (activateListing.userUniqueId === userUniqueId) {
-        const pausedListing = await saveListingModal.findOneAndUpdate(listingId,
+        const pausedListing = await saveListingModal.findOneAndUpdate(
+          listingId,
           {
-            status: "Paused"
+            status: "Paused",
           },
           {
             new: true,
-          });
+          }
+        );
         res.status(200).json({
           reason: "Listing paused successfully",
           statusCode: 200,
           status: "SUCCESS",
-          pausedListing
+          pausedListing,
         });
       } else {
         res.status(200).json({
@@ -210,7 +254,7 @@ router.post("/listing/activate", async (req, res) => {
       listingId: listingId,
     });
 
-    if(!activateListing) {
+    if (!activateListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
         statusCode: 200,
@@ -219,18 +263,20 @@ router.post("/listing/activate", async (req, res) => {
       return;
     } else {
       if (activateListing.userUniqueId === userUniqueId) {
-        const activatedListing = await saveListingModal.findOneAndUpdate(listingId,
+        const activatedListing = await saveListingModal.findOneAndUpdate(
+          listingId,
           {
-            status: "Active"
+            status: "Active",
           },
           {
             new: true,
-          });
+          }
+        );
         res.status(200).json({
           reason: "Listing activated successfully",
           statusCode: 200,
           status: "SUCCESS",
-          activatedListing
+          activatedListing,
         });
       } else {
         res.status(200).json({
@@ -243,6 +289,73 @@ router.post("/listing/activate", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
+  }
+});
+
+router.get("/listing/user/mobilenumber", async (req, res) => {
+  try {
+    const userUniqueId = req.query.userUniqueId;
+    const listingId = req.query.listingId;
+
+    const isValidUser = await createUserModal.find({
+      userUniqueId: userUniqueId,
+    });
+
+    if (isValidUser) {
+      const listing = await saveListingModal.findOne({ listingId: listingId });
+      const mobileNumber = listing.mobileNumber.trim();
+
+      const dataObject = {
+        mobileNumber,
+      };
+      res.status(200).json({
+        reason: "Mobile number retrieved successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Invalid user id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/listing/detail", async (req, res) => {
+  try {
+    const userUniqueId = req.query.userUniqueId;
+    const listingId = req.query.listingid;
+
+    // const isValidUser = await createUserModal.find({
+    //   userUniqueId: userUniqueId,
+    // });
+
+    // if (isValidUser) {
+      const listing = await saveListingModal.findOne({ listingId: listingId }, {mobileNumber: 0});
+
+      const dataObject = listing;
+      res.status(200).json({
+        reason: "Mobile number retrieved successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    // } else {
+    //   res.status(200).json({
+    //     reason: "Invalid user id provided",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //   });
+    // }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
   }
 });
 

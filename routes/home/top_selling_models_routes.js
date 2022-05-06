@@ -80,12 +80,12 @@ router.get("/topselling/models", async (req, res) => {
           });
         }
 
-        if (i == listings.length - 1) {
-          console.log("dataObject", dataObject);
+        // if (i == listings.length - 1) {
+        //   console.log("dataObject", dataObject);
           // res.send(dataObject)
           // next();
-          console.log("dataObject", dataObject);
-        }
+        //   console.log("dataObject", dataObject);
+        // }
       });
       return dataObject;
     };
