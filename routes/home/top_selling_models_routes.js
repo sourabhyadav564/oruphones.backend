@@ -6,7 +6,7 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/topSelling/models", async (req, res) => {
+router.get("/topselling/models", async (req, res) => {
   try {
     const listings = await saveListingModal.find();
 
