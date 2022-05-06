@@ -1,15 +1,16 @@
-// var sql = require('mysql');
+var mysql = require('mysql');
 
-// var connection = mysql.createConnection({
-//   host: "44.241.42.74",
-//   user: "jaswanth",
-//   password: "Jaswanth@123",
-//   database: "wordpress"
-// });
+var connection = mysql.createConnection({
+  host: "44.241.42.74",
+  user: "jaswanth",
+  password: "Jaswanth@123",
+  database: "wordpress",
+  multipleStatements: true
+});
 
-// connection.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected successfully with MySQL database");
-// });
+connection.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected to MySQL Database Successfully");
+});
 
-// module.exports = connection;
+module.exports = connection;
