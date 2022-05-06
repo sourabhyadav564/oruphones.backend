@@ -152,20 +152,24 @@ router.post("/address/addSearchLocation", async (req, res) => {
     if (getUser) {
       const userAddress = getUser.address;
       let bool = false;
+      let dataToBeSend = {}
 
       userAddress.forEach(async (element, i) => {
         if (element.addressType == "SearchLocation") {
           userAddress[i].city = city;
           bool = true;
+          dataToBeSend = userAddress[i];
         }
       });
       if (!bool && locationId == -1) {
-        userAddress.push({
+        dataToBeSend = {
           addressType: "SearchLocation",
           city: city,
           locationId: getUser._id,
-        });
+        }
+        userAddress.push(dataToBeSend);
       }
+
       const dataObject = {
         address: userAddress,
       };
@@ -176,7 +180,7 @@ router.post("/address/addSearchLocation", async (req, res) => {
         reason: "Profile location added successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject,
+        dataToBeSend,
       });
 
       // const dataObject = {
@@ -232,17 +236,21 @@ router.post("/address/addProfileLocation", async (req, res) => {
     if (getUser) {
       const userAddress = getUser.address;
       let bool = false;
+      let dataToBeSend = {}
+
       userAddress.forEach(async (element, i) => {
         if (element.addressType == "ProfileLocation") {
           userAddress[i].city = city;
           bool = true;
+          dataToBeSend = userAddress[i];
         }
       });
       if (!bool) {
-        userAddress.push({
+        dataToBeSend = {
           addressType: "ProfileLocation",
           city: city,
-        });
+        }
+        userAddress.push(dataToBeSend);
       }
       const dataObject = {
         address: userAddress,
@@ -254,7 +262,7 @@ router.post("/address/addProfileLocation", async (req, res) => {
         reason: "Profile location added successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject,
+        dataToBeSend,
       });
 
       // const dataObject = {

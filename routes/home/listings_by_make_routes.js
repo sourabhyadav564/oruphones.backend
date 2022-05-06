@@ -18,10 +18,28 @@ router.get("/listingsbymake", async (req, res) => {
       make: make,
       listingLocation: listingLocation,
     });
-    dataObject = {
-      bestDeals: listings,
-      otherListings: [] //TODO: other Listing should be added soon
+    if(listings.length) {
+      if(listings.length > 5) {
+        dataObject["bestDeals"] = listings.slice(0, 5);
+        dataObject["otherListings"] = listings.slice(5, listings.length);
+      } else if (listings.length > 2) {
+        dataObject["bestDeals"] = listings.slice(0, 2);
+        dataObject["otherListings"] = listings.slice(2, listings.length);
+      } 
+      else {
+        dataObject["bestDeals"] = listings;
+        dataObject["otherListings"] = [];
+      }
+    } else {
+      dataObject["bestDeals"] = [];
+      dataObject["otherListings"] = [];
     }
+
+    // dataObject = {
+    //   bestDeals: listings,
+    //   otherListings: [] //TODO: other Listing should be added soon
+    // }
+    
     res.status(200).json({
       reason: "Listings by make",
       statusCode: 200,
