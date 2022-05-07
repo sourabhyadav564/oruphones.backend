@@ -127,14 +127,14 @@ router.post("/recomanded/price", async (req, res) => {
         if (hasCharger && hasEarphone && hasOrignalBox) {
           if (isAppleEarphoneIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix +
+              (upperRangeMatrix +
                 isAppleEarphone +
                 isOriginalBox +
                 isAppleCharger) *
                 leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix +
+              (lowerRangeMatrix +
                 isAppleEarphone +
                 isOriginalBox +
                 isAppleCharger) *
@@ -159,11 +159,11 @@ router.post("/recomanded/price", async (req, res) => {
         } else if (hasCharger && hasEarphone) {
           if (isAppleChargerIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
+              (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
                 leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
+              (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
                 leastSellingPrice
             );
           } else {
@@ -179,11 +179,11 @@ router.post("/recomanded/price", async (req, res) => {
         } else if (hasCharger && hasOrignalBox) {
           if (isAppleChargerIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
+              (upperRangeMatrix + isAppleCharger + isOriginalBox) *
                 leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger + isOriginalBox) *
+              (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
                 leastSellingPrice
             );
           } else {
@@ -199,11 +199,11 @@ router.post("/recomanded/price", async (req, res) => {
         } else if (hasEarphone && hasOrignalBox) {
           if (isAppleEarphoneIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
+              (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
                 leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
+              (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
                 leastSellingPrice
             );
           } else {
@@ -219,10 +219,10 @@ router.post("/recomanded/price", async (req, res) => {
         } else if (hasCharger) {
           if (isAppleChargerIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
+              (upperRangeMatrix + isAppleCharger) * leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger) * leastSellingPrice
+              (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
             );
           } else {
             recommendedPriceRangeLowerLimit = Math.ceil(
@@ -235,10 +235,10 @@ router.post("/recomanded/price", async (req, res) => {
         } else if (hasEarphone) {
           if (isAppleEarphoneIncluded) {
             recommendedPriceRangeUpperLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
+              (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
             );
             recommendedPriceRangeLowerLimit = Math.ceil(
-              (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
+              (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
             );
           } else {
             recommendedPriceRangeLowerLimit = Math.ceil(
@@ -250,10 +250,10 @@ router.post("/recomanded/price", async (req, res) => {
           }
         } else if (hasOrignalBox) {
           recommendedPriceRangeUpperLimit = Math.ceil(
-            (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
+            (upperRangeMatrix + isOriginalBox) * leastSellingPrice
           );
           recommendedPriceRangeLowerLimit = Math.ceil(
-            (upperRangeMatrix + isOriginalBox) * leastSellingPrice
+            (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
           );
         }
 
