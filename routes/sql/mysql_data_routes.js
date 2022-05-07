@@ -102,16 +102,334 @@ router.post("/recomanded/price", async (req, res) => {
           }
         });
 
-        scrappedModels.forEach((item, index) => {
-          if (item.model_id === itemId && item.mobiru_condition === condition && item.storage === parseInt(storage)) {
-            // console.log("item.price", item);
+        let gotDataFrom = "";
+
+        // scrappedModels.forEach((item, index) => {
+        for (var item of scrappedModels) {
+          if (
+            item.model_id === itemId &&
+            item.mobiru_condition === condition &&
+            item.storage === parseInt(storage)
+          ) {
             selectdModels.push(item.price);
-            // return;
-          } 
-          // else if (item.model_id === itemId) {
-        });
+            gotDataFrom = condition;
+            break;
+          }
+          if (condition === "Good" && gotDataFrom === "") {
+            if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Excellent"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Excellent";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Like New"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Like New";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Fair"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Fair";
+              break;
+            }
+          } else if (condition === "Excellent" && gotDataFrom === "") {
+            if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Good"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Good";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Like New"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Like New";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Fair"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Fair";
+              break;
+            }
+          } else if (condition === "Like New" && gotDataFrom === "") {
+            if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Good"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Good";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Excellent"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Excellent";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Fair"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Fair";
+              break;
+            }
+          } else if (condition === "Fair" && gotDataFrom === "") {
+            if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Good"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Good";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Excellent"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Excellent";
+              break;
+            } else if (
+              item.model_id === itemId &&
+              item.storage === parseInt(storage) &&
+              item.mobiru_condition === "Like New"
+            ) {
+              selectdModels.push(item.price);
+              gotDataFrom = "Like New";
+              break;
+            }
+          }
+        }
 
         leastSellingPrice = Math.min(...selectdModels);
+
+        let bool = false;
+
+        console.log("leastSellingPrice first: " + leastSellingPrice);
+
+        if (condition === "Good") {
+          if (gotDataFrom === "Good") {
+            return;
+          } else if (gotDataFrom === "Excellent") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 300;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice - 700;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 1300;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 1700;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 2500;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 3500;
+              bool = true;
+            }
+          } else if (gotDataFrom === "Like New") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 700;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice - 1500;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 2500;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 3500;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 5500;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 8000;
+              bool = true;
+            }
+          }
+        } else if (condition === "Excellent") {
+          if (gotDataFrom === "Excellent") {
+            return;
+          } else if (gotDataFrom === "Good") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice + 300;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice + 700;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice + 1300;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice + 1700;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice + 2500;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice + 3500;
+              bool = true;
+            }
+          } else if (gotDataFrom === "Like New") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 400;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice - 800;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 1200;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 2300;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 3000;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 4500;
+              bool = true;
+            }
+          }
+        } else if (condition === "Like New") {
+          if (gotDataFrom === "Like New") {
+            return;
+          } else if (gotDataFrom === "Good") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice + 700;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice + 1500;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice + 2500;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice + 3500;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice + 5500;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice + 8000;
+              bool = true;
+            }
+          } else if (gotDataFrom === "Excellent") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice + 400;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice + 800;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice + 1200;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice + 2300;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice + 3000;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice + 4500;
+              bool = true;
+            }
+          }
+        } else if (condition === "Fair") {
+          if (gotDataFrom === "Good") {
+            console.log("inside fair good ", leastSellingPrice);
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 500;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              console.log("challlllll jaaa");
+              leastSellingPrice = leastSellingPrice - 1500;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 2500;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 3500;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 5500;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 8000;
+              bool = true;
+            }
+          } else if (gotDataFrom === "Excellent") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 1200;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice - 2300;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 3700;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 4700;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 8000;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 11500;
+              bool = true;
+            }
+          } else if (gotDataFrom === "Like New") {
+            if (leastSellingPrice <= 10000) {
+              leastSellingPrice = leastSellingPrice - 1500;
+              bool = true;
+            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+              leastSellingPrice = leastSellingPrice - 3000;
+              bool = true;
+            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+              leastSellingPrice = leastSellingPrice - 5000;
+              bool = true;
+            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+              leastSellingPrice = leastSellingPrice - 7000;
+              bool = true;
+            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+              leastSellingPrice = leastSellingPrice - 11000;
+              bool = true;
+            } else if (leastSellingPrice > 70000) {
+              leastSellingPrice = leastSellingPrice - 16000;
+              bool = true;
+            }
+          }
+        }
+
+        // if (bool) {
+        // console.log("leastSellingPrice: " + leastSellingPrice);
+        // console.log("gotDataFrom: " + gotDataFrom);
+        // }
 
         // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${
         //   0.9 * Math.max(...selectdModels)
@@ -258,8 +576,9 @@ router.post("/recomanded/price", async (req, res) => {
         }
 
         const dataObject = {};
-        dataObject['leastSellingprice'] = recommendedPriceRangeLowerLimit ?? "-" ;
-        dataObject['maxsellingprice'] = recommendedPriceRangeUpperLimit ?? "-" ;
+        dataObject["leastSellingprice"] =
+          recommendedPriceRangeLowerLimit ?? "-";
+        dataObject["maxsellingprice"] = recommendedPriceRangeUpperLimit ?? "-";
 
         if (selectdModels.length) {
           // if (selectdModels.length > 1) {
