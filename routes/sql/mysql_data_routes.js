@@ -2,33 +2,33 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../../src/database/mysql_connection");
 
-router.get("/any", async (req, res) => {
+router.post("/recomanded/price", async (req, res) => {
+  // let query1 = "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 24 hour;"
 
-    // let query1 = "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 24 hour;"
+  // let query2 = "select * from `web_scraper_model`"
 
-    // let query2 = "select * from `web_scraper_model`"
+  let query =
+    "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 72 hour;select * from `web_scraper_model`;";
 
-    const vendors = {
-      6: "Amazon",
-      7: "Quikr",
-      8: "Cashify",
-      9: "2Gud",
-      10: "Budli",
-      11: "Paytm",
-      12: "Yaantra",
-      13: "Shopcluse",
-      14: "Sahivalue",
-      15: "Xtracover",
-      16: "Mobigarage",
-      17: "Instacash",
-      18: "Cashforphone",
-      19: "Recycledevice",
-      20: "Quickmobile",
-      21: "Buyblynk",
-      22: "Electronicbazaar"
-    }
-
-    let query = "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 72 hour;select * from `web_scraper_model`;"
+  const VENDORS = {
+    6: "Amazon",
+    7: "Quikr",
+    8: "Cashify",
+    9: "2Gud",
+    10: "Budli",
+    11: "Paytm",
+    12: "Yaantra",
+    13: "Shopcluse",
+    14: "Sahivalue",
+    15: "Xtracover",
+    16: "Mobigarage",
+    17: "Instacash",
+    18: "Cashforphone",
+    19: "Recycledevice",
+    20: "Quickmobile",
+    21: "Buyblynk",
+    22: "Electronicbazaar",
+  };
 
   try {
     // connection.query(query1, (err, scrappedModels, fields) => {
@@ -41,7 +41,7 @@ router.get("/any", async (req, res) => {
     //             statusCode: 200,
     //             status: "SUCCESS",
     //             scrappedModels
-    //           });    
+    //           });
     //     }
     // })
 
@@ -55,70 +55,243 @@ router.get("/any", async (req, res) => {
     //             statusCode: 200,
     //             status: "SUCCESS",
     //             Models
-    //           });    
+    //           });
     //     }
     // })
 
-        connection.query(query, [2, 1], (err, results, fields) => {
-        if (err) {
-            console.log(err);
-        } else {
-            let models = results[1];
-            let scrappedModels = results[0];
-            let itemId = ""
-            let selectdModels = []
-            let minPrice;
-            let maxPrice;
-            let marketingname = "OnePlus 8";
-            let condition = "Excellent"
-            models.forEach((item, index) => {
-              if(item.name === marketingname) {
-                itemId = item.id;
-                return;
-              }
-            })
-            scrappedModels.forEach((item, index) => {
-              if(item.model_id === itemId && item.mobiru_condition === condition) {
-                console.log("item.price", item)
-                selectdModels.push(item.price);
-                return;
-              }
-            })
+    connection.query(query, [2, 1], (err, results, fields) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let models = results[1];
+        let scrappedModels = results[0];
+        let selectdModels = [];
+        // let minPrice;
+        // let maxPrice;
+        let itemId = "";
+        // let make = "OnePlus";
+        // let marketingname = "OnePlus 7";
+        // let condition = "Excellent";
+        // let storage = "128";
+        const make = req.body.make;
+        const marketingname = req.body.marketingName;
+        const condition = req.body.deviceCondition;
+        const storage = req.body.devicestorage.split(" ")[0].toString();
+        const hasCharger = req.body.charger === "Y" ? true : false;
+        const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
+        const hasEarphone = req.body.earPhones === "Y" ? true : false;
+        const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
+        const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
+        const isVarified = req.body.verified === "no" ? false : true;
 
-            let recommendedPriceRange = `${0.7*Math.max(...selectdModels)} to ${0.9*Math.max(...selectdModels)}`;
-            console.log("recommendedPriceRange", recommendedPriceRange);
-            
-            if(selectdModels.length) {
-              if(selectdModels.length > 1) {
-                minPrice = Math.min(...selectdModels);
-                maxPrice = Math.max(...selectdModels);
-              } else {
-                minPrice = selectdModels[0];
-                maxPrice = selectdModels[0];
-              }
-              res.status(200).json({
-                  reason: "Models Found Successfully",
-                  statusCode: 200,
-                  status: "SUCCESS",
-                  marketingname: marketingname,
-                  minPrice: minPrice,
-                  maxPrice: maxPrice,
-                  recommendedPriceRange: recommendedPriceRange
-                });   
-            } else {
-              res.status(200).json({
-                reason: "Models Found Successfully",
-                statusCode: 200,
-                status: "SUCCESS",
-                marketingname: marketingname,
-                minPrice: "NA",
-                maxPrice: "NA"
-              });
-            }
+        // console.log("make", make, marketingname, condition, storage);
 
+        let leastSellingPrice;
+        let lowerRangeMatrix = 0.7;
+        let upperRangeMatrix = 0.9;
+        let isAppleCharger = 0.1;
+        let isNonAppleCharger = 0.05;
+        let isAppleEarphone = 0.1;
+        let isNonAppleEarphone = 0.05;
+        let isOriginalBox = 0.03;
+
+        models.forEach((item, index) => {
+          if (item.name === marketingname) {
+            itemId = item.id;
+            return;
           }
-        })
+        });
 
+        scrappedModels.forEach((item, index) => {
+          if (item.model_id === itemId && item.mobiru_condition === condition && item.storage === parseInt(storage)) {
+            // console.log("item.price", item);
+            selectdModels.push(item.price);
+            // return;
+          } 
+          // else if (item.model_id === itemId) {
+        });
+
+        leastSellingPrice = Math.min(...selectdModels);
+
+        // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${
+        //   0.9 * Math.max(...selectdModels)
+        // }`;
+
+        let recommendedPriceRangeLowerLimit = Math.ceil(
+          lowerRangeMatrix * leastSellingPrice
+        );
+        let recommendedPriceRangeUpperLimit = Math.ceil(
+          upperRangeMatrix * leastSellingPrice
+        );
+
+        if (hasCharger && hasEarphone && hasOrignalBox) {
+          if (isAppleEarphoneIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix +
+                isAppleEarphone +
+                isOriginalBox +
+                isAppleCharger) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix +
+                isAppleEarphone +
+                isOriginalBox +
+                isAppleCharger) *
+                leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix +
+                isNonAppleEarphone +
+                isOriginalBox +
+                isNonAppleCharger) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix +
+                isNonAppleEarphone +
+                isOriginalBox +
+                isNonAppleCharger) *
+                leastSellingPrice
+            );
+          }
+        } else if (hasCharger && hasEarphone) {
+          if (isAppleChargerIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
+                leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
+                leastSellingPrice
+            );
+          }
+        } else if (hasCharger && hasOrignalBox) {
+          if (isAppleChargerIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix + isAppleCharger + isOriginalBox) *
+                leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
+                leastSellingPrice
+            );
+          }
+        } else if (hasEarphone && hasOrignalBox) {
+          if (isAppleEarphoneIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
+                leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
+                leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
+                leastSellingPrice
+            );
+          }
+        } else if (hasCharger) {
+          if (isAppleChargerIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix + isAppleCharger) * leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
+            );
+          }
+        } else if (hasEarphone) {
+          if (isAppleEarphoneIncluded) {
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
+            );
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
+            );
+          } else {
+            recommendedPriceRangeLowerLimit = Math.ceil(
+              (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
+            );
+            recommendedPriceRangeUpperLimit = Math.ceil(
+              (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
+            );
+          }
+        } else if (hasOrignalBox) {
+          recommendedPriceRangeUpperLimit = Math.ceil(
+            (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
+          );
+          recommendedPriceRangeLowerLimit = Math.ceil(
+            (upperRangeMatrix + isOriginalBox) * leastSellingPrice
+          );
+        }
+
+        const dataObject = {};
+        dataObject['leastSellingprice'] = recommendedPriceRangeLowerLimit ?? "-" ;
+        dataObject['maxsellingprice'] = recommendedPriceRangeUpperLimit ?? "-" ;
+
+        if (selectdModels.length) {
+          // if (selectdModels.length > 1) {
+          //   minPrice = Math.min(...selectdModels);
+          //   maxPrice = Math.max(...selectdModels);
+          // } else {
+          //   minPrice = selectdModels[0];
+          //   maxPrice = selectdModels[0];
+          // }
+          res.status(200).json({
+            reason: "Models Found Successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            // marketingname: marketingname,
+            // minPrice: minPrice,
+            // maxPrice: maxPrice,
+            // recommendedPriceRange: `${recommendedPriceRangeLowerLimit} to ${recommendedPriceRangeUpperLimit}`,
+            dataObject: dataObject,
+          });
+        } else {
+          res.status(200).json({
+            reason: "Models Found Successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            // marketingname: marketingname,
+            // minPrice: "NA",
+            // maxPrice: "NA",
+            dataObject: dataObject,
+          });
+        }
+      }
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -126,98 +299,96 @@ router.get("/any", async (req, res) => {
 });
 
 router.get("/new", async (req, res) => {
-
   // let query1 = "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 24 hour;"
 
   // let query2 = "select * from `web_scraper_model`;"
 
-  let query = "Select * From `web_scraper_modelwisescraping` Where web_scraper_modelwisescraping.model_id = 1013;"
+  let query =
+    "Select * From `web_scraper_modelwisescraping` Where web_scraper_modelwisescraping.model_id = 1013;";
 
-try {
-  // connection.query(query1, (err, scrappedModels, fields) => {
-  //     if (err) {
-  //         console.log(err);
-  //     } else {
-  //         // console.log(scrappedModels);
-  //         res.status(200).json({
-  //             reason: "Scrapped Models Found Successfully",
-  //             statusCode: 200,
-  //             status: "SUCCESS",
-  //             scrappedModels
-  //           });    
-  //     }
-  // })
+  try {
+    // connection.query(query1, (err, scrappedModels, fields) => {
+    //     if (err) {
+    //         console.log(err);
+    //     } else {
+    //         // console.log(scrappedModels);
+    //         res.status(200).json({
+    //             reason: "Scrapped Models Found Successfully",
+    //             statusCode: 200,
+    //             status: "SUCCESS",
+    //             scrappedModels
+    //           });
+    //     }
+    // })
 
-  // connection.query(query2, (err, Models, fields) => {
-  //     if (err) {
-  //         console.log(err);
-  //     } else {
-  //         // console.log(Models);
-  //         res.status(200).json({
-  //             reason: "Models Found Successfully",
-  //             statusCode: 200,
-  //             status: "SUCCESS",
-  //             Models
-  //           });    
-  //     }
-  // })
+    // connection.query(query2, (err, Models, fields) => {
+    //     if (err) {
+    //         console.log(err);
+    //     } else {
+    //         // console.log(Models);
+    //         res.status(200).json({
+    //             reason: "Models Found Successfully",
+    //             statusCode: 200,
+    //             status: "SUCCESS",
+    //             Models
+    //           });
+    //     }
+    // })
 
-      connection.query(query, (err, results, fields) => {
+    connection.query(query, (err, results, fields) => {
       if (err) {
-          console.log(err);
+        console.log(err);
       } else {
-          let models = results[1];
-          let scrappedModels = results[0];
-          let itemId = ""
-          let selectdModels = []
-          let minPrice;
-          let maxPrice;
-          let marketingname = "Samsung Galaxy F52 5G";
-          models.forEach((item, index) => {
-            if(item.name === marketingname) {
-              itemId = item.id;
-              return;
-            }
-          })
-          console.log(results);
-          scrappedModels.forEach((item, index) => {
-            if(item.model_id === itemId) {
-              selectdModels.push(item.price);
-              return;
-            }
-          })
-
-          if(selectdModels.length) {
-            if(selectdModels.length > 1) {
-              minPrice = Math.min(...selectdModels);
-              maxPrice = Math.max(...selectdModels);
-            } else {
-              minPrice = selectdModels[0];
-              maxPrice = selectdModels[0];
-            }
-            res.status(200).json({
-                reason: "Models Found Successfully",
-                statusCode: 200,
-                status: "SUCCESS",
-                minPrice: minPrice,
-                maxPrice: maxPrice
-              });   
-          } else {
-            res.status(200).json({
-              reason: "Models Found Successfully",
-              statusCode: 200,
-              status: "SUCCESS",
-              scrappedModels: results[0]
-            });
+        let models = results[1];
+        let scrappedModels = results[0];
+        let itemId = "";
+        let selectdModels = [];
+        let minPrice;
+        let maxPrice;
+        let marketingname = "Samsung Galaxy F52 5G";
+        models.forEach((item, index) => {
+          if (item.name === marketingname) {
+            itemId = item.id;
+            return;
           }
+        });
+        console.log(results);
+        scrappedModels.forEach((item, index) => {
+          if (item.model_id === itemId) {
+            selectdModels.push(item.price);
+            return;
+          }
+        });
 
+        if (selectdModels.length) {
+          if (selectdModels.length > 1) {
+            minPrice = Math.min(...selectdModels);
+            maxPrice = Math.max(...selectdModels);
+          } else {
+            minPrice = selectdModels[0];
+            maxPrice = selectdModels[0];
+          }
+          res.status(200).json({
+            reason: "Models Found Successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+          });
+        } else {
+          res.status(200).json({
+            reason: "Models Found Successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            scrappedModels: results[0],
+          });
         }
-      })
-
-} catch (error) {
-  console.log(error);
-  res.status(500).json(error);
-}
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
 });
 
 module.exports = router;
