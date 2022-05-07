@@ -93,7 +93,7 @@ router.get("/makemodellist", async (req, res) => {
 
       mKeys.forEach((colorKey, j) => {
         if (colorKey.includes("Colors")) {
-          color = item[key]["Misc"]["Colors"].split(" ,");
+          color = item[key]["Misc"]["Colors"].split(", ");
         }
       });
 
