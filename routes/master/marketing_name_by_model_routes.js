@@ -93,7 +93,7 @@ router.get("/makemodellist", async (req, res) => {
 
       mKeys.forEach((colorKey, j) => {
         if (colorKey.includes("Colors")) {
-          color = item[key]["Misc"]["Colors"].split(",");
+          color = item[key]["Misc"]["Colors"].split(" ,");
         }
       });
 
@@ -104,7 +104,16 @@ router.get("/makemodellist", async (req, res) => {
 
       memKeys.forEach((storageKey, j) => {
         if (storageKey.includes("Internal")) {
-          storage = item[key]["Memory"]["Internal"].split(",");
+          let storageArray = item[key]["Memory"]["Internal"].split(", ");
+          let intStorage;
+          let finalStorageArray = [];
+          storageArray.forEach((storageItem) => {
+            intStorage = storageItem.split(" ").find(item => item.indexOf("GB")).slice(0, -2);
+            // console.log("int", intStorage);
+            finalStorageArray.push(intStorage + " GB");
+          })
+          // storage = item[key]["Memory"]["Internal"].split(", ");
+          storage = finalStorageArray;
         }
       });
     });

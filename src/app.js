@@ -62,6 +62,7 @@ app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/device", bestDealCompletedRoute);
 app.use("/api/v1/global", citiesRoute);
+app.use("/api/v1/global", sqlRoute);
 app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/home", listingByMakeRoute);
 app.use("/api/v1/home", topSellingModelRoute);
@@ -71,7 +72,6 @@ app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
 app.use("/api/v1/favorite", favoriteRoute);
-app.use("/api/v1/sqlconnection", sqlRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
