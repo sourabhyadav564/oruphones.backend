@@ -5,6 +5,7 @@ const moment = require("moment");
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
+const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");
@@ -385,7 +386,7 @@ router.post("/listing/updatefordiag", async (req, res) => {
   const listingId = req.body.listingId;
 
   let currentDate = new Date();
-  let dateFormat = moment(currentDate).add(10, 'days').calendar();
+  let dateFormat = moment(currentDate).add(10, "days").calendar();
 
   const reqBody = {
     ...req.body,
@@ -431,6 +432,118 @@ router.post("/listing/updatefordiag", async (req, res) => {
           status: "SUCCESS",
         });
       }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.post("/listing/detailwithuserinfo", async (req, res) => {
+  const listingid = req.query.listingid;
+  const isOtherVendor = req.query.isOtherVendor;
+  const userUniqueId = req.query.userUniqueId;
+
+  try {
+    // const isValidUser = await createUserModal.find({
+    //   userUniqueId: userUniqueId,
+    // })
+
+    const getListing = await saveListingModal.findOne({
+      listingId: listingid,
+    });
+
+    if (!getListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      let query =
+        "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 30 day;select * from `web_scraper_model`;";
+
+      const VENDORS = {
+        6: "Amazon",
+        7: "Quikr",
+        8: "Cashify",
+        9: "2Gud",
+        10: "Budli",
+        11: "Paytm",
+        12: "Yaantra",
+        13: "Shopcluse",
+        14: "Sahivalue",
+        15: "Xtracover",
+        16: "Mobigarage",
+        17: "Instacash",
+        18: "Cashforphone",
+        19: "Recycledevice",
+        20: "Quickmobile",
+        21: "Buyblynk",
+        22: "Electronicbazaar",
+      };
+
+      const externalSource = [];
+
+      connection.query(query, [2, 1], async (err, results, fields) => {
+        if (err) {
+          console.log(err);
+        } else {
+          let models = results[1];
+          let scrappedModels = results[0];
+          let selectdModels = [];
+          // let minPrice;
+          // let maxPrice;
+          let itemId = "";
+          const make = await getListing.make;
+          const marketingname = await getListing.marketingName;
+          const condition = await getListing.deviceCondition;
+          const storage = await getListing.deviceStorage
+            .split(" ")[0]
+            .toString();
+          let leastSellingPrice;
+
+          models.forEach((item, index) => {
+            if (item.name === marketingname) {
+              itemId = item.id;
+              return;
+            }
+          });
+
+          scrappedModels.forEach((item, index) => {
+            if (
+              item.model_id === itemId &&
+              item.mobiru_condition === condition &&
+              item.storage === parseInt(storage)
+            ) {
+              vendorName = VENDORS[item.vendor_id];
+              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName.toString().toLowerCase()}_logo.png`;
+              let vendorObject = {
+                externalSourcePrice: item.price,
+                externalSourceImage: vendorImage
+              }
+              selectdModels.push(vendorObject);
+            }
+          });
+
+          // leastSellingPrice = Math.max(...selectdModels);
+          externalSource.push(selectdModels[0]) //TODO: Need to remove the duplicate objects. Objects from the rarest.
+
+          let dataObject = { externalSource, ...getListing._doc };
+          // console.log("externalSource", dataObject);
+    
+          // if(externalSource.length > 0) {
+            res.status(200).json({
+              reason: "Listing updated successfully",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+          }
+        // }
+      });
+
     }
   } catch (error) {
     console.log(error);

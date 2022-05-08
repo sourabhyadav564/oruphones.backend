@@ -146,6 +146,11 @@ const saveListingSchema = new mongoose.Schema({
                     type: Number,
                 }]
             },
+            childAnswers: {
+                type: [{
+                    type: Number,
+                }]
+            },
         }],
     }
 },{ timestamps: true })
