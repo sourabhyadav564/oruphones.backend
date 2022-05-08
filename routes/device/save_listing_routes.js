@@ -4,8 +4,9 @@ const router = express.Router();
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
-const defaultImageModel = require("../../src/database/modals/others/model_default_images");
+
 const logEvent = require("../../src/middleware/event_logging");
+const getDefaultImage = require("../../utils/get_default_image");
 
 // router.get("/listing", async (req, res) => {
 //   try {
