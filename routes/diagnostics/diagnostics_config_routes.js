@@ -315,15 +315,27 @@ router.post("/grade/price", async (req, res) => {
   //   console.log(error);
   // }
   // try {
-    const listing = await saveListingModal.findOne({ listingId: listingId });
+    // const listing = await saveListingModal.findOne({ listingId: listingId });
+
+    // console.log(listing);
+
+    // const updatedListing = await saveListingModal.findByIdAndUpdate(listing._id, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
+    //   new: true,
+    // });
+    const listing = await saveListingModal.findByIdAndUpdate(listingId, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
+      new: true,
+    });
+
+    console.log("updatedListing: " + listing);
 
     let query =
       "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
-    connection.query(query, [2, 1], (err, results, fields) => {
+    connection.query(query, [2, 1], async (err, results, fields) => {
       if (err) {
         console.log(err);
       } else {
+
         let models = results[1];
         let scrappedModels = results[0];
         let selectdModels = [];
@@ -490,8 +502,6 @@ router.post("/grade/price", async (req, res) => {
         leastSellingPrice = Math.min(...selectdModels);
 
         let bool = false;
-
-        console.log("leastSellingPrice first: " + leastSellingPrice);
 
         if (condition === "Good") {
           console.log("into good");
@@ -993,6 +1003,7 @@ router.post("/grade/price", async (req, res) => {
         //     dataObject: dataObject,
         //   });
         // }
+        
         res.status(200).json({
           reason: "Listing saved successfully",
           statusCode: 201,

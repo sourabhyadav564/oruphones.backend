@@ -152,6 +152,25 @@ const saveListingSchema = new mongoose.Schema({
                 }]
             },
         }],
+    },
+    functionalTestResults: {
+        type: [{
+            commandName: {
+                type: String,
+            },
+            startDateTime: {
+                type: Number,
+            },
+            displayName: {
+                type: String,
+            },
+            testStatus: {
+                type: String,
+            },
+            endDateTime: {
+                type: String,
+            }
+        }],
     }
 },{ timestamps: true })
 
