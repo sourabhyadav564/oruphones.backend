@@ -379,4 +379,51 @@ router.get("/listing/detail", async (req, res) => {
   }
 });
 
+router.post("/listing/updatefordiag", async (req, res) => {
+  const userUniqueId = req.body.userUniqueId;
+  const listingId = req.body.listingId;
+
+  try {
+    const updateListing = await saveListingModal.findOne({
+      listingId: listingId,
+    });
+
+    if (!updateListing) {
+      res.status(200).json({
+        reason: "Invalid listing id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+      return;
+    } else {
+      if (updateListing.userUniqueId === userUniqueId) {
+        let dataObject = await saveListingModal.findByIdAndUpdate(
+          updateListing._id,
+          req.body,
+          {
+            new: true,
+          }
+        );
+
+
+        res.status(200).json({
+          reason: "Listing updated successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject,
+        });
+      } else {
+        res.status(200).json({
+          reason: "You are not authorized to update this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
 module.exports = router;

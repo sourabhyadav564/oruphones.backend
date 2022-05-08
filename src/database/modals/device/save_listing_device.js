@@ -115,6 +115,20 @@ const saveListingSchema = new mongoose.Schema({
     },
     deviceImagesAvailable: {
         type: Boolean,
+    },
+    verifiedDate: {
+        type: String,
+        default: Date.now(),
+    },
+    listedDate: {
+        type: String,
+        default: Date.now(),
+    },
+    recommendedPriceRange: {
+        type: String,
+    },
+    deviceRam: {
+        type: String,
     }
 },{ timestamps: true })
 
