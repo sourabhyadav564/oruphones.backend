@@ -140,6 +140,8 @@ router.post("/fetch", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
+    // console.log("getFavObject", getFavObject);
+
     let dataObject = [];
 
     if (getFavObject && getFavObject.fav_listings.length > 0) {
@@ -150,7 +152,8 @@ router.post("/fetch", async (req, res) => {
         let single_listing = await saveListingModal.findOne({
           listingId: item,
         });
-        single_listing["imagePath"] = single_listing.defaultImage.fullImage;
+        console.log(single_listing);
+        single_listing = {...single_listing._doc, imagePath: single_listing.defaultImage.fullImage};
         dataObject.push(single_listing);
         if (dataObject.length === arr.length) {
           res.status(200).json({
