@@ -112,7 +112,7 @@ router.post("/marketingNameByModel", async (req, res) => {
     // getting the recommendedPriceRange start
 
     let query =
-      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 days;select * from `web_scraper_model`;";
+    "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
     const VENDORS = {
       6: "Amazon",
@@ -188,19 +188,6 @@ router.post("/marketingNameByModel", async (req, res) => {
             make === "Apple" ? hasEarphone : false;
           const hasOrignalBox = true;
           const isVarified = true;
-
-          console.log("models", 
-        make, 
-        marketingname,
-        condition,
-        storage,
-        hasCharger,
-        isAppleChargerIncluded,
-        hasEarphone,
-        isAppleEarphoneIncluded,
-        hasOrignalBox,
-        isVarified
-        );
 
           let leastSellingPrice;
           let lowerRangeMatrix = 0.7;
