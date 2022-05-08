@@ -43,7 +43,8 @@ router.post("/marketingNameByModel", async (req, res) => {
       deviceStorage: deviceStorage,
       marketingName: modelName,
       imagePath:
-        "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png",
+      `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${modelName.toLowerCase().replace(" ", "_")}.png`
+      ,
       price: "20,000",
     };
 
