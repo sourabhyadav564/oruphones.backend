@@ -118,17 +118,35 @@ const saveListingSchema = new mongoose.Schema({
     },
     verifiedDate: {
         type: String,
-        default: Date.now(),
+        // default: Date.now(),
     },
     listingDate: {
         type: String,
-        default: Date.now(),
+        // default: Date.now(),
     },
     recommendedPriceRange: {
         type: String,
     },
     deviceRam: {
         type: String,
+    },
+    questionnaireResults: {
+        type: [{
+            question: {
+                type: String,
+            },
+            questionId: {
+                type: Number,
+            },
+            result: {
+                type: String,
+            },
+            childQuestions: {
+                type: [{
+                    type: Number,
+                }]
+            },
+        }],
     }
 },{ timestamps: true })
 

@@ -394,6 +394,8 @@ router.post("/listing/updatefordiag", async (req, res) => {
     verifiedDate: dateFormat,
   };
 
+  console.log("reqBody", reqBody);
+
   try {
     const updateListing = await saveListingModal.findOne({
       listingId: listingId,
