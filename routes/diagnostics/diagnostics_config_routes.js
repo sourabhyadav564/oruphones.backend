@@ -216,7 +216,6 @@ router.post("/diagConfig", async (req, res) => {
 });
 
 router.post("/grade/price", async (req, res) => {
-  console.log("body is: ", req.body)
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
@@ -228,6 +227,10 @@ router.post("/grade/price", async (req, res) => {
   const ram = req.body.ram;
   // const storage = req.body.storage;
   const userUniqueId = req.body.userUniqueId;
+
+  const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
+  const deviceFinalGrade = req.body.deviceFinalGrade;
+  const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
 
   // PASS
   // OPTIMIZABLE
