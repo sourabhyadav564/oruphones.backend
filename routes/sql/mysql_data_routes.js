@@ -84,8 +84,6 @@ router.post("/recomanded/price", async (req, res) => {
         const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
         const isVarified = req.body.verified === "no" ? false : true;
 
-        // console.log("make", make, marketingname, condition, storage);
-
         let leastSellingPrice;
         let lowerRangeMatrix = 0.7;
         let upperRangeMatrix = 0.9;
@@ -235,16 +233,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 300;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 700;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 1300;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 1700;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 2500;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -255,16 +265,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 700;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 1500;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 2500;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 3500;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 5500;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -279,16 +301,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 300;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice + 700;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice + 1300;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice + 1700;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice + 2500;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -299,16 +333,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 400;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 800;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 1200;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 2300;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 3000;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -323,16 +369,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 700;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice + 1500;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice + 2500;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice + 3500;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice + 5500;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -343,16 +401,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 400;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice + 800;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice + 1200;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice + 2300;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice + 3000;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -362,21 +432,31 @@ router.post("/recomanded/price", async (req, res) => {
           }
         } else if (condition === "Fair") {
           if (gotDataFrom === "Good") {
-            console.log("inside fair good ", leastSellingPrice);
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 500;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
-              console.log("challlllll jaaa");
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 1500;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 2500;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 3500;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 5500;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -387,16 +467,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 1200;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 2300;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 3700;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 4700;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 8000;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -407,16 +499,28 @@ router.post("/recomanded/price", async (req, res) => {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 1500;
               bool = true;
-            } else if (leastSellingPrice <= 20000 && leastSellingPrice > 10000) {
+            } else if (
+              leastSellingPrice <= 20000 &&
+              leastSellingPrice > 10000
+            ) {
               leastSellingPrice = leastSellingPrice - 3000;
               bool = true;
-            } else if (leastSellingPrice <= 30000 && leastSellingPrice > 20000) {
+            } else if (
+              leastSellingPrice <= 30000 &&
+              leastSellingPrice > 20000
+            ) {
               leastSellingPrice = leastSellingPrice - 5000;
               bool = true;
-            } else if (leastSellingPrice <= 50000 && leastSellingPrice > 30000) {
+            } else if (
+              leastSellingPrice <= 50000 &&
+              leastSellingPrice > 30000
+            ) {
               leastSellingPrice = leastSellingPrice - 7000;
               bool = true;
-            } else if (leastSellingPrice <= 70000 && leastSellingPrice > 50000) {
+            } else if (
+              leastSellingPrice <= 70000 &&
+              leastSellingPrice > 50000
+            ) {
               leastSellingPrice = leastSellingPrice - 11000;
               bool = true;
             } else if (leastSellingPrice > 70000) {
@@ -671,7 +775,6 @@ router.get("/new", async (req, res) => {
             return;
           }
         });
-        console.log(results);
         scrappedModels.forEach((item, index) => {
           if (item.model_id === itemId) {
             selectdModels.push(item.price);

@@ -4,6 +4,7 @@ const router = express.Router();
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
+const defaultImageModel = require("../../src/database/modals/others/model_default_images");
 const logEvent = require("../../src/middleware/event_logging");
 
 // router.get("/listing", async (req, res) => {
@@ -77,6 +78,8 @@ router.post("/listing/save", async (req, res) => {
   //TODO - Add the exact default image as the model image
   //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
 
+  const defaultImage = `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toString().toLowerCase()}.png`
+
   const data = {
     charger,
     color,
@@ -100,6 +103,7 @@ router.post("/listing/save", async (req, res) => {
     recommendedPriceRange,
     userUniqueId,
     deviceImagesAvailable,
+    defaultImage
   };
 
   const modalInfo = new saveListingModal(data);
