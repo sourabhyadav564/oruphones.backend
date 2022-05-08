@@ -78,10 +78,16 @@ router.post("/listing/save", async (req, res) => {
   //TODO - Add the exact default image as the model image
   //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
 
-  const defaultImage = {
-    fullImage: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toLowerCase().replace(" ", "_")}.png`
+  const image = await getDefaultImage(modelName);
 
-  }
+  // const defaultImage = {
+  //   fullImage: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toLowerCase().replace(" ", "_")}.png`
+  // }
+
+  const defaultImage = {
+    fullImage: image,
+  };
+
   const data = {
     charger,
     color,
@@ -105,7 +111,7 @@ router.post("/listing/save", async (req, res) => {
     recommendedPriceRange,
     userUniqueId,
     deviceImagesAvailable,
-    defaultImage
+    defaultImage,
   };
 
   const modalInfo = new saveListingModal(data);
@@ -181,9 +187,13 @@ router.post("/listing/update", async (req, res) => {
       return;
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
-        const dataObject = await saveListingModal.findByIdAndUpdate(updateListing._id, req.body, {
-          new: true,
-        });
+        const dataObject = await saveListingModal.findByIdAndUpdate(
+          updateListing._id,
+          req.body,
+          {
+            new: true,
+          }
+        );
         res.status(200).json({
           reason: "Listing updated successfully",
           statusCode: 200,
@@ -343,15 +353,18 @@ router.get("/listing/detail", async (req, res) => {
     // });
 
     // if (isValidUser) {
-      const listing = await saveListingModal.findOne({ listingId: listingId }, {mobileNumber: 0});
+    const listing = await saveListingModal.findOne(
+      { listingId: listingId },
+      { mobileNumber: 0 }
+    );
 
-      const dataObject = listing;
-      res.status(200).json({
-        reason: "Mobile number retrieved successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
-      });
+    const dataObject = listing;
+    res.status(200).json({
+      reason: "Mobile number retrieved successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject,
+    });
     // } else {
     //   res.status(200).json({
     //     reason: "Invalid user id provided",
