@@ -383,6 +383,9 @@ router.post("/listing/updatefordiag", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
+  let currentDate = Date.now
+  const reqBody = {...req.body, verified: true, listingDate: currentDate, verifiedDate: currentDate};
+
   try {
     const updateListing = await saveListingModal.findOne({
       listingId: listingId,
@@ -399,7 +402,7 @@ router.post("/listing/updatefordiag", async (req, res) => {
       if (updateListing.userUniqueId === userUniqueId) {
         let dataObject = await saveListingModal.findByIdAndUpdate(
           updateListing._id,
-          req.body,
+          reqBody,
           {
             new: true,
           }

@@ -120,7 +120,7 @@ const saveListingSchema = new mongoose.Schema({
         type: String,
         default: Date.now(),
     },
-    listedDate: {
+    listingDate: {
         type: String,
         default: Date.now(),
     },
