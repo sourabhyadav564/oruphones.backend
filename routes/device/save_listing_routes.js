@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
@@ -383,8 +384,15 @@ router.post("/listing/updatefordiag", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
-  let currentDate = Date.now
-  const reqBody = {...req.body, verified: true, listingDate: currentDate, verifiedDate: currentDate};
+  let currentDate = new Date();
+  let dateFormat = moment(currentDate).add(10, 'days').calendar();
+
+  const reqBody = {
+    ...req.body,
+    verified: true,
+    listingDate: dateFormat,
+    verifiedDate: dateFormat,
+  };
 
   try {
     const updateListing = await saveListingModal.findOne({
@@ -407,7 +415,6 @@ router.post("/listing/updatefordiag", async (req, res) => {
             new: true,
           }
         );
-
 
         res.status(200).json({
           reason: "Listing updated successfully",
