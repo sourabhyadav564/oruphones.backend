@@ -216,6 +216,7 @@ router.post("/diagConfig", async (req, res) => {
 });
 
 router.post("/grade/price", async (req, res) => {
+  console.log("body is: ", req.body)
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
