@@ -8,8 +8,19 @@ const logEvent = require("../../src/middleware/event_logging");
 router.post("/marketingNameByModel", async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
-  const make = req.body.make;
+  let make = req.body.make;
   const ram = req.body.ram;
+
+  // const handleTitleCase = () => {
+  //   let newText = make.split(" ").map((currentValue) => {
+  //     let newText = currentValue[0].toUpperCase() + currentValue.slice(1);
+  //     return newText;
+  //   });
+  // };
+
+  make.split(" ").map((currentValue) => {
+    currentValue[0].toUpperCase() + currentValue.slice(1);
+  });
 
   try {
     // FURTHER: use aggregate to get the data when complex query is needed
@@ -42,9 +53,9 @@ router.post("/marketingNameByModel", async (req, res) => {
     let dataObject = {
       deviceStorage: deviceStorage,
       marketingName: modelName,
-      imagePath:
-      `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${modelName.toLowerCase().replace(" ", "_")}.png`
-      ,
+      imagePath: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make
+        .toString()
+        .toLowerCase()}/mbr_${modelName.toLowerCase().replace(" ", "_")}.png`,
       price: "20,000",
     };
 
@@ -65,81 +76,85 @@ router.get("/makemodellist", async (req, res) => {
   let makes = await gsmarenaModal.find({}, { make: 1, _id: 0 });
   let allBrand = [];
   makes.forEach((item) => {
-    let currentBrand = Object.values(item)[2].make
+    let currentBrand = Object.values(item)[2].make;
     allBrand.push(currentBrand);
-  })
+  });
 
   allBrand.forEach(async (brandName) => {
+    // Loop through the makes will be starting from here
+    let models = await gsmarenaModal.aggregate([
+      { $match: { make: brandName } },
+    ]);
 
-  // Loop through the makes will be starting from here
-  let models = await gsmarenaModal.aggregate([{ $match: { make: brandName } }]);
+    let modelArray = await models[0][brandName];
+    let newModels = [];
 
-  let modelArray = await models[0][brandName];
-  let newModels = [];
+    modelArray.forEach((item, index) => {
+      let marketingname = "";
+      let color = [];
+      let storage = [];
+      let keys = [];
+      for (let key in item) {
+        if (key !== "_id") keys.push(key);
+      }
+      keys.forEach((key, i) => {
+        marketingname = key;
+        let mKeys = [];
+        for (let mKey in item[key]["Misc"]) {
+          mKeys.push(mKey);
+        }
 
-  modelArray.forEach((item, index) => {
-    let marketingname = "";
-    let color = [];
-    let storage = [];
-    let keys = [];
-    for (let key in item) {
-      if (key !== "_id") keys.push(key);
+        mKeys.forEach((colorKey, j) => {
+          if (colorKey.includes("Colors")) {
+            color = item[key]["Misc"]["Colors"].split(", ");
+          }
+        });
+
+        let memKeys = [];
+        for (let memKey in item[key]["Memory"]) {
+          memKeys.push(memKey);
+        }
+
+        memKeys.forEach((storageKey, j) => {
+          if (storageKey.includes("Internal")) {
+            let storageArray = item[key]["Memory"]["Internal"].split(", ");
+            let intStorage;
+            let finalStorageArray = [];
+            storageArray.forEach((storageItem) => {
+              intStorage = storageItem
+                .split(" ")
+                .find((item) => item.indexOf("GB"))
+                .slice(0, -2);
+              // console.log("int", intStorage);
+              finalStorageArray.push(intStorage + " GB");
+            });
+            // storage = item[key]["Memory"]["Internal"].split(", ");
+            storage = finalStorageArray;
+          }
+        });
+      });
+
+      newModels.push({
+        marketingname,
+        color,
+        storage,
+      });
+    });
+
+    dataObject.push({
+      make: brandName,
+      models: newModels,
+    });
+
+    if (allBrand.length === dataObject.length) {
+      res.status(200).json({
+        reason: "Modals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
     }
-    keys.forEach((key, i) => {
-      marketingname = key;
-      let mKeys = [];
-      for (let mKey in item[key]["Misc"]) {
-        mKeys.push(mKey);
-      }
-
-      mKeys.forEach((colorKey, j) => {
-        if (colorKey.includes("Colors")) {
-          color = item[key]["Misc"]["Colors"].split(", ");
-        }
-      });
-
-      let memKeys = [];
-      for (let memKey in item[key]["Memory"]) {
-        memKeys.push(memKey);
-      }
-
-      memKeys.forEach((storageKey, j) => {
-        if (storageKey.includes("Internal")) {
-          let storageArray = item[key]["Memory"]["Internal"].split(", ");
-          let intStorage;
-          let finalStorageArray = [];
-          storageArray.forEach((storageItem) => {
-            intStorage = storageItem.split(" ").find(item => item.indexOf("GB")).slice(0, -2);
-            // console.log("int", intStorage);
-            finalStorageArray.push(intStorage + " GB");
-          })
-          // storage = item[key]["Memory"]["Internal"].split(", ");
-          storage = finalStorageArray;
-        }
-      });
-    });
-
-    newModels.push({
-      marketingname,
-      color,
-      storage,
-    });
   });
-
-  dataObject.push({
-    make: brandName,
-    models: newModels,
-  });
-
-  if(allBrand.length === dataObject.length){
-    res.status(200).json({
-      reason: "Modals found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
-    });
-  }
-})
 });
 
 module.exports = router;
