@@ -348,7 +348,8 @@ router.post("/marketingNameByModel", async (req, res) => {
 
           if (condition === "Good") {
             if (gotDataFrom === "Good") {
-              return;
+              // return;
+              bool = true;
             } else if (gotDataFrom === "Excellent") {
               if (leastSellingPrice <= 10000) {
                 leastSellingPrice = leastSellingPrice - 300;
@@ -416,7 +417,8 @@ router.post("/marketingNameByModel", async (req, res) => {
             }
           } else if (condition === "Excellent") {
             if (gotDataFrom === "Excellent") {
-              return;
+              // return;
+              bool = true;
             } else if (gotDataFrom === "Good") {
               if (leastSellingPrice <= 10000) {
                 leastSellingPrice = leastSellingPrice + 300;
@@ -484,7 +486,8 @@ router.post("/marketingNameByModel", async (req, res) => {
             }
           } else if (condition === "Like New") {
             if (gotDataFrom === "Like New") {
-              return;
+              // return;
+              bool = true;
             } else if (gotDataFrom === "Good") {
               if (leastSellingPrice <= 10000) {
                 leastSellingPrice = leastSellingPrice + 700;

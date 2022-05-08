@@ -229,9 +229,13 @@ router.post("/recomanded/price", async (req, res) => {
         console.log("leastSellingPrice first: " + leastSellingPrice);
 
         if (condition === "Good") {
+          console.log("into good")
           if (gotDataFrom === "Good") {
-            return;
+            console.log("return from good")
+            bool = true;
+            // return;
           } else if (gotDataFrom === "Excellent") {
+            console.log("return from excellent")
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 300;
               bool = true;
@@ -273,9 +277,14 @@ router.post("/recomanded/price", async (req, res) => {
             }
           }
         } else if (condition === "Excellent") {
+          console.log("into Excellent");
           if (gotDataFrom === "Excellent") {
-            return;
+            console.log("return from Excellent");
+            bool = true;
+            // return;
           } else if (gotDataFrom === "Good") {
+            console.log("return from Good");
+
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 300;
               bool = true;
@@ -296,6 +305,8 @@ router.post("/recomanded/price", async (req, res) => {
               bool = true;
             }
           } else if (gotDataFrom === "Like New") {
+            console.log("return from Like New");
+
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 400;
               bool = true;
@@ -318,7 +329,8 @@ router.post("/recomanded/price", async (req, res) => {
           }
         } else if (condition === "Like New") {
           if (gotDataFrom === "Like New") {
-            return;
+            bool = true;
+            // return;
           } else if (gotDataFrom === "Good") {
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 700;
