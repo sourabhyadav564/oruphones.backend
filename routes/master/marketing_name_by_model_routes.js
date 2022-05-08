@@ -112,7 +112,7 @@ router.post("/marketingNameByModel", async (req, res) => {
     // getting the recommendedPriceRange start
 
     let query =
-    "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
+      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
     const VENDORS = {
       6: "Amazon",
@@ -794,7 +794,7 @@ router.post("/marketingNameByModel", async (req, res) => {
           //   recommendedPriceRangeLowerLimit ?? "-";
           // dataObject["maxsellingprice"] =
           //   recommendedPriceRangeUpperLimit ?? "-";
-          
+
           let dataObject = {
             deviceStorage: deviceStorage,
             marketingName: modelName,
