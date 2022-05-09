@@ -147,9 +147,9 @@ const saveListingSchema = new mongoose.Schema({
                 }]
             },
             childAnswers: {
-                type: [{
-                    type: Number,
-                }]
+                type: {
+                    type: String,
+                }
             },
         }],
     },

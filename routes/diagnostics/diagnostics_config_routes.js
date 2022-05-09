@@ -216,7 +216,6 @@ router.post("/diagConfig", async (req, res) => {
 });
 
 router.post("/grade/price", async (req, res) => {
-  console.log("req.body", req.body);
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
@@ -302,20 +301,24 @@ router.post("/grade/price", async (req, res) => {
             break;
           }
           lCount++;
-        } 
-      } 
+        }
+      }
       index++;
-      if (index >= functionalTestResults.length && count === 0 && lCount === 0) {
+      if (
+        index >= functionalTestResults.length &&
+        count === 0 &&
+        lCount === 0
+      ) {
         grade = "S";
         condition = "Like New";
         break;
       }
     }
 
-  // } catch (error) {
-  //   console.log(error);
-  // }
-  // try {
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // try {
     // const listing = await saveListingModal.findOne({ listingId: listingId });
 
     // console.log(listing);
@@ -323,11 +326,17 @@ router.post("/grade/price", async (req, res) => {
     // const updatedListing = await saveListingModal.findByIdAndUpdate(listing._id, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
     //   new: true,
     // });
-    const listing = await saveListingModal.findByIdAndUpdate(listingId, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
-      new: true,
-    });
-
-    console.log("updatedListing: " + listing);
+    const listing = await saveListingModal.findByIdAndUpdate(
+      listingId,
+      {
+        deviceFunctionalGrade: grade,
+        functionalTestResults: functionalTestResults,
+        questionnaireResults: questionnaireResults,
+      },
+      {
+        new: true,
+      }
+    );
 
     let query =
       "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
@@ -336,7 +345,6 @@ router.post("/grade/price", async (req, res) => {
       if (err) {
         console.log(err);
       } else {
-
         let models = results[1];
         let scrappedModels = results[0];
         let selectdModels = [];
@@ -1004,7 +1012,7 @@ router.post("/grade/price", async (req, res) => {
         //     dataObject: dataObject,
         //   });
         // }
-        
+
         res.status(200).json({
           reason: "Listing saved successfully",
           statusCode: 201,
