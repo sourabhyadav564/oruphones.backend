@@ -518,32 +518,67 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
               item.storage === parseInt(storage)
             ) {
               vendorName = VENDORS[item.vendor_id];
-              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName.toString().toLowerCase()}_logo.png`;
+              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+                .toString()
+                .toLowerCase()}_logo.png`;
               let vendorObject = {
                 externalSourcePrice: item.price,
-                externalSourceImage: vendorImage
-              }
+                externalSourceImage: vendorImage,
+              };
               selectdModels.push(vendorObject);
             }
           });
 
           // leastSellingPrice = Math.max(...selectdModels);
-          externalSource.push(selectdModels[0]) //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          externalSource.push(selectdModels[0]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
 
           let dataObject = { externalSource, ...getListing._doc };
           // console.log("externalSource", dataObject);
-    
+
           // if(externalSource.length > 0) {
-            res.status(200).json({
-              reason: "Listing updated successfully",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject,
-            });
-          }
+          res.status(200).json({
+            reason: "Listing updated successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        }
         // }
       });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
 
+router.get("/listing/bydeviceid", async (req, res) => {
+  const deviceId = req.query.deviceId;
+
+  try {
+    // const isValidUser = await createUserModal.find({
+    //   userUniqueId: userUniqueId,
+    // })
+
+    const getListing = await saveListingModal.findOne({
+      deviceUniqueId: deviceId,
+    });
+
+    if (!getListing) {
+      res.status(200).json({
+        reason: "Invalid device id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+      return;
+    } else {
+      res.status(200).json({
+        reason: "Listing found successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: getListing
+      });
     }
   } catch (error) {
     console.log(error);
