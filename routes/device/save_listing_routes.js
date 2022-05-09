@@ -568,7 +568,7 @@ router.get("/listing/bydeviceid", async (req, res) => {
       res.status(200).json({
         reason: "Invalid device id provided",
         statusCode: 200,
-        status: "SUCCESS",
+        status: "INVALID",
         dataObject: {},
       });
       return;
