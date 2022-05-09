@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const logEvent = require("../../src/middleware/event_logging");
 const generateRandomNumber = require("../../utils/generate_random_number");
+const fs = require("fs");
 
 require("../../src/database/connection");
 const dignosticsConfigModal = require("../../src/database/modals/diagnostics/diagnostics_config");
@@ -231,6 +232,7 @@ router.post("/grade/price", async (req, res) => {
   const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
   const deviceFinalGrade = req.body.deviceFinalGrade;
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
+  // fs.writeFileSync(`${listingId}.json`, JSON.stringify(req.body));
 
   // PASS
   // OPTIMIZABLE
@@ -315,6 +317,74 @@ router.post("/grade/price", async (req, res) => {
       }
     }
 
+    // let cIndex = 0;
+    let cosmeticGrade;
+
+    for (item of questionnaireResults) {
+      if (item.questionId === 1 && item.childQuestions.length > 0) {
+        if (item.childQuestions.length === 3) {
+          cosmeticGrade = "C";
+          break;
+        } else if (item.childQuestions.length === 2) {
+          cosmeticGrade = "B";
+          break;
+        } else if (
+          item.childQuestions.includes(3) ||
+          item.childQuestions.includes(5)
+        ) {
+          cosmeticGrade = "B";
+          break;
+        } else if (item.childQuestions.includes(4)) {
+          cosmeticGrade = "A";
+          break;
+        }
+      } else if (item.questionId === 6 && item.childQuestions.length > 0) {
+        if (item.childQuestions.length >= 3) {
+          cosmeticGrade = "C";
+          break;
+        } else if (item.childQuestions.length === 2) {
+          if (
+            item.childQuestions.includes(7) &&
+            item.childQuestions.includes(8)
+          ) {
+            cosmeticGrade = "C";
+            break;
+          } else if (
+            (item.childQuestions.includes(7) &&
+              item.childQuestions.includes(9)) ||
+            (item.childQuestions.includes(7) &&
+              item.childQuestions.includes(10)) ||
+            (item.childQuestions.includes(8) &&
+              item.childQuestions.includes(9)) ||
+            (item.childQuestions.includes(8) &&
+              item.childQuestions.includes(10))
+          ) {
+            cosmeticGrade = "B";
+            break;
+          } else if (
+            item.childQuestions.includes(9) ||
+            item.childQuestions.includes(10)
+          ) {
+            cosmeticGrade = "A";
+          }
+        } else if (
+          item.childQuestions.includes(7) ||
+          item.childQuestions.includes(8)
+        ) {
+          cosmeticGrade = "B";
+          break;
+        } else if (
+          item.childQuestions.includes(9) ||
+          item.childQuestions.includes(10)
+        ) {
+          cosmeticGrade = "A";
+          break;
+        }
+      } else if (item.childQuestions.length === 0) {
+        cosmeticGrade = "S";
+      }
+    }
+
     // } catch (error) {
     //   console.log(error);
     // }
@@ -330,13 +400,16 @@ router.post("/grade/price", async (req, res) => {
       listingId,
       {
         deviceFunctionalGrade: grade,
-        functionalTestResults: functionalTestResults,
-        questionnaireResults: questionnaireResults,
+        functionalTestResults: req.body.functionalTestResults,
+        questionnaireResults: req.body.questionnaireResults,
+        deviceCosmeticGrade: cosmeticGrade,
       },
       {
         new: true,
       }
     );
+
+    console.log("cosmeticGrade", cosmeticGrade);
 
     let query =
       "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
@@ -513,13 +586,10 @@ router.post("/grade/price", async (req, res) => {
         let bool = false;
 
         if (condition === "Good") {
-          console.log("into good");
           if (gotDataFrom === "Good") {
-            console.log("return from good");
             bool = true;
             // return;
           } else if (gotDataFrom === "Excellent") {
-            console.log("return from excellent");
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 300;
               bool = true;
@@ -585,14 +655,11 @@ router.post("/grade/price", async (req, res) => {
             }
           }
         } else if (condition === "Excellent") {
-          console.log("into Excellent");
           if (gotDataFrom === "Excellent") {
             console.log("return from Excellent");
             bool = true;
             // return;
           } else if (gotDataFrom === "Good") {
-            console.log("return from Good");
-
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice + 300;
               bool = true;
@@ -625,8 +692,6 @@ router.post("/grade/price", async (req, res) => {
               bool = true;
             }
           } else if (gotDataFrom === "Like New") {
-            console.log("return from Like New");
-
             if (leastSellingPrice <= 10000) {
               leastSellingPrice = leastSellingPrice - 400;
               bool = true;

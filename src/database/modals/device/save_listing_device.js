@@ -159,7 +159,7 @@ const saveListingSchema = new mongoose.Schema({
                 type: String,
             },
             startDateTime: {
-                type: Number,
+                type: String,
             },
             displayName: {
                 type: String,
