@@ -117,48 +117,48 @@ const testsaveListingSchema = new mongoose.Schema({
     deviceRam: {
         type: String,
     },
-    // questionnaireResults: {
-    //     type: [{
-    //         question: {
-    //             type: String,
-    //         },
-    //         questionId: {
-    //             type: Number,
-    //         },
-    //         result: {
-    //             type: String,
-    //         },
-    //         childQuestions: {
-    //             type: [{
-    //                 type: Number,
-    //             }]
-    //         },
-    //         childAnswers: {
-    //             type: {
-    //                 type: String,
-    //             }
-    //         },
-    //     }],
-    // },
-    // functionalTestResults: {
-    //     type: [{
-    //         commandName: {
-    //             type: String,
-    //         },
-    //         startDateTime: {
-    //             type: String,
-    //         },
-    //         displayName: {
-    //             type: String,
-    //         },
-    //         testStatus: {
-    //             type: String,
-    //         },
-    //         endDateTime: {
-    //             type: String,
-    //         }
-    //     }],
-    // }
+    questionnaireResults: {
+        type: [{
+            question: {
+                type: String,
+            },
+            questionId: {
+                type: Number,
+            },
+            result: {
+                type: String,
+            },
+            childQuestions: {
+                type: [{
+                    type: Number,
+                }]
+            },
+            childAnswers: {
+                type: {
+                    type: String,
+                }
+            },
+        }],
+    },
+    functionalTestResults: {
+        type: [{
+            commandName: {
+                type: String,
+            },
+            startDateTime: {
+                type: String,
+            },
+            displayName: {
+                type: String,
+            },
+            testStatus: {
+                type: String,
+            },
+            endDateTime: {
+                type: String,
+            }
+        }],
+    }
 },{ timestamps: true })
 
 testsaveListingSchema.pre('save', async function (next) {

@@ -427,7 +427,10 @@ router.post("/grade/price", async (req, res) => {
       }
     );
 
-    const user = new testSaveListingModal(updatedListing);
+    console.log("updatedListing", updatedListing);
+
+    const user = new testSaveListingModal(req.body);
+    console.log("user", user);
     await user.save();
 
     // const listing = await saveListingModal.findByIdAndUpdate(
