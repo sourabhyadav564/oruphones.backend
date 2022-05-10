@@ -9,6 +9,7 @@ const dignosticsConfigModal = require("../../src/database/modals/diagnostics/dia
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
 const diagnosticsAllTests = require("../../src/database/modals/diagnostics/diagnostics_all_tests");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const testSaveListingModal = require("../../src/database/modals/device/test_verification_model");
 const connection = require("../../src/database/mysql_connection");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 
@@ -425,6 +426,9 @@ router.post("/grade/price", async (req, res) => {
         new: true,
       }
     );
+
+    const user = new testSaveListingModal(updatedListing);
+    await user.save();
 
     // const listing = await saveListingModal.findByIdAndUpdate(
     //   listingId,
@@ -1093,7 +1097,6 @@ router.post("/grade/price", async (req, res) => {
         dataObject["functionalGrade"] = grade;
         dataObject["cosmaticGrade"] = cosmeticGrade;
         dataObject["condition"] = condition;
-        dataObject["yourBody"] = req.body;
 
         // if (selectdModels.length) {
         //   // if (selectdModels.length > 1) {
