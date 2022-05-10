@@ -411,20 +411,28 @@ router.post("/grade/price", async (req, res) => {
 
     // console.log(listing);
 
+    const updateData = {
+      deviceFunctionalGrade: grade,
+      functionalTestResults: req.body.functionalTestResults,
+      questionnaireResults: req.body.questionnaireResults,
+      deviceCosmeticGrade: "B",
+      deviceFinalGrade: "A",
+      deviceUniqueId: deviceUniqueId,
+    }
+
     const updatedListing = await saveListingModal.findByIdAndUpdate(
       listing._id,
-      {
-        deviceFunctionalGrade: grade,
-        functionalTestResults: req.body.functionalTestResults,
-        questionnaireResults: req.body.questionnaireResults,
-        deviceCosmeticGrade: "B",
-        deviceFinalGrade: "A",
-        deviceUniqueId: deviceUniqueId,
-      },
+      updateData,
       {
         new: true,
       }
     );
+
+    if(updatedListing) {
+      console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy")
+    } else {
+      console.log("Lagee rahoo...................!!")
+    }
 
     console.log("updatedListing", updatedListing);
 
