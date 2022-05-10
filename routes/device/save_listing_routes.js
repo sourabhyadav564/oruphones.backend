@@ -385,14 +385,25 @@ router.post("/listing/updatefordiag", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
+  const recommendedPriceRange = req.body.recommendedPriceRange;
+  const deviceRam = req.body.deviceRam;
+  const listingPrice = req.body.listingPrice;
+  const deviceCondition = req.body.deviceCondition;
+  const images = req.body.images;
+
   let currentDate = new Date();
   let dateFormat = moment(currentDate).add(10, "days").calendar();
 
-  const reqBody = {
+  const dataToBeUpdate = {
     // ...req.body,
     verified: true,
     listingDate: dateFormat,
     verifiedDate: dateFormat,
+    recommendedPriceRange: recommendedPriceRange,
+    deviceRam: deviceRam,
+    listingPrice: listingPrice,
+    deviceCondition: deviceCondition,
+    images: images,
   };
 
   try {
@@ -411,7 +422,7 @@ router.post("/listing/updatefordiag", async (req, res) => {
       if (updateListing.userUniqueId === userUniqueId) {
         let dataObject = await saveListingModal.findByIdAndUpdate(
           updateListing._id,
-          reqBody,
+          dataToBeUpdate,
           {
             new: true,
           }
