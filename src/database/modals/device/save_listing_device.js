@@ -99,7 +99,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     verified: {
         type: Boolean,
-        default: false,
+        // default: false,
     },
     deviceUniqueId: {
         type: String,
@@ -107,7 +107,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     listingId: {
         type: String,
-        required: true,
+        // required: true,
     },
     status: {
         type: String,
