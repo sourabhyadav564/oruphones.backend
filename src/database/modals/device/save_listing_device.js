@@ -59,7 +59,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     listingLocation: {
         type: String,
-        default: 'India',
+        // default: 'India',
     },
     listingPrice: {
         type: String,
@@ -91,7 +91,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     recommendedPriceRange: {
         type: String,
-        default: '--',
+        // default: '--',
     },
     userUniqueId: {
         type: String,
@@ -103,7 +103,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     deviceUniqueId: {
         type: String,
-        default: 'NA',
+        // default: 'NA',
     },
     listingId: {
         type: String,
@@ -111,7 +111,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: 'Active',
+        // default: 'Active',
     },
     deviceImagesAvailable: {
         type: Boolean,
