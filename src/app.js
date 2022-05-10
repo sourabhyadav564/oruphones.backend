@@ -45,7 +45,7 @@ const marketingNameByModel = require("../routes/master/marketing_name_by_model_r
 const listingByMakeRoute = require("../routes/home/listings_by_make_routes");
 const sqlRoute = require("../routes/sql/mysql_data_routes");
 const topSellingModelRoute = require("../routes/home/top_selling_models_routes");
-const buyersVerficationRoutes = require("../routes/device/buyers_verfication_routes");
+const buyersVerficationRoutes = require("../routes/device/buyers_verification_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
