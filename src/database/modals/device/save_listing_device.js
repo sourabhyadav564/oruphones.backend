@@ -4,14 +4,14 @@ const validator = require('validator');
 const saveListingSchema = new mongoose.Schema({
     charger: {
         type: String,
-        // required: true,
+        required: true,
     }, 
     color: {
         type: String,
     },
     deviceCondition: {
         type: String,
-        // required: true,
+        required: true,
     },
     deviceCosmeticGrade: {
         type: String
@@ -24,15 +24,15 @@ const saveListingSchema = new mongoose.Schema({
     },
     listedBy: {
         type: String,
-        // required: true,
+        required: true,
     },
     deviceStorage: {
         type: String,
-        // required: true,
+        required: true,
     },
     earphone: {
         type: String,
-        // required: true,
+        required: true,
     },
     images: {
         type: [{
@@ -59,51 +59,51 @@ const saveListingSchema = new mongoose.Schema({
     },
     listingLocation: {
         type: String,
-        // default: 'India',
+        default: 'India',
     },
     listingPrice: {
         type: String,
-        // required: true,
+        required: true,
     },
     make: {
         type: String,
-        // required: true,
+        required: true,
     },
     marketingName: {
         type: String,
-        // required: true,
+        required: true,
     },
     mobileNumber: {
         type: String || Number,
-        // required: true,
+        required: true,
     }, 
     model: {
         type: String,
-        // required: true,
+        required: true,
     },
     originalbox: {
         type: String,
-        // required: true,
+        required: true,
     },
     platform: {
         type: String,
-        // required: true,
+        required: true,
     },
     recommendedPriceRange: {
         type: String,
-        // default: '--',
+        default: '--',
     },
     userUniqueId: {
         type: String,
-        // required: true,
+        required: true,
     },
     verified: {
         type: Boolean,
-        // default: false,
+        default: false,
     },
     deviceUniqueId: {
         type: String,
-        // default: 'NA',
+        default: 'NA',
     },
     listingId: {
         type: String,
@@ -111,7 +111,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        // default: 'Active',
+        default: 'Active',
     },
     deviceImagesAvailable: {
         type: Boolean,

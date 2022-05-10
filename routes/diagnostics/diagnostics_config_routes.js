@@ -417,10 +417,9 @@ router.post("/grade/price", async (req, res) => {
         deviceFunctionalGrade: grade,
         functionalTestResults: req.body.functionalTestResults,
         questionnaireResults: req.body.questionnaireResults,
-        deviceCosmeticGrade: cosmeticGrade,
-        deviceFinalGrade: finalGrade,
-        deviceUniqueId: deviceUniqueId
-
+        deviceCosmeticGrade: "B",
+        deviceFinalGrade: "A",
+        deviceUniqueId: deviceUniqueId,
       },
       {
         new: true,

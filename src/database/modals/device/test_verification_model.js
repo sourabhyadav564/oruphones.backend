@@ -29,26 +29,26 @@ const testsaveListingSchema = new mongoose.Schema({
     earphone: {
         type: String,
     },
-    images: {
-        type: [{
-            thumbnailImage: {
-                type: String,
-            },
-            fullImage: {
-                type: String,
-            },
-        }],
-    },
-    defaultImage: {
-        type: {
-            fullImage: {
-                type: String,
-            },
-        },
+    // images: {
+    //     type: [{
+    //         thumbnailImage: {
+    //             type: String,
+    //         },
+    //         fullImage: {
+    //             type: String,
+    //         },
+    //     }],
+    // },
+    // defaultImage: {
+    //     type: {
+    //         fullImage: {
+    //             type: String,
+    //         },
+    //     },
         // default: {
         //     fullImage: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png"
         // },
-    },
+    // },
     imei: {
         type: String,
     },
