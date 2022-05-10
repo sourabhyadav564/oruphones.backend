@@ -44,7 +44,8 @@ const favoriteRoute = require("../routes/favorite/favorite_add");
 const marketingNameByModel = require("../routes/master/marketing_name_by_model_routes");
 const listingByMakeRoute = require("../routes/home/listings_by_make_routes");
 const sqlRoute = require("../routes/sql/mysql_data_routes");
-const topSellingModelRoute = require("../routes/home/top_selling_models_routes")
+const topSellingModelRoute = require("../routes/home/top_selling_models_routes");
+const buyersVerficationRoutes = require("../routes/device/buyers_verfication_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -61,6 +62,7 @@ app.use("/api/v1/master", marketingNameByModel);
 app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/device", bestDealCompletedRoute);
+app.use("/api/v1/device", buyersVerficationRoutes);
 app.use("/api/v1/global", citiesRoute);
 app.use("/api/v1/global", sqlRoute);
 app.use("/api/v1/home", bestDealHomeRoute);
