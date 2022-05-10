@@ -266,6 +266,8 @@ router.post("/grade/price", async (req, res) => {
     ];
 
     let grade;
+    let cosmeticGrade;
+    let finalGrade;
     let condition;
     let count = 0;
     let lCount = 0;
@@ -318,7 +320,6 @@ router.post("/grade/price", async (req, res) => {
     }
 
     // let cIndex = 0;
-    let cosmeticGrade;
 
     for (item of questionnaireResults) {
       if (item.questionId === 1 && item.childQuestions.length > 0) {
@@ -396,6 +397,21 @@ router.post("/grade/price", async (req, res) => {
     // const updatedListing = await saveListingModal.findByIdAndUpdate(listing._id, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
     //   new: true,
     // });
+
+    if (grade === "S" && cosmeticGrade === "S") {
+      finalGrade = "S";
+    } else if (grade === "S" && cosmeticGrade !== "S") {
+      finalGrade = cosmeticGrade;
+    } else if (grade !== "S" && cosmeticGrade === "S") {
+      finalGrade = grade;
+    } else {
+      if (grade > cosmeticGrade) {
+        finalGrade = grade;
+      } else if (grade <= cosmeticGrade) {
+        finalGrade = cosmeticGrade;
+      }
+    }
+
     const listing = await saveListingModal.findByIdAndUpdate(
       listingId,
       {
@@ -403,6 +419,7 @@ router.post("/grade/price", async (req, res) => {
         functionalTestResults: req.body.functionalTestResults,
         questionnaireResults: req.body.questionnaireResults,
         deviceCosmeticGrade: cosmeticGrade,
+        deviceFinalGrade: finalGrade,
       },
       {
         new: true,
@@ -1045,7 +1062,9 @@ router.post("/grade/price", async (req, res) => {
         const dataObject = {};
         dataObject["minPrice"] = recommendedPriceRangeLowerLimit ?? "-";
         dataObject["maxPrice"] = recommendedPriceRangeUpperLimit ?? "-";
-        dataObject["grade"] = grade;
+        dataObject["grade"] = finalGrade;
+        dataObject["functionalGrade"] = grade;
+        dataObject["cosmaticGrade"] = cosmeticGrade;
         dataObject["condition"] = condition;
 
         // if (selectdModels.length) {
