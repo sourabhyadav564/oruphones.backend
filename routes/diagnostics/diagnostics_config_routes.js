@@ -10,6 +10,7 @@ const gsmarenaModal = require("../../src/database/modals/master/marketing_name_b
 const diagnosticsAllTests = require("../../src/database/modals/diagnostics/diagnostics_all_tests");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const connection = require("../../src/database/mysql_connection");
+const getRecommendedPrice = require("../../utils/get_recommended_price");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -390,13 +391,6 @@ router.post("/grade/price", async (req, res) => {
     //   console.log(error);
     // }
     // try {
-    // const listing = await saveListingModal.findOne({ listingId: listingId });
-
-    // console.log(listing);
-
-    // const updatedListing = await saveListingModal.findByIdAndUpdate(listing._id, {deviceFunctionalGrade: grade, functionalTestResults: functionalTestResults}, {
-    //   new: true,
-    // });
 
     if (grade === "S" && cosmeticGrade === "S") {
       finalGrade = "S";
@@ -412,39 +406,59 @@ router.post("/grade/price", async (req, res) => {
       }
     }
 
-    const listing = await saveListingModal.findByIdAndUpdate(
-      listingId,
+    const listing = await saveListingModal.findOne({ listingId: listingId });
+
+    // console.log(listing);
+
+    const updatedListing = await saveListingModal.findByIdAndUpdate(
+      listing._id,
       {
         deviceFunctionalGrade: grade,
         functionalTestResults: req.body.functionalTestResults,
         questionnaireResults: req.body.questionnaireResults,
         deviceCosmeticGrade: cosmeticGrade,
         deviceFinalGrade: finalGrade,
+        deviceUniqueId: deviceUniqueId
+
       },
       {
         new: true,
       }
     );
 
+    // const listing = await saveListingModal.findByIdAndUpdate(
+    //   listingId,
+    //   {
+    //     deviceFunctionalGrade: grade,
+    //     functionalTestResults: req.body.functionalTestResults,
+    //     questionnaireResults: req.body.questionnaireResults,
+    //     deviceCosmeticGrade: cosmeticGrade,
+    //     deviceFinalGrade: finalGrade,
+    //   },
+    //   {
+    //     new: true,
+    //   }
+    // );
+
     console.log("cosmeticGrade", cosmeticGrade);
 
-    let query =
-      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
+    // let query =
+    //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
-    connection.query(query, [2, 1], async (err, results, fields) => {
-      if (err) {
-        console.log(err);
-      } else {
-        let models = results[1];
-        let scrappedModels = results[0];
-        let selectdModels = [];
-        // let minPrice;
-        // let maxPrice;
-        let itemId = "";
-        // let make = "OnePlus";
-        // let marketingname = "OnePlus 7";
-        // let condition = "Excellent";
-        // let storage = "128";
+    // connection.query(query, [2, 1], async (err, results, fields) => {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     let models = results[1];
+    //     let scrappedModels = results[0];
+    //     let selectdModels = [];
+    //     // let minPrice;
+    //     // let maxPrice;
+    //     let itemId = "";
+    //     // let make = "OnePlus";
+    //     // let marketingname = "OnePlus 7";
+    //     // let condition = "Excellent";
+    //     // let storage = "128";
         const make = req.body.make;
         const marketingname = req.body.marketingName;
         // const condition = "Good"; //TODO: Need to make create the dynamic condition
@@ -462,610 +476,624 @@ router.post("/grade/price", async (req, res) => {
         const hasOrignalBox = listing.orignalBox === "Y" ? true : false;
         const isVarified = true;
 
-        let leastSellingPrice;
-        let lowerRangeMatrix = 0.7;
-        let upperRangeMatrix = 0.9;
-        let isAppleCharger = 0.1;
-        let isNonAppleCharger = 0.05;
-        let isAppleEarphone = 0.1;
-        let isNonAppleEarphone = 0.05;
-        let isOriginalBox = 0.03;
+    //     let leastSellingPrice;
+    //     let lowerRangeMatrix = 0.7;
+    //     let upperRangeMatrix = 0.9;
+    //     let isAppleCharger = 0.1;
+    //     let isNonAppleCharger = 0.05;
+    //     let isAppleEarphone = 0.1;
+    //     let isNonAppleEarphone = 0.05;
+    //     let isOriginalBox = 0.03;
 
-        models.forEach((item, index) => {
-          if (item.name === marketingname) {
-            itemId = item.id;
-            return;
-          }
-        });
+    //     models.forEach((item, index) => {
+    //       if (item.name === marketingname) {
+    //         itemId = item.id;
+    //         return;
+    //       }
+    //     });
 
-        let gotDataFrom = "";
+    //     let gotDataFrom = "";
 
-        // scrappedModels.forEach((item, index) => {
-        for (var item of scrappedModels) {
-          if (
-            item.model_id === itemId &&
-            item.mobiru_condition === condition &&
-            item.storage === parseInt(storage)
-          ) {
-            selectdModels.push(item.price);
-            gotDataFrom = condition;
-            break;
-          }
-          if (condition === "Good" && gotDataFrom === "") {
-            if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Excellent"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Excellent";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Like New"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Like New";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Fair"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Fair";
-              break;
-            }
-          } else if (condition === "Excellent" && gotDataFrom === "") {
-            if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Good"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Good";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Like New"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Like New";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Fair"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Fair";
-              break;
-            }
-          } else if (condition === "Like New" && gotDataFrom === "") {
-            if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Good"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Good";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Excellent"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Excellent";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Fair"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Fair";
-              break;
-            }
-          } else if (condition === "Fair" && gotDataFrom === "") {
-            if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Good"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Good";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Excellent"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Excellent";
-              break;
-            } else if (
-              item.model_id === itemId &&
-              item.storage === parseInt(storage) &&
-              item.mobiru_condition === "Like New"
-            ) {
-              selectdModels.push(item.price);
-              gotDataFrom = "Like New";
-              break;
-            }
-          }
-        }
+    //     // scrappedModels.forEach((item, index) => {
+    //     for (var item of scrappedModels) {
+    //       if (
+    //         item.model_id === itemId &&
+    //         item.mobiru_condition === condition &&
+    //         item.storage === parseInt(storage)
+    //       ) {
+    //         selectdModels.push(item.price);
+    //         gotDataFrom = condition;
+    //         break;
+    //       }
+    //       if (condition === "Good" && gotDataFrom === "") {
+    //         if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Excellent"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Excellent";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Like New"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Like New";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Fair"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Fair";
+    //           break;
+    //         }
+    //       } else if (condition === "Excellent" && gotDataFrom === "") {
+    //         if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Good"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Good";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Like New"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Like New";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Fair"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Fair";
+    //           break;
+    //         }
+    //       } else if (condition === "Like New" && gotDataFrom === "") {
+    //         if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Good"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Good";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Excellent"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Excellent";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Fair"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Fair";
+    //           break;
+    //         }
+    //       } else if (condition === "Fair" && gotDataFrom === "") {
+    //         if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Good"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Good";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Excellent"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Excellent";
+    //           break;
+    //         } else if (
+    //           item.model_id === itemId &&
+    //           item.storage === parseInt(storage) &&
+    //           item.mobiru_condition === "Like New"
+    //         ) {
+    //           selectdModels.push(item.price);
+    //           gotDataFrom = "Like New";
+    //           break;
+    //         }
+    //       }
+    //     }
 
-        leastSellingPrice = Math.min(...selectdModels);
+    //     leastSellingPrice = Math.min(...selectdModels);
 
-        let bool = false;
+    //     let bool = false;
 
-        if (condition === "Good") {
-          if (gotDataFrom === "Good") {
-            bool = true;
-            // return;
-          } else if (gotDataFrom === "Excellent") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 1300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 1700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 2500;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 3500;
-              bool = true;
-            }
-          } else if (gotDataFrom === "Like New") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 1500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 2500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 3500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 5500;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 8000;
-              bool = true;
-            }
-          }
-        } else if (condition === "Excellent") {
-          if (gotDataFrom === "Excellent") {
-            console.log("return from Excellent");
-            bool = true;
-            // return;
-          } else if (gotDataFrom === "Good") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice + 300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice + 700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice + 1300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice + 1700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice + 2500;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice + 3500;
-              bool = true;
-            }
-          } else if (gotDataFrom === "Like New") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 400;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 800;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 1200;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 2300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 3000;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 4500;
-              bool = true;
-            }
-          }
-        } else if (condition === "Like New") {
-          if (gotDataFrom === "Like New") {
-            bool = true;
-            // return;
-          } else if (gotDataFrom === "Good") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice + 700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice + 1500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice + 2500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice + 3500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice + 5500;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice + 8000;
-              bool = true;
-            }
-          } else if (gotDataFrom === "Excellent") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice + 400;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice + 800;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice + 1200;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice + 2300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice + 3000;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice + 4500;
-              bool = true;
-            }
-          }
-        } else if (condition === "Fair") {
-          if (gotDataFrom === "Good") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 1500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 2500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 3500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 5500;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 8000;
-              bool = true;
-            }
-          } else if (gotDataFrom === "Excellent") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 1200;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 2300;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 3700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 4700;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 8000;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 11500;
-              bool = true;
-            }
-          } else if (gotDataFrom === "Like New") {
-            if (leastSellingPrice <= 10000) {
-              leastSellingPrice = leastSellingPrice - 1500;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 20000 &&
-              leastSellingPrice > 10000
-            ) {
-              leastSellingPrice = leastSellingPrice - 3000;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 30000 &&
-              leastSellingPrice > 20000
-            ) {
-              leastSellingPrice = leastSellingPrice - 5000;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 50000 &&
-              leastSellingPrice > 30000
-            ) {
-              leastSellingPrice = leastSellingPrice - 7000;
-              bool = true;
-            } else if (
-              leastSellingPrice <= 70000 &&
-              leastSellingPrice > 50000
-            ) {
-              leastSellingPrice = leastSellingPrice - 11000;
-              bool = true;
-            } else if (leastSellingPrice > 70000) {
-              leastSellingPrice = leastSellingPrice - 16000;
-              bool = true;
-            }
-          }
-        }
+    //     if (condition === "Good") {
+    //       if (gotDataFrom === "Good") {
+    //         bool = true;
+    //         // return;
+    //       } else if (gotDataFrom === "Excellent") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 1300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 1700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 2500;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 3500;
+    //           bool = true;
+    //         }
+    //       } else if (gotDataFrom === "Like New") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 1500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 2500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 3500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 5500;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 8000;
+    //           bool = true;
+    //         }
+    //       }
+    //     } else if (condition === "Excellent") {
+    //       if (gotDataFrom === "Excellent") {
+    //         console.log("return from Excellent");
+    //         bool = true;
+    //         // return;
+    //       } else if (gotDataFrom === "Good") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice + 300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 1300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 1700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 2500;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice + 3500;
+    //           bool = true;
+    //         }
+    //       } else if (gotDataFrom === "Like New") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 400;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 800;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 1200;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 2300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 3000;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 4500;
+    //           bool = true;
+    //         }
+    //       }
+    //     } else if (condition === "Like New") {
+    //       if (gotDataFrom === "Like New") {
+    //         bool = true;
+    //         // return;
+    //       } else if (gotDataFrom === "Good") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice + 700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 1500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 2500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 3500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 5500;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice + 8000;
+    //           bool = true;
+    //         }
+    //       } else if (gotDataFrom === "Excellent") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice + 400;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 800;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 1200;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 2300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice + 3000;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice + 4500;
+    //           bool = true;
+    //         }
+    //       }
+    //     } else if (condition === "Fair") {
+    //       if (gotDataFrom === "Good") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 1500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 2500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 3500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 5500;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 8000;
+    //           bool = true;
+    //         }
+    //       } else if (gotDataFrom === "Excellent") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 1200;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 2300;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 3700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 4700;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 8000;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 11500;
+    //           bool = true;
+    //         }
+    //       } else if (gotDataFrom === "Like New") {
+    //         if (leastSellingPrice <= 10000) {
+    //           leastSellingPrice = leastSellingPrice - 1500;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 20000 &&
+    //           leastSellingPrice > 10000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 3000;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 30000 &&
+    //           leastSellingPrice > 20000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 5000;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 50000 &&
+    //           leastSellingPrice > 30000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 7000;
+    //           bool = true;
+    //         } else if (
+    //           leastSellingPrice <= 70000 &&
+    //           leastSellingPrice > 50000
+    //         ) {
+    //           leastSellingPrice = leastSellingPrice - 11000;
+    //           bool = true;
+    //         } else if (leastSellingPrice > 70000) {
+    //           leastSellingPrice = leastSellingPrice - 16000;
+    //           bool = true;
+    //         }
+    //       }
+    //     }
 
-        // if (bool) {
-        // console.log("leastSellingPrice: " + leastSellingPrice);
-        // console.log("gotDataFrom: " + gotDataFrom);
-        // }
+    //     // if (bool) {
+    //     // console.log("leastSellingPrice: " + leastSellingPrice);
+    //     // console.log("gotDataFrom: " + gotDataFrom);
+    //     // }
 
-        // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${
-        //   0.9 * Math.max(...selectdModels)
-        // }`;
+    //     // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${
+    //     //   0.9 * Math.max(...selectdModels)
+    //     // }`;
 
-        let recommendedPriceRangeLowerLimit = Math.ceil(
-          lowerRangeMatrix * leastSellingPrice
-        );
-        let recommendedPriceRangeUpperLimit = Math.ceil(
-          upperRangeMatrix * leastSellingPrice
-        );
+    //     let recommendedPriceRangeLowerLimit = Math.ceil(
+    //       lowerRangeMatrix * leastSellingPrice
+    //     );
+    //     let recommendedPriceRangeUpperLimit = Math.ceil(
+    //       upperRangeMatrix * leastSellingPrice
+    //     );
 
-        if (hasCharger && hasEarphone && hasOrignalBox) {
-          if (isAppleEarphoneIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix +
-                isAppleEarphone +
-                isOriginalBox +
-                isAppleCharger) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix +
-                isAppleEarphone +
-                isOriginalBox +
-                isAppleCharger) *
-                leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix +
-                isNonAppleEarphone +
-                isOriginalBox +
-                isNonAppleCharger) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix +
-                isNonAppleEarphone +
-                isOriginalBox +
-                isNonAppleCharger) *
-                leastSellingPrice
-            );
-          }
-        } else if (hasCharger && hasEarphone) {
-          if (isAppleChargerIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
-                leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-                leastSellingPrice
-            );
-          }
-        } else if (hasCharger && hasOrignalBox) {
-          if (isAppleChargerIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger + isOriginalBox) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
-                leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
-                leastSellingPrice
-            );
-          }
-        } else if (hasEarphone && hasOrignalBox) {
-          if (isAppleEarphoneIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
-                leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-                leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-                leastSellingPrice
-            );
-          }
-        } else if (hasCharger) {
-          if (isAppleChargerIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isAppleCharger) * leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
-            );
-          }
-        } else if (hasEarphone) {
-          if (isAppleEarphoneIncluded) {
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
-            );
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
-            );
-          } else {
-            recommendedPriceRangeLowerLimit = Math.ceil(
-              (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-            );
-            recommendedPriceRangeUpperLimit = Math.ceil(
-              (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-            );
-          }
-        } else if (hasOrignalBox) {
-          recommendedPriceRangeUpperLimit = Math.ceil(
-            (upperRangeMatrix + isOriginalBox) * leastSellingPrice
-          );
-          recommendedPriceRangeLowerLimit = Math.ceil(
-            (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
-          );
-        }
+    //     if (hasCharger && hasEarphone && hasOrignalBox) {
+    //       if (isAppleEarphoneIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix +
+    //             isAppleEarphone +
+    //             isOriginalBox +
+    //             isAppleCharger) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix +
+    //             isAppleEarphone +
+    //             isOriginalBox +
+    //             isAppleCharger) *
+    //             leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix +
+    //             isNonAppleEarphone +
+    //             isOriginalBox +
+    //             isNonAppleCharger) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix +
+    //             isNonAppleEarphone +
+    //             isOriginalBox +
+    //             isNonAppleCharger) *
+    //             leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasCharger && hasEarphone) {
+    //       if (isAppleChargerIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
+    //             leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
+    //             leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasCharger && hasOrignalBox) {
+    //       if (isAppleChargerIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isAppleCharger + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasEarphone && hasOrignalBox) {
+    //       if (isAppleEarphoneIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
+    //             leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasCharger) {
+    //       if (isAppleChargerIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isAppleCharger) * leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasEarphone) {
+    //       if (isAppleEarphoneIncluded) {
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
+    //         );
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
+    //         );
+    //       } else {
+    //         recommendedPriceRangeLowerLimit = Math.ceil(
+    //           (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
+    //         );
+    //         recommendedPriceRangeUpperLimit = Math.ceil(
+    //           (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
+    //         );
+    //       }
+    //     } else if (hasOrignalBox) {
+    //       recommendedPriceRangeUpperLimit = Math.ceil(
+    //         (upperRangeMatrix + isOriginalBox) * leastSellingPrice
+    //       );
+    //       recommendedPriceRangeLowerLimit = Math.ceil(
+    //         (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
+    //       );
+    //     }
+
+    const price = await getRecommendedPrice(
+      make,
+      marketingname,
+      condition,
+      storage,
+      hasCharger,
+      isAppleChargerIncluded,
+      hasEarphone,
+      isAppleEarphoneIncluded,
+      hasOrignalBox,
+      isVarified
+    );
 
         const dataObject = {};
-        dataObject["minPrice"] = recommendedPriceRangeLowerLimit ?? "-";
-        dataObject["maxPrice"] = recommendedPriceRangeUpperLimit ?? "-";
+        dataObject["minPrice"] = price.leastSellingprice ?? "-";
+        dataObject["maxPrice"] = price.maxsellingprice ?? "-";
         dataObject["grade"] = finalGrade;
         dataObject["functionalGrade"] = grade;
         dataObject["cosmaticGrade"] = cosmeticGrade;
         dataObject["condition"] = condition;
+        dataObject["yourBody"] = req.body;
 
         // if (selectdModels.length) {
         //   // if (selectdModels.length > 1) {
@@ -1103,8 +1131,8 @@ router.post("/grade/price", async (req, res) => {
           status: "SUCCESS",
           dataObject,
         });
-      }
-    });
+      // }
+    // });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
