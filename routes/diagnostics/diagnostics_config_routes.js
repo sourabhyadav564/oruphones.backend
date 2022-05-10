@@ -9,7 +9,6 @@ const dignosticsConfigModal = require("../../src/database/modals/diagnostics/dia
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
 const diagnosticsAllTests = require("../../src/database/modals/diagnostics/diagnostics_all_tests");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
-const testSaveListingModal = require("../../src/database/modals/device/test_verification_model");
 const connection = require("../../src/database/mysql_connection");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 
@@ -411,18 +410,16 @@ router.post("/grade/price", async (req, res) => {
 
     // console.log(listing);
 
-    const updateData = {
-      deviceFunctionalGrade: grade,
-      functionalTestResults: req.body.functionalTestResults,
-      questionnaireResults: req.body.questionnaireResults,
-      deviceCosmeticGrade: "B",
-      deviceFinalGrade: "A",
-      deviceUniqueId: deviceUniqueId,
-    }
-
     const updatedListing = await saveListingModal.findByIdAndUpdate(
       listing._id,
-      updateData,
+      {
+        deviceFunctionalGrade: grade,
+        functionalTestResults: req.body.functionalTestResults,
+        questionnaireResults: req.body.questionnaireResults,
+        deviceCosmeticGrade: cosmeticGrade,
+        deviceFinalGrade: finalGrade,
+        deviceUniqueId: deviceUniqueId
+      },
       {
         new: true,
       }
@@ -433,12 +430,6 @@ router.post("/grade/price", async (req, res) => {
     } else {
       console.log("Lagee rahoo...................!!")
     }
-
-    console.log("updatedListing", updatedListing);
-
-    const user = new testSaveListingModal(req.body);
-    console.log("user", user);
-    await user.save();
 
     // const listing = await saveListingModal.findByIdAndUpdate(
     //   listingId,
@@ -453,8 +444,6 @@ router.post("/grade/price", async (req, res) => {
     //     new: true,
     //   }
     // );
-
-    console.log("cosmeticGrade", cosmeticGrade);
 
     // let query =
     //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
@@ -1107,6 +1096,7 @@ router.post("/grade/price", async (req, res) => {
         dataObject["functionalGrade"] = grade;
         dataObject["cosmaticGrade"] = cosmeticGrade;
         dataObject["condition"] = condition;
+        dataObject["yourBody"] = req.body;
 
         // if (selectdModels.length) {
         //   // if (selectdModels.length > 1) {

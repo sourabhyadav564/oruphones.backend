@@ -389,7 +389,7 @@ router.post("/listing/updatefordiag", async (req, res) => {
   let dateFormat = moment(currentDate).add(10, "days").calendar();
 
   const reqBody = {
-    ...req.body,
+    // ...req.body,
     verified: true,
     listingDate: dateFormat,
     verifiedDate: dateFormat,
