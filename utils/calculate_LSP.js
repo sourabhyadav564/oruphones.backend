@@ -2,6 +2,10 @@ const express = require("express");
 const connection = require("../src/database/mysql_connection");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
+const moment = require("moment");
+
+const dotenv = require("dotenv");
+dotenv.config();
 
 const config = nodemailer.createTransport({
   service: "gmail",
@@ -12,14 +16,15 @@ const config = nodemailer.createTransport({
 });
 
 var MongoClient = require("mongodb").MongoClient;
-var url =
-  "mongodb+srv://HP_8440p:HP_8440p@cluster0.8jcx1.mongodb.net/testing_application_data?retryWrites=true&w=majority";
+var url = process.env.MONGO;
 
 // require("../../src/database/connection");
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
 // const smartphoneModal = require("../../src/database/modals/others/smartphone_models");
 
 let lspArray = [];
+let currentDate = new Date();
+let dateFormat = moment(currentDate).add(10, "days").calendar();
 
 // try {
 //   MongoClient.connect(url, function (err, db) {
@@ -227,7 +232,7 @@ const calculate_LSP_SELL = async () => {
                     console.log(
                       `${
                         lspArray.length
-                      } documents inserted successfully on ${Date.now()}`
+                      } documents inserted successfully on ${dateFormat})}`
                     );
                     db.close();
                   });

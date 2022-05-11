@@ -4,6 +4,9 @@ const connection = require("../src/database/mysql_connection");
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const smartphoneModal = require("../src/database/modals/others/smartphone_models");
 
+const NodeCache = require( "node-cache" );
+const myCache = new NodeCache( { stdTTL: 10, checkperiod: 120 } );
+
 const getRecommendedPrice = async (
   make,
   marketingname,
@@ -80,6 +83,7 @@ const getRecommendedPrice = async (
       //   $gte: "2022-05-05T18:38:20.640Z",
       // },
     });
+
     // console.log("scrappedModels", scrappedModels.length);
     let selectdModels = [];
     // let minPrice;
