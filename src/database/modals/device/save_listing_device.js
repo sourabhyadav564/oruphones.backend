@@ -142,9 +142,11 @@ const saveListingSchema = new mongoose.Schema({
                 type: String,
             },
             childQuestions: {
-                type: [{
-                    type: Number,
-                }]
+                type: [
+                    {
+                    type: String,
+                }
+            ]
             },
             childAnswers: {
                 type: {

@@ -11,6 +11,7 @@ const diagnosticsAllTests = require("../../src/database/modals/diagnostics/diagn
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const connection = require("../../src/database/mysql_connection");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
+const questionModal = require("../../src/database/modals/master/get_question");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -274,6 +275,9 @@ router.post("/grade/price", async (req, res) => {
     let lCount = 0;
     let index = 0;
 
+    const getQuestions = await questionModal.find({});
+    // console.log("getQuestions", getQuestions);
+
     // functionalTestResults.forEach((item, i) => {
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
@@ -410,25 +414,76 @@ router.post("/grade/price", async (req, res) => {
 
     // console.log(listing);
 
+    let questionArray = req.body.questionnaireResults;
+    // console.log("questionArray", questionArray);
+
+    let finalQuestionArray = [];
+
+    questionArray.forEach((item, index) => {
+      // console.log("childQuestions", item.childQuestions);
+      let childQuestions = item.childQuestions;
+      if (childQuestions.length > 0) {
+        let exactChildQuestions = [];
+        childQuestions.forEach((child) => {
+          // console.log("getQuestions", getQuestions)
+          let currentQuestion = getQuestions.find(
+            (element) => element.questionId === item.questionId
+          );
+          // console.log("current Questions", currentQuestion);
+          let currentChildQuestion = currentQuestion["childQuestions"].find(
+            (element2) => element2.questionId === child
+          );
+          // console.log("currentChildQuestion", currentChildQuestion);
+          // currentChildQuestion.question;
+          // questionArray[index].childQuestions[]
+          exactChildQuestions.push(currentChildQuestion["question"]);
+          // let anyVar = questionArray[index]["childQuestions"].indexOf(child);
+          // questionArray[index]["childQuestions"][anyVar] = currentChildQuestion["question"];
+        });
+        // questionArray[index].childQuestions = [];
+        // questionArray[index]["childQuestions"] = exactChildQuestions;
+        const updatedChildQuestionArray = {
+          ...questionArray[index],
+          childQuestions: exactChildQuestions,
+        };
+        // let questionObject = {
+        //   questionId: item.questionId,
+        //   question: item.question,
+        //   childQuestions: updatedChildQuestionArray,
+        //   result: item.result,
+        // };
+        finalQuestionArray.push(updatedChildQuestionArray);
+      } else {
+        finalQuestionArray.push(item);
+      }
+    });
+
+    console.log("questionArrayyyyyyyyyyyyyy: ", finalQuestionArray);
+
+    const dataToBeUpdate = {
+      deviceFunctionalGrade: grade,
+      functionalTestResults: req.body.functionalTestResults,
+      // questionnaireResults: req.body.questionnaireResults,
+      questionnaireResults: finalQuestionArray,
+      deviceCosmeticGrade: cosmeticGrade,
+      deviceFinalGrade: finalGrade,
+      deviceUniqueId: deviceUniqueId,
+    };
+
+    console.log("dataToBeUpdate", dataToBeUpdate);
+
     const updatedListing = await saveListingModal.findByIdAndUpdate(
       listing._id,
-      {
-        deviceFunctionalGrade: grade,
-        functionalTestResults: req.body.functionalTestResults,
-        questionnaireResults: req.body.questionnaireResults,
-        deviceCosmeticGrade: cosmeticGrade,
-        deviceFinalGrade: finalGrade,
-        deviceUniqueId: deviceUniqueId
-      },
+      dataToBeUpdate,
       {
         new: true,
       }
     );
 
-    if(updatedListing) {
-      console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy")
+    if (updatedListing) {
+      console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
     } else {
-      console.log("Lagee rahoo...................!!")
+      console.log("Lagee rahoo...................!!");
     }
 
     // const listing = await saveListingModal.findByIdAndUpdate(
@@ -462,22 +517,22 @@ router.post("/grade/price", async (req, res) => {
     //     // let marketingname = "OnePlus 7";
     //     // let condition = "Excellent";
     //     // let storage = "128";
-        const make = req.body.make;
-        const marketingname = req.body.marketingName;
-        // const condition = "Good"; //TODO: Need to make create the dynamic condition
-        const storage = req.body.storage.split(" ")[0].toString();
-        // const hasCharger = req.body.charger === "Y" ? true : false;
-        // const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
-        // const hasEarphone = req.body.earPhones === "Y" ? true : false;
-        // const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
-        // const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
-        // const isVarified = req.body.verified === "no" ? false : true;
-        const hasCharger = listing.charger === "Y" ? true : false;
-        const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
-        const hasEarphone = listing.earphone === "Y" ? true : false;
-        const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
-        const hasOrignalBox = listing.orignalBox === "Y" ? true : false;
-        const isVarified = true;
+    const make = req.body.make;
+    const marketingname = req.body.marketingName;
+    // const condition = "Good"; //TODO: Need to make create the dynamic condition
+    const storage = req.body.storage.split(" ")[0].toString();
+    // const hasCharger = req.body.charger === "Y" ? true : false;
+    // const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
+    // const hasEarphone = req.body.earPhones === "Y" ? true : false;
+    // const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
+    // const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
+    // const isVarified = req.body.verified === "no" ? false : true;
+    const hasCharger = listing.charger === "Y" ? true : false;
+    const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
+    const hasEarphone = listing.earphone === "Y" ? true : false;
+    const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
+    const hasOrignalBox = listing.orignalBox === "Y" ? true : false;
+    const isVarified = true;
 
     //     let leastSellingPrice;
     //     let lowerRangeMatrix = 0.7;
@@ -1089,52 +1144,53 @@ router.post("/grade/price", async (req, res) => {
       isVarified
     );
 
-        const dataObject = {};
-        dataObject["minPrice"] = price.leastSellingprice ?? "-";
-        dataObject["maxPrice"] = price.maxsellingprice ?? "-";
-        dataObject["grade"] = finalGrade;
-        dataObject["functionalGrade"] = grade;
-        dataObject["cosmaticGrade"] = cosmeticGrade;
-        dataObject["condition"] = condition;
-        dataObject["yourBody"] = req.body;
+    const dataObject = {};
+    dataObject["minPrice"] = price.leastSellingprice ?? "-";
+    dataObject["maxPrice"] = price.maxsellingprice ?? "-";
+    dataObject["grade"] = finalGrade;
+    dataObject["functionalGrade"] = grade;
+    dataObject["cosmaticGrade"] = cosmeticGrade;
+    dataObject["condition"] = condition;
+    dataObject["yourBody"] = req.body.questionnaireResults;
+    dataObject["finalQuestionArray"] = finalQuestionArray;
 
-        // if (selectdModels.length) {
-        //   // if (selectdModels.length > 1) {
-        //   //   minPrice = Math.min(...selectdModels);
-        //   //   maxPrice = Math.max(...selectdModels);
-        //   // } else {
-        //   //   minPrice = selectdModels[0];
-        //   //   maxPrice = selectdModels[0];
-        //   // }
-        //   res.status(200).json({
-        //     reason: "Models Found Successfully",
-        //     statusCode: 200,
-        //     status: "SUCCESS",
-        //     // marketingname: marketingname,
-        //     // minPrice: minPrice,
-        //     // maxPrice: maxPrice,
-        //     // recommendedPriceRange: `${recommendedPriceRangeLowerLimit} to ${recommendedPriceRangeUpperLimit}`,
-        //     dataObject: dataObject,
-        //   });
-        // } else {
-        //   res.status(200).json({
-        //     reason: "Models Found Successfully",
-        //     statusCode: 200,
-        //     status: "SUCCESS",
-        //     // marketingname: marketingname,
-        //     // minPrice: "NA",
-        //     // maxPrice: "NA",
-        //     dataObject: dataObject,
-        //   });
-        // }
+    // if (selectdModels.length) {
+    //   // if (selectdModels.length > 1) {
+    //   //   minPrice = Math.min(...selectdModels);
+    //   //   maxPrice = Math.max(...selectdModels);
+    //   // } else {
+    //   //   minPrice = selectdModels[0];
+    //   //   maxPrice = selectdModels[0];
+    //   // }
+    //   res.status(200).json({
+    //     reason: "Models Found Successfully",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //     // marketingname: marketingname,
+    //     // minPrice: minPrice,
+    //     // maxPrice: maxPrice,
+    //     // recommendedPriceRange: `${recommendedPriceRangeLowerLimit} to ${recommendedPriceRangeUpperLimit}`,
+    //     dataObject: dataObject,
+    //   });
+    // } else {
+    //   res.status(200).json({
+    //     reason: "Models Found Successfully",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //     // marketingname: marketingname,
+    //     // minPrice: "NA",
+    //     // maxPrice: "NA",
+    //     dataObject: dataObject,
+    //   });
+    // }
 
-        res.status(200).json({
-          reason: "Listing saved successfully",
-          statusCode: 201,
-          status: "SUCCESS",
-          dataObject,
-        });
-      // }
+    res.status(200).json({
+      reason: "Listing saved successfully",
+      statusCode: 201,
+      status: "SUCCESS",
+      dataObject,
+    });
+    // }
     // });
   } catch (error) {
     console.log(error);
