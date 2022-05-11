@@ -79,7 +79,8 @@ router.post("/recomanded/price", async (req, res) => {
         const make = req.body.make;
         const marketingname = req.body.marketingName;
         const condition = req.body.deviceCondition;
-        const storage = req.body.devicestorage.split(" ")[0].toString();
+        // const storage = req.body.devicestorage.split(" ")[0].toString();
+        const storage = req.body.devicestorage;
         const hasCharger = req.body.charger === "Y" ? true : false;
         const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
         const hasEarphone = req.body.earPhones === "Y" ? true : false;

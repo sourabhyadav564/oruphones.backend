@@ -74,12 +74,13 @@ const getRecommendedPrice = async (
     //   } else {
     // let models = results[1];
     // let scrappedModels = results[0];
-    let models = await smartphoneModal.find({});
+    // let models = await smartphoneModal.find({});
     let scrappedModels = await scrappedModal.find({
-      created_at: {
-        $gte: "2022-05-05T18:38:20.640Z",
-      },
+      // created_at: {
+      //   $gte: "2022-05-05T18:38:20.640Z",
+      // },
     });
+    // console.log("scrappedModels", scrappedModels.length);
     let selectdModels = [];
     // let minPrice;
     // let maxPrice;
@@ -108,21 +109,21 @@ const getRecommendedPrice = async (
     let isNonAppleEarphone = 0.05;
     let isOriginalBox = 0.03;
 
-    models.forEach((item, index) => {
-      if (item.name === marketingname) {
-        itemId = item.id;
-        return;
-      }
-    });
+    // models.forEach((item, index) => {
+    //   if (item.name === marketingname) {
+    //     itemId = item.id;
+    //     return;
+    //   }
+    // });
 
     let gotDataFrom = "";
 
     // scrappedModels.forEach((item, index) => {
     for (var item of scrappedModels) {
       if (
-        item.model_id === itemId &&
+        item.model_name === marketingname &&
         item.mobiru_condition === condition &&
-        item.storage === parseInt(storage)
+        item.storage === storage
       ) {
         selectdModels.push(item.price);
         gotDataFrom = condition;
@@ -130,24 +131,27 @@ const getRecommendedPrice = async (
       }
       if (condition === "Good" && gotDataFrom === "") {
         if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Excellent"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Like New"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Like New";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Fair"
         ) {
           selectdModels.push(item.price);
@@ -156,24 +160,27 @@ const getRecommendedPrice = async (
         }
       } else if (condition === "Excellent" && gotDataFrom === "") {
         if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Good"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Like New"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Like New";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Fair"
         ) {
           selectdModels.push(item.price);
@@ -182,24 +189,27 @@ const getRecommendedPrice = async (
         }
       } else if (condition === "Like New" && gotDataFrom === "") {
         if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Good"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Excellent"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Fair"
         ) {
           selectdModels.push(item.price);
@@ -208,24 +218,27 @@ const getRecommendedPrice = async (
         }
       } else if (condition === "Fair" && gotDataFrom === "") {
         if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Good"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Excellent"
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
           break;
         } else if (
-          item.model_id === itemId &&
-          item.storage === parseInt(storage) &&
+          // item.model_id === itemId &&
+          item.model_name === marketingname &&
+          item.storage === storage &&
           item.mobiru_condition === "Like New"
         ) {
           selectdModels.push(item.price);

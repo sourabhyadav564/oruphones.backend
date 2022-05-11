@@ -354,27 +354,25 @@ router.get("/listing/detail", async (req, res) => {
     // const isValidUser = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
-
-    // if (isValidUser) {
-    const listing = await saveListingModal.findOne(
-      { listingId: listingId },
-      { mobileNumber: 0 }
+    const validListing = await saveListingModal.findOne(
+      { listingId: listingId, userUniqueId: userUniqueId },
     );
 
-    const dataObject = listing;
+    if (validListing) {
+    const dataObject = validListing;
     res.status(200).json({
-      reason: "Mobile number retrieved successfully",
+      reason: "Listing found successfully",
       statusCode: 200,
       status: "SUCCESS",
       dataObject,
     });
-    // } else {
-    //   res.status(200).json({
-    //     reason: "Invalid user id provided",
-    //     statusCode: 200,
-    //     status: "SUCCESS",
-    //   });
-    // }
+    } else {
+      res.status(200).json({
+        reason: "Invalid user id provided",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
