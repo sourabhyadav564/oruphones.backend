@@ -1,6 +1,15 @@
 const express = require("express");
 const connection = require("../src/database/mysql_connection");
 const fs = require("fs");
+const nodemailer = require("nodemailer");
+
+const config = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mobiruindia22@gmail.com",
+    pass: "eghguoshcuniexbf",
+  },
+});
 
 var MongoClient = require("mongodb").MongoClient;
 var url =
@@ -35,7 +44,7 @@ let lspArray = [];
 const calculate_LSP_BUY = async () => {
   try {
     let query =
-      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 72 hour;select * from `web_scraper_model`;";
+      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
     connection.query(query, [2, 1], (err, results, fields) => {
       if (err) {
@@ -52,8 +61,10 @@ const calculate_LSP_BUY = async () => {
           lspArray.forEach(async (element, i) => {
             if (
               element.model_id === item.model_id &&
-              element.mobiru_condition === item.mobiru_condition &&
-              element.storage === (`${item.storage} GB`)
+              (element.mobiru_condition === item.mobiru_condition ||
+                (element.mobiru_condition === "Excellent" &&
+                  item.mobiru_condition === null)) &&
+              element.storage === `${item.storage} GB`
             ) {
               if (element.price > item.price) {
                 found = true;
@@ -75,8 +86,9 @@ const calculate_LSP_BUY = async () => {
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = item.price;
-            lspObject["mobiru_condition"] = item.mobiru_condition;
-            lspObject["storage"] = (`${item.storage} GB`); //TODO: add GB to storage
+            lspObject["mobiru_condition"] =
+              item.mobiru_condition ?? "Excellent";
+            lspObject["storage"] = `${item.storage} GB`; //TODO: add GB to storage
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;
@@ -125,7 +137,7 @@ const calculate_LSP_BUY = async () => {
 const calculate_LSP_SELL = async () => {
   try {
     let query =
-      "select * from `web_scraper_sellmodelwisescraping` where created_at > now() - interval 48 hour;select * from `web_scraper_model`;";
+      "select * from `web_scraper_sellmodelwisescraping` where created_at > now() - interval 7 day;select * from `web_scraper_model`;";
 
     connection.query(query, [2, 1], (err, results, fields) => {
       if (err) {
@@ -143,8 +155,10 @@ const calculate_LSP_SELL = async () => {
           lspArray.forEach(async (element, i) => {
             if (
               element.model_id === item.model_id &&
-              element.mobiru_condition === item.mobiru_condition &&
-              element.storage === (`${item.storage} GB`)
+              (element.mobiru_condition === item.mobiru_condition ||
+                (element.mobiru_condition === "Excellent" &&
+                  item.mobiru_condition === null)) &&
+              element.storage === `${item.storage} GB`
             ) {
               if (element.price > item.price) {
                 found = true;
@@ -176,8 +190,9 @@ const calculate_LSP_SELL = async () => {
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = Math.ceil(derivedPrice);
-            lspObject["mobiru_condition"] = item.mobiru_condition;
-            lspObject["storage"] = (`${item.storage} GB`); //TODO: add GB to storage
+            lspObject["mobiru_condition"] =
+              item.mobiru_condition ?? "Excellent";
+            lspObject["storage"] = `${item.storage} GB`; //TODO: add GB to storage
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;
@@ -201,7 +216,6 @@ const calculate_LSP_SELL = async () => {
           MongoClient.connect(url, function (err, db) {
             if (err) throw err;
             var dbo = db.db("testing_application_data");
-            // var myobj = { name: "Company Inc", address: "Highway 37" };
             dbo
               .collection("complete_scrapped_models")
               .deleteMany({})
@@ -219,6 +233,23 @@ const calculate_LSP_SELL = async () => {
                   });
               });
           });
+
+          let mailOptions = {
+            from: "mobiruindia22@gmail.com",
+            to: "aman@zenro.co.jp",
+            subject: "Data has successfully been migrated to MongoDB",
+            text:
+              "Scrapped data has been successfully migrated to MongoDB, number of scrapped models: " +
+              lspArray.length,
+          };
+
+          config.sendMail(mailOptions, function (err, result) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log("Email sent: " + result.response);
+            }
+          });
         } catch (error) {
           console.log(error);
         }
@@ -232,10 +263,12 @@ const calculate_LSP_SELL = async () => {
   }
 };
 
-calculate_LSP_BUY().then(() => {
-  // console.log("entered into then");
-  calculate_LSP_SELL();
-  // console.log("exited from then");
-});
+const start_migration = async () => {
+  calculate_LSP_BUY().then(() => {
+    // console.log("entered into then");
+    calculate_LSP_SELL();
+    // console.log("exited from then");
+  });
+};
 
-// module.exports = calculate_LSP;
+module.exports = start_migration;

@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const start_migration = require("../utils/calculate_LSP");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -24,6 +25,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
+
+let schedule = require('node-schedule');
+
+schedule.scheduleJob('50 18 * * * ', function(){
+  console.log('The answer to life, the universe, and everything!');
+  start_migration();
+});
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
