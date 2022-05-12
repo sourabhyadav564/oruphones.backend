@@ -42,6 +42,10 @@ const scrappedSchema = new mongoose.Schema(
     type: {
       type: String,
       // required: true,
+    },
+    actualPrice: {
+      type: Number,
+      // required: true,
     }
   },
   { timestamps: true }

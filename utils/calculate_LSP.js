@@ -165,7 +165,7 @@ const calculate_LSP_SELL = async () => {
                   item.mobiru_condition === null)) &&
               element.storage === `${item.storage} GB`
             ) {
-              if (element.price > item.price) {
+              if (element.price < item.price) {
                 found = true;
               } else {
                 lspArray.splice(i, 1);
@@ -203,6 +203,7 @@ const calculate_LSP_SELL = async () => {
             lspObject["warranty"] = item.warranty;
             lspObject["vendor_id"] = item.vendor_id;
             lspObject["type"] = "sell";
+            lspObject["actualPrice"] = item.price;
             lspArray.push(lspObject);
             // try {
             //     const refindedScrappedModelObject = new scrappedModal(lspObject);
@@ -241,7 +242,7 @@ const calculate_LSP_SELL = async () => {
 
           let mailOptions = {
             from: "mobiruindia22@gmail.com",
-            to: "aman@zenro.co.jp",
+            to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
             subject: "Data has successfully been migrated to MongoDB",
             text:
               "Scrapped data has been successfully migrated to MongoDB, number of scrapped models: " +

@@ -56,10 +56,10 @@ router.get("/listing/sendverification", async (req, res) => {
     listingId: listingId,
     userUniqueId: userUniqueId,
   };
-  let dataObject;
+
   try {
     const saveRequest = new saveRequestModal(data);
-    dataObject = await saveRequest.save();
+    let dataObject = await saveRequest.save();
     if (!dataObject) {
       res.status(500).json({ message: "Some error occured" });
       return;

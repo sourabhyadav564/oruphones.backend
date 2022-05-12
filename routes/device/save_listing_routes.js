@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const moment = require("moment");
+const saveRequestModal = require("../../src/database/modals/device/request_verification_save");
 
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
@@ -316,13 +317,21 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
     const userUniqueId = req.query.userUniqueId;
     const listingId = req.query.listingId;
 
-    const isValidUser = await createUserModal.find({
+    const isValidUser = await createUserModal.findOne({
       userUniqueId: userUniqueId,
     });
 
     if (isValidUser) {
       const listing = await saveListingModal.findOne({ listingId: listingId });
-      const mobileNumber = listing.mobileNumber.trim();
+      const mobileNumber = isValidUser.mobileNumber;
+
+      const data = {
+        listingId: listingId,
+        userUniqueId: userUniqueId,
+      };
+
+      const saveRequest = new saveRequestModal(data);
+      let savedData = await saveRequest.save();
 
       const dataObject = {
         mobileNumber,
@@ -354,18 +363,19 @@ router.get("/listing/detail", async (req, res) => {
     // const isValidUser = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
-    const validListing = await saveListingModal.findOne(
-      { listingId: listingId, userUniqueId: userUniqueId },
-    );
+    const validListing = await saveListingModal.findOne({
+      listingId: listingId,
+      userUniqueId: userUniqueId,
+    });
 
     if (validListing) {
-    const dataObject = validListing;
-    res.status(200).json({
-      reason: "Listing found successfully",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
-    });
+      const dataObject = validListing;
+      res.status(200).json({
+        reason: "Listing found successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
     } else {
       res.status(200).json({
         reason: "Invalid user id provided",
@@ -584,7 +594,7 @@ router.get("/listing/bydeviceid", async (req, res) => {
         reason: "Listing found successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject: getListing
+        dataObject: getListing,
       });
     }
   } catch (error) {
