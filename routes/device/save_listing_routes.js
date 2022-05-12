@@ -323,7 +323,7 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
 
     if (isValidUser) {
       const listing = await saveListingModal.findOne({ listingId: listingId });
-      const mobileNumber = isValidUser.mobileNumber;
+      const mobileNumber = listing.mobileNumber;
 
       const data = {
         listingId: listingId,
