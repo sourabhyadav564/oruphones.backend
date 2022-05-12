@@ -9,6 +9,10 @@ const saveRequestSchema = new mongoose.Schema({
     listingId: {
         type: String,
         required: true,
+    },
+    mobileNumber: {
+        type: String,
+        required: true,
     }
 },{ timestamps: true })
 
