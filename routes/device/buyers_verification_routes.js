@@ -18,6 +18,7 @@ router.get("/listing/buyer/verification", async (req, res) => {
 
     const getListingObject = await saveRequestModal.findOne({
       mobileNumber: mobileNumber,
+      listingId: listingId,
     });
     // console.log("getListingObject", getListingObject);
 
@@ -53,39 +54,57 @@ router.get("/listing/sendverification", async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
 
   try {
-  const isValidUser = await createUserModal.findOne({
-    userUniqueId: userUniqueId,
-  });
+    const isValidUser = await createUserModal.findOne({
+      userUniqueId: userUniqueId,
+    });
 
-  if (isValidUser) {
+    const getListingObject = await saveRequestModal.findOne({
+      mobileNumber: mobileNumber,
+      listingId: listingId,
+    });
 
-  const data = {
-    listingId: listingId,
-    userUniqueId: userUniqueId,
-    mobileNumber: isValidUser.mobileNumber,
-  };
+    if (isValidUser) {
+      const data = {
+        listingId: listingId,
+        userUniqueId: userUniqueId,
+        mobileNumber: isValidUser.mobileNumber,
+      };
 
-    const saveRequest = new saveRequestModal(data);
-    let dataObject = await saveRequest.save();
+      if (!getListingObject) {
+        const saveRequest = new saveRequestModal(data);
+        let dataObject = await saveRequest.save();
 
-    if (!dataObject) {
-      res.status(500).json({ message: "Some error occured" });
-      return;
+        if (!dataObject) {
+          res
+            .status(500)
+            .json({
+              reason: "Some error occured",
+              statusCode: 500,
+              status: "SUCCESS",
+            });
+          return;
+        } else {
+          res.status(201).json({
+            reason: "Request sent successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        }
+      } else {
+        res.status(200).json({
+          reason: "You have already sent verification request for this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
     } else {
-      res.status(201).json({
-        reason: "Request sent successfully",
+      res.status(200).json({
+        reason: "Invalid user id provided",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject,
       });
     }
-  } else {
-    res.status(200).json({
-      reason: "Invalid user id provided",
-      statusCode: 200,
-      status: "SUCCESS",
-    });
-  }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

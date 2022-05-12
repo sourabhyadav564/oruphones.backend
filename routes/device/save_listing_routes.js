@@ -325,24 +325,38 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
       const listing = await saveListingModal.findOne({ listingId: listingId });
       const mobileNumber = listing.mobileNumber;
 
-      const data = {
+      const getListingObject = await saveRequestModal.findOne({
+        mobileNumber: mobileNumber,
         listingId: listingId,
-        userUniqueId: userUniqueId,
-        mobileNumber: isValidUser.mobileNumber,
-      };
-
-      const saveRequest = new saveRequestModal(data);
-      let savedData = await saveRequest.save();
-
-      const dataObject = {
-        mobileNumber,
-      };
-      res.status(200).json({
-        reason: "Mobile number retrieved successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
       });
+
+      if (!getListingObject) {
+        const data = {
+          listingId: listingId,
+          userUniqueId: userUniqueId,
+          mobileNumber: isValidUser.mobileNumber,
+        };
+
+        const saveRequest = new saveRequestModal(data);
+        let savedData = await saveRequest.save();
+
+        const dataObject = {
+          mobileNumber,
+        };
+
+        res.status(200).json({
+          reason: "Mobile number retrieved successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject,
+        });
+      } else {
+        res.status(200).json({
+          reason: "You have already sent verification request for this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
     } else {
       res.status(200).json({
         reason: "Invalid user id provided",
