@@ -328,6 +328,7 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
       const data = {
         listingId: listingId,
         userUniqueId: userUniqueId,
+        mobileNumber: isValidUser.mobileNumber,
       };
 
       const saveRequest = new saveRequestModal(data);

@@ -17,7 +17,7 @@ router.get("/listing/buyer/verification", async (req, res) => {
     const mobileNumber = req.query.mobileNumber;
 
     const getListingObject = await saveRequestModal.findOne({
-      listingId: listingId,
+      mobileNumber: mobileNumber,
     });
     // console.log("getListingObject", getListingObject);
 
@@ -52,14 +52,22 @@ router.get("/listing/sendverification", async (req, res) => {
   const listingId = req.query.listingId;
   const userUniqueId = req.query.userUniqueId;
 
+  try {
+  const isValidUser = await createUserModal.findOne({
+    userUniqueId: userUniqueId,
+  });
+
+  if (isValidUser) {
+
   const data = {
     listingId: listingId,
     userUniqueId: userUniqueId,
+    mobileNumber: isValidUser.mobileNumber,
   };
 
-  try {
     const saveRequest = new saveRequestModal(data);
     let dataObject = await saveRequest.save();
+
     if (!dataObject) {
       res.status(500).json({ message: "Some error occured" });
       return;
@@ -71,6 +79,13 @@ router.get("/listing/sendverification", async (req, res) => {
         dataObject,
       });
     }
+  } else {
+    res.status(200).json({
+      reason: "Invalid user id provided",
+      statusCode: 200,
+      status: "SUCCESS",
+    });
+  }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
