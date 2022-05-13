@@ -51,14 +51,14 @@ router.get("/listings/best/nearme", async (req, res) => {
   let has_earphone_percentage = 0;
   const has_original_box_percentage = 3;
 
-  const citiesForIndia = [
-    "Delhi",
-    "Mumbai",
-    "Bangalore",
-    "Hyderabad",
-    "Chennai",
-    "Kolkata",
-  ];
+  // const citiesForIndia = [
+  //   "Delhi",
+  //   "Mumbai",
+  //   "Bangalore",
+  //   "Hyderabad",
+  //   "Chennai",
+  //   "Kolkata",
+  // ];
 
   let otherListings = [];
   let finalBestDeals = [];
@@ -112,7 +112,7 @@ router.get("/listings/best/nearme", async (req, res) => {
         item
       ) => {
         const getPrice = async () => {
-          console.log("into getPrice");
+          // console.log("into getPrice");
           const price = await getRecommendedPrice(
             make,
             marketingname,
@@ -125,7 +125,7 @@ router.get("/listings/best/nearme", async (req, res) => {
             hasOrignalBox,
             isVarified
           );
-          console.log("price", price);
+          // console.log("price", price);
           if (price !== null) {
             afterGetPrice(price);
             return price;
@@ -137,7 +137,7 @@ router.get("/listings/best/nearme", async (req, res) => {
         // getPrice().then((price) => {
         const afterGetPrice = async (price) => {
           basePrice = price.leastSellingprice;
-          console.log("basePrice", basePrice);
+          // console.log("basePrice", basePrice);
           // basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
           notionalPrice = basePrice;
 
@@ -194,10 +194,10 @@ router.get("/listings/best/nearme", async (req, res) => {
           bestDeals.push(newDataObject);
           // });
           dIndex++;
-          console.log("index", dIndex);
-          console.log("length", defaultDataObject.length);
+          // console.log("index", dIndex);
+          // console.log("length", defaultDataObject.length);
           if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
-            console.error("bestDeals22", bestDeals);
+            // console.error("bestDeals22", bestDeals);
             afterGetingBestDeals(bestDeals);
             // return bestDeals;
           }
@@ -243,7 +243,8 @@ router.get("/listings/best/nearme", async (req, res) => {
 
     // filterData().then((bestDeals) => {
     const afterGetingBestDeals = async (bestDeals) => {
-      console.log("bestDeals", bestDeals);
+      // console.log("bestDeals", bestDeals);
+      // console.log("bestDeals", bestDeals);
       bestDeals.forEach((item, index) => {
         if (item.notionalPercentage > 0) {
           finalBestDeals.push(item);
@@ -278,15 +279,27 @@ router.get("/listings/best/nearme", async (req, res) => {
       // return finalBestDeals
       // console.log("finalbestdeals", finalBestDeals);
 
-      res.status(200).json({
-        reason: "Best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          otherListings: otherListings,
-          bestDeals: finalBestDeals,
-        },
-      });
+      if (finalBestDeals.length > 0) {
+        res.status(200).json({
+          reason: "Best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: otherListings,
+            bestDeals: finalBestDeals,
+          },
+        });
+      } else {
+        res.status(200).json({
+          reason: "Best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: otherListings,
+            bestDeals: [],
+          },
+        });
+      }
     };
   } catch (error) {
     console.log(error);

@@ -22,25 +22,33 @@ router.get("/listing/buyer/verification", async (req, res) => {
     });
     // console.log("getListingObject", getListingObject);
 
-    const userUniqueId = getListingObject.userUniqueId;
-    const userDetails = await createUserModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-    // console.log("userDetails", userDetails.mobileNumber);
+    if (getListingObject) {
+      const userUniqueId = getListingObject.userUniqueId;
+      const userDetails = await createUserModal.findOne({
+        userUniqueId: userUniqueId,
+      });
+      // console.log("userDetails", userDetails.mobileNumber);
 
-    const isMatchFound = userDetails.mobileNumber === mobileNumber;
-    if (!isMatchFound) {
+      const isMatchFound = userDetails.mobileNumber === mobileNumber;
+      if (!isMatchFound) {
+        res.status(200).json({
+          reason: "Mobile number not found",
+          statusCode: 401,
+          status: "UNAUTHORIZED",
+        });
+        return;
+      } else {
+        res.status(200).json({
+          reason: "Listing found successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      }
+    } else {
       res.status(200).json({
         reason: "Mobile number not found",
         statusCode: 401,
         status: "UNAUTHORIZED",
-      });
-      return;
-    } else {
-      res.status(200).json({
-        reason: "Listing found successfully",
-        statusCode: 200,
-        status: "SUCCESS",
       });
     }
   } catch (error) {
@@ -75,13 +83,11 @@ router.get("/listing/sendverification", async (req, res) => {
         let dataObject = await saveRequest.save();
 
         if (!dataObject) {
-          res
-            .status(500)
-            .json({
-              reason: "Some error occured",
-              statusCode: 500,
-              status: "SUCCESS",
-            });
+          res.status(500).json({
+            reason: "Some error occured",
+            statusCode: 500,
+            status: "SUCCESS",
+          });
           return;
         } else {
           res.status(201).json({

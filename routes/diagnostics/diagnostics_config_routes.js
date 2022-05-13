@@ -472,19 +472,28 @@ router.post("/grade/price", async (req, res) => {
 
     console.log("dataToBeUpdate", dataToBeUpdate);
 
-    const updatedListing = await saveListingModal.findByIdAndUpdate(
-      listing._id,
-      dataToBeUpdate,
-      {
-        new: true,
-      }
-    );
-
-    if (updatedListing) {
-      console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
+    if (!listing) {
+      res.status(200).json({
+        reason: "Listing not found",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
     } else {
-      console.log("Lagee rahoo...................!!");
+      const updatedListing = await saveListingModal.findByIdAndUpdate(
+        listing._id,
+        dataToBeUpdate,
+        {
+          new: true,
+        }
+      );
+      if (updatedListing) {
+        console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
+      } else {
+        console.log("Lagee rahoo...................!!");
+      }
     }
+
+
 
     // const listing = await saveListingModal.findByIdAndUpdate(
     //   listingId,
@@ -520,7 +529,8 @@ router.post("/grade/price", async (req, res) => {
     const make = req.body.make;
     const marketingname = req.body.marketingName;
     // const condition = "Good"; //TODO: Need to make create the dynamic condition
-    const storage = req.body.storage.split(" ")[0].toString();
+    // const storage = req.body.storage.split(" ")[0].toString();
+    const storage = req.body.storage;
     // const hasCharger = req.body.charger === "Y" ? true : false;
     // const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
     // const hasEarphone = req.body.earPhones === "Y" ? true : false;

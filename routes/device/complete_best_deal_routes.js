@@ -6,6 +6,7 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
+const getRecommendedPrice = require("../../utils/get_recommended_price");
 
 router.get("/listings/best/nearall", async (req, res) => {
   const location = req.query.userLocation;
@@ -32,9 +33,9 @@ router.get("/listings/best/nearall", async (req, res) => {
   //   "Kolkata",
   // ];
 
-  let bestDeals = [];
-  let otherListings = [];
   let finalBestDeals = [];
+  let otherListings = [];
+  let updatedBestDeals = [];
 
   try {
     const getFavObject = await favoriteModal.findOne({
@@ -64,104 +65,221 @@ router.get("/listings/best/nearall", async (req, res) => {
       });
     }
 
-    defaultDataObject.filter((item) => {
-      has_charger_percentage = item.make === "Apple" ? 10 : 5;
-      has_earphone_percentage = item.make === "Apple" ? 10 : 5;
+    const filterData = async () => {
+      let bestDeals = [];
+      let dIndex = 0;
 
-      basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
-      notionalPrice = basePrice;
+      const filterData2 = async (
+        make,
+        marketingname,
+        condition,
+        storage,
+        hasCharger,
+        isAppleChargerIncluded,
+        hasEarphone,
+        isAppleEarphoneIncluded,
+        hasOrignalBox,
+        isVarified,
+        item
+      ) => {
+        const getPrice = async () => {
+          // console.log("into getPrice");
+          const price = await getRecommendedPrice(
+            make,
+            marketingname,
+            condition,
+            storage,
+            hasCharger,
+            isAppleChargerIncluded,
+            hasEarphone,
+            isAppleEarphoneIncluded,
+            hasOrignalBox,
+            isVarified
+          );
+          // console.log("price", price);
+          if (price !== null) {
+            afterGetPrice(price);
+            return price;
+          }
+        };
 
-      if ("verified" in item === true) {
-        if (item.verified === true) {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * verified_percentage;
-        }
-      }
+        getPrice();
 
-      if ("warranty" in item === true) {
-        if (item.warranty === "0-3 months") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * warranty_percentage1;
-        } else if (item.warranty === "4-6 months") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * warranty_percentage2;
-        } else if (item.warranty === "7-10 months") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * warranty_percentage3;
-        } else {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * warranty_percentage4;
-        }
-      }
+        // getPrice().then((price) => {
+        const afterGetPrice = async (price) => {
+          basePrice = price.leastSellingprice;
+          // console.log("basePrice", basePrice);
+          // basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
+          notionalPrice = basePrice;
 
-      if ("charger" in item === true) {
-        if (item.charger === "Y") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * has_charger_percentage;
-        }
-      }
+          if ("verified" in item === true) {
+            if (item.verified === true) {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * verified_percentage;
+            }
+          }
 
-      if ("earphone" in item === true) {
-        if (item.earphone === "Y") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * has_earphone_percentage;
-        }
-      }
+          if ("warranty" in item === true) {
+            if (item.warranty === "0-3 months") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * warranty_percentage1;
+            } else if (item.warranty === "4-6 months") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * warranty_percentage2;
+            } else if (item.warranty === "7-10 months") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * warranty_percentage3;
+            } else {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * warranty_percentage4;
+            }
+          }
 
-      if ("originalbox" in item === true) {
-        if (item.originalbox === "Y") {
-          notionalPrice =
-            notionalPrice + (basePrice / 100) * has_original_box_percentage;
-        }
-      }
+          if ("charger" in item === true) {
+            if (item.charger === "Y") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * has_charger_percentage;
+            }
+          }
 
-      let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
-      let newDataObject = {
-        ...item._doc,
-        notionalPercentage: currentPercentage,
+          if ("earphone" in item === true) {
+            if (item.earphone === "Y") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * has_earphone_percentage;
+            }
+          }
+
+          if ("originalbox" in item === true) {
+            if (item.originalbox === "Y") {
+              notionalPrice =
+                notionalPrice + (basePrice / 100) * has_original_box_percentage;
+            }
+          }
+
+          let currentPercentage =
+            ((notionalPrice - basePrice) / basePrice) * 100;
+          let newDataObject = {
+            ...item._doc,
+            notionalPercentage: currentPercentage,
+          };
+          bestDeals.push(newDataObject);
+          // });
+          dIndex++;
+          // console.log("index", dIndex);
+          // console.log("length", defaultDataObject.length);
+          if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
+            // console.error("bestDeals22", bestDeals);
+            afterGetingBestDeals(bestDeals);
+            // return bestDeals;
+          }
+        };
       };
-      bestDeals.push(newDataObject);
-    });
 
-    bestDeals.sort((a, b) => {
-      if (a.notionalPercentage > b.notionalPercentage) return -1;
-    });
+      defaultDataObject.filter(async (item, index) => {
+        has_charger_percentage = item.make === "Apple" ? 10 : 5;
+        has_earphone_percentage = item.make === "Apple" ? 10 : 5;
 
-    // adding image path to each listing
-    bestDeals.forEach((item, index) => {
-      if(!item.images.length) {
-        bestDeals[index].imagePath = item.defaultImage.fullImage;
+        // By Nishant on 10/05/22
+
+        let make = item.make;
+        let marketingname = item.marketingName;
+        let condition = item.deviceCondition;
+        let storage = item.deviceStorage;
+        const hasCharger = req.body.charger === "Y" ? true : false;
+        const isAppleChargerIncluded =
+          item.make === "Apple" ? hasCharger : false;
+        const hasEarphone = item.earphone === "Y" ? true : false;
+        const isAppleEarphoneIncluded =
+          item.make === "Apple" ? hasEarphone : false;
+        const hasOrignalBox = item.originalbox === "Y" ? true : false;
+        const isVarified = item.verified === "no" ? false : true;
+
+        filterData2(
+          make,
+          marketingname,
+          condition,
+          storage,
+          hasCharger,
+          isAppleChargerIncluded,
+          hasEarphone,
+          isAppleEarphoneIncluded,
+          hasOrignalBox,
+          isVarified,
+          item
+        );
+      });
+    };
+
+    filterData();
+
+    // filterData().then((bestDeals) => {
+    const afterGetingBestDeals = async (bestDeals) => {
+      // console.log("bestDeals", bestDeals);
+      // console.log("bestDeals", bestDeals);
+      bestDeals.forEach((item, index) => {
+        if (item.notionalPercentage > 0) {
+          finalBestDeals.push(item);
+        }
+      });
+
+      finalBestDeals.sort((a, b) => {
+        if (a.notionalPercentage > b.notionalPercentage) return -1;
+      });
+
+      finalBestDeals.length =
+        finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+
+      // adding image path to each listing
+      finalBestDeals.forEach((item, index) => {
+        if (!item.images.length) {
+          finalBestDeals[index].imagePath = item.defaultImage.fullImage;
+        } else {
+          finalBestDeals[index].imagePath = item.images[0].fullImage;
+        }
+      });
+
+      // add favorite listings to the final list
+      finalBestDeals.forEach((item, index) => {
+        if (favList.includes(item.listingId)) {
+          finalBestDeals[index].favourite = true;
+        } else {
+          finalBestDeals[index].favourite = false;
+        }
+      });
+
+      finalBestDeals.forEach((item, index) => {
+        if (index < 5 && item.notionalPercentage > 0) {
+          updatedBestDeals.push(item);
+        } else {
+          otherListings.push(item);
+        }
+      });
+
+      // return finalBestDeals
+      // console.log("finalbestdeals", finalBestDeals);
+
+      if (finalBestDeals.length > 0) {
+        res.status(200).json({
+          reason: "Best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: otherListings,
+            bestDeals: updatedBestDeals,
+          },
+        });
       } else {
-        bestDeals[index].imagePath = item.images[0].fullImage;
+        res.status(200).json({
+          reason: "Best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: [],
+            bestDeals: [],
+          },
+        });
       }
-    });
-
-    // add favorite listings to the final list
-    bestDeals.forEach((item, index) => {
-      if (favList.includes(item.listingId)) {
-        bestDeals[index].favourite = true;
-      } else {
-        bestDeals[index].favourite = false;
-      }
-    });
-
-    bestDeals.forEach((item, index) => {
-      if (index < 5 && item.notionalPercentage > 0) {
-        finalBestDeals.push(item);
-      } else {
-        otherListings.push(item);
-      }
-    });
-
-    res.status(200).json({
-      reason: "Best deals found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        otherListings: otherListings,
-        bestDeals: finalBestDeals,
-      },
-    });
+    };
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
