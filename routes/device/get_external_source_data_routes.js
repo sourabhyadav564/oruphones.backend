@@ -46,12 +46,13 @@ router.post("/price/externalsellsource", async (req, res) => {
     } else {
       let filterData = {};
       let finalDataArray = [];
+      finalDataArray.length = 3;
       listings.forEach(async (element) => {
         let vendorName = VENDORS[element.vendor_id];
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
           .toString()
           .toLowerCase()}_logo.png`;
-        filterData["externalSourcePrice"] = element.price;
+        filterData["externalSourcePrice"] = element.actualPrice.toString();
         filterData["externalSourceImage"] = vendorImage;
 
         finalDataArray.push(filterData);
