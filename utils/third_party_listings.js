@@ -88,6 +88,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       defaultImage: {
         fullImage: "",
       },
+      images: []
     };
 
     dataArray.push(dataObject);

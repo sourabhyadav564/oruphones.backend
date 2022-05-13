@@ -25,8 +25,8 @@ router.post("/price/externalsellsource", async (req, res) => {
     18: "Cashforphone",
     19: "Recycledevice",
     20: "Quickmobile",
-    21: "Buyblynk",
-    22: "Electronicbazaar",
+    21: "mbr_Buyblynk",
+    22: "mbr_Electronicbazaar",
   };
 
   try {
