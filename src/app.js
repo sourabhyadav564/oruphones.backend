@@ -28,7 +28,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('00 11 * * * ', function(){
+schedule.scheduleJob('08 16 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   start_migration();
 });
@@ -54,6 +54,7 @@ const listingByMakeRoute = require("../routes/home/listings_by_make_routes");
 const sqlRoute = require("../routes/sql/mysql_data_routes");
 const topSellingModelRoute = require("../routes/home/top_selling_models_routes");
 const buyersVerficationRoutes = require("../routes/device/buyers_verification_routes");
+const externalSourcePriceRoutes = require("../routes/device/get_external_source_data_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -71,6 +72,7 @@ app.use("/api/v1/device", saveModalRoute);
 app.use("/api/v1/device", imageRoute);
 app.use("/api/v1/device", bestDealCompletedRoute);
 app.use("/api/v1/device", buyersVerficationRoutes);
+app.use("/api/v1/device", externalSourcePriceRoutes);
 app.use("/api/v1/global", citiesRoute);
 app.use("/api/v1/global", sqlRoute);
 app.use("/api/v1/home", bestDealHomeRoute);

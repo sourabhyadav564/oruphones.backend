@@ -243,9 +243,9 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
-    console.log("finalBestDeals", finalBestDeals);
-    console.log("otherListings", otherListings);
-    console.log("updatedBestDeals", updatedBestDeals);
+    // console.log("finalBestDeals", finalBestDeals);
+    // console.log("otherListings", otherListings);
+    // console.log("updatedBestDeals", updatedBestDeals);
 
     if (finalBestDeals.length > 0 || otherListings.length > 0) {
       res.status(200).json({
