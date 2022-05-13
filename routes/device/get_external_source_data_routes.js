@@ -34,7 +34,9 @@ router.post("/price/externalsellsource", async (req, res) => {
       type: "sell",
       storage: deviceStorage,
       model_name: marketingName,
-    });
+    })
+
+    console.log("listings", listings);
 
     if (!listings.length) {
       res.status(200).json({
@@ -46,7 +48,6 @@ router.post("/price/externalsellsource", async (req, res) => {
     } else {
       let filterData = {};
       let finalDataArray = [];
-      finalDataArray.length = 3;
       listings.forEach(async (element) => {
         let vendorName = VENDORS[element.vendor_id];
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
@@ -57,11 +58,18 @@ router.post("/price/externalsellsource", async (req, res) => {
 
         finalDataArray.push(filterData);
       });
+
+      let dataToBeSend = [];
+      finalDataArray.forEach((element, index) => {
+        if (index <= 2) {
+          dataToBeSend.push(element);
+        }
+      })
       res.status(200).json({
         reason: "Listing found",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject: finalDataArray,
+        dataObject: dataToBeSend,
       });
     }
   } catch (error) {
