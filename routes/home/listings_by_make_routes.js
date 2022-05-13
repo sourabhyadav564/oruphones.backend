@@ -6,7 +6,7 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
-const getBestDeals = require("../../utils/get_best_deals");
+// const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 
 router.get("/listingsbymake", async (req, res) => {
