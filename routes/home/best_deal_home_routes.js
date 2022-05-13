@@ -214,7 +214,7 @@ router.get("/listings/best/nearme", async (req, res) => {
         let marketingname = item.marketingName;
         let condition = item.deviceCondition;
         let storage = item.deviceStorage;
-        const hasCharger = req.body.charger === "Y" ? true : false;
+        const hasCharger = item.charger === "Y" ? true : false;
         const isAppleChargerIncluded =
           item.make === "Apple" ? hasCharger : false;
         const hasEarphone = item.earphone === "Y" ? true : false;
