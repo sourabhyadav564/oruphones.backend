@@ -8,6 +8,7 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const logEvent = require("../../src/middleware/event_logging");
 // const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
+const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listingsbymake", async (req, res) => {
   const make = req.query.make;
@@ -40,12 +41,18 @@ router.get("/listingsbymake", async (req, res) => {
     favList = [];
   }
 
-  let defaultDataObject;
+  let defaultDataObject = [];
   if (location === "India") {
-    defaultDataObject = await saveListingModal.find({
+    let defaultDataObject2 = await saveListingModal.find({
       make: make,
     });
-    // console.log("for make", defaultDataObject);
+    defaultDataObject2.forEach((element) => {
+      defaultDataObject.push(element);
+    });
+    const thirdPartyVendors = await getThirdPartyVendors("", make);
+    thirdPartyVendors.forEach((thirdPartyVendor) => {
+      defaultDataObject.push(thirdPartyVendor);
+    });
   } else {
     defaultDataObject = await saveListingModal.find({
       listingLocation: location,
@@ -140,10 +147,15 @@ router.get("/listingsbymake", async (req, res) => {
         }
 
         let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
-        let newDataObject = {
-          ...item._doc,
-          notionalPercentage: currentPercentage,
-        };
+        let newDataObject = {};
+        if (item.isOtherVendor == "Y") {
+          newDataObject = item;
+        } else {
+          newDataObject = {
+            ...item._doc,
+            notionalPercentage: currentPercentage,
+          };
+        }
         bestDeals.push(newDataObject);
         // });
         dIndex++;
@@ -246,12 +258,15 @@ router.get("/listingsbymake", async (req, res) => {
         },
       });
     } else {
+      // const thirdPartyVendors = await getThirdPartyVendors("", make);
+      // console.log("thirdParty", thirdPartyVendors)
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
           otherListings: [],
+          // otherListings: thirdPartyVendors,
           bestDeals: [],
         },
       });
@@ -290,10 +305,17 @@ router.get("/listbymarketingname", async (req, res) => {
     favList = [];
   }
 
-  let defaultDataObject;
+  let defaultDataObject = [];
   if (location === "India") {
-    defaultDataObject = await saveListingModal.find({
+    let defaultDataObject2 = await saveListingModal.find({
       marketingName: marketingname,
+    });
+    defaultDataObject2.forEach((element) => {
+      defaultDataObject.push(element);
+    });
+    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
+    thirdPartyVendors.forEach((thirdPartyVendor) => {
+      defaultDataObject.push(thirdPartyVendor);
     });
   } else {
     defaultDataObject = await saveListingModal.find({
@@ -389,10 +411,19 @@ router.get("/listbymarketingname", async (req, res) => {
         }
 
         let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
-        let newDataObject = {
-          ...item._doc,
-          notionalPercentage: currentPercentage,
-        };
+        // let newDataObject = {
+        //   ...item._doc,
+        //   notionalPercentage: currentPercentage,
+        // };
+        let newDataObject = {};
+        if (item.isOtherVendor == "Y") {
+          newDataObject = item;
+        } else {
+          newDataObject = {
+            ...item._doc,
+            notionalPercentage: currentPercentage,
+          };
+        }
         bestDeals.push(newDataObject);
         // });
         dIndex++;

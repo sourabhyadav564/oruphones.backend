@@ -63,6 +63,9 @@ const calculate_LSP_BUY = async () => {
         scrappedModels.forEach(async (item, index) => {
           let lspObject = {};
           let found = false;
+          if (item.storage === null) {
+           console.error('storage is null: ', item.model_id); 
+          }
           lspArray.forEach(async (element, i) => {
             if (
               element.model_id === item.model_id &&
@@ -79,6 +82,7 @@ const calculate_LSP_BUY = async () => {
               }
             }
           });
+          // getting model name from model object
           if (!found) {
             const matchedModel = models.find((elem) => {
               // elem.id === item.model_id;
@@ -93,12 +97,13 @@ const calculate_LSP_BUY = async () => {
             lspObject["price"] = item.price;
             lspObject["mobiru_condition"] =
               item.mobiru_condition ?? "Excellent";
-            lspObject["storage"] = `${item.storage} GB`; //TODO: add GB to storage
+            lspObject["storage"] = item.storage ? `${item.storage} GB` : "0 GB";
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;
-            lspObject["vendor_id"] = item.vendor_id;
+          lspObject["vendor_id"] = item.vendor_id;
             lspObject["type"] = "buy";
+            lspObject["actualPrice"] = item.price;
             lspArray.push(lspObject);
             // try {
             //     const refindedScrappedModelObject = new scrappedModal(lspObject);
@@ -197,7 +202,7 @@ const calculate_LSP_SELL = async () => {
             lspObject["price"] = Math.ceil(derivedPrice);
             lspObject["mobiru_condition"] =
               item.mobiru_condition ?? "Excellent";
-            lspObject["storage"] = `${item.storage} GB`; //TODO: add GB to storage
+            lspObject["storage"] =  item.storage ? `${item.storage} GB` : "0 GB"
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;

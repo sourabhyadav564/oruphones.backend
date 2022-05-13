@@ -7,6 +7,7 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
+const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listings/best/nearall", async (req, res) => {
   const location = req.query.userLocation;
@@ -49,15 +50,22 @@ router.get("/listings/best/nearall", async (req, res) => {
       favList = [];
     }
 
-    let defaultDataObject;
+    let defaultDataObject = [];
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
-      defaultDataObject = await saveListingModal
+      let defaultDataObject2 = await saveListingModal
         .find
         //       {
         //     listingLocation: citiesForIndia,
         //   }
         ();
+      defaultDataObject2.forEach((element) => {
+        defaultDataObject.push(element);
+      });
+      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
+      });
     } else {
       // defaultDataObject = await bestDealHomeModel.find({
       defaultDataObject = await saveListingModal.find({
@@ -158,10 +166,19 @@ router.get("/listings/best/nearall", async (req, res) => {
 
           let currentPercentage =
             ((notionalPrice - basePrice) / basePrice) * 100;
-          let newDataObject = {
-            ...item._doc,
-            notionalPercentage: currentPercentage,
-          };
+          // let newDataObject = {
+          //   ...item._doc,
+          //   notionalPercentage: currentPercentage,
+          // };
+          let newDataObject = {};
+          if (item.isOtherVendor == "Y") {
+            newDataObject = item;
+          } else {
+            newDataObject = {
+              ...item._doc,
+              notionalPercentage: currentPercentage,
+            };
+          }
           bestDeals.push(newDataObject);
           // });
           dIndex++;
