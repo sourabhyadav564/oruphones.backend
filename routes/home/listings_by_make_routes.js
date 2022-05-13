@@ -231,9 +231,11 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
-    // console.log("finalBestDeals", finalBestDeals);
+    console.log("finalBestDeals", finalBestDeals);
+    console.log("otherListings", otherListings);
+    console.log("updatedBestDeals", updatedBestDeals);
 
-    if (finalBestDeals.length > 0) {
+    if (finalBestDeals.length > 0 || otherListings.length > 0) {
       res.status(200).json({
         reason: "Listing by make found",
         statusCode: 200,
@@ -478,7 +480,7 @@ router.get("/listbymarketingname", async (req, res) => {
       }
     });
 
-    if (finalBestDeals.length > 0) {
+    if (finalBestDeals.length > 0 || otherListings.length > 0) {
       res.status(200).json({
         reason: "Listing by marketingname found",
         statusCode: 200,

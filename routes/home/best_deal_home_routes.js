@@ -281,7 +281,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       // return finalBestDeals
       // console.log("finalbestdeals", finalBestDeals);
 
-      if (finalBestDeals.length > 0) {
+      if (finalBestDeals.length > 0 || otherListings.length > 0) {
         res.status(200).json({
           reason: "Best deals found",
           statusCode: 200,
