@@ -152,16 +152,27 @@ router.post("/fetch", async (req, res) => {
         let single_listing = await saveListingModal.findOne({
           listingId: item,
         });
-        console.log(single_listing);
-        single_listing = {...single_listing._doc, imagePath: single_listing.defaultImage.fullImage};
-        dataObject.push(single_listing);
-        if (dataObject.length === arr.length) {
+        if (!single_listing) {
           res.status(200).json({
-            reason: "Favorite listings fetched successfully",
+            reason: "You cannot add this listing to your favorite list",
             statusCode: 200,
             status: "SUCCESS",
-            dataObject,
+            dataObject: [],
           });
+        } else {
+          single_listing = {
+            ...single_listing._doc,
+            imagePath: single_listing.defaultImage.fullImage,
+          };
+          dataObject.push(single_listing);
+          if (dataObject.length === arr.length) {
+            res.status(200).json({
+              reason: "Favorite listings fetched successfully",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+          }
         }
       });
 
