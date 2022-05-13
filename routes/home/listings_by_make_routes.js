@@ -45,6 +45,7 @@ router.get("/listingsbymake", async (req, res) => {
     defaultDataObject = await saveListingModal.find({
       make: make,
     });
+    // console.log("for make", defaultDataObject);
   } else {
     defaultDataObject = await saveListingModal.find({
       listingLocation: location,
@@ -192,6 +193,8 @@ router.get("/listingsbymake", async (req, res) => {
     bestDeals.forEach((item, index) => {
       if (item.notionalPercentage > 0) {
         finalBestDeals.push(item);
+      } else {
+        otherListings.push(item);
       }
     });
 
@@ -227,6 +230,8 @@ router.get("/listingsbymake", async (req, res) => {
         otherListings.push(item);
       }
     });
+
+    // console.log("finalBestDeals", finalBestDeals);
 
     if (finalBestDeals.length > 0) {
       res.status(200).json({
@@ -435,6 +440,8 @@ router.get("/listbymarketingname", async (req, res) => {
     bestDeals.forEach((item, index) => {
       if (item.notionalPercentage > 0) {
         finalBestDeals.push(item);
+      } else {
+        otherListings.push(item);
       }
     });
 

@@ -219,6 +219,8 @@ router.get("/listings/best/nearall", async (req, res) => {
       bestDeals.forEach((item, index) => {
         if (item.notionalPercentage > 0) {
           finalBestDeals.push(item);
+        } else {
+          otherListings.push(item);
         }
       });
 
