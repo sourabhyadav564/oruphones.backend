@@ -85,6 +85,9 @@ const getThirdPartyVendors = async (model_name, make) => {
       charger: "N",
       earphone: "N",
       originalbox: "N",
+      defaultImage: {
+        fullImage: "",
+      },
     };
 
     dataArray.push(dataObject);

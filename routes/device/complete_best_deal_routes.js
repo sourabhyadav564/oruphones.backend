@@ -257,6 +257,14 @@ router.get("/listings/best/nearall", async (req, res) => {
         }
       });
 
+      otherListings.forEach((item, index) => {
+        if (!item.images.length) {
+          otherListings[index].imagePath = item.defaultImage.fullImage;
+        } else {
+          otherListings[index].imagePath = item.images[0].fullImage;
+        }
+      });
+
       // add favorite listings to the final list
       finalBestDeals.forEach((item, index) => {
         if (favList.includes(item.listingId)) {
