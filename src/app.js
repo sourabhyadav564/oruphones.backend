@@ -28,7 +28,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('08 16 * * * ', function(){
+schedule.scheduleJob('04 11 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   start_migration();
 });
@@ -55,6 +55,8 @@ const sqlRoute = require("../routes/sql/mysql_data_routes");
 const topSellingModelRoute = require("../routes/home/top_selling_models_routes");
 const buyersVerficationRoutes = require("../routes/device/buyers_verification_routes");
 const externalSourcePriceRoutes = require("../routes/device/get_external_source_data_routes");
+const searchSuggestionRoute = require("../routes/global/search_filter_routes");
+const searchListingRoute = require("../routes/home/search_listing_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -78,12 +80,14 @@ app.use("/api/v1/global", sqlRoute);
 app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/home", listingByMakeRoute);
 app.use("/api/v1/home", topSellingModelRoute);
+app.use("/api/v1/home", searchListingRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
 app.use("/api/v1/favorite", favoriteRoute);
+app.use("/api/v1/cscglobal", searchSuggestionRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
