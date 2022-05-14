@@ -9,6 +9,10 @@ require("../../src/database/connection");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
 const logEvent = require("../../src/middleware/event_logging");
 
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
+
 router.post("/otp/generate", async (req, res) => {
   const mobileNumber = req.query.mobileNumber;
   const countryCode = req.query.countryCode;
@@ -37,6 +41,7 @@ router.post("/otp/generate", async (req, res) => {
       statusCode: 200,
       status: "SUCCESS",
       response,
+      clientOTP: clientOTP,
       dataObject: {
         maxTime: 120,
         submitCountIncrement: 0,
