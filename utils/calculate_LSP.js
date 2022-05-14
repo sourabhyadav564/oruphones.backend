@@ -166,7 +166,7 @@ const calculate_LSP_SELL = async () => {
             if (
               element.model_id === item.model_id &&
               (element.mobiru_condition === item.mobiru_condition ||
-                (element.mobiru_condition === "Excellent" &&
+                (element.mobiru_condition === "Like New" &&
                   item.mobiru_condition === null)) &&
               element.storage === `${item.storage} GB`
             ) {

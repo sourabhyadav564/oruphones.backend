@@ -121,7 +121,6 @@ const getRecommendedPrice = async (
     // });
 
     let gotDataFrom = "";
-
     // scrappedModels.forEach((item, index) => {
     for (var item of scrappedModels) {
       if (
@@ -251,6 +250,11 @@ const getRecommendedPrice = async (
         }
       }
     }
+
+    console.log("selectdModels")
+
+    console.log("selectdModels", selectdModels);
+    console.log("gotDataFrom", gotDataFrom);
 
     leastSellingPrice = Math.min(...selectdModels);
 
