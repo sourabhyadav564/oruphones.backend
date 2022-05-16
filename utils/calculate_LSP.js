@@ -72,13 +72,13 @@ const calculate_LSP_BUY = async () => {
               (element.mobiru_condition === item.mobiru_condition ||
                 (element.mobiru_condition === "Excellent" &&
                   item.mobiru_condition === null)) &&
-              element.storage === `${item.storage} GB`
+              element.storage === `${item.storage} GB` && element.type === "buy"
             ) {
-              if (element.price > item.price) {
+              if (element.price <= item.price) {
                 found = true;
               } else {
                 lspArray.splice(i, 1);
-                found = true;
+                // found = true;
               }
             }
           });
@@ -166,15 +166,14 @@ const calculate_LSP_SELL = async () => {
             if (
               element.model_id === item.model_id &&
               (element.mobiru_condition === item.mobiru_condition ||
-                (element.mobiru_condition === "Like New" &&
-                  item.mobiru_condition === null)) &&
-              element.storage === `${item.storage} GB`
+                (element.mobiru_condition === "Like New")) &&
+              element.storage === `${item.storage} GB` && element.type === "sell"
             ) {
-              if (element.price < item.price) {
+              if (element.price >= item.price) {
                 found = true;
               } else {
                 lspArray.splice(i, 1);
-                found = true;
+                // found = true;
               }
             }
           });
@@ -201,7 +200,7 @@ const calculate_LSP_SELL = async () => {
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = Math.ceil(derivedPrice);
             lspObject["mobiru_condition"] =
-              item.mobiru_condition ?? "Excellent";
+              item.mobiru_condition ?? "Like New";
             lspObject["storage"] =  item.storage ? `${item.storage} GB` : "0 GB"
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
@@ -247,7 +246,8 @@ const calculate_LSP_SELL = async () => {
 
           let mailOptions = {
             from: "mobiruindia22@gmail.com",
-            to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+            // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+            to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
             subject: "Data has successfully been migrated to MongoDB",
             text:
               "Scrapped data has been successfully migrated to MongoDB, number of scrapped models: " +

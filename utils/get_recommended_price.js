@@ -471,23 +471,23 @@ const getRecommendedPrice = async (
     //   0.9 * Math.max(...selectdModels)
     // }`;
 
-    let recommendedPriceRangeLowerLimit = Math.ceil(
+    let recommendedPriceRangeLowerLimit = (
       lowerRangeMatrix * leastSellingPrice
     );
-    let recommendedPriceRangeUpperLimit = Math.ceil(
+    let recommendedPriceRangeUpperLimit = (
       upperRangeMatrix * leastSellingPrice
     );
 
     if (hasCharger && hasEarphone && hasOrignalBox) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix +
             isAppleEarphone +
             isOriginalBox +
             isAppleCharger) *
             leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix +
             isAppleEarphone +
             isOriginalBox +
@@ -495,14 +495,14 @@ const getRecommendedPrice = async (
             leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix +
             isNonAppleEarphone +
             isOriginalBox +
             isNonAppleCharger) *
             leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix +
             isNonAppleEarphone +
             isOriginalBox +
@@ -512,101 +512,101 @@ const getRecommendedPrice = async (
       }
     } else if (hasCharger && hasEarphone) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
             leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
             leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
             leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
             leastSellingPrice
         );
       }
     } else if (hasCharger && hasOrignalBox) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isAppleCharger + isOriginalBox) *
             leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
             leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
             leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
             leastSellingPrice
         );
       }
     } else if (hasEarphone && hasOrignalBox) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
             leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
             leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
             leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
             leastSellingPrice
         );
       }
     } else if (hasCharger) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isAppleCharger) * leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
         );
       }
     } else if (hasEarphone) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
         );
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
         );
       } else {
-        recommendedPriceRangeLowerLimit = Math.ceil(
+        recommendedPriceRangeLowerLimit = (
           (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
         );
-        recommendedPriceRangeUpperLimit = Math.ceil(
+        recommendedPriceRangeUpperLimit = (
           (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
         );
       }
     } else if (hasOrignalBox) {
-      recommendedPriceRangeUpperLimit = Math.ceil(
+      recommendedPriceRangeUpperLimit = (
         (upperRangeMatrix + isOriginalBox) * leastSellingPrice
       );
-      recommendedPriceRangeLowerLimit = Math.ceil(
+      recommendedPriceRangeLowerLimit = (
         (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
       );
     }
