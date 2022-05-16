@@ -68,7 +68,7 @@ router.post("/otp/validate", async (req, res) => {
     savedOtp = getOtp[0]?.otp?.toString();
     if (savedOtp === otp) {
       res.status(200).json({
-        reason: "OTP verified successfully",
+        reason: "OTP validated",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {

@@ -6,6 +6,7 @@ const saveRequestModal = require("../../src/database/modals/device/request_verif
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
+// const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
@@ -499,24 +500,24 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let query =
         "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 30 day;select * from `web_scraper_model`;";
 
-      const VENDORS = {
-        6: "Amazon",
-        7: "Quikr",
-        8: "Cashify",
-        9: "2Gud",
-        10: "Budli",
-        11: "Paytm",
-        12: "Yaantra",
-        13: "Shopcluse",
-        14: "Sahivalue",
-        15: "Xtracover",
-        16: "Mobigarage",
-        17: "Instacash",
-        18: "Cashforphone",
-        19: "Recycledevice",
-        20: "Quickmobile",
-        21: "Buyblynk",
-        22: "Electronicbazaar",
+        const VENDORS = {
+          6: "Amazon",
+          7: "Quikr",
+          8: "Cashify",
+          9: "2Gud",
+          10: "Budli",
+          11: "Paytm",
+          12: "Yaantra",
+          13: "Shopcluse",
+          14: "Sahivalue",
+          15: "Xtracover",
+          16: "Mobigarage",
+          17: "Instacash",
+          18: "Cashforphone",
+          19: "Recycledevice",
+          20: "Quickmobile",
+          21: "mbr_Buyblynk",
+          22: "mbr_Electronicbazaar",
       };
 
       const externalSource = [];

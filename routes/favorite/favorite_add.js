@@ -21,12 +21,32 @@ router.post("/add", async (req, res) => {
 
     if (getFavObject) {
       let arr = [];
+
+      //adding all the listing id to arr
       getFavObject.fav_listings.forEach((item) => {
         arr.push(item);
       });
 
       if (!arr.includes(listingId)) {
         arr.push(listingId);
+
+        let listingArray = {
+          fav_listings: arr,
+        };
+        const updateList = await favoriteModal.findByIdAndUpdate(
+          getFavObject._id,
+          listingArray,
+          {
+            new: true,
+          }
+        );
+        //   console.log("updateList", updateList);
+        res.status(200).json({
+          reason: "Favorite listings updated successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          updateList,
+        });
       } else {
         res.status(200).json({
           reason: "Listing already exists in your favorite list",
@@ -34,23 +54,6 @@ router.post("/add", async (req, res) => {
           status: "SUCCESS",
         });
       }
-      let listingArray = {
-        fav_listings: arr,
-      };
-      const updateList = await favoriteModal.findByIdAndUpdate(
-        getFavObject._id,
-        listingArray,
-        {
-          new: true,
-        }
-      );
-      //   console.log("updateList", updateList);
-      res.status(200).json({
-        reason: "Favorite listings updated successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        updateList,
-      });
     } else {
       const data = {
         fav_listings: listingId,

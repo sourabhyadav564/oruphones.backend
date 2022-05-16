@@ -15,6 +15,7 @@ const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const getDefaultImage = require("./get_default_image");
 
 const getThirdPartyVendors = async (model_name, make) => {
+  
   const VENDORS = {
     6: "Amazon",
     7: "Quikr",
@@ -31,8 +32,8 @@ const getThirdPartyVendors = async (model_name, make) => {
     18: "Cashforphone",
     19: "Recycledevice",
     20: "Quickmobile",
-    21: "Buyblynk",
-    22: "Electronicbazaar",
+    21: "mbr_Buyblynk",
+    22: "mbr_Electronicbazaar",
   };
 
   let filterd = [];
