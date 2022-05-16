@@ -63,7 +63,7 @@ router.post("/user/create", async (req, res) => {
       res.status(200).json({
         reason: "User Already Available",
         statusCode: 1,
-        status: "SUCCESS",
+        status: "FAIL",
         dataObject: {
           userUniqueId: getUser.userUniqueId,
           userdetails: getUser,
@@ -74,7 +74,7 @@ router.post("/user/create", async (req, res) => {
       const data = new createUserModal(createUserData);
       const saveData = await data.save();
       res.status(201).json({
-        reason: "UserCreated Successfully",
+        reason: "User Created Successfully",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
