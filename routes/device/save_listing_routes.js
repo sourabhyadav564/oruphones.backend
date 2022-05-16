@@ -56,6 +56,10 @@ router.get("/listings", async (req, res) => {
 });
 
 router.post("/listing/save", async (req, res) => {
+  
+  const userUniqueId = req.body.userUniqueId;
+  const userDetails = createUserModal.find({userUniqueId: userUniqueId});
+  const userMobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
@@ -76,7 +80,6 @@ router.post("/listing/save", async (req, res) => {
   const originalbox = req.body.originalbox;
   const platform = req.body.platform;
   const recommendedPriceRange = req.body.recommendedPriceRange;
-  const userUniqueId = req.body.userUniqueId;
   const deviceImagesAvailable = images.length ? true : false;
 
   //TODO - Add the exact default image as the model image
