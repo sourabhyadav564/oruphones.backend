@@ -568,7 +568,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
 
           if (selectdModels.length > 0) {
             // leastSellingPrice = Math.max(...selectdModels);
-            externalSource.push(selectdModels[0]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
+            externalSource.push(selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
           } 
 
           let dataObject = { externalSource, ...getListing._doc };
