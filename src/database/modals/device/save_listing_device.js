@@ -130,6 +130,10 @@ const saveListingSchema = new mongoose.Schema({
     deviceRam: {
         type: String,
     },
+    isOtherVendor: {
+        type: String,
+        default: 'N',
+    },
     questionnaireResults: {
         type: [{
             question: {
