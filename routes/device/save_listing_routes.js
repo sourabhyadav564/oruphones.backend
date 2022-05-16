@@ -498,7 +498,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       return;
     } else {
       let query =
-        "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 30 day;select * from `web_scraper_model`;";
+        "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
         const VENDORS = {
           6: "Amazon",
@@ -561,12 +561,15 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
                 externalSourcePrice: item.price,
                 externalSourceImage: vendorImage,
               };
+              console.log("vendorObject", vendorObject);
               selectdModels.push(vendorObject);
             }
           });
 
-          // leastSellingPrice = Math.max(...selectdModels);
-          externalSource.push(selectdModels[0]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          if (selectdModels.length > 0) {
+            // leastSellingPrice = Math.max(...selectdModels);
+            externalSource.push(selectdModels[0]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          } 
 
           let dataObject = { externalSource, ...getListing._doc };
           // console.log("externalSource", dataObject);
