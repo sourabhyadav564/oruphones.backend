@@ -893,7 +893,7 @@ router.post("/marketingNameByModel", async (req, res) => {
 });
 
 router.get("/makemodellist", async (req, res) => {
-  const make = req.query.make;
+  let make = req.query.make;
   const isPrimary = req.query.isPrimary;
 
   let tempMake = make.toLowerCase();
