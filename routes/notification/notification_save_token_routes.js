@@ -4,6 +4,7 @@ const logEvent = require("../../src/middleware/event_logging");
 
 require("../../src/database/connection");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
+const sendNotification = require("../../utils/push_notification");
 
 router.post("/save/token", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
@@ -16,6 +17,8 @@ router.post("/save/token", async (req, res) => {
     tokenId: tokenId,
   }
 
+  const response = await sendNotification(tokenId);
+
   const notificationInfo = new saveNotificationModel(notification_data);
   try {
     const dataObject = await notificationInfo.save();
@@ -24,8 +27,8 @@ router.post("/save/token", async (req, res) => {
       statusCode: 201,
       status: "SUCCESS",
       dataObject,
+      response
     });
-    return;
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

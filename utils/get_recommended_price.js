@@ -609,8 +609,8 @@ const getRecommendedPrice = async (
     }
 
     const dataObject = {};
-    dataObject["leastSellingprice"] = recommendedPriceRangeLowerLimit ?? "-";
-    dataObject["maxsellingprice"] = recommendedPriceRangeUpperLimit ?? "-";
+    dataObject["leastSellingprice"] = Math.ceil(recommendedPriceRangeLowerLimit) ?? "-";
+    dataObject["maxsellingprice"] = Math.ceil(recommendedPriceRangeUpperLimit) ?? "-";
 
     // if (selectdModels.length) {
     // if (selectdModels.length > 1) {
