@@ -893,6 +893,8 @@ router.post("/marketingNameByModel", async (req, res) => {
 });
 
 router.get("/makemodellist", async (req, res) => {
+  const make = req.query.make;
+  const isPrimary = req.query.isPrimary;
   // let dataObject = [];
   // let newModels = [];
   // let makes = await gsmarenaModal.find({}, { make: 1, _id: 0 });
@@ -978,25 +980,30 @@ router.get("/makemodellist", async (req, res) => {
   //   }
   // });
 
-  let object = await newMakeAndModal.find({
-    make: [
-      "Samsung",
-      "Apple",
-      "OnePlus",
-      "Xiaomi",
-      "Nokia",
-      "LG",
-      "Motorola",
-      "Sony",
-      "Lenovo",
-      "Asus",
-      "Vivo",
-      "Oppo",
-      "Infinix",
-      "Micromax",
-      "Karbonn",
-    ],
-  });
+  let object;
+  if (isPrimary === "Y") {
+    object = await newMakeAndModal.find({ make: make });
+  } else {
+    object = await newMakeAndModal.find({
+      make: [
+        "Samsung",
+        "Apple",
+        "OnePlus",
+        "Xiaomi",
+        "Nokia",
+        "LG",
+        "Motorola",
+        "Sony",
+        "Lenovo",
+        "Asus",
+        "Vivo",
+        "Oppo",
+        "Infinix",
+        "Micromax",
+        "Karbonn",
+      ],
+    });
+  }
 
   let dataObject = [];
   let makes = [];
