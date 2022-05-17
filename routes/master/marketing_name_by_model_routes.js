@@ -1004,7 +1004,7 @@ router.get("/makemodellist", async (req, res) => {
   object.forEach((item, index) => {
     let newModels = [];
     newModels.push({
-      marketingName: item.marketingName,
+      marketingName: item.marketingname,
       color: item.color,
       storage: item.storage,
     });
@@ -1018,7 +1018,7 @@ router.get("/makemodellist", async (req, res) => {
       dataObject.forEach((item2, index) => {
         if (item2.make === item.make) {
           item2.models.push({
-            marketingName: item.marketingName,
+            marketingName: item.marketingname,
             color: item.color,
             storage: item.storage,
           });
