@@ -67,7 +67,7 @@ router.get("/listing/sendverification", async (req, res) => {
     });
 
     const getListingObject = await saveRequestModal.findOne({
-      mobileNumber: mobileNumber,
+      mobileNumber: isValidUser.mobileNumber,
       listingId: listingId,
     });
 
