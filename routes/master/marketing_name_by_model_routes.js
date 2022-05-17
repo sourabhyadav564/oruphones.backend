@@ -895,6 +895,65 @@ router.post("/marketingNameByModel", async (req, res) => {
 router.get("/makemodellist", async (req, res) => {
   const make = req.query.make;
   const isPrimary = req.query.isPrimary;
+
+  let tempMake = make.toLowerCase();
+
+  switch (tempMake) {
+    case "samsung":
+      make = "Samsung";
+      break;
+    case "oneplus":
+      make = "OnePlus";
+      break;
+    case "huawei":
+      make = "Huawei";
+      break;
+    case "xiaomi":
+      make = "Xiaomi";
+      break;
+    case "vivo":
+      make = "Vivo";
+      break;
+    case "oppo":
+      make = "Oppo";
+      break;
+    case "google":
+      make = "Google";
+      break;
+    case "htc":
+      make = "HTC";
+      break;
+    case "lenovo":
+      make = "Lenovo";
+      break;
+    case "apple":
+      make = "Apple";
+      break;
+    case "sony":
+      make = "Sony";
+      break;
+    case "nokia":
+      make = "Nokia";
+      break;
+    case "infinix":
+      make = "Infinix";
+      break;
+    case "acer":
+      make = "Acer";
+      break;
+    case "asus":
+      make = "Asus";
+      break;
+    case "honor":
+      make = "Honor";
+      break;
+    case "microsoft":
+      make = "Microsoft";
+      break;
+    case "lg":
+      make = "LG";
+      break;
+  }
   // let dataObject = [];
   // let newModels = [];
   // let makes = await gsmarenaModal.find({}, { make: 1, _id: 0 });
