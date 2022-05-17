@@ -82,6 +82,8 @@ const getRecommendedPrice = async (
       // created_at: {
       //   $gte: "2022-05-05T18:38:20.640Z",
       // },
+      model_name: marketingname,
+      storage: storage,
     });
 
     // console.log("scrappedModels", scrappedModels.length);
@@ -250,11 +252,6 @@ const getRecommendedPrice = async (
         }
       }
     }
-
-    console.log("selectdModels")
-
-    console.log("selectdModels", selectdModels);
-    console.log("gotDataFrom", gotDataFrom);
 
     leastSellingPrice = Math.min(...selectdModels);
 
