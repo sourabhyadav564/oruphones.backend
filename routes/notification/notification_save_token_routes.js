@@ -127,7 +127,7 @@ router.get("/byUserId/:uuid", async (req, res) => {
 });
 
 router.get("/read/:id", async (req, res) => {
-  const notificationId = req.params.id;
+  const notificationId = req.query.id;
   const userUniqueId = req.query.userUniqueId;
 
   try {
@@ -151,7 +151,7 @@ router.get("/read/:id", async (req, res) => {
       (element) => element.notificationId === notificationId
     );
     notification.notification[notificationIndex].isUnRead = 1;
-    const updatedNotification = await notificationModel.save();
+    const updatedNotification = await notification.save();
     res.status(200).json({
       reason: "Notification read successfully",
       statusCode: 200,

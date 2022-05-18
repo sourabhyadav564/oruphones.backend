@@ -1,12 +1,29 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
+const moment = require("moment");
+const bcrypt = require("bcryptjs");
+const makeRandomString = require("../utils/generate_random_string");
+const generateHash = require("../utils/generate_hash");
+
 // const FCM = require("fcm-node");
 const fetch = require("node-fetch");
 const saveNotificationModel = require("../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../src/database/modals/notification/complete_notifications");
 
-const sendNotification = async (sellerUniqueId, isVerification, marketingName, sellerName) => {
+const sendNotification = async (
+  sellerUniqueId,
+  isVerification,
+  marketingName,
+  sellerName
+) => {
+  const now = new Date();
+  const currentDate = moment(now).format("L");
+
+  const string = await makeRandomString(10);
+  const hashCode = await generateHash(string);
+  console.log("hashCode", hashCode);
+
   let tokenObject = await saveNotificationModel.find({
     userUniqueId: sellerUniqueId,
   });
@@ -20,18 +37,25 @@ const sendNotification = async (sellerUniqueId, isVerification, marketingName, s
   var notification_body = {
     registration_ids: notificationTokens,
     notification: {
-      title: isVerification ? `Hey ${sellerName}, You've got a verfication request` : `Hey ${sellerName}, A listing has been removed from your favourite list`,
-      body: isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
+      title: isVerification
+        ? `Hey ${sellerName}, You've got a verfication request`
+        : `Hey ${sellerName}, A listing has been removed from your favourite list`,
+      body: isVerification
+        ? `Click here to visit your listings and complete verification for your ${marketingName}.`
+        : `Click here to visit your favourites and contact seller before they sold out!!`,
       sound: "default",
       //   click_action: "FCM_PLUGIN_ACTIVITY",
       icon: "fcm_push_icon",
     },
     data: {
-      title: isVerification ? `Hey ${sellerName}, You've got a verfication request` : `Hey ${sellerName}, A listing has been removed from your favourite list`,
+      title: isVerification
+        ? `Hey ${sellerName}, You've got a verfication request`
+        : `Hey ${sellerName}, A listing has been removed from your favourite list`,
       body: {
         source: "ORU Phones",
-        messageContent:
-        isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
+        messageContent: isVerification
+          ? `Click here to visit your listings and complete verification for your ${marketingName}.`
+          : `Click here to visit your favourites and contact seller before they sold out!!`,
       },
       appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
     },
@@ -56,7 +80,11 @@ const sendNotification = async (sellerUniqueId, isVerification, marketingName, s
   //Save notification to database
   let notificationData = {
     appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
-    messageContent: isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
+    messageContent: isVerification
+      ? `Click here to visit your listings and complete verification for your ${marketingName}.`
+      : `Click here to visit your favourites and contact seller before they sold out!!`,
+    notificationId: hashCode,
+    createdDate: currentDate,
   };
 
   let dataToBeSave = {
