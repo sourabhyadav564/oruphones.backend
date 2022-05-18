@@ -5,30 +5,47 @@ const logEvent = require("../../src/middleware/event_logging");
 require("../../src/database/connection");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const sendNotification = require("../../utils/push_notification");
+const notificationModel = require("../../src/database/modals/notification/complete_notifications");
 
 router.post("/save/token", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const deviceId = req.body.deviceId;
   const tokenId = req.body.tokenId;
 
-  const notification_data = {
-    userUniqueId: userUniqueId,
-    deviceId: deviceId,
-    tokenId: tokenId,
-  }
-
-  const response = await sendNotification(tokenId);
-
-  const notificationInfo = new saveNotificationModel(notification_data);
   try {
-    const dataObject = await notificationInfo.save();
-    res.status(201).json({
-      reason: "Notification token saved successfully",
-      statusCode: 201,
-      status: "SUCCESS",
-      dataObject,
-      response
+    const findDevice = await saveNotificationModel.find({
+      deviceId: deviceId,
+      userUniqueId: userUniqueId,
     });
+    if (findDevice) {
+      const updateDocument = await favoriteModal.findByIdAndUpdate(
+        findDevice._id,
+        { tokenId: tokenId },
+        {
+          new: true,
+        }
+      );
+      res.status(201).json({
+        reason: "Notification token updated successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject: updateDocument,
+      });
+    } else {
+      const notification_data = {
+        userUniqueId: userUniqueId,
+        deviceId: deviceId,
+        tokenId: tokenId,
+      };
+      const notificationInfo = new saveNotificationModel(notification_data);
+      const dataObject = await notificationInfo.save();
+      res.status(201).json({
+        reason: "Notification token saved successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -60,6 +77,87 @@ router.post("/delete/token", async (req, res) => {
         deletedNotification: deleteNotification,
       });
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/byUserId/:uuid", async (req, res) => {
+  const userUniqueId = req.params.uuid;
+
+  try {
+    const notificationArray = await notificationModel.findOne({
+      userUniqueId: userUniqueId,
+    });
+    let dataToBeSend = {};
+    let unReadCount = 0;
+    if (notificationArray) {
+      notificationArray?.notification?.forEach((element, index) => {
+        if (element.isUnRead === 0) {
+          unReadCount++;
+        }
+      });
+      dataToBeSend = {
+        unReadCount,
+        notifications: notificationArray?.notification,
+      };
+      res.status(201).json({
+        reason: "Notification fetched successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject: dataToBeSend,
+      });
+    } else {
+      dataToBeSend = {
+        unReadCount: 0,
+        notifications: [],
+      };
+      res.status(202).json({
+        reason: "No notification found",
+        statusCode: 202,
+        status: "SUCCESS",
+        dataObject: dataToBeSend,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/read/:id", async (req, res) => {
+  const notificationId = req.params.id;
+  const userUniqueId = req.query.userUniqueId;
+
+  try {
+    const notification = await notificationModel.findOne({
+      userUniqueId: userUniqueId,
+      notification: {
+        $elemMatch: {
+          notificationId: notificationId,
+        },
+      },
+    });
+    if (!notification) {
+      res.status(202).json({
+        reason: "Notification not found",
+        statusCode: 202,
+        status: "ACCEPTED",
+      });
+      return;
+    }
+    const notificationIndex = notification.notification.findIndex(
+      (element) => element.notificationId === notificationId
+    );
+    notification.notification[notificationIndex].isUnRead = 1;
+    const updatedNotification = await notification.save();
+    res.status(200).json({
+      reason: "Notification read successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: updatedNotification,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

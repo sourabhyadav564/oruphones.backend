@@ -4,15 +4,15 @@ const router = express.Router();
 require("../../src/database/connection");
 // const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
-const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
+// const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listings/best/nearall", async (req, res) => {
-  const location = req.query.userLocation;
+router.get("/listings/category/verfied", async (req, res) => {
+  const location = "India";
   // Put keys always in lower case when get data from headers
-  const userUniqueId = req.headers.useruniqueid;
+  // const userUniqueId = "Guest";
 
   let basePrice;
   let notionalPrice;
@@ -25,40 +25,14 @@ router.get("/listings/best/nearall", async (req, res) => {
   let has_earphone_percentage = 0;
   const has_original_box_percentage = 3;
 
-  // const citiesForIndia = [
-  //   "Delhi",
-  //   "Mumbai",
-  //   "Bangalore",
-  //   "Hyderabad",
-  //   "Chennai",
-  //   "Kolkata",
-  // ];
-
   let finalBestDeals = [];
   let otherListings = [];
   let updatedBestDeals = [];
 
   try {
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-
-    let favList = [];
-    if (getFavObject) {
-      favList = getFavObject.fav_listings;
-    } else {
-      favList = [];
-    }
-
     let defaultDataObject = [];
     if (location === "India") {
-      // defaultDataObject = await bestDealHomeModel.find(
-      let defaultDataObject2 = await saveListingModal
-        .find
-        //       {
-        //     listingLocation: citiesForIndia,
-        //   }
-        ();
+      let defaultDataObject2 = await saveListingModal.find({ verified: true });
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -67,7 +41,6 @@ router.get("/listings/best/nearall", async (req, res) => {
         defaultDataObject.push(thirdPartyVendor);
       });
     } else {
-      // defaultDataObject = await bestDealHomeModel.find({
       defaultDataObject = await saveListingModal.find({
         listingLocation: location,
       });
@@ -91,7 +64,6 @@ router.get("/listings/best/nearall", async (req, res) => {
         item
       ) => {
         const getPrice = async () => {
-          // console.log("into getPrice");
           const price = await getRecommendedPrice(
             make,
             marketingname,
@@ -104,7 +76,6 @@ router.get("/listings/best/nearall", async (req, res) => {
             hasOrignalBox,
             isVarified
           );
-          // console.log("price", price);
           if (price !== null) {
             afterGetPrice(price);
             return price;
@@ -113,11 +84,8 @@ router.get("/listings/best/nearall", async (req, res) => {
 
         getPrice();
 
-        // getPrice().then((price) => {
         const afterGetPrice = async (price) => {
           basePrice = price.leastSellingprice;
-          // console.log("basePrice", basePrice);
-          // basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
           notionalPrice = basePrice;
 
           if ("verified" in item === true) {
@@ -166,10 +134,6 @@ router.get("/listings/best/nearall", async (req, res) => {
 
           let currentPercentage =
             ((notionalPrice - basePrice) / basePrice) * 100;
-          // let newDataObject = {
-          //   ...item._doc,
-          //   notionalPercentage: currentPercentage,
-          // };
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
             newDataObject = item;
@@ -180,14 +144,9 @@ router.get("/listings/best/nearall", async (req, res) => {
             };
           }
           bestDeals.push(newDataObject);
-          // });
           dIndex++;
-          // console.log("index", dIndex);
-          // console.log("length", defaultDataObject.length);
           if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
-            // console.error("bestDeals22", bestDeals);
             afterGetingBestDeals(bestDeals);
-            // return bestDeals;
           }
         };
       };
@@ -229,10 +188,7 @@ router.get("/listings/best/nearall", async (req, res) => {
 
     filterData();
 
-    // filterData().then((bestDeals) => {
     const afterGetingBestDeals = async (bestDeals) => {
-      // console.log("bestDeals", bestDeals);
-      // console.log("bestDeals", bestDeals);
       bestDeals.forEach((item, index) => {
         if (item.notionalPercentage > 0) {
           finalBestDeals.push(item);
@@ -265,15 +221,6 @@ router.get("/listings/best/nearall", async (req, res) => {
         }
       });
 
-      // add favorite listings to the final list
-      finalBestDeals.forEach((item, index) => {
-        if (favList.includes(item.listingId)) {
-          finalBestDeals[index].favourite = true;
-        } else {
-          finalBestDeals[index].favourite = false;
-        }
-      });
-
       finalBestDeals.forEach((item, index) => {
         if (index < 5 && item.notionalPercentage > 0) {
           updatedBestDeals.push(item);
@@ -281,9 +228,6 @@ router.get("/listings/best/nearall", async (req, res) => {
           otherListings.push(item);
         }
       });
-
-      // return finalBestDeals
-      // console.log("finalbestdeals", finalBestDeals);
 
       if (finalBestDeals.length > 0 || otherListings.length > 0) {
         res.status(200).json({

@@ -29,7 +29,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('27 16 * * * ', function(){
+schedule.scheduleJob('05 11 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   start_migration();
   // getBestDeals();
@@ -59,6 +59,8 @@ const buyersVerficationRoutes = require("../routes/device/buyers_verification_ro
 const externalSourcePriceRoutes = require("../routes/device/get_external_source_data_routes");
 const searchSuggestionRoute = require("../routes/global/search_filter_routes");
 const searchListingRoute = require("../routes/home/search_listing_routes");
+const shareLinkRoute = require("../routes/global/share_link_route");
+const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -79,10 +81,12 @@ app.use("/api/v1/device", buyersVerficationRoutes);
 app.use("/api/v1/device", externalSourcePriceRoutes);
 app.use("/api/v1/global", citiesRoute);
 app.use("/api/v1/global", sqlRoute);
+app.use("/api/v1/global", shareLinkRoute);
 app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/home", listingByMakeRoute);
 app.use("/api/v1/home", topSellingModelRoute);
 app.use("/api/v1/home", searchListingRoute);
+app.use("/api/v1/home", shopByCategoryRoutes);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
 app.use("/api/v1/login", loginOtpRoute);

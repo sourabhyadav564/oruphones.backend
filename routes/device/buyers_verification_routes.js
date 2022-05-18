@@ -11,6 +11,9 @@ const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");
 const saveRequestModal = require("../../src/database/modals/device/request_verification_save");
 
+const sendNotification = require("../../utils/push_notification");
+const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
+
 router.get("/listing/buyer/verification", async (req, res) => {
   try {
     const listingId = req.query.listingId;
@@ -66,7 +69,7 @@ router.get("/listing/sendverification", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    const getListingObject = await saveRequestModal.findOne({
+    const getRequestObject = await saveRequestModal.findOne({
       mobileNumber: isValidUser.mobileNumber,
       listingId: listingId,
     });
@@ -78,7 +81,7 @@ router.get("/listing/sendverification", async (req, res) => {
         mobileNumber: isValidUser.mobileNumber,
       };
 
-      if (!getListingObject) {
+      if (!getRequestObject) {
         const saveRequest = new saveRequestModal(data);
         let dataObject = await saveRequest.save();
 
@@ -90,12 +93,34 @@ router.get("/listing/sendverification", async (req, res) => {
           });
           return;
         } else {
-          res.status(201).json({
-            reason: "Request sent successfully",
-            statusCode: 200,
-            status: "SUCCESS",
-            dataObject,
+          let listingObject = await saveListingModal.findOne({
+            listingId: listingId,
           });
+
+          if (listingObject) {
+            let sellerUniqueId = listingObject.userUniqueId;
+            // let tokenObject = saveNotificationModel.find({
+            //   userUniqueId: sellerUniqueId,
+            // });
+            // let notificationTokens = [];
+            // tokenObject.forEach((item, index) => {
+            //   notificationTokens.push(item.tokenId);
+            // });
+            const response = await sendNotification(sellerUniqueId, true);
+            res.status(201).json({
+              reason: "Request sent successfully",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+          } else {
+            res.status(200).json({
+              reason: "Listing not found",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+          }
         }
       } else {
         res.status(200).json({

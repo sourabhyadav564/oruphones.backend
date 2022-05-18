@@ -150,7 +150,6 @@ router.post("/otp/resend", async (req, res) => {
       reason: "OTP generated successfully",
       statusCode: 200,
       status: "SUCCESS",
-      response,
       dataObject: {
         maxTime: 120,
         submitCountIncrement: 0,
