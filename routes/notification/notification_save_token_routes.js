@@ -18,7 +18,7 @@ router.post("/save/token", async (req, res) => {
       userUniqueId: userUniqueId,
     });
     if (findDevice) {
-      const updateDocument = await favoriteModal.findByIdAndUpdate(
+      const updateDocument = await saveNotificationModel.findByIdAndUpdate(
         findDevice._id,
         { tokenId: tokenId },
         {
