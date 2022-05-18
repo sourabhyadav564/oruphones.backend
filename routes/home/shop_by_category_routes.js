@@ -9,7 +9,7 @@ const logEvent = require("../../src/middleware/event_logging");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listings/category/verfied", async (req, res) => {
+router.get("/listings/category", async (req, res) => {
   const location = "India";
   // Put keys always in lower case when get data from headers
   // const userUniqueId = "Guest";

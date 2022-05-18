@@ -16,6 +16,44 @@ const sendNotification = async (sellerUniqueId, isVerification) => {
     notificationTokens.push(item.tokenId);
   });
 
+  //Push notification to user devices (if exists)
+  var notification_body = {
+    registration_ids: notificationTokens,
+    notification: {
+      title: "Want to sell your phone at best deal??",
+      text: "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
+      sound: "default",
+      //   click_action: "FCM_PLUGIN_ACTIVITY",
+      icon: "fcm_push_icon",
+    },
+    data: {
+      title: "ok tested!",
+      body: {
+        source: "ORU Phones",
+        messageContent:
+          "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
+      },
+      appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
+    },
+  };
+
+  fetch("https://fcm.googleapis.com/fcm/send", {
+    method: "POST",
+    headers: {
+      // replace authorization key with your key
+      Authorization: "key=" + process.env.FCM_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(notification_body),
+  })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.error(error);
+    });
+
+  //Save notification to database
   let notificationData = {
     appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
     messageContent:
@@ -69,42 +107,6 @@ const sendNotification = async (sellerUniqueId, isVerification) => {
   //       return response;
   //     }
   //   });
-
-  var notification_body = {
-    registration_ids: notificationTokens,
-    notification: {
-      title: "Want to sell your phone at best deal??",
-      text: "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
-      sound: "default",
-      //   click_action: "FCM_PLUGIN_ACTIVITY",
-      icon: "fcm_push_icon",
-    },
-    data: {
-      title: "ok tested!",
-      body: {
-        source: "ORU Phones",
-        messageContent:
-          "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
-      },
-      appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
-    },
-  };
-
-  fetch("https://fcm.googleapis.com/fcm/send", {
-    method: "POST",
-    headers: {
-      // replace authorization key with your key
-      Authorization: "key=" + process.env.FCM_KEY,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(notification_body),
-  })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.error(error);
-    });
 };
 
 module.exports = sendNotification;
