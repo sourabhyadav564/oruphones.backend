@@ -4,8 +4,8 @@ const connection = require("../src/database/mysql_connection");
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const smartphoneModal = require("../src/database/modals/others/smartphone_models");
 
-const NodeCache = require( "node-cache" );
-const myCache = new NodeCache( { stdTTL: 10, checkperiod: 120 } );
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
 const getRecommendedPrice = async (
   make,
@@ -17,7 +17,8 @@ const getRecommendedPrice = async (
   hasEarphone,
   isAppleEarphoneIncluded,
   hasOrignalBox,
-  isVarified
+  isVarified,
+  isForMarketingName
 ) => {
   // let query =
   //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 72 hour;select * from `web_scraper_model`;";
@@ -114,6 +115,10 @@ const getRecommendedPrice = async (
     let isAppleEarphone = 0.1;
     let isNonAppleEarphone = 0.05;
     let isOriginalBox = 0.03;
+    let warrantyZeroToThree = 0.1;
+    // let warrantyFourToSix = 0.08;
+    // let warrantySevenToTen = 0.05;
+    let varified = 0.1;
 
     // models.forEach((item, index) => {
     //   if (item.name === marketingname) {
@@ -258,7 +263,6 @@ const getRecommendedPrice = async (
     let bool = false;
 
     console.log("leastSellingPrice first: " + leastSellingPrice);
-    
 
     if (condition === "Good") {
       if (gotDataFrom === "Good") {
@@ -468,149 +472,156 @@ const getRecommendedPrice = async (
     //   0.9 * Math.max(...selectdModels)
     // }`;
 
-    let recommendedPriceRangeLowerLimit = (
-      lowerRangeMatrix * leastSellingPrice
-    );
-    let recommendedPriceRangeUpperLimit = (
-      upperRangeMatrix * leastSellingPrice
-    );
-
-    if (hasCharger && hasEarphone && hasOrignalBox) {
+    let recommendedPriceRangeLowerLimit = lowerRangeMatrix * leastSellingPrice;
+    let recommendedPriceRangeUpperLimit = upperRangeMatrix * leastSellingPrice;
+    if (isForMarketingName) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = (
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix +
             isAppleEarphone +
             isOriginalBox +
-            isAppleCharger) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
+            isAppleCharger +
+            varified +
+            warrantyZeroToThree) *
+          leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix +
             isAppleEarphone +
             isOriginalBox +
-            isAppleCharger) *
-            leastSellingPrice
-        );
+            isAppleCharger +
+            varified +
+            warrantyZeroToThree) *
+          leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix +
+            isNonAppleEarphone +
+            isOriginalBox +
+            isNonAppleCharger +
+            varified +
+            warrantyZeroToThree) *
+          leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix +
+            isNonAppleEarphone +
+            isOriginalBox +
+            isNonAppleCharger +
+            varified +
+            warrantyZeroToThree) *
+          leastSellingPrice;
+      }
+    } else if (hasCharger && hasEarphone && hasOrignalBox) {
+      if (isAppleEarphoneIncluded) {
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix +
+            isAppleEarphone +
+            isOriginalBox +
+            isAppleCharger) *
+          leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix +
+            isAppleEarphone +
+            isOriginalBox +
+            isAppleCharger) *
+          leastSellingPrice;
+      } else {
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix +
             isNonAppleEarphone +
             isOriginalBox +
             isNonAppleCharger) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix +
             isNonAppleEarphone +
             isOriginalBox +
             isNonAppleCharger) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       }
     } else if (hasCharger && hasEarphone) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = (
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       }
     } else if (hasCharger && hasOrignalBox) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = (
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isAppleCharger + isOriginalBox) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       }
     } else if (hasEarphone && hasOrignalBox) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = (
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
+        recommendedPriceRangeLowerLimit =
           (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-            leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
+          leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
           (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-            leastSellingPrice
-        );
+          leastSellingPrice;
       }
     } else if (hasCharger) {
       if (isAppleChargerIncluded) {
-        recommendedPriceRangeUpperLimit = (
-          (upperRangeMatrix + isAppleCharger) * leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
-          (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
-        );
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix + isAppleCharger) * leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix + isAppleCharger) * leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
-          (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
-          (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
-        );
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice;
       }
     } else if (hasEarphone) {
       if (isAppleEarphoneIncluded) {
-        recommendedPriceRangeUpperLimit = (
-          (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
-        );
-        recommendedPriceRangeLowerLimit = (
-          (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
-        );
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix + isAppleEarphone) * leastSellingPrice;
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice;
       } else {
-        recommendedPriceRangeLowerLimit = (
-          (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-        );
-        recommendedPriceRangeUpperLimit = (
-          (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-        );
+        recommendedPriceRangeLowerLimit =
+          (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice;
+        recommendedPriceRangeUpperLimit =
+          (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice;
       }
     } else if (hasOrignalBox) {
-      recommendedPriceRangeUpperLimit = (
-        (upperRangeMatrix + isOriginalBox) * leastSellingPrice
-      );
-      recommendedPriceRangeLowerLimit = (
-        (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
-      );
+      recommendedPriceRangeUpperLimit =
+        (upperRangeMatrix + isOriginalBox) * leastSellingPrice;
+      recommendedPriceRangeLowerLimit =
+        (lowerRangeMatrix + isOriginalBox) * leastSellingPrice;
     }
 
     const dataObject = {};
-    dataObject["leastSellingprice"] = Math.ceil(recommendedPriceRangeLowerLimit) ?? "-";
-    dataObject["maxsellingprice"] = Math.ceil(recommendedPriceRangeUpperLimit) ?? "-";
+    dataObject["leastSellingprice"] =
+      Math.ceil(recommendedPriceRangeLowerLimit) ?? "-";
+    dataObject["maxsellingprice"] =
+      Math.ceil(recommendedPriceRangeUpperLimit) ?? "-";
 
     // if (selectdModels.length) {
     // if (selectdModels.length > 1) {

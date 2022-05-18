@@ -1151,7 +1151,8 @@ router.post("/grade/price", async (req, res) => {
       hasEarphone,
       isAppleEarphoneIncluded,
       hasOrignalBox,
-      isVarified
+      isVarified,
+      false
     );
 
     const dataObject = {};

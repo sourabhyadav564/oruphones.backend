@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 const saveNotificationModel = require("../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../src/database/modals/notification/complete_notifications");
 
-const sendNotification = async (sellerUniqueId, isVerification) => {
+const sendNotification = async (sellerUniqueId, isVerification, marketingName, sellerName) => {
   let tokenObject = await saveNotificationModel.find({
     userUniqueId: sellerUniqueId,
   });
@@ -20,8 +20,8 @@ const sendNotification = async (sellerUniqueId, isVerification) => {
   var notification_body = {
     registration_ids: notificationTokens,
     notification: {
-      title: "Want to sell your phone at best deal??",
-      text: "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
+      title: isVerification ? `Hey ${sellerName}, You've got a verfication request` : `Hey ${sellerName}, A listing has been removed from your favourite list`,
+      body: isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
       sound: "default",
       //   click_action: "FCM_PLUGIN_ACTIVITY",
       icon: "fcm_push_icon",

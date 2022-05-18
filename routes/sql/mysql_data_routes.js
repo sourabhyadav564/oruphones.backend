@@ -100,7 +100,8 @@ router.post("/recomanded/price", async (req, res) => {
           hasEarphone,
           isAppleEarphoneIncluded,
           hasOrignalBox,
-          isVarified
+          isVarified,
+          false
         );
       
         console.log("recomended price", recommendedPrice);

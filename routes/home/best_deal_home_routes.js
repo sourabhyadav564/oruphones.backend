@@ -131,7 +131,8 @@ router.get("/listings/best/nearme", async (req, res) => {
             hasEarphone,
             isAppleEarphoneIncluded,
             hasOrignalBox,
-            isVarified
+            isVarified,
+            false
           );
           // console.log("price", price);
           if (price !== null) {

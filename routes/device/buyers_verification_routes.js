@@ -99,6 +99,8 @@ router.get("/listing/sendverification", async (req, res) => {
 
           if (listingObject) {
             let sellerUniqueId = listingObject.userUniqueId;
+            let marketingName = listingObject.marketingName;
+            let sellerName = listingObject.listedBy;
             // let tokenObject = saveNotificationModel.find({
             //   userUniqueId: sellerUniqueId,
             // });
@@ -106,7 +108,12 @@ router.get("/listing/sendverification", async (req, res) => {
             // tokenObject.forEach((item, index) => {
             //   notificationTokens.push(item.tokenId);
             // });
-            const response = await sendNotification(sellerUniqueId, true);
+            const response = await sendNotification(
+              sellerUniqueId,
+              true,
+              marketingName,
+              sellerName
+            );
             res.status(201).json({
               reason: "Request sent successfully",
               statusCode: 200,

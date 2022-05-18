@@ -812,7 +812,8 @@ router.post("/marketingNameByModel", async (req, res) => {
         hasEarphone,
         isAppleEarphoneIncluded,
         hasOrignalBox,
-        isVarified
+        isVarified,
+        true
       );
 
       let dataObject = {

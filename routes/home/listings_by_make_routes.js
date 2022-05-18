@@ -88,7 +88,8 @@ router.get("/listingsbymake", async (req, res) => {
           hasEarphone,
           isAppleEarphoneIncluded,
           hasOrignalBox,
-          isVarified
+          isVarified,
+          false
         );
         if (price !== null) {
           afterGetPrice(price);
@@ -360,7 +361,8 @@ router.get("/listbymarketingname", async (req, res) => {
           hasEarphone,
           isAppleEarphoneIncluded,
           hasOrignalBox,
-          isVarified
+          isVarified,
+          false
         );
         if (price !== null) {
           afterGetPrice(price);
