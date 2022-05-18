@@ -126,7 +126,7 @@ router.get("/byUserId/:uuid", async (req, res) => {
   }
 });
 
-router.get("/read/:id", async (req, res) => {
+router.get("/read", async (req, res) => {
   const notificationId = req.query.id;
   const userUniqueId = req.query.userUniqueId;
 

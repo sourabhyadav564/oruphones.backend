@@ -20,9 +20,9 @@ const sendNotification = async (
   const now = new Date();
   const currentDate = moment(now).format("L");
 
-  const string = await makeRandomString(10);
-  const hashCode = await generateHash(string);
-  console.log("hashCode", hashCode);
+  const string = await makeRandomString(25);
+  // const hashCode = await generateHash(string);
+  // console.log("hashCode", hashCode);
 
   let tokenObject = await saveNotificationModel.find({
     userUniqueId: sellerUniqueId,
@@ -83,7 +83,7 @@ const sendNotification = async (
     messageContent: isVerification
       ? `Click here to visit your listings and complete verification for your ${marketingName}.`
       : `Click here to visit your favourites and contact seller before they sold out!!`,
-    notificationId: hashCode,
+    notificationId: string,
     createdDate: currentDate,
   };
 
