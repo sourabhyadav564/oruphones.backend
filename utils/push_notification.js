@@ -27,11 +27,11 @@ const sendNotification = async (sellerUniqueId, isVerification, marketingName, s
       icon: "fcm_push_icon",
     },
     data: {
-      title: "ok tested!",
+      title: isVerification ? `Hey ${sellerName}, You've got a verfication request` : `Hey ${sellerName}, A listing has been removed from your favourite list`,
       body: {
         source: "ORU Phones",
         messageContent:
-          "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
+        isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
       },
       appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
     },
@@ -56,8 +56,7 @@ const sendNotification = async (sellerUniqueId, isVerification, marketingName, s
   //Save notification to database
   let notificationData = {
     appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
-    messageContent:
-      "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
+    messageContent: isVerification? `Click here to visit your listings and complete verification for your ${marketingName}.` : `Click here to visit your favourites and contact seller before they sold out!!`,
   };
 
   let dataToBeSave = {
