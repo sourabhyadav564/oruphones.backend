@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Joi = require("joi");
 require("dotenv").config();
-const fast2sms = require("fast-two-sms");
 const generateOTP = require("../../utils/generate_otp");
+const sendLoginOtp = require("../../utils/send_login_otp");
 
 require("../../src/database/connection");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
@@ -11,7 +11,14 @@ const logEvent = require("../../src/middleware/event_logging");
 
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
-// const client = require('twilio')(accountSid, authToken);
+// const twilio = require("twilio")(accountSid, authToken);
+
+// const Vonage = require("@vonage/server-sdk");
+
+// const vonage = new Vonage({
+//   apiKey: "d0607933",
+//   apiSecret: "ApasBxeJHAuzso7f",
+// });
 
 router.post("/otp/generate", async (req, res) => {
   const mobileNumber = req.query.mobileNumber;
@@ -28,20 +35,38 @@ router.post("/otp/generate", async (req, res) => {
     const data = new userModal(userDatas);
     const saveData = await data.save();
 
-    var options = {
-      authorization: process.env.API_KEY,
-      message: `${clientOTP} is your OTP for login`,
-      numbers: [mobileNumber],
-    };
+    // const from = "ORU Phones";
+    // const to = `${countryCode}${mobileNumber}`;
+    // const text = `${clientOTP} is your OTP for login`;
 
-    const response = await fast2sms.sendMessage(options); //Asynchronous Function.
+    // vonage.message.sendSms(from, to, text, (err, responseData) => {
+    //   if (err) {
+    //     console.log(err);
+    //   } else {
+    //     if (responseData.messages[0]["status"] === "0") {
+    //       console.log("Message sent successfully.");
+    //     } else {
+    //       console.log(
+    //         `Message failed with error: ${responseData.messages[0]["error-text"]}`
+    //       );
+    //     }
+    //   }
+    // });
+
+    // twilio.messages.create({
+    //   from: "918005879678",
+    //   to: "919261638242",
+    //   body: `${clientOTP} is your OTP for login`
+    // }).then((message) => console.log(message.sid))
+    // .catch((error) => console.log(error));
+
+    const sendMessage = sendLoginOtp(mobileNumber, clientOTP);
+    console.log("message sent successfully!");
 
     res.status(200).json({
       reason: "OTP generated successfully",
       statusCode: 200,
       status: "SUCCESS",
-      response,
-      clientOTP: clientOTP,
       dataObject: {
         maxTime: 120,
         submitCountIncrement: 0,
@@ -110,13 +135,16 @@ router.post("/otp/resend", async (req, res) => {
     const data = new userModal(userDatas);
     const saveData = await data.save();
 
-    var options = {
-      authorization: process.env.API_KEY,
-      message: `${clientOTP} is your OTP for login`,
-      numbers: [mobileNumber],
-    };
+    // var options = {
+    //   authorization: process.env.API_KEY,
+    //   message: `${clientOTP} is your OTP for login`,
+    //   numbers: [mobileNumber],
+    // };
 
-    const response = await fast2sms.sendMessage(options); //Asynchronous Function.
+    // const response = await fast2sms.sendMessage(options); //Asynchronous Function.
+
+    const sendMessage = sendLoginOtp(mobileNumber, clientOTP);
+    console.log("message sent successfully!");
 
     res.status(200).json({
       reason: "OTP generated successfully",
