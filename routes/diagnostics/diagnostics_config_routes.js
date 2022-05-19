@@ -77,6 +77,7 @@ router.post("/diagConfig", async (req, res) => {
       it["severity"] = item.severity;
       it["category"] = item.category;
       it["status"] = item.status;
+      it["testCode"] = item.testCode;
 
       finalAT.push(it);
     });
@@ -87,6 +88,7 @@ router.post("/diagConfig", async (req, res) => {
       it["severity"] = item.severity;
       it["category"] = item.category;
       it["status"] = item.status;
+      it["testCode"] = item.testCode;
 
       finalMT.push(it);
     });

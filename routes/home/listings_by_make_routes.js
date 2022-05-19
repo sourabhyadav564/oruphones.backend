@@ -11,9 +11,14 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listingsbymake", async (req, res) => {
-  const make = req.query.make;
+  const initialMake = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
+
+  let make;
+  initialMake.split(" ").map((currentValue) => {
+    make = currentValue[0].toUpperCase() + currentValue.slice(1);
+  });
 
   let basePrice;
   let notionalPrice;
@@ -30,15 +35,17 @@ router.get("/listingsbymake", async (req, res) => {
   let finalBestDeals = [];
   let updatedBestDeals = [];
 
-  const getFavObject = await favoriteModal.findOne({
-    userUniqueId: userUniqueId,
-  });
-
   let favList = [];
-  if (getFavObject) {
-    favList = getFavObject.fav_listings;
-  } else {
-    favList = [];
+  if (userUniqueId !== "Guest") {
+    const getFavObject = await favoriteModal.findOne({
+      userUniqueId: userUniqueId,
+    });
+
+    if (getFavObject) {
+      favList = getFavObject.fav_listings;
+    } else {
+      favList = [];
+    }
   }
 
   let defaultDataObject = [];
@@ -235,14 +242,16 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
-    // add favorite listings to the final list
-    finalBestDeals.forEach((item, index) => {
-      if (favList.includes(item.listingId)) {
-        finalBestDeals[index].favourite = true;
-      } else {
-        finalBestDeals[index].favourite = false;
-      }
-    });
+    if (userUniqueId !== "Guest") {
+      // add favorite listings to the final list
+      finalBestDeals.forEach((item, index) => {
+        if (favList.includes(item.listingId)) {
+          finalBestDeals[index].favourite = true;
+        } else {
+          finalBestDeals[index].favourite = false;
+        }
+      });
+    }
 
     finalBestDeals.forEach((item, index) => {
       if (index < 5 && item.notionalPercentage > 0) {
@@ -303,15 +312,17 @@ router.get("/listbymarketingname", async (req, res) => {
   let finalBestDeals = [];
   let updatedBestDeals = [];
 
-  const getFavObject = await favoriteModal.findOne({
-    userUniqueId: userUniqueId,
-  });
-
   let favList = [];
-  if (getFavObject) {
-    favList = getFavObject.fav_listings;
-  } else {
-    favList = [];
+  if (userUniqueId !== "Guest") {
+    const getFavObject = await favoriteModal.findOne({
+      userUniqueId: userUniqueId,
+    });
+
+    if (getFavObject) {
+      favList = getFavObject.fav_listings;
+    } else {
+      favList = [];
+    }
   }
 
   let defaultDataObject = [];
@@ -512,14 +523,16 @@ router.get("/listbymarketingname", async (req, res) => {
       }
     });
 
-    // add favorite listings to the final list
-    finalBestDeals.forEach((item, index) => {
-      if (favList.includes(item.listingId)) {
-        finalBestDeals[index].favourite = true;
-      } else {
-        finalBestDeals[index].favourite = false;
-      }
-    });
+    if (userUniqueId !== "Guest") {
+      // add favorite listings to the final list
+      finalBestDeals.forEach((item, index) => {
+        if (favList.includes(item.listingId)) {
+          finalBestDeals[index].favourite = true;
+        } else {
+          finalBestDeals[index].favourite = false;
+        }
+      });
+    }
 
     finalBestDeals.forEach((item, index) => {
       if (index < 5 && item.notionalPercentage > 0) {
