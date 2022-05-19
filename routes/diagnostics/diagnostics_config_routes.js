@@ -67,9 +67,42 @@ router.post("/diagConfig", async (req, res) => {
         manualTests.push(item);
       }
     });
-    categoryObject["autoTests"] = autoTests;
-    categoryObject["manualTests"] = manualTests;
-    return categoryObject;
+
+    let finalAT = [];
+    let finalMT = [];
+    autoTests.forEach((item) => {
+      let it = {};
+      it["name"] = item.name;
+      it["displayname"] = item.displayname;
+      it["severity"] = item.severity;
+      it["category"] = item.category;
+      it["status"] = item.status;
+
+      finalAT.push(it);
+    });
+    manualTests.forEach((item) => {
+      let it = {};
+      it["name"] = item.name;
+      it["displayname"] = item.displayname;
+      it["severity"] = item.severity;
+      it["category"] = item.category;
+      it["status"] = item.status;
+
+      finalMT.push(it);
+    });
+
+    if (
+      finalAT.length === autoTests.length &&
+      finalMT.length === manualTests.length
+    ) {
+      categoryObject["autoTests"] = finalAT;
+      categoryObject["manualTests"] = finalMT;
+      return categoryObject;
+    }
+
+    // categoryObject["autoTests"] = autoTests;
+    // categoryObject["manualTests"] = manualTests;
+    // return categoryObject;
   };
 
   if (req.body.transactionName === "VerifyDevice") {
@@ -492,8 +525,6 @@ router.post("/grade/price", async (req, res) => {
         console.log("Lagee rahoo...................!!");
       }
     }
-
-
 
     // const listing = await saveListingModal.findByIdAndUpdate(
     //   listingId,
