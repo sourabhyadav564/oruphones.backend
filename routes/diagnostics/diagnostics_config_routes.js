@@ -152,7 +152,7 @@ router.post("/diagConfig", async (req, res) => {
   data["latestFirmware"] = true;
   data["runAllManualTests"] = false;
   data["latestFirmwareVersion"] = latestFirmwareVersion;
-  data["callTestNumber"] = 121;
+  data["callTestNumber"] = "121";
   data["pkeys"] = "VOLUME_UP,VOLUME_DOWN,POWER"; // TODO: Need to update according to the device
   data["vkeys"] = "BACK,HOME,MENU"; // TODO: Need to update according to the device
   data["iosBatteryHealthPer"] = platform === "Android" ? -1 : 100;

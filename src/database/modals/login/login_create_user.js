@@ -63,6 +63,10 @@ const createUserSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
+    createdDate: {
+        type: String,
+        default: "",
+    }
 },{ timestamps: true })
 
 createUserSchema.pre('save', async function (next) {

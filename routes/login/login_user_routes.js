@@ -4,6 +4,7 @@ const router = express.Router();
 require("../../src/database/connection");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const logEvent = require("../../src/middleware/event_logging");
+const moment = require("moment");
 
 router.get("/user/details", async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
@@ -36,6 +37,10 @@ router.get("/user/details", async (req, res) => {
 });
 
 router.post("/user/create", async (req, res) => {
+
+  const now = new Date();
+  const currentDate = moment(now).format("L");
+
   const email = req.body.email;
   const mobileNumber = req.body.mobileNumber
     ? parseInt(req.body.mobileNumber)
@@ -54,6 +59,7 @@ router.post("/user/create", async (req, res) => {
     userName: userName,
     userType: userType,
     userUniqueId,
+    createdDate: currentDate,
   };
 
   try {
