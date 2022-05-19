@@ -88,15 +88,17 @@ router.post("/listings/search", async (req, res) => {
     let otherListings = [];
     let updatedBestDeals = [];
 
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-
     let favList = [];
-    if (getFavObject) {
-      favList = getFavObject.fav_listings;
-    } else {
-      favList = [];
+    if (userUniqueId !== "Guest") {
+      const getFavObject = await favoriteModal.findOne({
+        userUniqueId: userUniqueId,
+      });
+  
+      if (getFavObject) {
+        favList = getFavObject.fav_listings;
+      } else {
+        favList = [];
+      }
     }
 
     let defaultDataObject = [];
@@ -317,14 +319,16 @@ router.post("/listings/search", async (req, res) => {
         }
       });
 
-      // add favorite listings to the final list
-      finalBestDeals.forEach((item, index) => {
-        if (favList.includes(item.listingId)) {
-          finalBestDeals[index].favourite = true;
-        } else {
-          finalBestDeals[index].favourite = false;
-        }
-      });
+      if (userUniqueId !== "Guest") {
+        // add favorite listings to the final list
+        finalBestDeals.forEach((item, index) => {
+          if (favList.includes(item.listingId)) {
+            finalBestDeals[index].favourite = true;
+          } else {
+            finalBestDeals[index].favourite = false;
+          }
+        });
+      }
 
       finalBestDeals.forEach((item, index) => {
         if (index < 5 && item.notionalPercentage > 0) {

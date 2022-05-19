@@ -4,7 +4,6 @@ const router = express.Router();
 
 router.post("/search", async (req, res) => {
   const userInputText = req.body.userInputText;
-  console.log(userInputText);
   try {
     const resultData = await searchFilterModal.find({});
     let brandList = [];
