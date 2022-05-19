@@ -205,11 +205,11 @@ router.post("/diagConfig", async (req, res) => {
   try {
     // const givedSavedData = await saveDiagnosticsData.save();
     res.status(201).json({
-      message: "Valid store id",
-      statusCode: 201,
-      status: "SUCCESS",
-      sessionId: parseInt(randomNumber),
       data: data,
+      status: "SUCCESS",
+      message: "Valid store id",
+      sessionId: parseInt(randomNumber),
+      // statusCode: 201,
     });
     return;
   } catch (error) {
