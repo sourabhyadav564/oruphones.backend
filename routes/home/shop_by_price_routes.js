@@ -10,13 +10,17 @@ const logEvent = require("../../src/middleware/event_logging");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listings/category", async (req, res) => {
-  const location = req.query.location;
-  const category = req.query.category;
+router.get("/shopbyprice/listmodel", async (req, res) => {
+  //   const location = req.query.location;
+  //   const category = req.query.category;
+  //   const userUniqueId = req.query.userUniqueId;
+  //   // const location = "India";
+  //   // Put keys always in lower case when get data from headers
+  //   // const userUniqueId = "Guest";
+  const startPrice = req.query.start;
+  const endPrice = req.query.end;
+  const location = req.query.listingLocation;
   const userUniqueId = req.query.userUniqueId;
-  // const location = "India";
-  // Put keys always in lower case when get data from headers
-  // const userUniqueId = "Guest";
 
   let basePrice;
   let notionalPrice;
@@ -34,106 +38,74 @@ router.get("/listings/category", async (req, res) => {
   let updatedBestDeals = [];
 
   try {
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-
     let favList = [];
-    if (getFavObject) {
-      favList = getFavObject.fav_listings;
-    } else {
-      favList = [];
+    if (userUniqueId !== "Guest") {
+      const getFavObject = await favoriteModal.findOne({
+        userUniqueId: userUniqueId,
+      });
+
+      if (getFavObject) {
+        favList = getFavObject.fav_listings;
+      } else {
+        favList = [];
+      }
     }
 
     let defaultDataObject = [];
     if (location === "India") {
       let defaultDataObject2 = [];
-      if (category == "Verified") {
-        defaultDataObject2 = await saveListingModal.find({
-          verified: true,
-        });
-      } else if (category === "Storage") {
-        defaultDataObject2 = await saveListingModal.find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-        });
-      } else if (category === "Like New") {
-        defaultDataObject2 = await saveListingModal.find({
-          deviceCondition: "Like New",
-        });
-      } else if (category === "Excellent") {
-        defaultDataObject2 = await saveListingModal.find({
-          deviceCondition: "Excellent",
-        });
-      } else if (category === "Thirty") {
-        defaultDataObject2 = await saveListingModal.find({
-          $expr: {
-            $lt: [
+      //  if (category === "Fifteen") {
+      defaultDataObject2 = await saveListingModal.find({
+        $expr: {
+            $lte: [
               {
                 $toInt: "$listingPrice",
               },
-              30000,
+              parseInt(endPrice.toString()),
             ],
           },
-        });
-      } else if (category === "Fifteen") {
-        defaultDataObject2 = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          },
-        });
-      }
+      });
+      let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
+        return parseInt(item.listingPrice.toString()) >= parseInt(startPrice.toString());
+      })
+        defaultDataObject2 = defaultDataObject3;
+      //   }
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      // const thirdPartyVendors = await getThirdPartyVendors("", "");
-      // thirdPartyVendors.forEach((thirdPartyVendor) => {
-      //   defaultDataObject.push(thirdPartyVendor);
-      // });
+    //   const thirdPartyVendors = await getThirdPartyVendors("", "");
+    //   thirdPartyVendors.forEach((thirdPartyVendor) => {
+    //     defaultDataObject.push(thirdPartyVendor);
+    //   });
     } else {
-      // defaultDataObject = await saveListingModal.find({
-      //   listingLocation: location,
-      // });
-      if (category === "Verified") {
-        defaultDataObject = await saveListingModal.find({ verified: true });
-      } else if (category === "Storage") {
+      defaultDataObject = await saveListingModal.find({
+        listingLocation: location,
+      });
+      if (category === "Fifteen") {
+        // defaultDataObject = await saveListingModal.find({
+        //   $expr: {
+        //     $lt: [
+        //       {
+        //         $toInt: "$listingPrice",
+        //       },
+        //       15000,
+        //     ],
+        //   },
+        // });
         defaultDataObject = await saveListingModal.find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-        });
-      } else if (category === "Like New") {
-        defaultDataObject = await saveListingModal.find({
-          deviceCondition: "Like New",
-        });
-      } else if (category === "Excellent") {
-        defaultDataObject = await saveListingModal.find({
-          deviceCondition: "Excellent",
-        });
-      } else if (category === "Thirty") {
-        defaultDataObject = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
+            $expr: {
+                $lte: [
+                  {
+                    $toInt: "$listingPrice",
+                  },
+                  parseInt(endPrice.toString()),
+                ],
               },
-              30000,
-            ],
-          },
-        });
-      } else if (category === "Fifteen") {
-        defaultDataObject = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          },
-        });
+          });
+          let defaultDataObject3 = defaultDataObject.filter((item, index) => {
+            return parseInt(item.listingPrice.toString()) >= parseInt(startPrice.toString());
+          })
+            defaultDataObject = defaultDataObject3;
       }
     }
 
@@ -313,14 +285,16 @@ router.get("/listings/category", async (req, res) => {
         }
       });
 
-      // add favorite listings to the final list
-      finalBestDeals.forEach((item, index) => {
-        if (favList.includes(item.listingId)) {
-          finalBestDeals[index].favourite = true;
-        } else {
-          finalBestDeals[index].favourite = false;
-        }
-      });
+      if (userUniqueId !== "Guest") {
+        // add favorite listings to the final list
+        finalBestDeals.forEach((item, index) => {
+          if (favList.includes(item.listingId)) {
+            finalBestDeals[index].favourite = true;
+          } else {
+            finalBestDeals[index].favourite = false;
+          }
+        });
+      }
 
       finalBestDeals.forEach((item, index) => {
         if (index < 5 && item.notionalPercentage > 0) {

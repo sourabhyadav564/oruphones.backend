@@ -111,14 +111,16 @@ const getRecommendedPrice = async (
     let lowerRangeMatrix = 0.7;
     let upperRangeMatrix = 0.9;
     let isAppleCharger = 0.1;
-    let isNonAppleCharger = 0.05;
-    let isAppleEarphone = 0.1;
-    let isNonAppleEarphone = 0.05;
-    let isOriginalBox = 0.03;
-    let warrantyZeroToThree = 0.1;
+    let isNonAppleCharger = 0.02;
+    let isAppleEarphone = 0.05;
+    let isNonAppleEarphone = 0.02;
+    let isOriginalBox = 0.01;
+    let warrantyZeroToThree = 0.05;
+    // let warrantyZeroToThree = 0.1;
     // let warrantyFourToSix = 0.08;
     // let warrantySevenToTen = 0.05;
-    let varified = 0.1;
+    // let varified = 0.1;
+    let varified = 0.04;
 
     // models.forEach((item, index) => {
     //   if (item.name === marketingname) {

@@ -4,19 +4,19 @@ const validator = require('validator');
 const imageUploadSchema = new mongoose.Schema({
     deviceFace: {
         type: String,
-        required: true,
+        // required: true,
     }, 
     deviceStorage: {
         type: String,
-        required: true,
+        // required: true,
     },
     make: {
         type: String,
-        required: true,
+        // required: true,
     },
     model: {
         type: String,
-        required: true,
+        // required: true,
     },
     userUniqueId: {
         type: String,
@@ -24,7 +24,7 @@ const imageUploadSchema = new mongoose.Schema({
     },
     imagePath: {
         type: String,
-        required: true,
+        // required: true,
     }
 },{ timestamps: true })
 

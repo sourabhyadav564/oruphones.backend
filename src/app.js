@@ -61,6 +61,7 @@ const searchSuggestionRoute = require("../routes/global/search_filter_routes");
 const searchListingRoute = require("../routes/home/search_listing_routes");
 const shareLinkRoute = require("../routes/global/share_link_route");
 const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
+const shopByPriceRoute = require("../routes/home/shop_by_price_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -87,6 +88,7 @@ app.use("/api/v1/home", listingByMakeRoute);
 app.use("/api/v1/home", topSellingModelRoute);
 app.use("/api/v1/home", searchListingRoute);
 app.use("/api/v1/home", shopByCategoryRoutes);
+app.use("/api/v1/home", shopByPriceRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
 app.use("/api/v1/login", loginOtpRoute);
