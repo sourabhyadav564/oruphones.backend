@@ -270,6 +270,7 @@ router.post("/grade/price", async (req, res) => {
   const deviceFinalGrade = req.body.deviceFinalGrade;
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
   // fs.writeFileSync(`${listingId}.json`, JSON.stringify(req.body));
+  const saveData = res.body.saveData;
 
   // PASS
   // OPTIMIZABLE
@@ -514,18 +515,20 @@ router.post("/grade/price", async (req, res) => {
         status: "SUCCESS",
       });
     } else {
-      const updatedListing = await saveListingModal.findByIdAndUpdate(
-        listing._id,
-        dataToBeUpdate,
-        {
-          new: true,
-        }
-      );
-      if (updatedListing) {
-        console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
-      } else {
-        console.log("Lagee rahoo...................!!");
+      if (saveData) {
+        const updatedListing = await saveListingModal.findByIdAndUpdate(
+          listing._id,
+          dataToBeUpdate,
+          {
+            new: true,
+          }
+        );
       }
+      // if (updatedListing) {
+      //   console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
+      // } else {
+      //   console.log("Lagee rahoo...................!!");
+      // }
     }
 
     // const listing = await saveListingModal.findByIdAndUpdate(
