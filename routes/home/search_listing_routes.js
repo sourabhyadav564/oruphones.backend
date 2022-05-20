@@ -365,7 +365,7 @@ router.post("/listings/search", async (req, res) => {
         }
       });
 
-      finalBestDeals.sort((a, b) => {
+      finalBestDeals.sort((b, a) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
 

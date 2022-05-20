@@ -166,7 +166,7 @@ router.get("/listings/best/nearall", async (req, res) => {
           }
 
           let currentPercentage =
-            ((notionalPrice - basePrice) / basePrice) * 100;
+            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
           // let newDataObject = {
           //   ...item._doc,
           //   notionalPercentage: currentPercentage,
@@ -242,10 +242,10 @@ router.get("/listings/best/nearall", async (req, res) => {
         }
       });
 
-      finalBestDeals.sort((a, b) => {
+      finalBestDeals.sort((b, a) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
-
+      
       finalBestDeals.length =
         finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
 

@@ -225,7 +225,7 @@ router.get("/listings/category", async (req, res) => {
           }
 
           let currentPercentage =
-            ((notionalPrice - basePrice) / basePrice) * 100;
+            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
             newDataObject = item;
@@ -289,7 +289,7 @@ router.get("/listings/category", async (req, res) => {
         }
       });
 
-      finalBestDeals.sort((a, b) => {
+      finalBestDeals.sort((b, a) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
 

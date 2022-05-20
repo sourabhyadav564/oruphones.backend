@@ -154,7 +154,8 @@ router.get("/listingsbymake", async (req, res) => {
           }
         }
 
-        let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
+        let currentPercentage =
+            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
         let newDataObject = {};
         if (item.isOtherVendor == "Y") {
           newDataObject = item;
@@ -218,7 +219,7 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
-    finalBestDeals.sort((a, b) => {
+    finalBestDeals.sort((b, a) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
@@ -431,7 +432,8 @@ router.get("/listbymarketingname", async (req, res) => {
           }
         }
 
-        let currentPercentage = ((notionalPrice - basePrice) / basePrice) * 100;
+        let currentPercentage =
+            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
         // let newDataObject = {
         //   ...item._doc,
         //   notionalPercentage: currentPercentage,
@@ -499,7 +501,7 @@ router.get("/listbymarketingname", async (req, res) => {
       }
     });
 
-    finalBestDeals.sort((a, b) => {
+    finalBestDeals.sort((b, a) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
