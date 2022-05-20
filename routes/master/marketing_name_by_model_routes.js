@@ -897,6 +897,7 @@ router.get("/makemodellist", async (req, res) => {
   let make = req.query.make;
   const isPrimary = req.query.isPrimary;
 
+  if (make) {
   let tempMake = make.toLowerCase();
 
   switch (tempMake) {
@@ -955,6 +956,7 @@ router.get("/makemodellist", async (req, res) => {
       make = "LG";
       break;
   }
+}
   // let dataObject = [];
   // let newModels = [];
   // let makes = await gsmarenaModal.find({}, { make: 1, _id: 0 });
