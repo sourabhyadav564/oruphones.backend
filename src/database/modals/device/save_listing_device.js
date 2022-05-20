@@ -75,7 +75,7 @@ const saveListingSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String || Number,
-        required: true,
+        // required: true,
     }, 
     model: {
         type: String,

@@ -58,8 +58,10 @@ router.get("/listings", async (req, res) => {
 
 router.post("/listing/save", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
-  const userDetails = createUserModal.find({ userUniqueId: userUniqueId });
-  const mobileNumber = userDetails?.mobileNumber;
+  const userDetails = await createUserModal.find({
+    userUniqueId: userUniqueId,
+  });
+  const mobileNumber = userDetails[0]?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
