@@ -20,46 +20,94 @@ router.post("/listings/search", async (req, res) => {
   const verified = req.body.verified === "verified" ? true : false;
   const warenty = req.body.warenty;
   const marketingName = req.body.marketingName;
+
   try {
-    const listing = await saveListingModal.find({}, { _id: 0 });
     let allListings = [];
+    let listing = [];
+    if (marketingName.length > 0) {
+      let ourListing = await saveListingModal.find(
+        { marketingName: marketingName[0] },
+        { _id: 0 }
+      );
+      listing.push(...ourListing);
+      i = 0;
+      while (i < marketingName.length) {
+        console.log("i", i);
+        let newListings = await getThirdPartyVendors(marketingName[i], "");
+        newListings.forEach((thirdPartyVendor) => {
+          listing.push(thirdPartyVendor);
+        });
+        i++;
+      }
+    } else if (make.length > 0) {
+      let ourListing = await saveListingModal.find({ make: make }, { _id: 0 });
+      listing.push(...ourListing);
+      i = 0;
+      while (i < make.length) {
+        console.log("i", i);
+        let newListings = await getThirdPartyVendors("", make[i]);
+        newListings.forEach((thirdPartyVendor) => {
+          listing.push(thirdPartyVendor);
+        });
+        i++;
+      }
+    } else {
+      console.log("no make");
+      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        listing.push(thirdPartyVendor);
+      });
+    }
+
     listing.filter((item, index) => {
-      if (color.length > 0) {
-        if (color.includes(item.color)) {
-          allListings.push(item);
-        }
-      }
-      if (deviceCondition.length > 0) {
-        if (deviceCondition.includes(item.deviceCondition)) {
-          allListings.push(item);
-        }
-      }
-      if (deviceStorage.length > 0) {
-        if (deviceStorage.includes(item.deviceStorage)) {
-          allListings.push(item);
-        }
-      }
       if (make.length > 0) {
         if (make.includes(item.make)) {
           allListings.push(item);
         }
-      }
-      if (listingLocation.length === item.listingLocation) {
+      } else if (color.length > 0 && make.length === 0 && reqPage !== "TSM") {
+        if (color.includes(item.color)) {
+          allListings.push(item);
+        }
+      } else if (
+        deviceCondition.length > 0 &&
+        make.length === 0 &&
+        reqPage !== "TSM"
+      ) {
+        if (deviceCondition.includes(item.deviceCondition)) {
+          allListings.push(item);
+        }
+      } else if (deviceStorage.length > 0 && make.length === 0) {
+        if (deviceStorage.includes(item.deviceStorage)) {
+          allListings.push(item);
+        }
+      } else if (listingLocation === item.listingLocation) {
+        let tempListings = [];
+        tempListings = allListings.filter((item, index) => {
+          return item.listingLocation === listingLocation;
+        });
+        allListings = tempListings;
+      } else if (parseInt(maxsellingPrice) > parseInt(item.listingPrice)) {
+        allListings.push(item);
+      } else if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
+        allListings.push(item);
+      } else {
         allListings.push(item);
       }
-      if (parseInt(maxsellingPrice) > parseInt(item.listingPrice)) {
-        allListings.push(item);
-      }
-      if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
-        allListings.push(item);
-      }
-      if (verified === item.verified) {
-        allListings.push(item);
-      }
+
       // if(warenty === item.warenty){
       //     allListings.push(item);
       // }
     });
+
+    if (verified === true) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        if (item.verified === true) {
+          return true;
+        }
+      });
+      allListings = tempListings;
+    }
 
     //Best deal starts here
 
@@ -93,7 +141,7 @@ router.post("/listings/search", async (req, res) => {
       const getFavObject = await favoriteModal.findOne({
         userUniqueId: userUniqueId,
       });
-  
+
       if (getFavObject) {
         favList = getFavObject.fav_listings;
       } else {
@@ -114,10 +162,10 @@ router.post("/listings/search", async (req, res) => {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      const thirdPartyVendors = await getThirdPartyVendors("", "");
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
-      });
+      // const thirdPartyVendors = await getThirdPartyVendors("", "");
+      // thirdPartyVendors.forEach((thirdPartyVendor) => {
+      //   defaultDataObject.push(thirdPartyVendor);
+      // });
     } else {
       // defaultDataObject = await bestDealHomeModel.find({
       // defaultDataObject = await saveListingModal.find({
@@ -181,6 +229,8 @@ router.post("/listings/search", async (req, res) => {
             }
           }
 
+          console.log("notionalPrice1", notionalPrice);
+
           if ("warranty" in item === true) {
             if (item.warranty === "0-3 months") {
               notionalPrice =
@@ -197,12 +247,18 @@ router.post("/listings/search", async (req, res) => {
             }
           }
 
+          console.log("notionalPrice2", notionalPrice);
+
+
           if ("charger" in item === true) {
             if (item.charger === "Y") {
               notionalPrice =
                 notionalPrice + (basePrice / 100) * has_charger_percentage;
             }
           }
+
+          console.log("notionalPrice3", notionalPrice);
+
 
           if ("earphone" in item === true) {
             if (item.earphone === "Y") {
@@ -211,6 +267,9 @@ router.post("/listings/search", async (req, res) => {
             }
           }
 
+          console.log("notionalPrice4", notionalPrice);
+
+
           if ("originalbox" in item === true) {
             if (item.originalbox === "Y") {
               notionalPrice =
@@ -218,15 +277,22 @@ router.post("/listings/search", async (req, res) => {
             }
           }
 
+          console.log("notionalPrice5", notionalPrice);
+
+
           let currentPercentage =
-            ((notionalPrice - basePrice) / basePrice) * 100;
+            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
           // let newDataObject = {
           //   ...item._doc,
           //   notionalPercentage: currentPercentage,
           // };
           let newDataObject = {};
-          if (item.isOtherVendor == "Y") {
-            newDataObject = item;
+          if (item.isOtherVendor === "Y") {
+            // newDataObject = item;
+            newDataObject = {
+              ...item,
+              notionalPercentage: currentPercentage,
+            };
           } else {
             newDataObject = {
               ...item._doc,
@@ -288,9 +354,13 @@ router.post("/listings/search", async (req, res) => {
       // console.log("bestDeals", bestDeals);
       // console.log("bestDeals", bestDeals);
       bestDeals.forEach((item, index) => {
-        if (item.notionalPercentage > 0) {
-          finalBestDeals.push(item);
-        } else {
+        if (reqPage === "BBNM") {
+          if (item.notionalPercentage > 0) {
+            finalBestDeals.push(item);
+          } else {
+            otherListings.push(item);
+          }
+        } else if (reqPage === "TSM") {
           otherListings.push(item);
         }
       });

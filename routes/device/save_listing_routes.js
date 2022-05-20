@@ -57,10 +57,9 @@ router.get("/listings", async (req, res) => {
 });
 
 router.post("/listing/save", async (req, res) => {
-  
   const userUniqueId = req.body.userUniqueId;
-  const userDetails = createUserModal.find({userUniqueId: userUniqueId});
-  const userMobileNumber = userDetails?.mobileNumber;
+  const userDetails = createUserModal.find({ userUniqueId: userUniqueId });
+  const mobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
@@ -76,7 +75,7 @@ router.post("/listing/save", async (req, res) => {
   const listingPrice = req.body.listingPrice;
   const make = req.body.make;
   const marketingName = req.body.marketingName;
-  const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
+  // const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
   const model = req.body.model;
   const originalbox = req.body.originalbox;
   const platform = req.body.platform;
@@ -418,8 +417,8 @@ router.post("/listing/updatefordiag", async (req, res) => {
   const deviceCondition = req.body.deviceCondition;
   const images = req.body.images;
 
-  let currentDate = new Date();
-  let dateFormat = moment(currentDate).add(10, "days").calendar();
+  const now = new Date();
+  const dateFormat = moment(now).format("L");
 
   const dataToBeUpdate = {
     // ...req.body,
@@ -500,24 +499,24 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let query =
         "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
-        const VENDORS = {
-          6: "Amazon",
-          7: "Quikr",
-          8: "Cashify",
-          9: "2Gud",
-          10: "Budli",
-          11: "Paytm",
-          12: "Yaantra",
-          13: "Shopcluse",
-          14: "Sahivalue",
-          15: "Xtracover",
-          16: "Mobigarage",
-          17: "Instacash",
-          18: "Cashforphone",
-          19: "Recycledevice",
-          20: "Quickmobile",
-          21: "mbr_Buyblynk",
-          22: "mbr_Electronicbazaar",
+      const VENDORS = {
+        6: "Amazon",
+        7: "Quikr",
+        8: "Cashify",
+        9: "2Gud",
+        10: "Budli",
+        11: "Paytm",
+        12: "Yaantra",
+        13: "Shopcluse",
+        14: "Sahivalue",
+        15: "Xtracover",
+        16: "Mobigarage",
+        17: "Instacash",
+        18: "Cashforphone",
+        19: "Recycledevice",
+        20: "Quickmobile",
+        21: "mbr_Buyblynk",
+        22: "mbr_Electronicbazaar",
       };
 
       const externalSource = [];
@@ -570,7 +569,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
             // leastSellingPrice = Math.max(...selectdModels);
             externalSource.push(selectdModels[0]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
             externalSource.push(selectdModels[1]); //TODO: Need to remove the duplicate objects. Objects from the rarest.
-          } 
+          }
 
           let dataObject = { externalSource, ...getListing._doc };
           // console.log("externalSource", dataObject);

@@ -64,7 +64,7 @@ const calculate_LSP_BUY = async () => {
           let lspObject = {};
           let found = false;
           if (item.storage === null) {
-           console.error('storage is null: ', item.model_id); 
+            console.error("storage is null: ", item.model_id);
           }
           lspArray.forEach(async (element, i) => {
             if (
@@ -72,7 +72,8 @@ const calculate_LSP_BUY = async () => {
               (element.mobiru_condition === item.mobiru_condition ||
                 (element.mobiru_condition === "Excellent" &&
                   item.mobiru_condition === null)) &&
-              element.storage === `${item.storage} GB` && element.type === "buy"
+              element.storage === `${item.storage} GB` &&
+              element.type === "buy"
             ) {
               if (element.price <= item.price) {
                 found = true;
@@ -101,7 +102,7 @@ const calculate_LSP_BUY = async () => {
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;
-          lspObject["vendor_id"] = item.vendor_id;
+            lspObject["vendor_id"] = item.vendor_id;
             lspObject["type"] = "buy";
             lspObject["actualPrice"] = item.price;
             lspArray.push(lspObject);
@@ -166,8 +167,9 @@ const calculate_LSP_SELL = async () => {
             if (
               element.model_id === item.model_id &&
               (element.mobiru_condition === item.mobiru_condition ||
-                (element.mobiru_condition === "Like New")) &&
-              element.storage === `${item.storage} GB` && element.type === "sell"
+                element.mobiru_condition === "Like New") &&
+              element.storage === `${item.storage} GB` &&
+              element.type === "sell"
             ) {
               if (element.price >= item.price) {
                 found = true;
@@ -186,22 +188,25 @@ const calculate_LSP_SELL = async () => {
               }
             });
             // console.log("matchedModel", matchedModel);
-            let derivedPrice = item.heading.includes("Samsung")
-              ? item.price + item.price * 0.4
-              : item.price + item.price * 0.2;
-            console.log(
-              item.heading.split(" ")[0],
-              " : price: ",
-              item.price,
-              "derivedPrice: ",
-              derivedPrice
-            );
+            let derivedPrice = 0;
+            if (item.heading != null) {
+              derivedPrice = item.heading.includes("Samsung")
+                ? item.price + item.price * 0.4
+                : item.price + item.price * 0.2;
+
+              console.log(
+                item.heading.split(" ")[0],
+                " : price: ",
+                item.price,
+                "derivedPrice: ",
+                derivedPrice
+              );
+            }
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = Math.ceil(derivedPrice);
-            lspObject["mobiru_condition"] =
-              item.mobiru_condition ?? "Like New";
-            lspObject["storage"] =  item.storage ? `${item.storage} GB` : "0 GB"
+            lspObject["mobiru_condition"] = item.mobiru_condition ?? "Like New";
+            lspObject["storage"] = item.storage ? `${item.storage} GB` : "0 GB";
             lspObject["ram"] = item.ram;
             lspObject["link"] = item.link;
             lspObject["warranty"] = item.warranty;
@@ -235,9 +240,7 @@ const calculate_LSP_SELL = async () => {
                   .insertMany(lspArray, function (err, res) {
                     if (err) throw err;
                     console.log(
-                      `${
-                        lspArray.length
-                      } documents inserted successfully on ${dateFormat})}`
+                      `${lspArray.length} documents inserted successfully on ${dateFormat})}`
                     );
                     db.close();
                   });

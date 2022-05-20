@@ -38,17 +38,20 @@ const getThirdPartyVendors = async (model_name, make) => {
 
   let filterd = [];
   if (make != "") {
-    let newFilterd = await scrappedModal.find({ type: "buy" });
-    newFilterd.filter((item) => {
-      if (item.model_name.includes(make)) {
-        filterd.push(item);
-      }
-    });
+    // let newFilterd = await scrappedModal.find({ type: "buy" });
+    // newFilterd.filter((item) => {
+    //   if (item.model_name.includes(make)) {
+    //     filterd.push(item);
+    //   }
+    // });
+    filterd = await scrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
   } else if (model_name != "") {
-    filterd = await scrappedModal.find({ type: "buy", model_name: model_name });
+    filterd = await scrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
   } else {
-    filterd = await scrappedModal.find({ type: "buy" });
+    filterd = await scrappedModal.find({ type: "buy" }).limit(50);
   }
+  
+  console.log("fffff ",filterd.length);
 
   let dataObject = {};
   let dataArray = [];
@@ -67,7 +70,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       marketingName: element.model_name,
       make: element.model_name.split(" ")[0],
       listingPrice: element.actualPrice.toString(),
-      deviceStorage: element.storage,
+      deviceStorage: element.storage === "0 GB" ? "--" : element.storage,
       warranty: element.warranty,
       vendorLogo: vendorImage,
       vendorLink: element.link,
@@ -94,6 +97,8 @@ const getThirdPartyVendors = async (model_name, make) => {
 
     dataArray.push(dataObject);
   });
+
+  console.log("dataArray ", dataArray.length);
   return dataArray;
 };
 
