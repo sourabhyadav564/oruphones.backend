@@ -15,7 +15,7 @@ router.get("/share/link", async (req, res) => {
     const model = listing.marketingName.replaceAll(" ", "");
     const productId = listing.listingId;
 
-    const static_link = `${"http://localhost:3001"}/product/listings/${make}/${model}/${productId}?isOtherVendor=N`;
+    const static_link = `${"https://next-js-oru-phones.herokuapp.com"}/product/listings/${make}/${model}/${productId}?isOtherVendor=N`;
 
     const dataObject = {
       url: static_link,
