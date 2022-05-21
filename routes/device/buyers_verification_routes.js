@@ -97,7 +97,7 @@ router.get("/listing/sendverification", async (req, res) => {
             listingId: listingId,
           });
 
-          if (listingObject) {
+          if (listingObject && listingObject.userUniqueId !== userUniqueId) {
             let sellerUniqueId = listingObject.userUniqueId;
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
@@ -114,7 +114,7 @@ router.get("/listing/sendverification", async (req, res) => {
               marketingName,
               sellerName
             );
-            res.status(201).json({
+            res.status(200).json({
               reason: "Request sent successfully",
               statusCode: 200,
               status: "SUCCESS",
@@ -123,7 +123,7 @@ router.get("/listing/sendverification", async (req, res) => {
           } else {
             res.status(200).json({
               reason: "You can't send verification request to yourself",
-              statusCode: 202,
+              statusCode: 200,
               status: "SUCCESS",
               dataObject,
             });
@@ -132,14 +132,14 @@ router.get("/listing/sendverification", async (req, res) => {
       } else {
         res.status(200).json({
           reason: "You have already sent verification request for this listing",
-          statusCode: 204,
+          statusCode: 200,
           status: "SUCCESS",
         });
       }
     } else {
       res.status(200).json({
         reason: "Invalid user id provided",
-        statusCode: 401,
+        statusCode: 200,
         status: "SUCCESS",
       });
     }
