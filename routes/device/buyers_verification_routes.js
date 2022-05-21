@@ -69,21 +69,21 @@ router.get("/listing/sendverification", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    const getRequestObject = await saveRequestModal.findOne({
-      mobileNumber: isValidUser.mobileNumber,
-      listingId: listingId,
-    });
-
+    
     if (isValidUser) {
-      const data = {
-        listingId: listingId,
-        userUniqueId: userUniqueId,
+      const getRequestObject = await saveRequestModal.findOne({
         mobileNumber: isValidUser.mobileNumber,
-      };
-
+        listingId: listingId,
+      });
+      
       if (!getRequestObject) {
-        const saveRequest = new saveRequestModal(data);
-        let dataObject = await saveRequest.save();
+        const data = {
+          listingId: listingId,
+          userUniqueId: userUniqueId,
+          mobileNumber: isValidUser.mobileNumber,
+        };
+        // const saveRequest = new saveRequestModal(data);
+        // let dataObject = await saveRequest.save();
 
         if (!dataObject) {
           res.status(500).json({
