@@ -202,6 +202,11 @@ router.get("/listings/best/nearme", async (req, res) => {
             currentPercentage =
               ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
           }
+
+          let newDataObject = {
+            ...item._doc,
+            notionalPercentage: currentPercentage,
+          };
           // let newDataObject = {};
           // if (item.isOtherVendor == "Y") {
           //   newDataObject = item;
@@ -298,13 +303,13 @@ router.get("/listings/best/nearme", async (req, res) => {
         }
       });
 
-      let updatedBestDeals = [];
+      let updatedBestDeals= [];
 
       finalBestDeals.forEach((item, index) => {
         if (
           updatedBestDeals.length <= 5 &&
           item.notionalPercentage > 0 &&
-          item.notionalPercentage < 50
+          item.notionalPercentage < 60
         ) {
           updatedBestDeals.push(item);
         } else {
