@@ -11,15 +11,15 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listingsbymake", async (req, res) => {
-  // const initialMake = req.query.make;
-  const make = req.query.make;
+  const initialMake = req.query.make;
+  // const make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
 
-  // let make;
-  // initialMake.split(" ").map((currentValue) => {
-  //   make = currentValue[0].toUpperCase() + currentValue.slice(1);
-  // });
+  let make;
+  initialMake.split(" ").map((currentValue) => {
+    make = currentValue[0].toUpperCase() + currentValue.slice(1);
+  });
 
   let basePrice;
   let notionalPrice;
