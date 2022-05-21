@@ -22,7 +22,7 @@ router.get("/topselling/models", async (req, res) => {
         // let count = 0;
 
         if (!modelVals.includes(modelName)) {
-          // console.log(modelName);
+          console.log(modelName);
           let data = {
             make: item.make,
             marketingName: item.marketingName,
@@ -33,17 +33,16 @@ router.get("/topselling/models", async (req, res) => {
             isTopSelling: false,
             quantity: 1,
           };
-          // if (!modelVals.includes(modelName)) {
           modelVals.push(modelName);
-          // }
           dataObject.push(data);
         } else {
+          console.log("Model already exists");
           let data = {};
-          dataObject.forEach(async (mObj, k) => {
-            if (Object.values(mObj).includes(modelName)) {
-              // let stf = mObj.startingFrom.replace(",", "");
-              // let maxP = mObj.maxPrice.replace(",", "");
-              // let listP = item.listingPrice.replace(",", "");
+            var modObj = dataObject.filter(obj => {
+              return obj.marketingName === modelName;
+            })
+
+            let mObj = modObj[0];
               let stf = mObj.startingFrom;
               let maxP = mObj.maxPrice;
               let listP = item.listingPrice;
@@ -57,8 +56,6 @@ router.get("/topselling/models", async (req, res) => {
                   ? mObj.maxPrice
                   : item.listingPrice;
 
-              // console.log("\n start: " + startFrom + " max: " + mPrice + "\n")
-              // console.log("s: " + stf + " m: " + maxP + " l: " + listP);
               data = {
                 make: mObj.make,
                 marketingName: mObj.marketingName,
@@ -69,23 +66,13 @@ router.get("/topselling/models", async (req, res) => {
                 isTopSelling: false,
                 quantity: mObj.quantity + 1,
               };
-              bool = true;
-            }
-            if (k == dataObject.length - 1) {
+              console.log("into if bool", data)
               let objIndex = dataObject.findIndex(
-                (obj) => obj.listingId == mObj.listingId
+                (obj) => obj.marketingName === mObj.marketingName
               );
+              console.log(data.marketingName, objIndex);
               dataObject[objIndex] = data;
-            }
-          });
         }
-
-        // if (i == listings.length - 1) {
-        //   console.log("dataObject", dataObject);
-          // res.send(dataObject)
-          // next();
-        //   console.log("dataObject", dataObject);
-        // }
       });
       return dataObject;
     };

@@ -194,12 +194,14 @@ router.get("/listings/best/nearme", async (req, res) => {
             }
           }
 
-          let currentPercentage =
-            ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
-          let newDataObject = {
-            ...item._doc,
-            notionalPercentage: currentPercentage,
-          };
+          let currentPercentage;
+          if (item.listingPrice > notionalPrice) {
+            currentPercentage =
+              ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+          } else {
+            currentPercentage =
+              ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+          }
           // let newDataObject = {};
           // if (item.isOtherVendor == "Y") {
           //   newDataObject = item;
@@ -296,6 +298,20 @@ router.get("/listings/best/nearme", async (req, res) => {
         }
       });
 
+      let updatedBestDeals = [];
+
+      finalBestDeals.forEach((item, index) => {
+        if (
+          updatedBestDeals.length <= 5 &&
+          item.notionalPercentage > 0 &&
+          item.notionalPercentage < 50
+        ) {
+          updatedBestDeals.push(item);
+        } else {
+          // otherListings.push(item);
+        }
+      });
+
       // return finalBestDeals
       // console.log("finalbestdeals", finalBestDeals);
 
@@ -306,7 +322,7 @@ router.get("/listings/best/nearme", async (req, res) => {
           status: "SUCCESS",
           dataObject: {
             otherListings: otherListings,
-            bestDeals: finalBestDeals,
+            bestDeals: updatedBestDeals,
           },
         });
       } else {
