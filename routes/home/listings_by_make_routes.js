@@ -11,14 +11,15 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listingsbymake", async (req, res) => {
-  const initialMake = req.query.make;
+  // const initialMake = req.query.make;
+  const make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
 
-  let make;
-  initialMake.split(" ").map((currentValue) => {
-    make = currentValue[0].toUpperCase() + currentValue.slice(1);
-  });
+  // let make;
+  // initialMake.split(" ").map((currentValue) => {
+  //   make = currentValue[0].toUpperCase() + currentValue.slice(1);
+  // });
 
   let basePrice;
   let notionalPrice;
@@ -154,8 +155,14 @@ router.get("/listingsbymake", async (req, res) => {
           }
         }
 
-        let currentPercentage =
+        let currentPercentage;
+        if (item.listingPrice > notionalPrice) {
+          currentPercentage =
             ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+        } else {
+          currentPercentage =
+            ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+        }
         let newDataObject = {};
         if (item.isOtherVendor == "Y") {
           newDataObject = item;
@@ -262,6 +269,15 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
+    let bestDealToBeSend = [];
+    updatedBestDeals.forEach((item, index) => {
+      if (item.notionalPercentage < 50) {
+        bestDealToBeSend.push(item);
+      } else {
+        otherListings.push(item);
+      }
+    });
+
     // console.log("finalBestDeals", finalBestDeals);
     // console.log("otherListings", otherListings);
     // console.log("updatedBestDeals", updatedBestDeals);
@@ -273,7 +289,7 @@ router.get("/listingsbymake", async (req, res) => {
         status: "SUCCESS",
         dataObject: {
           otherListings: otherListings,
-          bestDeals: updatedBestDeals,
+          bestDeals: bestDealToBeSend,
         },
       });
     } else {
@@ -432,8 +448,16 @@ router.get("/listbymarketingname", async (req, res) => {
           }
         }
 
-        let currentPercentage =
+        // let currentPercentage =
+        //   ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+        let currentPercentage;
+        if (item.listingPrice > notionalPrice) {
+          currentPercentage =
             ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+        } else {
+          currentPercentage =
+            ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+        }
         // let newDataObject = {
         //   ...item._doc,
         //   notionalPercentage: currentPercentage,
@@ -544,6 +568,15 @@ router.get("/listbymarketingname", async (req, res) => {
       }
     });
 
+    let bestDealToBeSend = [];
+    updatedBestDeals.forEach((item, index) => {
+      if (item.notionalPercentage < 50) {
+        bestDealToBeSend.push(item);
+      } else {
+        otherListings.push(item);
+      }
+    });
+
     if (finalBestDeals.length > 0 || otherListings.length > 0) {
       res.status(200).json({
         reason: "Listing by marketingname found",
@@ -551,7 +584,7 @@ router.get("/listbymarketingname", async (req, res) => {
         status: "SUCCESS",
         dataObject: {
           otherListings: otherListings,
-          bestDeals: updatedBestDeals,
+          bestDeals: bestDealToBeSend,
         },
       });
     } else {
