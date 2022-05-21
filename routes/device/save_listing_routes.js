@@ -619,6 +619,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
 
 router.get("/listing/bydeviceid", async (req, res) => {
   const deviceId = req.query.deviceId;
+  const userUniqueId = req.query.userUniqueId;
 
   try {
     // const isValidUser = await createUserModal.find({
@@ -627,6 +628,7 @@ router.get("/listing/bydeviceid", async (req, res) => {
 
     const getListing = await saveListingModal.findOne({
       deviceUniqueId: deviceId,
+      userUniqueId: userUniqueId,
     });
 
     if (!getListing) {
