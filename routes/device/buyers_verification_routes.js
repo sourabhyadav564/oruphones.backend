@@ -114,7 +114,7 @@ router.get("/listing/sendverification", async (req, res) => {
               marketingName,
               sellerName
             );
-            res.status(200).json({
+            res.status(201).json({
               reason: "Request sent successfully",
               statusCode: 200,
               status: "SUCCESS",
@@ -122,7 +122,7 @@ router.get("/listing/sendverification", async (req, res) => {
             });
           } else {
             res.status(200).json({
-              reason: "You can't send verification request to yourself",
+              reason: "Listing not found",
               statusCode: 200,
               status: "SUCCESS",
               dataObject,
