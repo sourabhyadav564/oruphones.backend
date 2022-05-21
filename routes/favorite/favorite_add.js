@@ -147,28 +147,36 @@ router.post("/fetch", async (req, res) => {
 
     let dataObject = [];
 
-    if (getFavObject && getFavObject.fav_listings.length > 0) {
+    console.log("getFavObject", getFavObject);
+
+    if (getFavObject && getFavObject?.fav_listings.length > 0) {
       let arr = [];
       arr = getFavObject.fav_listings;
 
-      arr.forEach(async (item, index) => {
+      // arr.forEach(async (item, index) => {
+      for (item in arr) {
         let single_listing = await saveListingModal.findOne({
           listingId: item,
         });
-        if (!single_listing) {
+        if (single_listing === null) {
+          console.log("hello3");
+
           res.status(200).json({
             reason: "You cannot add this listing to your favorite list",
             statusCode: 200,
             status: "SUCCESS",
             dataObject: [],
           });
+          break;
         } else {
+          console.log("hell2");
           single_listing = {
-            ...single_listing._doc,
-            imagePath: single_listing.defaultImage.fullImage,
+            ...single_listing?._doc,
+            imagePath: single_listing?.defaultImage?.fullImage,
           };
           dataObject.push(single_listing);
           if (dataObject.length === arr.length) {
+            console.log("hell1");
             res.status(200).json({
               reason: "Favorite listings fetched successfully",
               statusCode: 200,
@@ -177,7 +185,8 @@ router.post("/fetch", async (req, res) => {
             });
           }
         }
-      });
+      }
+      // });
 
       //TODO - PENDING TO  ADD IMAGE PATH TO THE LISTING OBJECT
 
@@ -204,6 +213,7 @@ router.post("/fetch", async (req, res) => {
       //   });
       // }
     } else {
+      console.log("hello");
       res.status(200).json({
         reason: "Favorite listing does not exist",
         statusCode: 200,
