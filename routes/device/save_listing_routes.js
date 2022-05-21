@@ -84,6 +84,9 @@ router.post("/listing/save", async (req, res) => {
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const deviceImagesAvailable = images.length ? true : false;
 
+  const now = new Date();
+  const dateFormat = moment(now).format("L");
+
   //TODO - Add the exact default image as the model image
   //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
 
@@ -121,6 +124,7 @@ router.post("/listing/save", async (req, res) => {
     userUniqueId,
     deviceImagesAvailable,
     defaultImage,
+    listingDate: dateFormat,
   };
 
   const modalInfo = new saveListingModal(data);
