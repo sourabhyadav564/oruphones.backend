@@ -58,7 +58,7 @@ router.get("/listings/best/nearall", async (req, res) => {
         //       {
         //     listingLocation: citiesForIndia,
         //   }
-        ();
+        ({});
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
