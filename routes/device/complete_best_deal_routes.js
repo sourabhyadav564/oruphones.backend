@@ -124,62 +124,67 @@ router.get("/listings/best/nearall", async (req, res) => {
           if ("verified" in item === true) {
             if (item.verified === true) {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * verified_percentage;
+                notionalPrice - (basePrice / 100) * verified_percentage;
             }
           }
 
           if ("warranty" in item === true) {
             if (item.warranty === "0-3 months") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage1;
+                notionalPrice - (basePrice / 100) * warranty_percentage1;
             } else if (item.warranty === "4-6 months") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage2;
+                notionalPrice - (basePrice / 100) * warranty_percentage2;
             } else if (item.warranty === "7-10 months") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage3;
+                notionalPrice - (basePrice / 100) * warranty_percentage3;
             } else {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage4;
+                notionalPrice - (basePrice / 100) * warranty_percentage4;
             }
           }
 
           if ("charger" in item === true) {
             if (item.charger === "Y") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * has_charger_percentage;
+                notionalPrice - (basePrice / 100) * has_charger_percentage;
             }
           }
 
           if ("earphone" in item === true) {
             if (item.earphone === "Y") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * has_earphone_percentage;
+                notionalPrice - (basePrice / 100) * has_earphone_percentage;
             }
           }
 
           if ("originalbox" in item === true) {
             if (item.originalbox === "Y") {
               notionalPrice =
-                notionalPrice + (basePrice / 100) * has_original_box_percentage;
+                notionalPrice - (basePrice / 100) * has_original_box_percentage;
             }
           }
 
           let currentPercentage;
-          if (item.listingPrice > notionalPrice) {
-            currentPercentage =
-              ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
-          } else {
-            currentPercentage =
-              ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
-          }
+          // if (item.listingPrice > notionalPrice) {
+          //   currentPercentage =
+          //     ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+          // } else {
+          //   currentPercentage =
+          //     ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+          // }
+          currentPercentage = ((basePrice - notionalPrice)/basePrice) * 100;
           // let newDataObject = {
           //   ...item._doc,
           //   notionalPercentage: currentPercentage,
           // };
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
-            newDataObject = item;
+            // newDataObject = item;
+            newDataObject = {
+              ...item,
+              notionalPercentage: currentPercentage,
+            };
           } else {
             newDataObject = {
               ...item._doc,
@@ -248,7 +253,7 @@ router.get("/listings/best/nearall", async (req, res) => {
         }
       });
 
-      finalBestDeals.sort((b, a) => {
+      finalBestDeals.sort((a, b) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
 
@@ -283,9 +288,10 @@ router.get("/listings/best/nearall", async (req, res) => {
 
       finalBestDeals.forEach((item, index) => {
         if (
-          updatedBestDeals.length <= 5 &&
-          item.notionalPercentage > 0 &&
-          item.notionalPercentage < 50
+          updatedBestDeals.length <= 5 
+          // &&
+          // item.notionalPercentage > 0 &&
+          // item.notionalPercentage < 50
         ) {
           updatedBestDeals.push(item);
         } else {
