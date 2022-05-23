@@ -910,6 +910,12 @@ router.get("/makemodellist", async (req, res) => {
     case "huawei":
       make = "Huawei";
       break;
+    case "google":
+      make = "Google";
+      break;
+    case "honor":
+      make = "Honor";
+      break;
     case "xiaomi":
       make = "Xiaomi";
       break;
@@ -954,6 +960,36 @@ router.get("/makemodellist", async (req, res) => {
       break;
     case "lg":
       make = "LG";
+      break;
+    case "realme":
+      make = "Realme";
+      break;
+    case "blackberry":
+      make = "Blackberry";
+      break;
+    case "htc":
+      make = "HTC";
+      break;
+    case "huawei":
+      make = "Huawei";
+      break;
+    case "panasonic":
+      make = "Panasonic";
+      break;
+    case "zte":
+      make = "ZTE";
+      break;
+    case "alcatel":
+      make = "Alcatel";
+      break;
+    case "gionee":
+      make = "Gionee";
+      break;
+    case "lava":
+      make = "Lava";
+      break;
+    case "tecno":
+      make = "Tecno";
       break;
   }
 }
@@ -1052,9 +1088,18 @@ router.get("/makemodellist", async (req, res) => {
         "Apple",
         "OnePlus",
         "Xiaomi",
+        "Google",
+        "Honor",
+        "Realme",
+        "Blackberry",
+        "HTC",
         "Nokia",
         "LG",
         "Motorola",
+        "Huawei",
+        "Panasonic",
+        "ZTE",
+        "Alcatel",
         "Sony",
         "Lenovo",
         "Asus",
@@ -1063,6 +1108,9 @@ router.get("/makemodellist", async (req, res) => {
         "Infinix",
         "Micromax",
         "Karbonn",
+        "Lava",
+        "Gionee",
+        "Tenco"
       ],
     });
   }

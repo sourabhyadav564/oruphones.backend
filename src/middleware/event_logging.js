@@ -12,10 +12,6 @@ const logEvent = async (req, res, next) => {
   const expirationTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = moment(Date.now()).format("LTS");
 
-  console.log("expiration time", expirationTime);
-  console.log("createdTime", createdTime);
-  console.log("current time", currentTime);
-
   try {
     if (getEvent) {
       if (currentTime > expirationTime) {

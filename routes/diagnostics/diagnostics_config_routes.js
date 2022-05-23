@@ -1199,7 +1199,7 @@ router.post("/grade/price", async (req, res) => {
     dataObject["functionalGrade"] = grade;
     dataObject["cosmaticGrade"] = cosmeticGrade;
     dataObject["condition"] = condition;
-    dataObject["yourBody"] = req.body.questionnaireResults;
+    // dataObject["yourBody"] = req.body.questionnaireResults;
     dataObject["finalQuestionArray"] = finalQuestionArray;
 
     // if (selectdModels.length) {

@@ -185,6 +185,16 @@ router.post("/listing/delete", async (req, res) => {
 router.post("/listing/update", async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
+  const charger = req.body.charger;
+  const color = req.body.color;
+  const deviceCondition = req.body.deviceCondition;
+  const deviceStorage = req.body.deviceStorage;
+  const earphone = req.body.earphone;
+  const images = req.body.images;
+  const listingLocation = req.body.listingLocation;
+  const listingPrice = req.body.listingPrice;
+  const originalbox = req.body.originalbox;
+  const recommendedPriceRange = req.body.recommendedPriceRange;
 
   try {
     const updateListing = await saveListingModal.findOne({
@@ -200,9 +210,52 @@ router.post("/listing/update", async (req, res) => {
       return;
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
+        let dataToBeUpdate = {
+          charger,
+          color,
+          deviceCondition,
+          earphone,
+          images,
+          listingLocation,
+          listingPrice,
+          originalbox,
+          recommendedPriceRange,
+          deviceStorage
+        };
+        if (
+          updateListing?.deviceCondition === deviceCondition
+        ) {
+          dataToBeUpdate = {
+            charger,
+            color,
+            deviceCondition,
+            earphone,
+            images,
+            listingLocation,
+            listingPrice,
+            originalbox,
+            recommendedPriceRange,
+            deviceStorage
+          }; 
+        } else {
+          dataToBeUpdate = {
+            charger,
+            color,
+            deviceCondition,
+            earphone,
+            images,
+            listingLocation,
+            listingPrice,
+            originalbox,
+            recommendedPriceRange,
+            deviceStorage,
+            verified: false,
+          };
+        }
+
         const dataObject = await saveListingModal.findByIdAndUpdate(
           updateListing._id,
-          req.body,
+          dataToBeUpdate,
           {
             new: true,
           }
