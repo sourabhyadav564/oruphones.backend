@@ -8,20 +8,19 @@ const logEvent = async (req, res, next) => {
   const sessionId = req.headers.sessionid;
 
   const getEvent = await eventModal.findOne({sessionId: sessionId});
-  const createdTime = moment(getEvent?.createdAt).format("LTS");
-  const expirationTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
   const currentTime = moment(Date.now()).format("LTS");
+  const expirationTime = moment(getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)).format("LTS");
 
   try {
     if (getEvent) {
-      if (currentTime > expirationTime) {
-        res.status(301).send({
-          status: "SESSION_EXPIRED",
-          statusCode: 301,
-          reason: "User session expired",
-        });
-        return;
-      } else {
+      // if (currentTime > expirationTime) {
+      //   res.status(301).send({
+      //     status: "SESSION_EXPIRED",
+      //     statusCode: 301,
+      //     reason: "User session expired",
+      //   });
+      //   return;
+      // } else {
         const arr = [];
         getEvent.events.forEach((item) => {
           arr.push(item);
@@ -49,7 +48,7 @@ const logEvent = async (req, res, next) => {
 
         console.log("updateEvent", updateEvent);
         next();
-      }
+      // }
     } else {
       res.status(301).send({
         status: "SESSION_INVALID",
