@@ -1127,6 +1127,8 @@ router.get("/makemodellist", async (req, res) => {
       ram: item.ram,
     });
 
+    console.log("newModels", newModels);
+
     if (!makes.includes(item.make)) {
       dataObject.push({
         make: item.make,

@@ -28,6 +28,12 @@ const newMakeAndSchema = new mongoose.Schema(
         type: String,
         // required: true,
       }]
+    },
+    ram: {
+      type: [{
+        type: String,
+        // required: true,
+      }]
     }
   },
   { timestamps: true }
