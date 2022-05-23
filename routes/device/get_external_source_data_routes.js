@@ -36,8 +36,6 @@ router.post("/price/externalsellsource", async (req, res) => {
       model_name: marketingName,
     })
 
-    console.log("listings", listings);
-
     if (!listings.length) {
       res.status(200).json({
         reason: "Listing not found",
