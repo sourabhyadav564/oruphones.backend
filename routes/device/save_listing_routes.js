@@ -83,6 +83,7 @@ router.post("/listing/save", async (req, res) => {
   const platform = req.body.platform;
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const deviceImagesAvailable = images.length ? true : false;
+  const deviceRam = req.body.deviceRam;
 
   const now = new Date();
   const dateFormat = moment(now).format("L");
@@ -124,6 +125,7 @@ router.post("/listing/save", async (req, res) => {
     userUniqueId,
     deviceImagesAvailable,
     defaultImage,
+    deviceRam,
     listingDate: dateFormat,
   };
 

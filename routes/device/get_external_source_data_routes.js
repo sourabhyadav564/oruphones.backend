@@ -32,7 +32,7 @@ router.post("/price/externalsellsource", async (req, res) => {
   try {
     const listings = await scrappedModal.find({
       type: "sell",
-      storage: deviceStorage,
+      // storage: deviceStorage,
       model_name: marketingName,
     })
 
@@ -44,23 +44,32 @@ router.post("/price/externalsellsource", async (req, res) => {
         dataObject: [],
       });
     } else {
-      let filterData = {};
       let finalDataArray = [];
       listings.forEach(async (element) => {
+        let filterData = {};
         let vendorName = VENDORS[element.vendor_id];
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
           .toString()
           .toLowerCase()}_logo.png`;
         filterData["externalSourcePrice"] = element.actualPrice.toString();
         filterData["externalSourceImage"] = vendorImage;
-
         finalDataArray.push(filterData);
       });
 
       let dataToBeSend = [];
+      let extrData = [];
+
       finalDataArray.forEach((element, index) => {
-        if (index <= 2) {
+        if (dataToBeSend.length <= 1 && !extrData.includes(element.externalSourceImage) && element.externalSourceImage.includes("amazon_logo")) {
           dataToBeSend.push(element);
+          extrData.push(element.externalSourceImage);
+        }
+      })
+
+      finalDataArray.forEach((element, index) => {
+        if (dataToBeSend.length <= 3 && !extrData.includes(element.externalSourceImage)) {
+          dataToBeSend.push(element);
+          extrData.push(element.externalSourceImage);
         }
       })
       res.status(200).json({
