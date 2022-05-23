@@ -818,6 +818,7 @@ router.post("/marketingNameByModel", async (req, res) => {
 
       let dataObject = {
         deviceStorage: deviceStorage,
+        deviceRam: ram,
         marketingName: modelName,
         // imagePath: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make
         //   .toString()
