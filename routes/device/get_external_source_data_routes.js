@@ -8,6 +8,7 @@ router.post("/price/externalsellsource", async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const make = req.body.make;
   const marketingName = req.body.marketingName;
+  const deviceCondition = req.body.deviceCondition;
 
   const VENDORS = {
     6: "Amazon",
@@ -34,7 +35,8 @@ router.post("/price/externalsellsource", async (req, res) => {
       type: "sell",
       // storage: deviceStorage,
       model_name: marketingName,
-    })
+      mobiru_condition: deviceCondition,
+    });
 
     if (!listings.length) {
       res.status(200).json({
@@ -51,27 +53,41 @@ router.post("/price/externalsellsource", async (req, res) => {
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
           .toString()
           .toLowerCase()}_logo.png`;
-        filterData["externalSourcePrice"] = element.actualPrice.toString();
+        filterData["externalSourcePrice"] =
+          element.actualPrice != null ? element.actualPrice.toString() : "";
         filterData["externalSourceImage"] = vendorImage;
         finalDataArray.push(filterData);
+      });
+
+      finalDataArray.sort((a, b) => {
+        return (
+          parseInt(a.externalSourcePrice) - parseInt(b.externalSourcePrice)
+        );
       });
 
       let dataToBeSend = [];
       let extrData = [];
 
       finalDataArray.forEach((element, index) => {
-        if (dataToBeSend.length <= 1 && !extrData.includes(element.externalSourceImage) && element.externalSourceImage.includes("amazon_logo")) {
+        if (
+          dataToBeSend.length <= 1 &&
+          !extrData.includes(element.externalSourceImage) &&
+          element.externalSourceImage.includes("amazon_logo")
+        ) {
           dataToBeSend.push(element);
           extrData.push(element.externalSourceImage);
         }
-      })
+      });
 
       finalDataArray.forEach((element, index) => {
-        if (dataToBeSend.length <= 3 && !extrData.includes(element.externalSourceImage)) {
+        if (
+          dataToBeSend.length <= 3 &&
+          !extrData.includes(element.externalSourceImage)
+        ) {
           dataToBeSend.push(element);
           extrData.push(element.externalSourceImage);
         }
-      })
+      });
       res.status(200).json({
         reason: "Listing found",
         statusCode: 200,
