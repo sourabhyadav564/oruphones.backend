@@ -5,7 +5,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const start_migration = require("../utils/calculate_LSP");
-const getBestDeals = require("../utils/get_best_deals");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -32,7 +31,6 @@ let schedule = require('node-schedule');
 schedule.scheduleJob('37 11 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   start_migration();
-  // getBestDeals();
 });
 
 const testRoute = require("../routes/others/test_routes");
