@@ -1124,6 +1124,7 @@ router.get("/makemodellist", async (req, res) => {
       marketingname: item.marketingName,
       color: item.color,
       storage: item.storage,
+      ram: item.ram,
     });
 
     if (!makes.includes(item.make)) {
@@ -1138,6 +1139,7 @@ router.get("/makemodellist", async (req, res) => {
             marketingname: item.marketingName,
             color: item.color,
             storage: item.storage,
+            ram: item.ram,
           });
         }
       });
