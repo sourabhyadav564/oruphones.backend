@@ -4,7 +4,7 @@ const router = express.Router();
 require("../../src/database/connection");
 const eventModal = require("../../src/database/modals/others/event_logs");
 
-router.post("/sessionid", async (req, res) => {
+router.get("/sessionid", async (req, res) => {
   const userUniqueId = req.headers.useruniqueid;
   const eventName = req.headers.eventname;
   const srcFrom = req.headers.srcfrom;
