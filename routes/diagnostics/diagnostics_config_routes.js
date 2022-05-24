@@ -447,6 +447,16 @@ router.post("/grade/price", async (req, res) => {
       }
     }
 
+    if (finalGrade === "S") {
+      condition = "Like New";
+    } else if (finalGrade === "A") {
+      condition = "Excellent";
+    } else if (finalGrade === "B") {
+      condition = "Good";
+    } else if (finalGrade === "C") {
+      condition = "Fair";
+    }
+
     const listing = await saveListingModal.findOne({ listingId: listingId });
 
     // console.log(listing);
