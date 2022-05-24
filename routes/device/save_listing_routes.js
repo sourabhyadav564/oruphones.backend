@@ -802,7 +802,7 @@ router.get("/listing/bydeviceid", async (req, res) => {
 
     const getListing = await saveListingModal.findOne({
       deviceUniqueId: deviceId,
-      userUniqueId: userUniqueId,
+      // userUniqueId: userUniqueId,
     });
 
     if (!getListing) {
