@@ -217,7 +217,7 @@ router.post("/listings/search", async (req, res) => {
 
         // getPrice().then((price) => {
           const afterGetPrice = async (price) => {
-            basePrice = price.leastSellingprice;
+            basePrice = price.actualLSP;
             // console.log("basePrice", basePrice);
             notionalPrice = parseInt(
               item.listingPrice.toString().replace(",", "")

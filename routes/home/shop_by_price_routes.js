@@ -149,7 +149,7 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
         getPrice();
 
         const afterGetPrice = async (price) => {
-          basePrice = price.leastSellingprice;
+          basePrice = price.actualLSP;
           // console.log("basePrice", basePrice);
           notionalPrice = parseInt(
             item.listingPrice.toString().replace(",", "")

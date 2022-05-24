@@ -123,7 +123,7 @@ router.get("/listings/best/nearall", async (req, res) => {
 
         // getPrice().then((price) => {
         const afterGetPrice = async (price) => {
-          basePrice = price.leastSellingprice;
+          basePrice = price.actualLSP;
           // console.log("basePrice", basePrice);
           notionalPrice = parseInt(
             item.listingPrice.toString().replace(",", "")
@@ -174,6 +174,8 @@ router.get("/listings/best/nearall", async (req, res) => {
             }
           }
 
+          
+
           let currentPercentage;
           // if (item.listingPrice > notionalPrice) {
           //   currentPercentage =
@@ -183,6 +185,7 @@ router.get("/listings/best/nearall", async (req, res) => {
           //     ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
           // }
           currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
+          
           // let newDataObject = {
           //   ...item._doc,
           //   notionalPercentage: currentPercentage,

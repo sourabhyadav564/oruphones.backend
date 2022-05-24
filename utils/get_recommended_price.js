@@ -624,6 +624,7 @@ const getRecommendedPrice = async (
       Math.ceil(recommendedPriceRangeLowerLimit) ?? "-";
     dataObject["maxsellingprice"] =
       Math.ceil(recommendedPriceRangeUpperLimit) ?? "-";
+    dataObject["actualLSP"] = Math.ceil(leastSellingPrice) ?? "-";
 
     // if (selectdModels.length) {
     // if (selectdModels.length > 1) {

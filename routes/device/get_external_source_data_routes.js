@@ -78,10 +78,21 @@ router.post("/price/externalsellsource", async (req, res) => {
           extrData.push(element.externalSourceImage);
         }
       });
+      
+      finalDataArray.forEach((element, index) => {
+        if (
+          dataToBeSend.length <= 2 &&
+          !extrData.includes(element.externalSourceImage) &&
+          element.externalSourceImage.includes("cashify_logo")
+        ) {
+          dataToBeSend.push(element);
+          extrData.push(element.externalSourceImage);
+        }
+      });
 
       finalDataArray.forEach((element, index) => {
         if (
-          dataToBeSend.length <= 3 &&
+          dataToBeSend.length <= 12 &&
           !extrData.includes(element.externalSourceImage)
         ) {
           dataToBeSend.push(element);

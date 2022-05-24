@@ -609,7 +609,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let has_earphone_percentage = 0;
       const has_original_box_percentage = 3;
 
-        basePrice = price.leastSellingprice;
+        basePrice = price.actualLSP;
         // console.log("basePrice", basePrice);
         notionalPrice = parseInt(
           getListing.listingPrice.toString().replace(",", "")

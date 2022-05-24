@@ -8,6 +8,7 @@ const saveListingSchema = new mongoose.Schema({
     }, 
     color: {
         type: String,
+        default: ' ',
     },
     deviceCondition: {
         type: String,
