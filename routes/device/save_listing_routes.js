@@ -416,10 +416,16 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
           dataObject,
         });
       } else {
+
+        const dataObject = {
+          mobileNumber,
+        };
+
         res.status(200).json({
-          reason: "You have already sent verification request for this listing",
+          reason: "Mobile number retrieved again",
           statusCode: 200,
           status: "SUCCESS",
+          dataObject,
         });
       }
     } else {
