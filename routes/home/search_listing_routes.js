@@ -216,106 +216,95 @@ router.post("/listings/search", async (req, res) => {
         getPrice();
 
         // getPrice().then((price) => {
-        const afterGetPrice = async (price) => {
-          basePrice = price.leastSellingprice;
-          // console.log("basePrice", basePrice);
-          // basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
-          notionalPrice = basePrice;
-
-          if ("verified" in item === true) {
-            if (item.verified === true) {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * verified_percentage;
+          const afterGetPrice = async (price) => {
+            basePrice = price.leastSellingprice;
+            // console.log("basePrice", basePrice);
+            notionalPrice = parseInt(
+              item.listingPrice.toString().replace(",", "")
+            );
+            // notionalPrice = basePrice;
+  
+            if ("verified" in item === true) {
+              if (item.verified === true) {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * verified_percentage;
+              }
             }
-          }
-
-          console.log("notionalPrice1", notionalPrice);
-
-          if ("warranty" in item === true) {
-            if (item.warranty === "0-3 months") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage1;
-            } else if (item.warranty === "4-6 months") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage2;
-            } else if (item.warranty === "7-10 months") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage3;
+  
+            if ("warranty" in item === true) {
+              if (item.warranty === "0-3 months") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * warranty_percentage1;
+              } else if (item.warranty === "4-6 months") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * warranty_percentage2;
+              } else if (item.warranty === "7-10 months") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * warranty_percentage3;
+              } else {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * warranty_percentage4;
+              }
+            }
+  
+            if ("charger" in item === true) {
+              if (item.charger === "Y") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * has_charger_percentage;
+              }
+            }
+  
+            if ("earphone" in item === true) {
+              if (item.earphone === "Y") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * has_earphone_percentage;
+              }
+            }
+  
+            if ("originalbox" in item === true) {
+              if (item.originalbox === "Y") {
+                notionalPrice =
+                  notionalPrice - (basePrice / 100) * has_original_box_percentage;
+              }
+            }
+  
+            let currentPercentage;
+            // if (item.listingPrice > notionalPrice) {
+            //   currentPercentage =
+            //     ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+            // } else {
+            //   currentPercentage =
+            //     ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+            // }
+            currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
+            // let newDataObject = {
+            //   ...item._doc,
+            //   notionalPercentage: currentPercentage,
+            // };
+            let newDataObject = {};
+            if (item.isOtherVendor == "Y") {
+              // newDataObject = item;
+              newDataObject = {
+                ...item,
+                notionalPercentage: currentPercentage,
+              };
             } else {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * warranty_percentage4;
+              newDataObject = {
+                ...item._doc,
+                notionalPercentage: currentPercentage,
+              };
             }
-          }
-
-          console.log("notionalPrice2", notionalPrice);
-
-
-          if ("charger" in item === true) {
-            if (item.charger === "Y") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_charger_percentage;
+            bestDeals.push(newDataObject);
+            // });
+            dIndex++;
+            // console.log("index", dIndex);
+            // console.log("length", defaultDataObject.length);
+            if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
+              // console.error("bestDeals22", bestDeals);
+              afterGetingBestDeals(bestDeals);
+              // return bestDeals;
             }
-          }
-
-          console.log("notionalPrice3", notionalPrice);
-
-
-          if ("earphone" in item === true) {
-            if (item.earphone === "Y") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_earphone_percentage;
-            }
-          }
-
-          console.log("notionalPrice4", notionalPrice);
-
-
-          if ("originalbox" in item === true) {
-            if (item.originalbox === "Y") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_original_box_percentage;
-            }
-          }
-
-          console.log("notionalPrice5", notionalPrice);
-
-
-          let currentPercentage;
-          if (item.listingPrice > notionalPrice) {
-            currentPercentage =
-              ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
-          } else {
-            currentPercentage =
-              ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
-          }
-          // let newDataObject = {
-          //   ...item._doc,
-          //   notionalPercentage: currentPercentage,
-          // };
-          let newDataObject = {};
-          if (item.isOtherVendor === "Y") {
-            // newDataObject = item;
-            newDataObject = {
-              ...item,
-              notionalPercentage: currentPercentage,
-            };
-          } else {
-            newDataObject = {
-              ...item._doc,
-              notionalPercentage: currentPercentage,
-            };
-          }
-          bestDeals.push(newDataObject);
-          // });
-          dIndex++;
-          // console.log("index", dIndex);
-          // console.log("length", defaultDataObject.length);
-          if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
-            // console.error("bestDeals22", bestDeals);
-            afterGetingBestDeals(bestDeals);
-            // return bestDeals;
-          }
-        };
+          };
       };
 
       defaultDataObject.filter(async (item, index) => {
@@ -371,7 +360,7 @@ router.post("/listings/search", async (req, res) => {
         }
       });
 
-      finalBestDeals.sort((b, a) => {
+      finalBestDeals.sort((a, b) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
 
@@ -408,15 +397,32 @@ router.post("/listings/search", async (req, res) => {
 
       finalBestDeals.forEach((item, index) => {
         if (
-          updatedBestDeals.length <= 5 &&
-          item.notionalPercentage > 0 &&
-          item.notionalPercentage < 50
+          updatedBestDeals.length <= 5 
+          // &&
+          // item.notionalPercentage > 0 &&
+          // item.notionalPercentage < 50
         ) {
           updatedBestDeals.push(item);
         } else {
           otherListings.push(item);
         }
       });
+
+      let nullOtherList = [];
+
+      otherListings.forEach((item, index) => {
+        console.log(item.notionalPercentage.toString());
+        if (item.notionalPercentage.toString() === "NaN") {
+          nullOtherList.push(item);
+          otherListings.splice(index, 1);
+        }
+      })
+
+      otherListings.sort((a, b) => {
+        if (a.notionalPercentage > b.notionalPercentage) return -1;
+      });
+
+      otherListings.push(...nullOtherList);
 
       // return finalBestDeals
       // console.log("finalbestdeals", finalBestDeals);

@@ -53,12 +53,12 @@ router.get("/listings/best/nearall", async (req, res) => {
     let defaultDataObject = [];
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
-      let defaultDataObject2 = await saveListingModal
-        .find
+      let defaultDataObject2 = await saveListingModal.find(
         //       {
         //     listingLocation: citiesForIndia,
         //   }
-        ({});
+        {}
+      );
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -68,8 +68,15 @@ router.get("/listings/best/nearall", async (req, res) => {
       });
     } else {
       // defaultDataObject = await bestDealHomeModel.find({
-      defaultDataObject = await saveListingModal.find({
+      let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
+      });
+      defaultDataObject2.forEach((element) => {
+        defaultDataObject.push(element);
+      });
+      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
       });
     }
 
@@ -118,8 +125,10 @@ router.get("/listings/best/nearall", async (req, res) => {
         const afterGetPrice = async (price) => {
           basePrice = price.leastSellingprice;
           // console.log("basePrice", basePrice);
-          // basePrice = parseInt(item.listingPrice.toString().replace(",", ""));
-          notionalPrice = basePrice;
+          notionalPrice = parseInt(
+            item.listingPrice.toString().replace(",", "")
+          );
+          // notionalPrice = basePrice;
 
           if ("verified" in item === true) {
             if (item.verified === true) {
@@ -173,7 +182,7 @@ router.get("/listings/best/nearall", async (req, res) => {
           //   currentPercentage =
           //     ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
           // }
-          currentPercentage = ((basePrice - notionalPrice)/basePrice) * 100;
+          currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
           // let newDataObject = {
           //   ...item._doc,
           //   notionalPercentage: currentPercentage,
@@ -257,8 +266,8 @@ router.get("/listings/best/nearall", async (req, res) => {
         if (a.notionalPercentage > b.notionalPercentage) return -1;
       });
 
-      finalBestDeals.length =
-        finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+      // finalBestDeals.length =
+      //   finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
 
       // adding image path to each listing
       finalBestDeals.forEach((item, index) => {
@@ -286,18 +295,38 @@ router.get("/listings/best/nearall", async (req, res) => {
         }
       });
 
+      // let otherListToBeSend = [];
+
       finalBestDeals.forEach((item, index) => {
         if (
-          updatedBestDeals.length <= 5 
+          updatedBestDeals.length <= 5
           // &&
           // item.notionalPercentage > 0 &&
           // item.notionalPercentage < 50
         ) {
           updatedBestDeals.push(item);
         } else {
+          // otherListToBeSend.push(item);
           otherListings.push(item);
         }
       });
+      // otherListToBeSend.push(...otherListings);
+
+      let nullOtherList = [];
+
+      otherListings.forEach((item, index) => {
+        console.log(item.notionalPercentage.toString());
+        if (item.notionalPercentage.toString() === "NaN") {
+          nullOtherList.push(item);
+          otherListings.splice(index, 1);
+        }
+      })
+
+      otherListings.sort((a, b) => {
+        if (a.notionalPercentage > b.notionalPercentage) return -1;
+      });
+
+      otherListings.push(...nullOtherList);
 
       // return finalBestDeals
       // console.log("finalbestdeals", finalBestDeals);

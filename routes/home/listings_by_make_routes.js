@@ -62,10 +62,22 @@ router.get("/listingsbymake", async (req, res) => {
       defaultDataObject.push(thirdPartyVendor);
     });
   } else {
-    defaultDataObject = await saveListingModal.find({
-      listingLocation: location,
-      make: make,
-    });
+    // defaultDataObject = await saveListingModal.find({
+    //   listingLocation: location,
+    //   make: make,
+    // });
+    // defaultDataObject = await bestDealHomeModel.find({
+      let defaultDataObject2 = await saveListingModal.find({
+        listingLocation: location,
+        make: make,
+      });
+      defaultDataObject2.forEach((element) => {
+        defaultDataObject.push(element);
+      });
+      const thirdPartyVendors = await getThirdPartyVendors("", make);
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
+      });
   }
 
   const filterData = async () => {
@@ -109,63 +121,64 @@ router.get("/listingsbymake", async (req, res) => {
 
       const afterGetPrice = async (price) => {
         basePrice = price.leastSellingprice;
-        notionalPrice = basePrice;
+        // console.log("basePrice", basePrice);
+        notionalPrice = parseInt(
+          item.listingPrice.toString().replace(",", "")
+        );
+        // notionalPrice = basePrice;
 
         if ("verified" in item === true) {
           if (item.verified === true) {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * verified_percentage;
+              notionalPrice - (basePrice / 100) * verified_percentage;
           }
         }
 
         if ("warranty" in item === true) {
           if (item.warranty === "0-3 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage1;
+              notionalPrice - (basePrice / 100) * warranty_percentage1;
           } else if (item.warranty === "4-6 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage2;
+              notionalPrice - (basePrice / 100) * warranty_percentage2;
           } else if (item.warranty === "7-10 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage3;
+              notionalPrice - (basePrice / 100) * warranty_percentage3;
           } else {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage4;
+              notionalPrice - (basePrice / 100) * warranty_percentage4;
           }
         }
 
         if ("charger" in item === true) {
           if (item.charger === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_charger_percentage;
+              notionalPrice - (basePrice / 100) * has_charger_percentage;
           }
         }
 
         if ("earphone" in item === true) {
           if (item.earphone === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_earphone_percentage;
+              notionalPrice - (basePrice / 100) * has_earphone_percentage;
           }
         }
 
         if ("originalbox" in item === true) {
           if (item.originalbox === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_original_box_percentage;
+              notionalPrice - (basePrice / 100) * has_original_box_percentage;
           }
         }
 
         let currentPercentage;
-          if (item.listingPrice > notionalPrice) {
-            currentPercentage =
-              ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
-          } else {
-            currentPercentage =
-              ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
-          }
+        currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
         let newDataObject = {};
         if (item.isOtherVendor == "Y") {
-          newDataObject = item;
+          newDataObject = {
+            ...item,
+            notionalPercentage: currentPercentage,
+          };
         } else {
           newDataObject = {
             ...item._doc,
@@ -175,8 +188,12 @@ router.get("/listingsbymake", async (req, res) => {
         bestDeals.push(newDataObject);
         // });
         dIndex++;
+        // console.log("index", dIndex);
+        // console.log("length", defaultDataObject.length);
         if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
+          // console.error("bestDeals22", bestDeals);
           afterGetingBestDeals(bestDeals);
+          // return bestDeals;
         }
       };
     };
@@ -226,12 +243,12 @@ router.get("/listingsbymake", async (req, res) => {
       }
     });
 
-    finalBestDeals.sort((b, a) => {
+    finalBestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
-    finalBestDeals.length =
-      finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+    // finalBestDeals.length =
+    //   finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
 
     // adding image path to each listing
     finalBestDeals.forEach((item, index) => {
@@ -263,15 +280,32 @@ router.get("/listingsbymake", async (req, res) => {
 
     finalBestDeals.forEach((item, index) => {
       if (
-        updatedBestDeals.length <= 5 &&
-        item.notionalPercentage > 0 &&
-        item.notionalPercentage < 50
+        updatedBestDeals.length <= 5 
+        // &&
+        // item.notionalPercentage > 0 &&
+        // item.notionalPercentage < 50
       ) {
         updatedBestDeals.push(item);
       } else {
         otherListings.push(item);
       }
     });
+
+    let nullOtherList = [];
+
+      otherListings.forEach((item, index) => {
+        console.log(item.notionalPercentage.toString());
+        if (item.notionalPercentage.toString() === "NaN") {
+          nullOtherList.push(item);
+          otherListings.splice(index, 1);
+        }
+      })
+
+      otherListings.sort((a, b) => {
+        if (a.notionalPercentage > b.notionalPercentage) return -1;
+      });
+
+      otherListings.push(...nullOtherList);
 
     // console.log("finalBestDeals", finalBestDeals);
     // console.log("otherListings", otherListings);
@@ -350,9 +384,20 @@ router.get("/listbymarketingname", async (req, res) => {
       defaultDataObject.push(thirdPartyVendor);
     });
   } else {
-    defaultDataObject = await saveListingModal.find({
+    // defaultDataObject = await saveListingModal.find({
+    //   listingLocation: location,
+    //   marketingName: marketingname,
+    // });
+    let defaultDataObject2 = await saveListingModal.find({
       listingLocation: location,
-      marketingName: marketingname,
+      marketingName: marketingname
+    });
+    defaultDataObject2.forEach((element) => {
+      defaultDataObject.push(element);
+    });
+    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
+    thirdPartyVendors.forEach((thirdPartyVendor) => {
+      defaultDataObject.push(thirdPartyVendor);
     });
   }
 
@@ -397,69 +442,76 @@ router.get("/listbymarketingname", async (req, res) => {
 
       const afterGetPrice = async (price) => {
         basePrice = price.leastSellingprice;
-        notionalPrice = basePrice;
+        // console.log("basePrice", basePrice);
+        notionalPrice = parseInt(
+          item.listingPrice.toString().replace(",", "")
+        );
+        // notionalPrice = basePrice;
 
         if ("verified" in item === true) {
           if (item.verified === true) {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * verified_percentage;
+              notionalPrice - (basePrice / 100) * verified_percentage;
           }
         }
 
         if ("warranty" in item === true) {
           if (item.warranty === "0-3 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage1;
+              notionalPrice - (basePrice / 100) * warranty_percentage1;
           } else if (item.warranty === "4-6 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage2;
+              notionalPrice - (basePrice / 100) * warranty_percentage2;
           } else if (item.warranty === "7-10 months") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage3;
+              notionalPrice - (basePrice / 100) * warranty_percentage3;
           } else {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage4;
+              notionalPrice - (basePrice / 100) * warranty_percentage4;
           }
         }
 
         if ("charger" in item === true) {
           if (item.charger === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_charger_percentage;
+              notionalPrice - (basePrice / 100) * has_charger_percentage;
           }
         }
 
         if ("earphone" in item === true) {
           if (item.earphone === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_earphone_percentage;
+              notionalPrice - (basePrice / 100) * has_earphone_percentage;
           }
         }
 
         if ("originalbox" in item === true) {
           if (item.originalbox === "Y") {
             notionalPrice =
-              notionalPrice + (basePrice / 100) * has_original_box_percentage;
+              notionalPrice - (basePrice / 100) * has_original_box_percentage;
           }
         }
 
-        // let currentPercentage =
-        //   ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
         let currentPercentage;
-          if (item.listingPrice > notionalPrice) {
-            currentPercentage =
-              ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
-          } else {
-            currentPercentage =
-              ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
-          }
+        // if (item.listingPrice > notionalPrice) {
+        //   currentPercentage =
+        //     ((item.listingPrice - notionalPrice) / item.listingPrice) * 100;
+        // } else {
+        //   currentPercentage =
+        //     ((notionalPrice - item.listingPrice) / item.listingPrice) * 100;
+        // }
+        currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
         // let newDataObject = {
         //   ...item._doc,
         //   notionalPercentage: currentPercentage,
         // };
         let newDataObject = {};
         if (item.isOtherVendor == "Y") {
-          newDataObject = item;
+          // newDataObject = item;
+          newDataObject = {
+            ...item,
+            notionalPercentage: currentPercentage,
+          };
         } else {
           newDataObject = {
             ...item._doc,
@@ -469,8 +521,12 @@ router.get("/listbymarketingname", async (req, res) => {
         bestDeals.push(newDataObject);
         // });
         dIndex++;
+        // console.log("index", dIndex);
+        // console.log("length", defaultDataObject.length);
         if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
+          // console.error("bestDeals22", bestDeals);
           afterGetingBestDeals(bestDeals);
+          // return bestDeals;
         }
       };
     };
@@ -520,12 +576,12 @@ router.get("/listbymarketingname", async (req, res) => {
       }
     });
 
-    finalBestDeals.sort((b, a) => {
+    finalBestDeals.sort((a, b) => {
       if (a.notionalPercentage > b.notionalPercentage) return -1;
     });
 
-    finalBestDeals.length =
-      finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
+    // finalBestDeals.length =
+    //   finalBestDeals.length >= 16 ? 16 : finalBestDeals.length;
 
     // adding image path to each listing
     finalBestDeals.forEach((item, index) => {
@@ -557,15 +613,32 @@ router.get("/listbymarketingname", async (req, res) => {
 
     finalBestDeals.forEach((item, index) => {
       if (
-        updatedBestDeals.length <= 5 &&
-        item.notionalPercentage > 0 &&
-        item.notionalPercentage < 50
+        updatedBestDeals.length <= 5 
+        // &&
+        // item.notionalPercentage > 0 &&
+        // item.notionalPercentage < 50
       ) {
         updatedBestDeals.push(item);
       } else {
         otherListings.push(item);
       }
     });
+
+    let nullOtherList = [];
+
+    otherListings.forEach((item, index) => {
+      console.log(item.notionalPercentage.toString());
+      if (item.notionalPercentage.toString() === "NaN") {
+        nullOtherList.push(item);
+        otherListings.splice(index, 1);
+      }
+    })
+
+    otherListings.sort((a, b) => {
+      if (a.notionalPercentage > b.notionalPercentage) return -1;
+    });
+
+    otherListings.push(...nullOtherList);
 
     if (finalBestDeals.length > 0 || otherListings.length > 0) {
       res.status(200).json({
