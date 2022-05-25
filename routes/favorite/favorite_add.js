@@ -143,77 +143,45 @@ router.post("/fetch", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    // console.log("getFavObject", getFavObject);
-
     let dataObject = [];
-
-    console.log("getFavObject", getFavObject);
 
     if (getFavObject && getFavObject?.fav_listings.length > 0) {
       let arr = [];
       arr = getFavObject.fav_listings;
+      let allFavListings = [];
 
-      // arr.forEach(async (item, index) => {
       for (item in arr) {
         let single_listing = await saveListingModal.findOne({
-          listingId: item,
+          listingId: arr[item],
         });
-        if (single_listing === null) {
-          console.log("hello3");
-
-          res.status(200).json({
-            reason: "You cannot add this listing to your favorite list",
-            statusCode: 200,
-            status: "SUCCESS",
-            dataObject: [],
-          });
-          break;
-        } else {
-          console.log("hell2");
+        if (single_listing) {
           single_listing = {
             ...single_listing?._doc,
             imagePath: single_listing?.defaultImage?.fullImage,
           };
-          dataObject.push(single_listing);
-          if (dataObject.length === arr.length) {
-            console.log("hell1");
+          allFavListings.push(single_listing);
+        }
+        if (item == arr.length - 1) {
+
+          if (allFavListings.length > 0) {
+            dataObject = allFavListings;
             res.status(200).json({
               reason: "Favorite listings fetched successfully",
               statusCode: 200,
               status: "SUCCESS",
               dataObject,
             });
+          } else {
+            res.status(200).json({
+              reason: "You do not have any favourite listing",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject: [],
+            });
           }
         }
       }
-      // });
-
-      //TODO - PENDING TO  ADD IMAGE PATH TO THE LISTING OBJECT
-
-      // if (dataObject.length === arr.length) {
-      //   let j = 1;
-      //   dataObject.forEach(async (item2, index) => {
-      //     if (!item2.images.length) {
-      //       dataObject[index].imagePath = await item2.defaultImage.fullImage;
-      //     } else {
-      //       dataObject[index].imagePath = await item2.images[0].fullImage;
-      //     }
-      //     // console.log("j", j);
-      //     // console.log("dataObject", dataObject.length);
-      //     if (j === dataObject.length) {
-      //       console.log("dataObject", dataObject);
-      //       res.status(200).json({
-      //         reason: "Favorite listings fetched successfully",
-      //         statusCode: 200,
-      //         status: "SUCCESS",
-      //         dataObject,
-      //       });
-      //     }
-      //     j++;
-      //   });
-      // }
     } else {
-      console.log("hello");
       res.status(200).json({
         reason: "Favorite listing does not exist",
         statusCode: 200,

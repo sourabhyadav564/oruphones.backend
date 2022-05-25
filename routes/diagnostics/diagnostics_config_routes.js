@@ -263,7 +263,7 @@ router.post("/grade/price", async (req, res) => {
   const questionnaireResults = req.body.questionnaireResults;
   const deviceUniqueId = req.body.deviceUniqueId;
   const ram = req.body.ram;
-  // const storage = req.body.storage;
+  const storage = req.body.storage;
   const userUniqueId = req.body.userUniqueId;
 
   const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
@@ -515,6 +515,7 @@ router.post("/grade/price", async (req, res) => {
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
       deviceUniqueId: deviceUniqueId,
+      deviceStorage: storage
     };
 
     console.log("dataToBeUpdate", dataToBeUpdate);

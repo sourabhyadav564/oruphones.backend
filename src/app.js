@@ -61,6 +61,7 @@ const searchListingRoute = require("../routes/home/search_listing_routes");
 const shareLinkRoute = require("../routes/global/share_link_route");
 const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
 const shopByPriceRoute = require("../routes/home/shop_by_price_routes");
+const getInfoTemplateRoutes = require("../routes/global/get_info_template_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -82,6 +83,7 @@ app.use("/api/v1/device", externalSourcePriceRoutes);
 app.use("/api/v1/global", citiesRoute);
 app.use("/api/v1/global", sqlRoute);
 app.use("/api/v1/global", shareLinkRoute);
+app.use("/api/v1/global", getInfoTemplateRoutes);
 app.use("/api/v1/home", bestDealHomeRoute);
 app.use("/api/v1/home", listingByMakeRoute);
 app.use("/api/v1/home", topSellingModelRoute);

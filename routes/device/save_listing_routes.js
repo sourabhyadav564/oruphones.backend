@@ -223,36 +223,15 @@ router.post("/listing/update", async (req, res) => {
           listingPrice,
           originalbox,
           recommendedPriceRange,
-          deviceStorage
+          deviceStorage,
         };
-        if (
-          updateListing?.deviceCondition === deviceCondition
-        ) {
-          dataToBeUpdate = {
-            charger,
-            color,
-            deviceCondition,
-            earphone,
-            images,
-            listingLocation,
-            listingPrice,
-            originalbox,
-            recommendedPriceRange,
-            deviceStorage
-          }; 
+        if (updateListing?.deviceCondition === deviceCondition) {
+          dataToBeUpdate = { ...dataToBeUpdate };
         } else {
           dataToBeUpdate = {
-            charger,
-            color,
-            deviceCondition,
-            earphone,
-            images,
-            listingLocation,
-            listingPrice,
-            originalbox,
-            recommendedPriceRange,
-            deviceStorage,
+            ...dataToBeUpdate,
             verified: false,
+            verifiedDate: ""
           };
         }
 
@@ -416,7 +395,6 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
           dataObject,
         });
       } else {
-
         const dataObject = {
           mobileNumber,
         };
@@ -564,39 +542,40 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       });
       return;
     } else {
-
       // let query =
       //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
-        let getMake = getListing?.make;
-        let getMarketingName = getListing?.marketingName;
-        let getCondition = getListing?.deviceCondition;
-        let getStorage = getListing?.deviceStorage;
-        let getCharger = getListing?.charger === "Y" ? true : false;
-        let isAppleChargerIncluded = getCharger?.make === "Apple" ? getCharger : false;
-        let getEarphone = getListing?.earphone === "Y" ? true : false;
-        let isAppleEarphoneIncluded = getEarphone?.make === "Apple" ? getEarphone : false;
-        let gethasOrignalBox = getListing?.originalbox === "Y" ? true : false;
-        let getisVarified = getListing?.verified;
-        
-        const price = await getRecommendedPrice(
-          getMake,
-          getMarketingName,
-          getCondition,
-          getStorage,
-          getCharger,
-          isAppleChargerIncluded,
-          getEarphone,
-          isAppleEarphoneIncluded,
-          gethasOrignalBox,
-          getisVarified,
-          false
+      let getMake = getListing?.make;
+      let getMarketingName = getListing?.marketingName;
+      let getCondition = getListing?.deviceCondition;
+      let getStorage = getListing?.deviceStorage;
+      let getCharger = getListing?.charger === "Y" ? true : false;
+      let isAppleChargerIncluded =
+        getCharger?.make === "Apple" ? getCharger : false;
+      let getEarphone = getListing?.earphone === "Y" ? true : false;
+      let isAppleEarphoneIncluded =
+        getEarphone?.make === "Apple" ? getEarphone : false;
+      let gethasOrignalBox = getListing?.originalbox === "Y" ? true : false;
+      let getisVarified = getListing?.verified;
+
+      const price = await getRecommendedPrice(
+        getMake,
+        getMarketingName,
+        getCondition,
+        getStorage,
+        getCharger,
+        isAppleChargerIncluded,
+        getEarphone,
+        isAppleEarphoneIncluded,
+        gethasOrignalBox,
+        getisVarified,
+        false
       );
       // console.log("price", price);
       // if (price !== null) {
       //   afterGetPrice(price);
       //   return price;
-      // } 
+      // }
 
       let basePrice;
       let notionalPrice;
@@ -609,80 +588,80 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let has_earphone_percentage = 0;
       const has_original_box_percentage = 3;
 
-        basePrice = price.actualLSP;
-        // console.log("basePrice", basePrice);
-        notionalPrice = parseInt(
-          getListing.listingPrice.toString().replace(",", "")
-        );
-        // notionalPrice = basePrice;
+      basePrice = price.actualLSP;
+      // console.log("basePrice", basePrice);
+      notionalPrice = parseInt(
+        getListing.listingPrice.toString().replace(",", "")
+      );
+      // notionalPrice = basePrice;
 
-        if ("verified" in getListing === true) {
-          if (getListing.verified === true) {
-            notionalPrice =
-              notionalPrice - (basePrice / 100) * verified_percentage;
-          }
+      if ("verified" in getListing === true) {
+        if (getListing.verified === true) {
+          notionalPrice =
+            notionalPrice - (basePrice / 100) * verified_percentage;
         }
+      }
 
-        // if ("warranty" in item === true) {
-        //   if (item.warranty === "0-3 months") {
-        //     notionalPrice =
-        //       notionalPrice - (basePrice / 100) * warranty_percentage1;
-        //   } else if (item.warranty === "4-6 months") {
-        //     notionalPrice =
-        //       notionalPrice - (basePrice / 100) * warranty_percentage2;
-        //   } else if (item.warranty === "7-10 months") {
-        //     notionalPrice =
-        //       notionalPrice - (basePrice / 100) * warranty_percentage3;
-        //   } else {
-        //     notionalPrice =
-        //       notionalPrice - (basePrice / 100) * warranty_percentage4;
-        //   }
-        // }
+      // if ("warranty" in item === true) {
+      //   if (item.warranty === "0-3 months") {
+      //     notionalPrice =
+      //       notionalPrice - (basePrice / 100) * warranty_percentage1;
+      //   } else if (item.warranty === "4-6 months") {
+      //     notionalPrice =
+      //       notionalPrice - (basePrice / 100) * warranty_percentage2;
+      //   } else if (item.warranty === "7-10 months") {
+      //     notionalPrice =
+      //       notionalPrice - (basePrice / 100) * warranty_percentage3;
+      //   } else {
+      //     notionalPrice =
+      //       notionalPrice - (basePrice / 100) * warranty_percentage4;
+      //   }
+      // }
 
-        if ("charger" in getListing === true) {
-          if (getListing.charger === "Y") {
-            notionalPrice =
-              notionalPrice - (basePrice / 100) * has_charger_percentage;
-          }
+      if ("charger" in getListing === true) {
+        if (getListing.charger === "Y") {
+          notionalPrice =
+            notionalPrice - (basePrice / 100) * has_charger_percentage;
         }
+      }
 
-        if ("earphone" in getListing === true) {
-          if (getListing.earphone === "Y") {
-            notionalPrice =
-              notionalPrice - (basePrice / 100) * has_earphone_percentage;
-          }
+      if ("earphone" in getListing === true) {
+        if (getListing.earphone === "Y") {
+          notionalPrice =
+            notionalPrice - (basePrice / 100) * has_earphone_percentage;
         }
+      }
 
-        if ("originalbox" in getListing === true) {
-          if (getListing.originalbox === "Y") {
-            notionalPrice =
-              notionalPrice - (basePrice / 100) * has_original_box_percentage;
-          }
+      if ("originalbox" in getListing === true) {
+        if (getListing.originalbox === "Y") {
+          notionalPrice =
+            notionalPrice - (basePrice / 100) * has_original_box_percentage;
         }
+      }
 
-        let currentPercentage;
-        currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
+      let currentPercentage;
+      currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-        console.log("currentPercentage", currentPercentage);
-        // let newDataObject = {};
-        // if (getListing.isOtherVendor == "Y") {
-        //   newDataObject = {
-        //     ...getListing,
-        //     notionalPercentage: currentPercentage,
-        //   };
-        // } else {
-        //   newDataObject = {
-        //     ...getListing._doc,
-        //     notionalPercentage: currentPercentage,
-        //   };
-        // }
-        // bestDeals.push(newDataObject);
-        // dIndex++;
-        // if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
-        //   // console.error("bestDeals22", bestDeals);
-        //   // afterGetingBestDeals(bestDeals);
-        //   // return bestDeals;
-        // }
+      console.log("currentPercentage", currentPercentage);
+      // let newDataObject = {};
+      // if (getListing.isOtherVendor == "Y") {
+      //   newDataObject = {
+      //     ...getListing,
+      //     notionalPercentage: currentPercentage,
+      //   };
+      // } else {
+      //   newDataObject = {
+      //     ...getListing._doc,
+      //     notionalPercentage: currentPercentage,
+      //   };
+      // }
+      // bestDeals.push(newDataObject);
+      // dIndex++;
+      // if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
+      //   // console.error("bestDeals22", bestDeals);
+      //   // afterGetingBestDeals(bestDeals);
+      //   // return bestDeals;
+      // }
 
       console.log("price", price);
       const VENDORS = {
@@ -707,79 +686,78 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
 
       const externalSource = [];
 
-      let dataObject = {externalSource, ...getListing._doc };
+      let dataObject = { externalSource, ...getListing._doc };
       if (currentPercentage > -3) {
+        let scrappedModels = await scrappedModal.find({
+          model_name: getListing?.marketingName,
+          storage: getListing?.deviceStorage,
+          type: "buy",
+        });
 
-      let scrappedModels = await scrappedModal.find({
-        model_name: getListing?.marketingName,
-        storage: getListing?.deviceStorage,
-        type: "buy",
-      });
+        // console.log("scrappedModels", scrappedModels);
+        // console.log("scrappedModel1", getListing?.marketingName);
+        // console.log("scrappedModel2", getListing?.deviceStorage);
 
-      // console.log("scrappedModels", scrappedModels);
-      // console.log("scrappedModel1", getListing?.marketingName);
-      // console.log("scrappedModel2", getListing?.deviceStorage);
+        // connection.query(query, [2, 1], async (err, results, fields) => {
+        //   if (err) {
+        //     console.log(err);
+        //   } else {
+        // let models = results[1];
+        // let scrappedModels = results[0];
+        let selectdModels = [];
+        // let minPrice;
+        // let maxPrice;
+        let itemId = "";
+        // const make = await getListing.make;
+        const marketingname = getListing.marketingName;
+        const condition = getListing.deviceCondition;
+        const storage = getListing.deviceStorage;
+        // .split(" ")[0]
+        // .toString();
+        let leastSellingPrice;
 
-      // connection.query(query, [2, 1], async (err, results, fields) => {
-      //   if (err) {
-      //     console.log(err);
-      //   } else {
-      // let models = results[1];
-      // let scrappedModels = results[0];
-      let selectdModels = [];
-      // let minPrice;
-      // let maxPrice;
-      let itemId = "";
-      // const make = await getListing.make;
-      const marketingname = getListing.marketingName;
-      const condition = getListing.deviceCondition;
-      const storage = getListing.deviceStorage;
-      // .split(" ")[0]
-      // .toString();
-      let leastSellingPrice;
+        // models.forEach((item, index) => {
+        //   if (item.name === marketingname) {
+        //     itemId = item.id;
+        //     return;
+        //   }
+        // });
 
-      // models.forEach((item, index) => {
-      //   if (item.name === marketingname) {
-      //     itemId = item.id;
-      //     return;
-      //   }
-      // });
+        // console.log("marketingname", marketingname);
+        // console.log("condition", condition);
+        // console.log("storage", storage);
 
-      // console.log("marketingname", marketingname);
-      // console.log("condition", condition);
-      // console.log("storage", storage);
+        let pushedVendors = [];
 
-      let pushedVendors = [];
-
-      scrappedModels.forEach((item, index) => {
-        if (
-          item.model_name === marketingname &&
-          item.mobiru_condition === condition &&
-          item.storage === storage
-        ) {
-          vendorName = VENDORS[item.vendor_id];
-          vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
-            .toString()
-            .toLowerCase()}_logo.png`;
-          let vendorObject = {
-            externalSourcePrice: item.price,
-            externalSourceImage: vendorImage,
-          };
-          if (!pushedVendors.includes(vendorName)) {
-            selectdModels.push(vendorObject);
-            pushedVendors.push(vendorName);
+        scrappedModels.forEach((item, index) => {
+          if (
+            item.model_name === marketingname &&
+            item.mobiru_condition === condition &&
+            item.storage === storage
+          ) {
+            vendorName = VENDORS[item.vendor_id];
+            vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+              .toString()
+              .toLowerCase()}_logo.png`;
+            let vendorObject = {
+              externalSourcePrice: item.price,
+              externalSourceImage: vendorImage,
+            };
+            if (!pushedVendors.includes(vendorName)) {
+              selectdModels.push(vendorObject);
+              pushedVendors.push(vendorName);
+            }
           }
+        });
+
+        if (selectdModels.length > 0) {
+          // leastSellingPrice = Math.max(...selectdModels);
+          externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
-      });
 
-      if (selectdModels.length > 0) {
-        // leastSellingPrice = Math.max(...selectdModels);
-        externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
+        dataObject = { externalSource, ...getListing._doc };
+        // console.log("externalSource", dataObject);
       }
-
-      dataObject = { externalSource, ...getListing._doc };
-      // console.log("externalSource", dataObject);
-    }
       // if(externalSource.length > 0) {
       res.status(200).json({
         reason: "Listing updated successfully",
