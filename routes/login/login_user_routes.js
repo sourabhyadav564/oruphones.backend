@@ -167,7 +167,7 @@ router.post("/address/addSearchLocation", async (req, res) => {
           dataToBeSend = userAddress[i];
         }
       });
-      if (!bool && locationId == -1) {
+      if (!bool && locationId == "-1") {
         dataToBeSend = {
           addressType: "SearchLocation",
           city: city,
