@@ -87,9 +87,12 @@ router.get("/byUserId/:uuid", async (req, res) => {
   const userUniqueId = req.params.uuid;
 
   try {
-    const notificationArray = await notificationModel.findOne({
+    let notificationArray = await notificationModel.findOne({
       userUniqueId: userUniqueId,
     });
+
+    notificationArray.notification.reverse();
+
     let dataToBeSend = {};
     let unReadCount = 0;
     if (notificationArray) {

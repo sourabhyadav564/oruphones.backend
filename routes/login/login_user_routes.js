@@ -186,7 +186,7 @@ router.post("/address/addSearchLocation", async (req, res) => {
         reason: "Profile location added successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataToBeSend,
+        dataObject: dataToBeSend,
       });
 
       // const dataObject = {
@@ -268,7 +268,7 @@ router.post("/address/addProfileLocation", async (req, res) => {
         reason: "Profile location added successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataToBeSend,
+        dataObject: dataToBeSend,
       });
 
       // const dataObject = {

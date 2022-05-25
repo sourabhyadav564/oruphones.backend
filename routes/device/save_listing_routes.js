@@ -38,7 +38,8 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 router.get("/listings", async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
-    const dataObject = await saveListingModal.find({ userUniqueId });
+    let dataObject = await saveListingModal.find({ userUniqueId });
+    dataObject.reverse();
 
     if (!dataObject) {
       res.status(404).json({ message: "User unique ID not found" });
