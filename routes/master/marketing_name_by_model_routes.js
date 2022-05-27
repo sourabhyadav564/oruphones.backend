@@ -79,6 +79,30 @@ router.post("/marketingNameByModel", async (req, res) => {
     case "lg":
       make = "LG";
       break;
+    case "alcatel":
+      make = "Alcatel";
+      break;
+    case "micromax":
+      make = "Micromax";
+      break;
+    case "motorola":
+      make = "Motorola";
+      break;
+    case "panasonic":
+      make = "Panasonic";
+      break;
+    case "realme":
+      make = "Realme";
+      break;
+    case "tenco":
+      make = "Tenco";
+      break;
+    case "lava":
+      make = "Lava";
+      break;
+    case "gionee":
+      make = "Gionee";
+      break;
   }
 
   try {

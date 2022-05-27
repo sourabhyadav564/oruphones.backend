@@ -7,6 +7,7 @@ const saveRequestModal = require("../../src/database/modals/device/request_verif
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const scrappedModal = require("../../src/database/modals/others/scrapped_models");
+const scrappedExternalSourceModal = require("../../src/database/modals/others/scrapped_for_external_source_models");
 const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
@@ -689,13 +690,14 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
 
       let dataObject = { externalSource, ...getListing._doc };
       if (currentPercentage > -3) {
-        let scrappedModels = await scrappedModal.find({
+        let scrappedModels = await scrappedExternalSourceModal.find({
           model_name: getListing?.marketingName,
           storage: getListing?.deviceStorage,
           type: "buy",
         });
 
-        // console.log("scrappedModels", scrappedModels);
+
+        console.log("scrappedModels", scrappedModels);
         // console.log("scrappedModel1", getListing?.marketingName);
         // console.log("scrappedModel2", getListing?.deviceStorage);
 
