@@ -43,14 +43,14 @@ router.get("/listings/best/nearme", async (req, res) => {
 
   let basePrice;
   let notionalPrice;
-  const verified_percentage = 4;
+  const verified_percentage = 10;
   const warranty_percentage1 = 10;
   const warranty_percentage2 = 8;
   const warranty_percentage3 = 5;
   const warranty_percentage4 = 0;
   let has_charger_percentage = 0;
   let has_earphone_percentage = 0;
-  const has_original_box_percentage = 1;
+  const has_original_box_percentage = 3;
 
   // const citiesForIndia = [
   //   "Delhi",

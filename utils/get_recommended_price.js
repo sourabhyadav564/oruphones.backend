@@ -109,11 +109,11 @@ const getRecommendedPrice = async (
 
     let leastSellingPrice;
     let lowerRangeMatrix = 0.7;
-    let upperRangeMatrix = 0.9;
+    let upperRangeMatrix = 0.8;
     let isAppleCharger = 0.1;
     let isNonAppleCharger = 0.02;
     let isAppleEarphone = 0.05;
-    let isNonAppleEarphone = 0.02;
+    let isNonAppleEarphone = 0.01;
     let isOriginalBox = 0.01;
     let warrantyZeroToThree = 0.05;
     // let warrantyZeroToThree = 0.1;
