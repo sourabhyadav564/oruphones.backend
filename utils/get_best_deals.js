@@ -124,14 +124,16 @@ const getBestDeals = async (
             item.listingPrice.toString().replace(",", "")
           );
 
-          if ("verified" in item != true) {
-            if (item.verified === true) {
+          if ("verified" in item === true && item.isOtherVendor === "N") {
+            if (item.verified != true) {
+              console.log("into verified");
               notionalPrice =
                 notionalPrice + (basePrice / 100) * verified_percentage;
             }
           }
 
-          if ("warranty" in item != true) {
+          if ("warranty" in item != true && item.isOtherVendor === "N") {
+            console.log("into warranty");
             // if (item.warranty === "0-3 months") {
             notionalPrice =
               notionalPrice + (basePrice / 100) * warranty_percentage1;
@@ -149,6 +151,7 @@ const getBestDeals = async (
 
           if ("charger" in item === true) {
             if (item.charger === "N") {
+              console.log("into charger");
               notionalPrice =
                 notionalPrice + (basePrice / 100) * has_charger_percentage;
             }
@@ -156,6 +159,7 @@ const getBestDeals = async (
 
           if ("earphone" in item === true) {
             if (item.earphone === "N") {
+              console.log("into earphone");
               notionalPrice =
                 notionalPrice + (basePrice / 100) * has_earphone_percentage;
             }
@@ -163,6 +167,7 @@ const getBestDeals = async (
 
           if ("originalbox" in item === true) {
             if (item.originalbox === "N") {
+              console.log("into originalbox");
               notionalPrice =
                 notionalPrice + (basePrice / 100) * has_original_box_percentage;
             }
@@ -171,13 +176,13 @@ const getBestDeals = async (
           let currentPercentage;
           currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-          // console.log("lsp", basePrice);
-          // console.log("listing price", item.listingPrice.toString());
-          // console.log("notional price", notionalPrice);
-          // console.log("percent", currentPercentage);
-          // console.log("---------");
-          // console.log("item", item);
-          // console.log("----------------------------------------------");
+          console.log("lsp", basePrice);
+          console.log("listing price", item.listingPrice.toString());
+          console.log("notional price", notionalPrice);
+          console.log("percent", currentPercentage);
+          console.log("---------");
+          console.log("item", item);
+          console.log("----------------------------------------------");
 
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
