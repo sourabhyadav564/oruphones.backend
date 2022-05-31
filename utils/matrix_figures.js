@@ -26,3 +26,15 @@ const recommendedPriceFigures = {
 };
 
 exports.recommendedPriceFigures = recommendedPriceFigures;
+
+const bestDealFigures = {
+  verified_percentage: 5,
+  warranty_percentage1: 10,
+  has_apple_charger_percentage: 10,
+  has_non_apple_charger_percentage: 2,
+  has_apple_earphone_percentage: 10,
+  has_non_apple_earphone_percentage: 1.5,
+  has_original_box_percentage: 1,
+}
+
+exports.bestDealFigures = bestDealFigures;
