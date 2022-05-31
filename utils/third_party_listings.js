@@ -50,8 +50,6 @@ const getThirdPartyVendors = async (model_name, make) => {
   } else {
     filterd = await scrappedModal.find({ type: "buy" }).limit(50);
   }
-  
-  console.log("fffff ",filterd.length);
 
   let dataObject = {};
   let dataArray = [];
@@ -98,7 +96,6 @@ const getThirdPartyVendors = async (model_name, make) => {
     dataArray.push(dataObject);
   });
 
-  console.log("dataArray ", dataArray.length);
   return dataArray;
 };
 

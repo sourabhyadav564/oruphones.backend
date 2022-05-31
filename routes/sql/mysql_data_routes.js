@@ -87,6 +87,7 @@ router.post("/recomanded/price", async (req, res) => {
         const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
         const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
         const isVarified = req.body.verified === "no" ? false : true;
+        const warrantyPeriod = req.body.warrantyPeriod;
         // fs.writeFileSync(`scrapped.json`, JSON.stringify(scrappedModels));
         // fs.writeFileSync(`models.json`, JSON.stringify(models));
 
@@ -101,7 +102,8 @@ router.post("/recomanded/price", async (req, res) => {
           isAppleEarphoneIncluded,
           hasOrignalBox,
           isVarified,
-          false
+          false,
+          warrantyPeriod
         );
       
         console.log("recomended price", recommendedPrice);
