@@ -17,9 +17,9 @@ router.get("/getinfotemplates", async (req, res) => {
       "TERMS_CONDITIONS": "/terms_conditions.html",
       "FAQ": "/faq",
       "ABOUT_US": "/about-us",
-      "WARRANTY": "",
-      "HOW_TO_BUY": "",
-      "HOW_TO_SELL": ""
+      "WARRANTY": "/warranty",
+      "HOW_TO_BUY": "/how-to-buy",
+      "HOW_TO_SELL": "/how-to-sell",
     }
     res.status(200).json({
       reason: "Product link generated successfully",
