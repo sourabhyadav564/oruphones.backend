@@ -103,10 +103,11 @@ router.get("/listings/best/nearme", async (req, res) => {
         defaultDataObject2.forEach((element) => {
           defaultDataObject.push(element);
         });
-        const thirdPartyVendors = await getThirdPartyVendors("", "");
-        thirdPartyVendors.forEach((thirdPartyVendor) => {
-          defaultDataObject.push(thirdPartyVendor);
-        });
+        // TODO: can be enabled in future
+        // const thirdPartyVendors = await getThirdPartyVendors("", "");
+        // thirdPartyVendors.forEach((thirdPartyVendor) => {
+        //   defaultDataObject.push(thirdPartyVendor);
+        // });
     }
 
     getBestDeals(defaultDataObject, userUniqueId, res, true);
