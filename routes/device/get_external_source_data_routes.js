@@ -84,7 +84,7 @@ router.post("/price/externalsellsource", async (req, res) => {
   try {
     const listings = await scrappedModal.find({
       type: "sell",
-      storage: deviceStorage || '--',
+      storage: [deviceStorage, '--'],
       model_name: marketingName,
       mobiru_condition: deviceCondition,
     });
