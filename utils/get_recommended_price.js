@@ -129,7 +129,7 @@ const getRecommendedPrice = async (
     if (hasOrignalBox) {
       totalPercentageToBeAdd += isOriginalBox;
     }
-    if (isVarified) {
+    if (isVarified == true) {
       totalPercentageToBeAdd += varified;
     }
 
@@ -477,12 +477,12 @@ const getRecommendedPrice = async (
 
     recommendedPriceRangeLowerLimit = Math.ceil(
       recommendedPriceRangeLowerLimit +
-        (recommendedPriceRangeLowerLimit * totalPercentageToBeAdd) / 100
+        (leastSellingPrice * totalPercentageToBeAdd) / 100
     );
 
     recommendedPriceRangeUpperLimit = Math.ceil(
       recommendedPriceRangeUpperLimit +
-        (recommendedPriceRangeUpperLimit * totalPercentageToBeAdd) / 100
+        (leastSellingPrice * totalPercentageToBeAdd) / 100
     );
 
     console.log("lsp", leastSellingPrice);
