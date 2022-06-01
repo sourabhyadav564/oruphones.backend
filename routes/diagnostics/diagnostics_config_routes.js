@@ -270,7 +270,6 @@ router.post("/grade/price", async (req, res) => {
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
   // fs.writeFileSync(`${listingId}.json`, JSON.stringify(req.body));
   const saveData = req.body.saveData;
-  console.log("saveData key", saveData);
   console.log("req.body", req.body);
 
   // PASS
