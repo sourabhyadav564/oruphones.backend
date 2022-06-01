@@ -134,7 +134,7 @@ const getRecommendedPrice = async (
     }
 
     let gotDataFrom = "";
-    let gotType = ""
+    let gotType = "";
     for (var item of scrappedModels) {
       if (
         item.model_name === marketingname &&
@@ -484,6 +484,13 @@ const getRecommendedPrice = async (
       recommendedPriceRangeUpperLimit +
         (recommendedPriceRangeUpperLimit * totalPercentageToBeAdd) / 100
     );
+
+    console.log("lsp", leastSellingPrice);
+    console.log("recommendedPriceRangeLowerLimit", recommendedPriceRangeLowerLimit);
+    console.log("recommendedPriceRangeUpperLimit", recommendedPriceRangeUpperLimit);
+    console.log("totalPercentageToBeAdd", totalPercentageToBeAdd);
+    console.log("gotDataFrom", gotDataFrom);
+    console.log("gotType", gotType);
 
     // if (isForMarketingName) {
     //   if (isAppleEarphoneIncluded) {
