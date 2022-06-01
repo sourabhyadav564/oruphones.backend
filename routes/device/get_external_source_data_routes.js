@@ -84,7 +84,7 @@ router.post("/price/externalsellsource", async (req, res) => {
   try {
     const listings = await scrappedModal.find({
       type: "sell",
-      storage: deviceStorage,
+      storage: deviceStorage || '--',
       model_name: marketingName,
       mobiru_condition: deviceCondition,
     });
@@ -146,7 +146,7 @@ router.post("/price/externalsellsource", async (req, res) => {
         if (
           dataToBeSend.length <= 2 &&
           !extrData.includes(element.externalSourceImage) &&
-          element.externalSourceImage.includes("cashify_logo")
+          element.externalSourceImage.includes("cashify")
         ) {
           dataToBeSend.push(element);
           extrData.push(element.externalSourceImage);

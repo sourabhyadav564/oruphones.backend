@@ -43,10 +43,20 @@ const getRecommendedPrice = async (
   };
 
   try {
-    let scrappedModels = await scrappedModal.find({
+    let scrappedModels = [];
+    scrappedModels = await scrappedModal.find({
       model_name: marketingname,
       storage: storage,
+      type: "buy",
     });
+
+    if(scrappedModels.length == 0){
+      scrappedModels = await scrappedModal.find({
+        model_name: marketingname,
+        storage: storage,
+        type: "sell",
+      });
+    }
 
     let selectdModels = [];
     let itemId = "";
