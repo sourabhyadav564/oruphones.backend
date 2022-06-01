@@ -101,11 +101,16 @@ router.post("/price/externalsellsource", async (req, res) => {
       listings.forEach(async (element) => {
         let filterData = {};
         let vendorName = VENDORS[element.vendor_id];
-        let finalPrice =
-          element.actualPrice != null
-            ? element.actualPrice -
-              (element.actualPrice * totalPercentageToBeReduced) / 100
-            : 0;
+        let finalPrice;
+        if(element.vendor_id != 6) {
+          finalPrice =
+            element.actualPrice != null
+              ? element.actualPrice -
+                (element.actualPrice * totalPercentageToBeReduced) / 100
+              : 0;
+        }else{
+          finalPrice = element.actualPrice;
+        }
         finalPrice = Math.ceil(finalPrice);
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
           .toString()
@@ -146,7 +151,7 @@ router.post("/price/externalsellsource", async (req, res) => {
         if (
           dataToBeSend.length <= 2 &&
           !extrData.includes(element.externalSourceImage) &&
-          element.externalSourceImage.includes("cashify")
+          element.externalSourceImage.includes("ashify_logo")
         ) {
           dataToBeSend.push(element);
           extrData.push(element.externalSourceImage);
