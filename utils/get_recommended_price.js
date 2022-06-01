@@ -134,6 +134,7 @@ const getRecommendedPrice = async (
     }
 
     let gotDataFrom = "";
+    let gotType = ""
     for (var item of scrappedModels) {
       if (
         item.model_name === marketingname &&
@@ -142,6 +143,7 @@ const getRecommendedPrice = async (
       ) {
         selectdModels.push(item.price);
         gotDataFrom = condition;
+        gotType = item.type;
         break;
       }
       if (condition === "Good" && gotDataFrom === "") {
@@ -152,6 +154,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -160,6 +163,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Like New";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -168,6 +172,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Fair";
+          gotType = item.type;
           break;
         }
       } else if (condition === "Excellent" && gotDataFrom === "") {
@@ -178,6 +183,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -186,6 +192,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Like New";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -194,6 +201,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Fair";
+          gotType = item.type;
           break;
         }
       } else if (condition === "Like New" && gotDataFrom === "") {
@@ -204,6 +212,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -212,6 +221,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -220,6 +230,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Fair";
+          gotType = item.type;
           break;
         }
       } else if (condition === "Fair" && gotDataFrom === "") {
@@ -230,6 +241,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Good";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -238,6 +250,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Excellent";
+          gotType = item.type;
           break;
         } else if (
           item.model_name === marketingname &&
@@ -246,6 +259,7 @@ const getRecommendedPrice = async (
         ) {
           selectdModels.push(item.price);
           gotDataFrom = "Like New";
+          gotType = item.type;
           break;
         }
       }
@@ -451,6 +465,11 @@ const getRecommendedPrice = async (
           bool = true;
         }
       }
+    }
+
+    if (gotType === "sell") {
+      let price_with_added_percentage = make === "Samsung" ? 1.4 : 1.2;
+      leastSellingPrice = leastSellingPrice * price_with_added_percentage;
     }
 
     let recommendedPriceRangeLowerLimit = lowerRangeMatrix * leastSellingPrice;

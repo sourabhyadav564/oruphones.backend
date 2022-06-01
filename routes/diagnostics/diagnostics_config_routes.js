@@ -427,6 +427,21 @@ router.post("/grade/price", async (req, res) => {
       }
     }
 
+    let warrantyPeriod;
+    for (item of questionnaireResults) {
+      if (item.questionId === 11 && item.childQuestions.length > 0) {
+        if (item.childQuestions[0] == "12") {
+          warrantyPeriod = "zero";
+        } else if (item.childQuestions[0] == "13") {
+          warrantyPeriod = "four";
+        } else if (item.childQuestions[0] == "14") {
+          warrantyPeriod = "seven";
+        } else {
+          warrantyPeriod = "more";
+        }
+      }
+    }
+
     // } catch (error) {
     //   console.log(error);
     // }
@@ -514,7 +529,7 @@ router.post("/grade/price", async (req, res) => {
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
       deviceUniqueId: deviceUniqueId,
-      deviceStorage: req.body.storage
+      deviceStorage: req.body.storage,
     };
 
     console.log("dataToBeUpdate", dataToBeUpdate);
@@ -1199,8 +1214,11 @@ router.post("/grade/price", async (req, res) => {
       isAppleEarphoneIncluded,
       hasOrignalBox,
       isVarified,
-      false
+      false,
+      warrantyPeriod
     );
+
+    console.log("price", price);
 
     const dataObject = {};
     dataObject["minPrice"] = price.leastSellingprice ?? "-";

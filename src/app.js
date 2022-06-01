@@ -29,9 +29,9 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('05 12 * * * ', function(){
+schedule.scheduleJob('55 13 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
-  // start_migration();
+  start_migration();
   start_migrating_external_source_buy();
 });
 

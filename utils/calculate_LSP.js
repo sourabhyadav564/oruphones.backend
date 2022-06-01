@@ -190,23 +190,24 @@ const calculate_LSP_SELL = async () => {
               }
             });
             // console.log("matchedModel", matchedModel);
-            let derivedPrice = 0;
-            if (item.heading != null) {
-              derivedPrice = item.heading.includes("Samsung")
-                ? item.price + item.price * 0.4
-                : item.price + item.price * 0.2;
+            // let derivedPrice = 0;
+            // if (item.heading != null) {
+            //   derivedPrice = item.heading.includes("Samsung")
+            //     ? item.price + item.price * 0.4
+            //     : item.price + item.price * 0.2;
 
-              console.log(
-                item.heading.split(" ")[0],
-                " : price: ",
-                item.price,
-                "derivedPrice: ",
-                derivedPrice
-              );
-            }
+            //   console.log(
+            //     item.heading.split(" ")[0],
+            //     " : price: ",
+            //     item.price,
+            //     "derivedPrice: ",
+            //     derivedPrice
+            //   );
+            // }
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
-            lspObject["price"] = Math.ceil(derivedPrice);
+            // lspObject["price"] = Math.ceil(derivedPrice);
+            lspObject["price"] = item.price;
             lspObject["mobiru_condition"] = item.mobiru_condition ?? "Like New";
             lspObject["storage"] = item.storage ? `${item.storage} GB` : "0 GB";
             lspObject["ram"] = item.ram;
@@ -255,54 +256,60 @@ const calculate_LSP_SELL = async () => {
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice < 20000 && item.actualPrice >= 10000) {
               price = item.actualPrice - 800;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 20000 && item.actualPrice < 30000) {
               price = item.actualPrice - 1200;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 30000 && item.actualPrice < 50000) {
               price = item.actualPrice - 2300;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 50000 && item.actualPrice < 70000) {
               price = item.actualPrice - 3000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 70000) {
               price = item.actualPrice - 4500;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             }
             finalScrappedModelObject.push(item);
@@ -317,54 +324,60 @@ const calculate_LSP_SELL = async () => {
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice < 20000 && item.actualPrice >= 10000) {
               price = item.actualPrice - 1500;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 20000 && item.actualPrice < 30000) {
               price = item.actualPrice - 2500;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 30000 && item.actualPrice < 50000) {
               price = item.actualPrice - 3500;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 50000 && item.actualPrice < 70000) {
               price = item.actualPrice - 5500;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 70000) {
               price = item.actualPrice - 8000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             }
             finalScrappedModelObject.push(item);
@@ -379,54 +392,60 @@ const calculate_LSP_SELL = async () => {
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice < 20000 && item.actualPrice >= 10000) {
               price = item.actualPrice - 3000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 20000 && item.actualPrice < 30000) {
               price = item.actualPrice - 5000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 30000 && item.actualPrice < 50000) {
               price = item.actualPrice - 7000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 50000 && item.actualPrice < 70000) {
               price = item.actualPrice - 11000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             } else if (item.actualPrice >= 70000) {
               price = item.actualPrice - 16000;
               item = {
                 ...item,
                 actualPrice: price,
-                price: item.model_name.includes("Samsung")
-                  ? item.actualPrice + item.actualPrice * 0.4
-                  : item.actualPrice + item.actualPrice * 0.2,
+                price: price,
+                // price: item.model_name.includes("Samsung")
+                //   ? item.actualPrice + item.actualPrice * 0.4
+                //   : item.actualPrice + item.actualPrice * 0.2,
               };
             }
             finalScrappedModelObject.push(item);
@@ -490,9 +509,10 @@ const calculate_LSP_For_Amazon_Exchange = async () => {
   amazonData.forEach((item) => {
     item = {
       ...item._doc,
-      price: item.model_name.includes("Samsung")
-        ? item.actualPrice * 1.4
-        : item.actualPrice * 1.2,
+      // price: item.model_name.includes("Samsung")
+      //   ? item.actualPrice * 1.4
+      //   : item.actualPrice * 1.2,
+      price: item.actualPrice
     };
     finalScrappedModelObject.push(item);
   });
