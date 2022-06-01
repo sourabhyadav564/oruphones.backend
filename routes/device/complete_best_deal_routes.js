@@ -64,13 +64,26 @@ router.get("/listings/best/nearall", async (req, res) => {
       let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
       });
-      defaultDataObject2.forEach((element) => {
-        defaultDataObject.push(element);
-      });
-      const thirdPartyVendors = await getThirdPartyVendors("", "");
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
-      });
+      if (!defaultDataObject2.length) {
+        res.status(200).json({
+          reason: "No best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: [],
+            bestDeals: [],
+          },
+        });
+        return;
+      } else {
+        defaultDataObject2.forEach((element) => {
+          defaultDataObject.push(element);
+        });
+        const thirdPartyVendors = await getThirdPartyVendors("", "");
+        thirdPartyVendors.forEach((thirdPartyVendor) => {
+          defaultDataObject.push(thirdPartyVendor);
+        });
+      }
     }
 
     getBestDeals(defaultDataObject, userUniqueId, res, false);

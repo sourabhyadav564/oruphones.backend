@@ -58,55 +58,75 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
       //  if (category === "Fifteen") {
       defaultDataObject2 = await saveListingModal.find({
         $expr: {
-            $lte: [
-              {
-                $toInt: "$listingPrice",
-              },
-              parseInt(endPrice.toString()),
-            ],
-          },
+          $lte: [
+            {
+              $toInt: "$listingPrice",
+            },
+            parseInt(endPrice.toString()),
+          ],
+        },
       });
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
-        return parseInt(item.listingPrice.toString()) >= parseInt(startPrice.toString());
-      })
-        defaultDataObject2 = defaultDataObject3;
+        return (
+          parseInt(item.listingPrice.toString()) >=
+          parseInt(startPrice.toString())
+        );
+      });
+      defaultDataObject2 = defaultDataObject3;
       //   }
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-    //   const thirdPartyVendors = await getThirdPartyVendors("", "");
-    //   thirdPartyVendors.forEach((thirdPartyVendor) => {
-    //     defaultDataObject.push(thirdPartyVendor);
-    //   });
+      //   const thirdPartyVendors = await getThirdPartyVendors("", "");
+      //   thirdPartyVendors.forEach((thirdPartyVendor) => {
+      //     defaultDataObject.push(thirdPartyVendor);
+      //   });
     } else {
       defaultDataObject = await saveListingModal.find({
         listingLocation: location,
       });
-      if (category === "Fifteen") {
-        // defaultDataObject = await saveListingModal.find({
-        //   $expr: {
-        //     $lt: [
-        //       {
-        //         $toInt: "$listingPrice",
-        //       },
-        //       15000,
-        //     ],
-        //   },
-        // });
-        defaultDataObject = await saveListingModal.find({
+
+      if (!defaultDataObject.length) {
+        res.status(200).json({
+          reason: "No best deals found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            otherListings: [],
+            bestDeals: [],
+          },
+        });
+        return;
+      } else {
+        // if (category === "Fifteen") {
+          // defaultDataObject = await saveListingModal.find({
+          //   $expr: {
+          //     $lt: [
+          //       {
+          //         $toInt: "$listingPrice",
+          //       },
+          //       15000,
+          //     ],
+          //   },
+          // });
+          defaultDataObject = await saveListingModal.find({
             $expr: {
-                $lte: [
-                  {
-                    $toInt: "$listingPrice",
-                  },
-                  parseInt(endPrice.toString()),
-                ],
-              },
+              $lte: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                parseInt(endPrice.toString()),
+              ],
+            },
           });
           let defaultDataObject3 = defaultDataObject.filter((item, index) => {
-            return parseInt(item.listingPrice.toString()) >= parseInt(startPrice.toString());
-          })
-            defaultDataObject = defaultDataObject3;
+            return (
+              parseInt(item.listingPrice.toString()) >=
+              parseInt(startPrice.toString())
+            );
+          });
+          defaultDataObject = defaultDataObject3;
+        // }
       }
     }
 
@@ -325,7 +345,7 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
 
     //   finalBestDeals.forEach((item, index) => {
     //     if (
-    //       updatedBestDeals.length <= 5 
+    //       updatedBestDeals.length <= 5
     //       // &&
     //       // item.notionalPercentage > 0 &&
     //       // item.notionalPercentage < 50

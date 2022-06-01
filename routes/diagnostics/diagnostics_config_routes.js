@@ -430,17 +430,19 @@ router.post("/grade/price", async (req, res) => {
     let warrantyPeriod;
     for (item of questionnaireResults) {
       if (item.questionId === 11 && item.childQuestions.length > 0) {
-        if (item.childQuestions[0] == "12") {
+        console.log("item.childQuestions", item.childQuestions);
+        if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
           warrantyPeriod = "zero";
-        } else if (item.childQuestions[0] == "13") {
+        } else if (item.childQuestions[0] == "13" || item.childQuestions[0] == 13) {
           warrantyPeriod = "four";
-        } else if (item.childQuestions[0] == "14") {
+        } else if (item.childQuestions[0] == "14" || item.childQuestions[0] == 14) {
           warrantyPeriod = "seven";
         } else {
           warrantyPeriod = "more";
         }
       }
     }
+    console.log("warrantyPeriod", warrantyPeriod);
 
     // } catch (error) {
     //   console.log(error);

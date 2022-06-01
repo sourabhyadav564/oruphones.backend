@@ -68,10 +68,22 @@ router.get("/listingsbymake", async (req, res) => {
     //   make: make,
     // });
     // defaultDataObject = await bestDealHomeModel.find({
-      let defaultDataObject2 = await saveListingModal.find({
-        listingLocation: location,
-        make: make,
+    let defaultDataObject2 = await saveListingModal.find({
+      listingLocation: location,
+      make: make,
+    });
+    if (!defaultDataObject2.length) {
+      res.status(200).json({
+        reason: "No best deals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          otherListings: [],
+          bestDeals: [],
+        },
       });
+      return;
+    } else {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -79,6 +91,7 @@ router.get("/listingsbymake", async (req, res) => {
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
+    }
   }
 
   getBestDeals(defaultDataObject, userUniqueId, res, false);
@@ -283,7 +296,7 @@ router.get("/listingsbymake", async (req, res) => {
 
   //   finalBestDeals.forEach((item, index) => {
   //     if (
-  //       updatedBestDeals.length <= 5 
+  //       updatedBestDeals.length <= 5
   //       // &&
   //       // item.notionalPercentage > 0 &&
   //       // item.notionalPercentage < 50
@@ -393,15 +406,28 @@ router.get("/listbymarketingname", async (req, res) => {
     // });
     let defaultDataObject2 = await saveListingModal.find({
       listingLocation: location,
-      marketingName: marketingname
+      marketingName: marketingname,
     });
-    defaultDataObject2.forEach((element) => {
-      defaultDataObject.push(element);
-    });
-    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
-    thirdPartyVendors.forEach((thirdPartyVendor) => {
-      defaultDataObject.push(thirdPartyVendor);
-    });
+    if (!defaultDataObject2.length) {
+      res.status(200).json({
+        reason: "No best deals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          otherListings: [],
+          bestDeals: [],
+        },
+      });
+      return;
+    } else {
+      defaultDataObject2.forEach((element) => {
+        defaultDataObject.push(element);
+      });
+      const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
+      });
+    }
   }
 
   getBestDeals(defaultDataObject, userUniqueId, res, false);
@@ -618,7 +644,7 @@ router.get("/listbymarketingname", async (req, res) => {
 
   //   finalBestDeals.forEach((item, index) => {
   //     if (
-  //       updatedBestDeals.length <= 5 
+  //       updatedBestDeals.length <= 5
   //       // &&
   //       // item.notionalPercentage > 0 &&
   //       // item.notionalPercentage < 50
