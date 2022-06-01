@@ -75,7 +75,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       vendorId: element.vendor_id,
       isOtherVendor: "Y",
       imagePath: imagePath,
-      verified: true,
+      verified: false,
       favourite: false,
       listingLocation: "India",
       deviceFinalGrade: null,
