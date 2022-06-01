@@ -520,7 +520,7 @@ router.post("/grade/price", async (req, res) => {
       }
     });
 
-    console.log("questionArrayyyyyyyyyyyyyy: ", finalQuestionArray);
+    // console.log("questionArrayyyyyyyyyyyyyy: ", finalQuestionArray);
 
     const dataToBeUpdate = {
       deviceFunctionalGrade: grade,
@@ -533,7 +533,7 @@ router.post("/grade/price", async (req, res) => {
       deviceStorage: req.body.storage,
     };
 
-    console.log("dataToBeUpdate", dataToBeUpdate);
+    // console.log("dataToBeUpdate", dataToBeUpdate);
 
     if (!listing) {
       res.status(200).json({

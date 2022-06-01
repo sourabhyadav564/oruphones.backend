@@ -29,12 +29,12 @@ const newMakeAndSchema = new mongoose.Schema(
         // required: true,
       }]
     },
-    ram: {
-      type: [{
-        type: String,
-        // required: true,
-      }]
-    }
+    // ram: {
+    //   type: [{
+    //     type: String,
+    //     // required: true,
+    //   }]
+    // }
   },
   { timestamps: true }
 );
