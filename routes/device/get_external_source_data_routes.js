@@ -12,7 +12,7 @@ router.post("/price/externalsellsource", async (req, res) => {
   const deviceCondition = req.body.deviceCondition;
   const hasCharger = req.body.hasCharger;
   const hasEarphone = req.body.hasEarphone;
-  const hasOrignalBox = req.body.hasOrignalBox;
+  const hasOriginalBox = req.body.hasOriginalBox;
   let warrantyPeriod = req.body.warrantyPeriod;
 
   let chargerPercentage = allMatrix.externalSellSourceFigures.chargerPercentage;
@@ -56,7 +56,7 @@ router.post("/price/externalsellsource", async (req, res) => {
     totalPercentageToBeReduced += earphonePercentage;
   }
   console.log("Total2: ", totalPercentageToBeReduced);
-  if (hasOrignalBox === "N") {
+  if (hasOriginalBox === "N") {
     totalPercentageToBeReduced += originalBoxPercentage;
   }
   console.log("Total3: ", totalPercentageToBeReduced);

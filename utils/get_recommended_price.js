@@ -45,10 +45,19 @@ const getRecommendedPrice = async (
   try {
     let scrappedModels = [];
     scrappedModels = await scrappedModal.find({
+      mobiru_condition: condition,
       model_name: marketingname,
       storage: storage,
       type: "buy",
     });
+
+    if (scrappedModels.length == 0) {
+      scrappedModels = await scrappedModal.find({
+        model_name: marketingname,
+        storage: storage,
+        type: "buy",
+      });
+    } 
 
     if(scrappedModels.length == 0){
       scrappedModels = await scrappedModal.find({
