@@ -31,8 +31,8 @@ let schedule = require('node-schedule');
 
 schedule.scheduleJob('55 13 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
-  start_migration();
-  start_migrating_external_source_buy();
+  // start_migration();
+  // start_migrating_external_source_buy();
 });
 
 const testRoute = require("../routes/others/test_routes");
