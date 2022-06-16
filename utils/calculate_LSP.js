@@ -51,7 +51,7 @@ let dateFormat = moment(currentDate).add(10, "days").calendar();
 const calculate_LSP_BUY = async () => {
   try {
     let query =
-      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
+      "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 3 day;select * from `web_scraper_model`;";
 
     connection.query(query, [2, 1], (err, results, fields) => {
       if (err) {
@@ -77,7 +77,7 @@ const calculate_LSP_BUY = async () => {
               element.storage === `${item.storage} GB` &&
               element.type === "buy"
             ) {
-              if (element.price <= item.price) {
+              if (element.price == item.price) {
                 found = true;
               } else {
                 lspArray.splice(i, 1);
@@ -150,7 +150,7 @@ const calculate_LSP_BUY = async () => {
 const calculate_LSP_SELL = async () => {
   try {
     let query =
-      "select * from `web_scraper_sellmodelwisescraping` where created_at > now() - interval 7 day;select * from `web_scraper_model`;";
+      "select * from `web_scraper_sellmodelwisescraping` where created_at > now() - interval 3 day;select * from `web_scraper_model`;";
 
     connection.query(query, [2, 1], (err, results, fields) => {
       if (err) {
@@ -173,7 +173,7 @@ const calculate_LSP_SELL = async () => {
               element.storage === `${item.storage} GB` &&
               element.type === "sell"
             ) {
-              if (element.price >= item.price) {
+              if (element.price == item.price) {
                 found = true;
               } else {
                 lspArray.splice(i, 1);
