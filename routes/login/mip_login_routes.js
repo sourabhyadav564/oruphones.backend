@@ -7,7 +7,7 @@ var bcrypt = require("bcryptjs");
 
 require("../../src/database/connection");
 
-router.get("/validateUser", async (req, res) => {
+router.post("/validateUser", async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
@@ -17,15 +17,17 @@ router.get("/validateUser", async (req, res) => {
     });
 
     if (!getUser) {
-      res.status(404).json({ message: "User not found", code: 0 });
+      res.status(404).json({ message: "User not found", code: 1 });
       return;
     } else {
-      passwordCompare = bcrypt.compare(password, getUser.password);
+      passwordCompare = await bcrypt.compare(password, getUser.password);
+      console.log("passwordCompare", passwordCompare);
       if (!passwordCompare) {
-        res.status(404).json({ message: "Invalid login credentials", code: 0 });
+        res.status(404).json({ message: "Invalid login credentials", code: 1 });
         return;
-      } else {
-        res.status(200).json({ message: "User found", code: 1, getUser });
+      } 
+      else {
+        res.status(200).json({ message: "User found", code: 0, getUser });
       }
     }
   } catch (error) {
@@ -34,7 +36,7 @@ router.get("/validateUser", async (req, res) => {
   }
 });
 
-router.get("/createUser", async (req, res) => {
+router.post("/createUser", async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
