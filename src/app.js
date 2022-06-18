@@ -53,7 +53,7 @@ const searchFilterRoute = require("../routes/master/show_search_filters_routes")
 const favoriteRoute = require("../routes/favorite/favorite_add");
 const marketingNameByModel = require("../routes/master/marketing_name_by_model_routes");
 const listingByMakeRoute = require("../routes/home/listings_by_make_routes");
-const sqlRoute = require("../routes/sql/mysql_data_routes");
+const recommendedPriceRoute = require("../routes/others/recommended_price");
 const topSellingModelRoute = require("../routes/home/top_selling_models_routes");
 const buyersVerficationRoutes = require("../routes/device/buyers_verification_routes");
 const externalSourcePriceRoutes = require("../routes/device/get_external_source_data_routes");
@@ -64,6 +64,7 @@ const shareLinkRoute = require("../routes/global/share_link_route");
 const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
 const shopByPriceRoute = require("../routes/home/shop_by_price_routes");
 const getInfoTemplateRoutes = require("../routes/global/get_info_template_routes");
+const getMIPLoginRoutes = require("../routes/login/mip_login_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -83,7 +84,7 @@ app.use("/api/v1/device", bestDealCompletedRoute);
 app.use("/api/v1/device", buyersVerficationRoutes);
 app.use("/api/v1/device", externalSourcePriceRoutes);
 app.use("/api/v1/global", citiesRoute);
-app.use("/api/v1/global", sqlRoute);
+app.use("/api/v1/global", recommendedPriceRoute);
 app.use("/api/v1/global", shareLinkRoute);
 app.use("/api/v1/global", getInfoTemplateRoutes);
 app.use("/api/v1/home", bestDealHomeRoute);
@@ -100,6 +101,7 @@ app.use("/api/v1/notification", saveNotificationTokenRoute);
 app.use("/api/v1/favorite", favoriteRoute);
 app.use("/api/v1/cscglobal", searchSuggestionRoute);
 app.use("/api/v1/cscglobal", logEventInfoRoute);
+app.use("/api/v1/user", getMIPLoginRoutes);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
