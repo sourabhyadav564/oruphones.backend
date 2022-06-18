@@ -23,7 +23,7 @@ router.post("/validateUser", async (req, res) => {
       passwordCompare = await bcrypt.compare(password, getUser.password);
       console.log("passwordCompare", passwordCompare);
       if (!passwordCompare) {
-        res.status(404).json({ message: "Invalid login credentials", code: 1 });
+        res.status(401).json({ message: "Invalid login credentials", code: 1 });
         return;
       } 
       else {
