@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('18 15 * * * ', function(){
+schedule.scheduleJob('54 19 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   // start_migration();
   // start_migrating_external_source_buy();
@@ -66,7 +66,8 @@ const shareLinkRoute = require("../routes/global/share_link_route");
 const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
 const shopByPriceRoute = require("../routes/home/shop_by_price_routes");
 const getInfoTemplateRoutes = require("../routes/global/get_info_template_routes");
-const getMIPLoginRoutes = require("../routes/login/mip_login_routes");
+const getMIPLoginRoutes = require("../routes/mip/mip_login_routes");
+const getMIPImageVerificationRoutes = require("../routes/mip/mip_image_verification_route");
 const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes");
 
 app.get("/", (req, res) => {
@@ -98,7 +99,8 @@ app.use("/api/v1/home", shopByCategoryRoutes);
 app.use("/api/v1/home", shopByPriceRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
-app.use("/api/v1/api", getBatteryTestRoutes);
+app.use("/api/v1/mip", getBatteryTestRoutes);
+app.use("/api/v1/mip", getMIPImageVerificationRoutes);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
