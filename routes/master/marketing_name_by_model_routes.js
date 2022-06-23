@@ -848,7 +848,7 @@ router.post("/marketingNameByModel", async (req, res) => {
         //   .toString()
         //   .toLowerCase()}/mbr_${modelName.toLowerCase().replace(" ", "_")}.png`,
         imagePath: image,
-        price: price.maxsellingprice.toString(),
+        price: price == {} ? price.maxsellingprice.toString() : "--",
       };
       // if (selectdModels.length) {
       // if (selectdModels.length > 1) {
