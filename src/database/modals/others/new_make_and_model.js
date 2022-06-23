@@ -35,6 +35,11 @@ const newMakeAndSchema = new mongoose.Schema(
     //     // required: true,
     //   }]
     // }
+    released: {
+      type: String,
+      // required: true,
+    }
+
   },
   { timestamps: true }
 );

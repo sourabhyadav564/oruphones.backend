@@ -1,4 +1,5 @@
 const express = require("express");
+const lspModal = require("../../src/database/modals/others/new_scrapped_models");
 const router = express.Router();
 
 require("../../src/database/connection");
@@ -82,11 +83,19 @@ router.post("/price/externalsellsource", async (req, res) => {
   };
 
   try {
-    const listings = await scrappedModal.find({
+   console.log("sss", deviceStorage, deviceCondition, marketingName)
+    // const listings = await scrappedModal.find({
+    //   type: "sell",
+    //   storage: [deviceStorage, '--'],
+    //   model_name: marketingName,
+    //   mobiru_condition: deviceCondition,
+    // });
+    const listings = await lspModal.find({
       type: "sell",
-      storage: [deviceStorage, '--'],
-      model_name: marketingName,
-      mobiru_condition: deviceCondition,
+      // storage: [deviceStorage, '--'],
+      storage: deviceStorage,
+      model: marketingName,
+      condition: deviceCondition,
     });
 
     if (!listings.length) {
@@ -98,31 +107,42 @@ router.post("/price/externalsellsource", async (req, res) => {
       });
     } else {
       let finalDataArray = [];
-      listings.forEach(async (element) => {
+      let vendorListings = [];
+
+      listings.forEach((listing) => {
+        listing.vendor.forEach((vendor) => {
+          if(vendor.type == 'sell'){
+            vendorListings.push(vendor);
+          }
+        })
+      })
+
+      vendorListings.forEach(async (element) => {
+        console.log("element: ", element);
         let filterData = {};
         let vendorName = VENDORS[element.vendor_id];
         let finalPrice;
         if(element.vendor_id != 6) {
           finalPrice =
-            element.actualPrice != null
-              ? element.actualPrice -
-                (element.actualPrice * totalPercentageToBeReduced) / 100
+            element.price != null
+              ? element.price -
+                (element.price * totalPercentageToBeReduced) / 100
               : 0;
         }else{
-          finalPrice = element.actualPrice;
+          finalPrice = element.price;
         }
         finalPrice = Math.ceil(finalPrice);
         let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
           .toString()
           .toLowerCase()}_logo.png`;
         filterData["externalSourcePrice"] =
-          element.actualPrice != null ? finalPrice.toString() : "";
+          element.price != null ? finalPrice.toString() : "";
         filterData["externalSourceImage"] = vendorImage;
         finalDataArray.push(filterData);
-      });
+      })
 
       finalDataArray.filter((element) => {
-        if (element.actualPrice === "") {
+        if (element.price === "") {
           finalDataArray.splice(finalDataArray.indexOf(element), 1);
         }
       });

@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const start_migration = require("../utils/calculate_LSP");
 const start_migrating_external_source_buy = require("../utils/get_external_source_data");
+const allCron = require("../utils/filter_cron_job_data")
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -29,10 +30,11 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('28 23 * * * ', function(){
+schedule.scheduleJob('18 15 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
-  start_migration();
-  start_migrating_external_source_buy();
+  // start_migration();
+  // start_migrating_external_source_buy();
+  allCron();
 });
 
 const testRoute = require("../routes/others/test_routes");
@@ -65,6 +67,7 @@ const shopByCategoryRoutes = require("../routes/home/shop_by_category_routes");
 const shopByPriceRoute = require("../routes/home/shop_by_price_routes");
 const getInfoTemplateRoutes = require("../routes/global/get_info_template_routes");
 const getMIPLoginRoutes = require("../routes/login/mip_login_routes");
+const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -95,6 +98,7 @@ app.use("/api/v1/home", shopByCategoryRoutes);
 app.use("/api/v1/home", shopByPriceRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
+app.use("/api/v1/api", getBatteryTestRoutes);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
 app.use("/api/v1/notification", saveNotificationTokenRoute);
