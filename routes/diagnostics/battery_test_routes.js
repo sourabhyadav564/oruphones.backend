@@ -53,6 +53,12 @@ router.post("/batteryTest/mah", async (req, res) => {
   const getBatterymAhResult = await getBatteryMah(make, marketingName);
 
   try {
+    if (!getBatterymAhResult) {
+      res.status(204).json({
+        status: 204,
+        reason: "Battery mAh not found",
+      });
+    }
     res.status(200).json({
       status: 200,
       reason: "Battery mAh found successfully",
