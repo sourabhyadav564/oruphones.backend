@@ -43,6 +43,10 @@ const saveListingSchema = new mongoose.Schema({
             fullImage: {
                 type: String,
             },
+            isVarified: {
+                type: Boolean,
+                default: false,
+            }
         }],
     },
     defaultImage: {
