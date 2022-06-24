@@ -141,8 +141,8 @@ const allCronJobs = (allgsmData, fileData) => {
             return (
               obj.make.toLowerCase() == element2.make.toLowerCase() &&
               obj.model.toLowerCase() == mdl.toLowerCase() &&
-              str.includes(obj.storage) &&
-              str.includes(obj.ram.charAt(0))
+              (obj.storage == "-- GB" || str.includes(obj.storage) || obj.storage == "--") &&
+              (obj.ram == "-- GB" || str.includes(obj.ram.charAt(0)) || obj.ram == "--")
             );
           });
           if (newArray.length > 0) {

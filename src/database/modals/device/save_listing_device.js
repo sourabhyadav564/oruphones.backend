@@ -44,8 +44,8 @@ const saveListingSchema = new mongoose.Schema({
                 type: String,
             },
             isVarified: {
-                type: Boolean,
-                default: false,
+                type: String,
+                default: "default",
             }
         }],
     },
