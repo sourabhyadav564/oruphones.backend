@@ -101,18 +101,20 @@ router.get("/listing/sendverification", async (req, res) => {
             let sellerUniqueId = listingObject.userUniqueId;
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
-            // let tokenObject = saveNotificationModel.find({
-            //   userUniqueId: sellerUniqueId,
-            // });
-            // let notificationTokens = [];
-            // tokenObject.forEach((item, index) => {
-            //   notificationTokens.push(item.tokenId);
-            // });
             const response = await sendNotification(
               sellerUniqueId,
               true,
               marketingName,
               sellerName
+            );
+            const addToFavorite = await favoriteModal.findOneAndUpdate(
+              userUniqueId,
+              {
+                $push: {
+                  fav_listings: listingId,
+                },
+              },
+              { new: true }
             );
             res.status(201).json({
               reason: "Request sent successfully",

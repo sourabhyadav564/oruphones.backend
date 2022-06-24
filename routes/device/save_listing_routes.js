@@ -3,16 +3,26 @@ const router = express.Router();
 const moment = require("moment");
 const saveRequestModal = require("../../src/database/modals/device/request_verification_save");
 
+const dotenv = require("dotenv");
+dotenv.config();
+
+// const FCM = require("fcm-node");
+const fetch = require("node-fetch");
+
 // require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const scrappedModal = require("../../src/database/modals/others/scrapped_models");
+const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const scrappedExternalSourceModal = require("../../src/database/modals/others/scrapped_for_external_source_models");
 const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
+const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
+const notificationModel = require("../../src/database/modals/notification/complete_notifications");
+const makeRandomString = require("../../utils/generate_random_string");
 
 // router.get("/listing", async (req, res) => {
 //   try {
@@ -508,6 +518,102 @@ router.post("/listing/updatefordiag", async (req, res) => {
             new: true,
           }
         );
+
+        const userFromFavorite = await favoriteModal.find({
+          fav_listings: listingId,
+        });
+
+        // console.log("userFromFavorite", userFromFavorite);
+
+        const sendNotificationToUser = [];
+        userFromFavorite.forEach((item, index) => {
+          sendNotificationToUser.push(item.userUniqueId);
+        });
+
+        // console.log("sendNotificationToUser", sendNotificationToUser);
+
+        const now = new Date();
+        const currentDate = moment(now).format("L");
+
+        const string = await makeRandomString(25);
+
+        let tokenObject = await saveNotificationModel.find({
+          userUniqueId: sendNotificationToUser,
+        });
+
+        // console.log("tokenObject", tokenObject);
+
+        let notificationTokens = [];
+        tokenObject.forEach((item, index) => {
+          notificationTokens.push(item.tokenId);
+        });
+
+        var notification_body = {
+          registration_ids: notificationTokens,
+          notification: {
+            title: `Congratulations!!!`,
+            body: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+            sound: "default",
+            //   click_action: "FCM_PLUGIN_ACTIVITY",
+            icon: "fcm_push_icon",
+          },
+          data: {
+            title: `Congratulations!!!`,
+            body: {
+              source: "ORU Phones",
+              messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+            },
+            appEventAction: "MY_FAVORITES",
+          },
+        };
+
+        fetch("https://fcm.googleapis.com/fcm/send", {
+          method: "POST",
+          headers: {
+            // replace authorization key with your key
+            Authorization: "key=" + process.env.FCM_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(notification_body),
+        })
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+
+        //Save notification to database
+        let notificationData = {
+          appEventAction: "MY_FAVORITES",
+          messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+          notificationId: string,
+          createdDate: currentDate,
+        };
+
+        console.log("sendNotificationToUser", sendNotificationToUser);
+
+        sendNotificationToUser.forEach(async (user, index) => {
+          let dataToBeSave = {
+            userUniqueId: user,
+            notification: [notificationData],
+          };
+  
+          const notificationObject = await notificationModel.findOne({
+            userUniqueId: user,
+          });
+  
+          if (!notificationObject) {
+            const saveNotification = new notificationModel(dataToBeSave);
+            let dataObject = await saveNotification.save();
+          } else {
+            const updateNotification = await notificationModel.findByIdAndUpdate(
+              notificationObject._id,
+              { $push: { notification: notificationData } },
+              { new: true }
+            );
+          }
+        })
 
         res.status(200).json({
           reason: "Listing updated successfully",
