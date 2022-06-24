@@ -233,7 +233,7 @@ router.post("/listing/update", async (req, res) => {
           dataToBeUpdate = {
             ...dataToBeUpdate,
             verified: false,
-            verifiedDate: ""
+            verifiedDate: "",
           };
         }
 
@@ -269,9 +269,11 @@ router.post("/listing/pause", async (req, res) => {
   const listingId = req.body.listingId;
 
   try {
-    const activateListing = await saveListingModal.findOne({
+    const activateListing = await saveListingModal.find({
       listingId: listingId,
     });
+
+    console.log("activateListing", activateListing);
 
     if (!activateListing) {
       res.status(200).json({
@@ -281,7 +283,13 @@ router.post("/listing/pause", async (req, res) => {
       });
       return;
     } else {
-      if (activateListing.userUniqueId === userUniqueId) {
+      if (!activateListing.userUniqueId === userUniqueId) {
+        res.status(200).json({
+          reason: "You are not authorized to pause this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      } else {
         const pausedListing = await saveListingModal.findOneAndUpdate(
           listingId,
           {
@@ -297,12 +305,6 @@ router.post("/listing/pause", async (req, res) => {
           status: "SUCCESS",
           pausedListing,
         });
-      } else {
-        res.status(200).json({
-          reason: "You are not authorized to pause this listing",
-          statusCode: 200,
-          status: "SUCCESS",
-        });
       }
     }
   } catch (error) {
@@ -316,7 +318,7 @@ router.post("/listing/activate", async (req, res) => {
   const listingId = req.body.listingId;
 
   try {
-    const activateListing = await saveListingModal.findOne({
+    const activateListing = await saveListingModal.find({
       listingId: listingId,
     });
 
@@ -695,7 +697,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
           storage: getListing?.deviceStorage,
           type: "buy",
         });
-
 
         console.log("scrappedModels", scrappedModels);
         // console.log("scrappedModel1", getListing?.marketingName);

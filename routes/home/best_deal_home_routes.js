@@ -9,7 +9,6 @@ const logEvent = require("../../src/middleware/event_logging");
 const getBestDeals = require("../../utils/get_best_deals");
 
 const getRecommendedPrice = require("../../utils/get_recommended_price");
-const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
