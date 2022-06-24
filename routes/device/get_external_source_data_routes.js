@@ -92,8 +92,7 @@ router.post("/price/externalsellsource", async (req, res) => {
     // });
     const listings = await lspModal.find({
       type: "sell",
-      // storage: [deviceStorage, '--'],
-      storage: deviceStorage,
+      storage: [deviceStorage, '--', '-- GB'],
       model: marketingName,
       condition: deviceCondition,
     });
