@@ -10,16 +10,12 @@ router.get("/topselling/models", async (req, res) => {
   try {
     const listings = await saveListingModal.find();
 
-    // console.log("Listings", listings);
-
     const topModels = async () => {
       let dataObject = [];
       let modelVals = [];
 
       listings.forEach(async (item, i) => {
         let modelName = item.marketingName;
-        let bool = false;
-        // let count = 0;
 
         if (!modelVals.includes(modelName)) {
           console.log(modelName);
@@ -36,7 +32,6 @@ router.get("/topselling/models", async (req, res) => {
           modelVals.push(modelName);
           dataObject.push(data);
         } else {
-          console.log("Model already exists");
           let data = {};
             var modObj = dataObject.filter(obj => {
               return obj.marketingName === modelName;
@@ -62,11 +57,10 @@ router.get("/topselling/models", async (req, res) => {
                 startingFrom: startFrom,
                 maxPrice: mPrice,
                 imagePath: mObj.imagePath,
-                displayOrder: 99,
+                displayOrder: 9999,
                 isTopSelling: false,
                 quantity: mObj.quantity + 1,
               };
-              console.log("into if bool", data)
               let objIndex = dataObject.findIndex(
                 (obj) => obj.marketingName === mObj.marketingName
               );
@@ -74,17 +68,16 @@ router.get("/topselling/models", async (req, res) => {
               dataObject[objIndex] = data;
         }
       });
-      return dataObject;
+      return dataObject.sort(function(a, b){return b.quantity - a.quantity});;
     };
 
     const dataObject = await topModels();
-    const sortedData = dataObject.sort(function(a, b){return b - a});
     //TODO: Save the title object in the database for top selling collection
     res.status(200).json({
       reason: "Listings by marketing name",
       statusCode: 200,
       status: "SUCCESS",
-      dataObject: sortedData,
+      dataObject,
     });
   } catch (error) {
     console.log(error);
