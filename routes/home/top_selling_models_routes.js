@@ -78,12 +78,13 @@ router.get("/topselling/models", async (req, res) => {
     };
 
     const dataObject = await topModels();
+    const sortedData = dataObject.sort(function(a, b){return b - a});
     //TODO: Save the title object in the database for top selling collection
     res.status(200).json({
       reason: "Listings by marketing name",
       statusCode: 200,
       status: "SUCCESS",
-      dataObject,
+      dataObject: sortedData,
     });
   } catch (error) {
     console.log(error);

@@ -30,19 +30,27 @@ let finalScrappedModelObject = [];
 let currentDate = new Date();
 let dateFormat = moment(currentDate).add(10, "days").calendar();
 
-const allCronJobs = (allgsmData, fileData) => {
+const allCronJobs = () => {
+  // let dataObject = [];
   let foundObjects = [];
   let allModelFound = [];
   let allModelNotFound = [];
+  // console.log("fileData: " + fileData.length);
+  // console.log("allgsmData: " + allgsmData.length);
+  const allgsmData = JSON.parse(fs.readFileSync("allGSMwithRamRom.json"));
+  const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
 
   let gsmData = allgsmData.filter((item) => item.models.length > 1);
   gsmData.forEach((element, index) => {
     let marketingName =
       element.marketingName.charAt(0).toUpperCase() +
       element.marketingName.slice(1);
+    console.log("enters in gsm loop for ", index, marketingName);
     let cond = ["Like New", "Excellent", "Good", "Fair"];
     element.storage.forEach((el) => {
       cond.forEach((con) => {
+        // TODO file data will be all the data from all the 10 data files
+        // TODO .map() will be replaced by .find() for mongoDB
         let variable = fileData.filter((elm) => {
           let mdl = elm.model_name != null ? elm.model_name.toString() : "";
           if (mdl.includes("(")) {
@@ -54,111 +62,107 @@ const allCronJobs = (allgsmData, fileData) => {
             el.includes(elm.storage) &&
             elm.mobiru_condition.includes(con)
           ) {
+            console.log(
+              "enters in if                    ***************************************",
+              elm.type
+            );
+
             return elm;
           } else if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             elm.storage == "--" &&
             elm.mobiru_condition.includes(con) &&
+            // && elm.type == eType
             elm.price != null
           ) {
+            console.log(
+              "enters in else if                    ***************************************",
+              elm.type
+            );
             return elm;
           } else if (
             mdl.toLowerCase().includes(marketingName.toLowerCase()) &&
             el.includes(elm.storage) &&
             el.includes(elm.ram) &&
-            elm.mobiru_condition.includes(con) &&
-            elm.price != null
+            elm.mobiru_condition.includes(con)
           ) {
             return elm;
           }
         });
         if (variable) {
+          console.log("len", variable.length);
           variable = variable.filter(
             (value, index, self) =>
               index ===
               self.findIndex(
                 (t) =>
-                  t.model_name == value.model_name &&
-                  t.storage == value.storage &&
-                  t.ram == value.ram &&
-                  t.mobiru_condition == value.mobiru_condition &&
-                  t.type == value.type &&
-                  t.vendor_id == value.vendor_id
+                  t.model_name === value.model_name &&
+                  t.storage === value.storage &&
+                  t.ram === value.ram &&
+                  t.mobiru_condition === value.mobiru_condition &&
+                  t.type === value.type &&
+                  t.vendor_id === value.vendor_id
               )
           );
+          console.log("len2", variable.length);
 
-          // allModelFound.push(marketingName);
+          allModelFound.push(marketingName);
           variable.forEach((elm) => {
+            console.log("enters in complete data loop");
             let make = element.make;
             let model = element.marketingName;
-            let model_id = elm.model_id;
             let storage = elm.storage ? `${elm.storage} GB` : "--";
             let ram = elm.ram ? `${elm.ram} GB` : "--";
-            let condition = con;
+            let condition = elm.mobiru_condition;
             let price = parseInt(elm.price.toString());
             let type = elm.type;
             let vendor_id = elm.vendor_id;
-            let link = elm.link;
-            let warranty = elm.warranty;
 
             let dataObj = {
               make,
               model,
-              model_id,
               storage,
               ram,
               condition,
               price,
               type,
               vendor_id,
-              link,
-              warranty,
             };
             foundObjects.push(dataObj);
           });
         } else {
-          // if (!allModelNotFound.includes("GSM: " + marketingName)) {
-          //   allModelNotFound.push("GSM: " + marketingName);
-          // }
+          if (!allModelNotFound.includes("GSM: " + marketingName)) {
+            allModelNotFound.push("GSM: " + marketingName);
+          }
+          console.log("enters in complete data loop11111111111111");
         }
       });
     });
 
     if (index == gsmData.length - 1) {
+      console.log(
+        "enters in gsm loop for last*************************************************"
+      );
       let finalData = [];
       gsmData.forEach((element2, index2) => {
-        let types = ["buy", "sell"];
         element2.storage.forEach((str) => {
           let newArray = foundObjects.filter(function (obj) {
-            let mdl =
-              element2.marketingName != null
-                ? element2.marketingName.toString()
-                : "";
-            if (mdl.includes("(")) {
-              let tempName = mdl.split("(")[0];
-              mdl = tempName.trim();
-            }
             return (
-              obj.make.toLowerCase() == element2.make.toLowerCase() &&
-              obj.model.toLowerCase() == mdl.toLowerCase() &&
-              (obj.storage == "-- GB" || str.includes(obj.storage) || obj.storage == "--") &&
-              (obj.ram == "-- GB" || str.includes(obj.ram.charAt(0)) || obj.ram == "--")
+              obj.make == element2.make &&
+              obj.model == element2.marketingName &&
+              (obj.storage == "-- GB" || str.includes(obj.storage)) &&
+              (obj.ram == "-- GB" || str.includes(obj.ram.charAt(0)))
             );
           });
           if (newArray.length > 0) {
             let conditions = ["Like New", "Excellent", "Good", "Fair"];
             conditions.forEach((con2) => {
-              const obj2 = newArray.filter((obj2) =>
-                obj2.condition.includes(con2)
-              );
-              let obj = obj2[0];
+              const obj = newArray.find((obj2) => obj2.condition == con2);
               if (obj) {
                 let vendorObj = {
                   price: obj.price,
                   type: obj.type,
                   vendor_id: obj.vendor_id,
-                  // link: obj.link,
-                  // warranty: obj.warranty,
                 };
                 let dataObject2 = {
                   make: element2.make,
@@ -175,11 +179,6 @@ const allCronJobs = (allgsmData, fileData) => {
                     elm.ram == obj.ram
                 );
                 if (foundInFinalData) {
-                  finalData.splice(finalData.indexOf(foundInFinalData), 1);
-                  foundInFinalData.vendor.splice(
-                    foundInFinalData.vendor.indexOf(vendorObj),
-                    1
-                  );
                   foundInFinalData.vendor.push(vendorObj);
                   foundInFinalData.lsp =
                     foundInFinalData.lsp < obj.price
@@ -190,13 +189,12 @@ const allCronJobs = (allgsmData, fileData) => {
                     foundInFinalData.lsp < obj.price
                       ? foundInFinalData.type
                       : obj.type;
-                  finalData.push(foundInFinalData);
+                  finalData.push(...[foundInFinalData]);
                 } else {
                   dataObject2.vendor = [];
                   dataObject2.vendor.push(vendorObj);
                   dataObject2.lsp = obj.price;
                   dataObject2.isDerived = false;
-
                   dataObject2.type = obj.type;
                   finalData.push(dataObject2);
                 }
@@ -211,8 +209,6 @@ const allCronJobs = (allgsmData, fileData) => {
                   price: derivedPrice,
                   type: obj.type,
                   vendor_id: obj.vendor_id,
-                  // link: obj.link,
-                  // warranty: obj.warranty,
                 };
                 let dataObject2 = {
                   make: element2.make,
@@ -229,11 +225,6 @@ const allCronJobs = (allgsmData, fileData) => {
                     elm.ram == obj.ram
                 );
                 if (foundInFinalData) {
-                  finalData.splice(finalData.indexOf(foundInFinalData), 1);
-                  foundInFinalData.vendor.splice(
-                    foundInFinalData.vendor.indexOf(vendorObj),
-                    1
-                  );
                   foundInFinalData.vendor.push(vendorObj);
                   foundInFinalData.lsp =
                     foundInFinalData.lsp < derivedPrice
@@ -244,20 +235,18 @@ const allCronJobs = (allgsmData, fileData) => {
                     foundInFinalData.lsp < derivedPrice
                       ? foundInFinalData.type
                       : obj.type;
-                  finalData.push(foundInFinalData);
+                  finalData.push(...[foundInFinalData]);
                 } else {
                   dataObject2.vendor = [];
                   dataObject2.vendor.push(vendorObj);
                   dataObject2.lsp = obj.price;
-                  dataObject2.isDerived = true;
-
+                  dataObject2.isDerived = false;
                   dataObject2.type = obj.type;
                   finalData.push(dataObject2);
                 }
               }
             });
           }
-          // });
         });
         if (index2 == gsmData.length - 1) {
           finalData = finalData.filter(
@@ -265,19 +254,22 @@ const allCronJobs = (allgsmData, fileData) => {
               index ===
               self.findIndex(
                 (t) =>
-                  t.make == value.make &&
-                  t.model == value.model &&
-                  t.storage == value.storage &&
-                  t.ram == value.ram &&
-                  t.condition == value.condition &&
-                  t.lsp == value.lsp &&
-                  t.type == value.type &&
-                  t.isDerived == value.isDerived
+                  t.make === value.make &&
+                  t.model === value.model &&
+                  t.storage === value.storage &&
+                  t.ram === value.ram &&
+                  t.condition === value.condition &&
+                  t.lsp === value.lsp &&
+                  t.type === value.type &&
+                  t.isDerived === value.isDerived
               )
           );
         }
       });
-      // fs.writeFileSync("lspData.json", JSON.stringify(finalData, null, 2));
+      // fs.writeFileSync(
+      //   "finalData.json",
+      //   JSON.stringify(finalData, null, 2)
+      // );
       collectData(finalData);
     }
   });
@@ -306,12 +298,13 @@ const collectData = async (data) => {
 
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
-        data.length + ". The data is not ready to use for other business logics",
+        data.length +
+        ". The data is not ready to use for other business logics",
     };
 
     config.sendMail(mailOptions, function (err, result) {
@@ -531,7 +524,7 @@ const allCron = async () => {
     { _id: 0 }
   );
   const fileData = await testScrappedModal.find({}, { _id: 0 });
-  allCronJobs(allgsmData, fileData);
+  allCronJobs();
 };
 
 module.exports = allCron;
