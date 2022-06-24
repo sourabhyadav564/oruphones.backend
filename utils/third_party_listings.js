@@ -63,13 +63,24 @@ const getThirdPartyVendors = async (model_name, make) => {
     // let imagePath = await getDefaultImage(element.model_name);
     // let imagePath = getImage(element.model_name);
     let imagePath = "";
+    let condition = "";
+    
+    if (element.mobiru_condition.includes("Like New")) {
+      condition = "Like New";
+    } else if (element.mobiru_condition.includes("Excellent")) {
+      condition = "Excellent";
+    } else if (element.mobiru_condition.includes("Good")) {
+      condition = "Good";
+    } else if (element.mobiru_condition.includes("Fair")) {
+      condition = "Fair";
+    }
 
     dataObject = {
       //   marketingName: element.marketing_name,
       marketingName: element.model_name,
       make: element.model_name.split(" ")[0],
       listingPrice: element.price.toString(),
-      deviceStorage: element.storage === "0 GB" || element.storage === "--" ? "--" : element.storage.toString(),
+      deviceStorage: element.storage === "0 GB" || element.storage === "--" ? "--" : (element.storage.toString() + " GB"),
       warranty: element.warranty,
       vendorLogo: vendorImage,
       vendorLink: element.link,
@@ -80,7 +91,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       favourite: false,
       listingLocation: "India",
       deviceFinalGrade: null,
-      deviceCondition: element.mobiru_condition,
+      deviceCondition: condition,
       listingId: element._id,
       listingDate: "",
       modifiedDate: "",
