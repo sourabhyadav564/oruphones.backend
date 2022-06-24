@@ -25,7 +25,7 @@ router.post("/listings/search", async (req, res) => {
   try {
     let allListings = [];
     let listing = [];
-    if (marketingName.length > 0) {
+    if (marketingName && marketingName.length > 0) {
       let ourListing = await saveListingModal.find(
         { marketingName: marketingName[0], status: "Active" },
         { _id: 0 }
