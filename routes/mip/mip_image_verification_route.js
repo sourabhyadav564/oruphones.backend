@@ -71,14 +71,14 @@ router.post("/verifyImage", async (req, res) => {
       return element._id.toString() === listingId.toString();
     });
 
-    if (images[0].images[imageIndex].isVarified === imageStatus) {
-      res.status(202).json({
-        reason: "Can't change status",
-        statusCode: 202,
-        status: "ACCEPTED",
-      });
-      return;
-    } else {
+    // if (images[0].images[imageIndex].isVarified === imageStatus) {
+    //   res.status(202).json({
+    //     reason: "Can't change status",
+    //     statusCode: 202,
+    //     status: "ACCEPTED",
+    //   });
+    //   return;
+    // } else {
       images[0].images[imageIndex].isVarified = imageStatus;
 
       const updatedImage = await images[0].save();
@@ -89,7 +89,7 @@ router.post("/verifyImage", async (req, res) => {
         status: "SUCCESS",
         dataObject: updatedImage,
       });
-    }
+    // }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
