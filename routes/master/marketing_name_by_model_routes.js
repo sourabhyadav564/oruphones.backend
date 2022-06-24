@@ -108,11 +108,11 @@ router.post("/marketingNameByModel", async (req, res) => {
   try {
     // FURTHER: use aggregate to get the data when complex query is needed
     // let Object = await gsmarenaModal.aggregate([{ $match: { make: make } }]);
-    let Object = await newMakeAndModal.find({
+    let objects = await newMakeAndModal.find({
       make: make,
       models: { $in: model },
     });
-    let modelName = Object[0].marketingName;
+    let modelName = objects[0].marketingName;
     // let modelName = "";
     // let makeArray = Object[0][make];
     // // Get the model name from the make array based on the model number
@@ -848,7 +848,7 @@ router.post("/marketingNameByModel", async (req, res) => {
         //   .toString()
         //   .toLowerCase()}/mbr_${modelName.toLowerCase().replace(" ", "_")}.png`,
         imagePath: image,
-        price: price == {} ? price.maxsellingprice.toString() : "--",
+        price: Object.keys(price).length > 0 ? price.maxsellingprice.toString() : "--",
       };
       // if (selectdModels.length) {
       // if (selectdModels.length > 1) {

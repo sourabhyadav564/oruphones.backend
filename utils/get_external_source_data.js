@@ -21,7 +21,6 @@ var url = process.env.MONGO;
 // require("../../src/database/connection");
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
 // const smartphoneModal = require("../../src/database/modals/others/smartphone_models");
-const amazonScrappedModal = require("../src/database/modals/others/amazon_scraped_models");
 
 let lspArray = [];
 let finalScrappedModelObject = [];
