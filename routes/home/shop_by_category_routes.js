@@ -52,18 +52,22 @@ router.get("/listings/category", async (req, res) => {
       if (category == "Verified") {
         defaultDataObject2 = await saveListingModal.find({
           verified: true,
+          status: "Active"
         });
       } else if (category === "Storage") {
         defaultDataObject2 = await saveListingModal.find({
           deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+          status: "Active"
         });
       } else if (category === "Like New") {
         defaultDataObject2 = await saveListingModal.find({
           deviceCondition: "Like New",
+          status: "Active"
         });
       } else if (category === "Excellent") {
         defaultDataObject2 = await saveListingModal.find({
           deviceCondition: "Excellent",
+          status: "Active"
         });
       } else if (category === "Thirty") {
         defaultDataObject2 = await saveListingModal.find({
@@ -74,7 +78,7 @@ router.get("/listings/category", async (req, res) => {
               },
               30000,
             ],
-          },
+          }, status: "Active"
         });
       } else if (category === "Fifteen") {
         defaultDataObject2 = await saveListingModal.find({
@@ -85,7 +89,7 @@ router.get("/listings/category", async (req, res) => {
               },
               15000,
             ],
-          },
+          }, status: "Active"
         });
       }
       defaultDataObject2.forEach((element) => {
@@ -100,18 +104,21 @@ router.get("/listings/category", async (req, res) => {
       //   listingLocation: location,
       // });
       if (category === "Verified") {
-        defaultDataObject = await saveListingModal.find({ verified: true });
+        defaultDataObject = await saveListingModal.find({ verified: true, status: "Active" });
       } else if (category === "Storage") {
         defaultDataObject = await saveListingModal.find({
           deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+          status: "Active"
         });
       } else if (category === "Like New") {
         defaultDataObject = await saveListingModal.find({
           deviceCondition: "Like New",
+          status: "Active"
         });
       } else if (category === "Excellent") {
         defaultDataObject = await saveListingModal.find({
           deviceCondition: "Excellent",
+          status: "Active"
         });
       } else if (category === "Thirty") {
         defaultDataObject = await saveListingModal.find({
@@ -122,7 +129,7 @@ router.get("/listings/category", async (req, res) => {
               },
               30000,
             ],
-          },
+          }, status: "Active"
         });
       } else if (category === "Fifteen") {
         defaultDataObject = await saveListingModal.find({
@@ -133,7 +140,7 @@ router.get("/listings/category", async (req, res) => {
               },
               15000,
             ],
-          },
+          }, status: "Active"
         });
       }
     }

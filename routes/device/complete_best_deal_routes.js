@@ -50,7 +50,7 @@ router.get("/listings/best/nearall", async (req, res) => {
         //       {
         //     listingLocation: citiesForIndia,
         //   }
-        {}
+        {status: "Active"}
       );
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
@@ -63,6 +63,7 @@ router.get("/listings/best/nearall", async (req, res) => {
       // defaultDataObject = await bestDealHomeModel.find({
       let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
+        status: "Active"
       });
       if (!defaultDataObject2.length) {
         res.status(200).json({

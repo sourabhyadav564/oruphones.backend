@@ -64,7 +64,7 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
             },
             parseInt(endPrice.toString()),
           ],
-        },
+        }, status: "Active"
       });
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
@@ -84,6 +84,7 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
     } else {
       defaultDataObject = await saveListingModal.find({
         listingLocation: location,
+        status: "Active"
       });
 
       if (!defaultDataObject.length) {
@@ -117,7 +118,7 @@ router.get("/shopbyprice/listmodel", async (req, res) => {
                 },
                 parseInt(endPrice.toString()),
               ],
-            },
+            }, status: "Active"
           });
           let defaultDataObject3 = defaultDataObject.filter((item, index) => {
             return (

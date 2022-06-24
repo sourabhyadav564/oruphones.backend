@@ -27,7 +27,7 @@ router.post("/listings/search", async (req, res) => {
     let listing = [];
     if (marketingName.length > 0) {
       let ourListing = await saveListingModal.find(
-        { marketingName: marketingName[0] },
+        { marketingName: marketingName[0], status: "Active" },
         { _id: 0 }
       );
       listing.push(...ourListing);
@@ -41,7 +41,7 @@ router.post("/listings/search", async (req, res) => {
         i++;
       }
     } else if (make.length > 0) {
-      let ourListing = await saveListingModal.find({ make: make }, { _id: 0 });
+      let ourListing = await saveListingModal.find({ make: make, status: "Active" }, { _id: 0 });
       listing.push(...ourListing);
       i = 0;
       while (i < make.length) {

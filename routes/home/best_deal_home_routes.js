@@ -98,6 +98,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       // defaultDataObject = await bestDealHomeModel.find({
         let defaultDataObject2 = await saveListingModal.find({
           listingLocation: location,
+          status: "Active"
         });
         if (!defaultDataObject2.length) {
           res.status(200).json({

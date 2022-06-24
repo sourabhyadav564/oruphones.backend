@@ -25,6 +25,7 @@ router.get("/listingsbymake", async (req, res) => {
   if (location === "India") {
     let defaultDataObject2 = await saveListingModal.find({
       make: make,
+      status: "Active"
     });
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
@@ -37,6 +38,7 @@ router.get("/listingsbymake", async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       listingLocation: location,
       make: make,
+      status: "Active"
     });
     if (!defaultDataObject2.length) {
       res.status(200).json({
@@ -72,6 +74,7 @@ router.get("/listbymarketingname", async (req, res) => {
   if (location === "India") {
     let defaultDataObject2 = await saveListingModal.find({
       marketingName: marketingname,
+      status: "Active"
     });
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
@@ -84,6 +87,7 @@ router.get("/listbymarketingname", async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       listingLocation: location,
       marketingName: marketingname,
+      status: "Active"
     });
     if (!defaultDataObject2.length) {
       res.status(200).json({

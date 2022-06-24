@@ -266,11 +266,11 @@ const allCronJobs = () => {
           );
         }
       });
-      // fs.writeFileSync(
-      //   "finalData.json",
-      //   JSON.stringify(finalData, null, 2)
-      // );
-      collectData(finalData);
+      fs.writeFileSync(
+        "finalData.json",
+        JSON.stringify(finalData, null, 2)
+      );
+      // collectData(finalData);
     }
   });
 };
