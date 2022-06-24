@@ -7,13 +7,16 @@ require("../../src/database/connection");
 
 router.get("/getImages", async (req, res) => {
   try {
-    const listings = await saveListingModal.find({
+    const listings = await saveListingModal.findOne({
       images: { $exists: true, $ne: [] },
     });
 
+    const listingArray = [];
+    listingArray.push(listings);
+
     let dataToBeSend = [];
 
-    listings.forEach((listing) => {
+    listingArray.forEach((listing) => {
       listing.images.forEach((image) => {
         console.log(image);
         if ("isVarified" in image && image.isVarified === "default") {
