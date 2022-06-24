@@ -269,13 +269,13 @@ router.post("/listing/pause", async (req, res) => {
   const listingId = req.body.listingId;
 
   try {
-    const activateListing = await saveListingModal.find({
+    const pauseListing = await saveListingModal.find({
       listingId: listingId,
     });
 
-    console.log("activateListing", activateListing);
+    console.log("activateListing", pauseListing);
 
-    if (!activateListing) {
+    if (!pauseListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
         statusCode: 200,
@@ -283,7 +283,7 @@ router.post("/listing/pause", async (req, res) => {
       });
       return;
     } else {
-      if (activateListing[0]?.userUniqueId !== userUniqueId) {
+      if (pauseListing[0]?.userUniqueId !== userUniqueId) {
         res.status(200).json({
           reason: "You are not authorized to pause this listing",
           statusCode: 200,
@@ -291,7 +291,7 @@ router.post("/listing/pause", async (req, res) => {
         });
       } else {
         const pausedListing = await saveListingModal.findByIdAndUpdate(
-          activateListing[0]?._id,
+          pauseListing[0]?._id,
           {
             status: "Paused",
           },
@@ -323,6 +323,8 @@ router.post("/listing/activate", async (req, res) => {
       listingId: listingId,
     });
 
+    console.log("activateListing", activateListing);
+
     if (!activateListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
@@ -331,9 +333,15 @@ router.post("/listing/activate", async (req, res) => {
       });
       return;
     } else {
-      if (activateListing.userUniqueId === userUniqueId) {
-        const activatedListing = await saveListingModal.findOneAndUpdate(
-          listingId,
+      if (activateListing[0].userUniqueId !== userUniqueId) {
+        res.status(200).json({
+          reason: "You are not authorized to activate this listing",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+      } else {
+        const activatedListing = await saveListingModal.findByIdAndUpdate(
+          activateListing[0]?._id,
           {
             status: "Active",
           },
@@ -341,17 +349,13 @@ router.post("/listing/activate", async (req, res) => {
             new: true,
           }
         );
+        console.log("activatedListing", activatedListing);
+
         res.status(200).json({
           reason: "Listing activated successfully",
           statusCode: 200,
           status: "SUCCESS",
           activatedListing,
-        });
-      } else {
-        res.status(200).json({
-          reason: "You are not authorized to activate this listing",
-          statusCode: 200,
-          status: "SUCCESS",
         });
       }
     }
