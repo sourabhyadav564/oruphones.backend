@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('08 08 * * * ', function(){
+schedule.scheduleJob('59 14 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   // start_migration();
   // start_migrating_external_source_buy();
@@ -99,7 +99,7 @@ app.use("/api/v1/home", shopByCategoryRoutes);
 app.use("/api/v1/home", shopByPriceRoute);
 app.use("/api/v1/api/auth", eventRoute);
 app.use("/api/v1/api", diagnosticsConfigRoute);
-app.use("/api/v1/mip", getBatteryTestRoutes);
+app.use("/api/v1/api", getBatteryTestRoutes);
 app.use("/api/v1/mip", getMIPImageVerificationRoutes);
 app.use("/api/v1/login", loginOtpRoute);
 app.use("/api/v1/login", createUserRoute);
