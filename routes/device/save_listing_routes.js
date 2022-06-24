@@ -283,15 +283,15 @@ router.post("/listing/pause", async (req, res) => {
       });
       return;
     } else {
-      if (!activateListing.userUniqueId === userUniqueId) {
+      if (activateListing[0]?.userUniqueId !== userUniqueId) {
         res.status(200).json({
           reason: "You are not authorized to pause this listing",
           statusCode: 200,
           status: "SUCCESS",
         });
       } else {
-        const pausedListing = await saveListingModal.findOneAndUpdate(
-          listingId,
+        const pausedListing = await saveListingModal.findByIdAndUpdate(
+          activateListing[0]?._id,
           {
             status: "Paused",
           },
@@ -299,6 +299,7 @@ router.post("/listing/pause", async (req, res) => {
             new: true,
           }
         );
+        console.log("pausedListing", pausedListing);
         res.status(200).json({
           reason: "Listing paused successfully",
           statusCode: 200,
