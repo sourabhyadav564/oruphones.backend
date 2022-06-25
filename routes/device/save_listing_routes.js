@@ -23,6 +23,7 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../../src/database/modals/notification/complete_notifications");
 const makeRandomString = require("../../utils/generate_random_string");
+const lspModal = require("../../src/database/modals/others/new_scrapped_models");
 
 // router.get("/listing", async (req, res) => {
 //   try {
@@ -658,6 +659,8 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       }
     }
 
+    console.log("favList", favList);
+
     const getListing = await saveListingModal.findOne({
       listingId: listingid,
     });
@@ -670,8 +673,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       });
       return;
     } else {
-      // let query =
-      //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
 
       let getMake = getListing?.make;
       let getMarketingName = getListing?.marketingName;
@@ -699,11 +700,8 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
         getisVarified,
         false
       );
-      // console.log("price", price);
-      // if (price !== null) {
-      //   afterGetPrice(price);
-      //   return price;
-      // }
+
+      console.log("price", price);
 
       let basePrice;
       let notionalPrice;
@@ -717,11 +715,9 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       const has_original_box_percentage = 3;
 
       basePrice = price.actualLSP;
-      // console.log("basePrice", basePrice);
       notionalPrice = parseInt(
         getListing.listingPrice.toString().replace(",", "")
       );
-      // notionalPrice = basePrice;
 
       if ("verified" in getListing === true) {
         if (getListing.verified === true) {
@@ -729,22 +725,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
             notionalPrice - (basePrice / 100) * verified_percentage;
         }
       }
-
-      // if ("warranty" in item === true) {
-      //   if (item.warranty === "0-3 months") {
-      //     notionalPrice =
-      //       notionalPrice - (basePrice / 100) * warranty_percentage1;
-      //   } else if (item.warranty === "4-6 months") {
-      //     notionalPrice =
-      //       notionalPrice - (basePrice / 100) * warranty_percentage2;
-      //   } else if (item.warranty === "7-10 months") {
-      //     notionalPrice =
-      //       notionalPrice - (basePrice / 100) * warranty_percentage3;
-      //   } else {
-      //     notionalPrice =
-      //       notionalPrice - (basePrice / 100) * warranty_percentage4;
-      //   }
-      // }
 
       if ("charger" in getListing === true) {
         if (getListing.charger === "Y") {
@@ -770,25 +750,9 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let currentPercentage;
       currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-      // let newDataObject = {};
-      // if (getListing.isOtherVendor == "Y") {
-      //   newDataObject = {
-      //     ...getListing,
-      //     notionalPercentage: currentPercentage,
-      //   };
-      // } else {
-      //   newDataObject = {
-      //     ...getListing._doc,
-      //     notionalPercentage: currentPercentage,
-      //   };
-      // }
-      // bestDeals.push(newDataObject);
-      // dIndex++;
-      // if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
-      //   // console.error("bestDeals22", bestDeals);
-      //   // afterGetingBestDeals(bestDeals);
-      //   // return bestDeals;
-      // }
+      console.log("currentPercentage", currentPercentage);
+      console.log("basePrice", basePrice);
+      console.log("notionalPrice", notionalPrice);
 
       const VENDORS = {
         6: "Amazon",
@@ -814,43 +778,25 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
 
       let dataObject = { externalSource, ...getListing._doc };
       if (currentPercentage > -3) {
-        let scrappedModels = await scrappedExternalSourceModal.find({
-          model_name: getListing?.marketingName,
-          storage: getListing?.deviceStorage,
+
+        console.log("getListing", getListing);
+        console.log("getListing", getListing?.marketingName);
+        console.log("getListing", getListing?.deviceStorage);
+
+        let scrappedModels = await lspModal.find({
+          model: getListing?.marketingName,
+          storage: [getListing?.deviceStorage, "-- GB"],
           type: "buy",
         });
 
-        // console.log("scrappedModel1", getListing?.marketingName);
-        // console.log("scrappedModel2", getListing?.deviceStorage);
+        console.log("scrappedModels", scrappedModels);
 
-        // connection.query(query, [2, 1], async (err, results, fields) => {
-        //   if (err) {
-        //     console.log(err);
-        //   } else {
-        // let models = results[1];
-        // let scrappedModels = results[0];
         let selectdModels = [];
-        // let minPrice;
-        // let maxPrice;
         let itemId = "";
-        // const make = await getListing.make;
         const marketingname = getListing.marketingName;
         const condition = getListing.deviceCondition;
         const storage = getListing.deviceStorage;
-        // .split(" ")[0]
-        // .toString();
         let leastSellingPrice;
-
-        // models.forEach((item, index) => {
-        //   if (item.name === marketingname) {
-        //     itemId = item.id;
-        //     return;
-        //   }
-        // });
-
-        // console.log("marketingname", marketingname);
-        // console.log("condition", condition);
-        // console.log("storage", storage);
 
         let pushedVendors = [];
 
@@ -876,31 +822,24 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
         });
 
         if (selectdModels.length > 0) {
-          // leastSellingPrice = Math.max(...selectdModels);
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
         dataObject = { externalSource, ...getListing._doc };
         let tempArray = [];
         tempArray.push(dataObject);
 
+        // add favorite listings to the final list
         if (userUniqueId !== "Guest") {
-          // add favorite listings to the final list
           tempArray.forEach((item, index) => {
             if (favList.includes(item.listingId)) {
-              dataObject = {...dataObject, favorite: true};
-              // dataObject[index].favourite = true;
-              // finalBestDeals[index].favourite = true;
+              dataObject = {...dataObject, favourite: true};
             } else {
-              dataObject = {...dataObject, favorite: false};
-              // dataObject[index].favourite = false;
-              // finalBestDeals[index].favourite = false;
+              dataObject = {...dataObject, favourite: false};
             }
           });
         }
 
-        // console.log("externalSource", dataObject);
       }
-      // if(externalSource.length > 0) {
       res.status(200).json({
         reason: "Listing updated successfully",
         statusCode: 200,
@@ -908,9 +847,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
         dataObject,
       });
     }
-    // }
-    // });
-    // }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
