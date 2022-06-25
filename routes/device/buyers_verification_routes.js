@@ -13,6 +13,7 @@ const saveRequestModal = require("../../src/database/modals/device/request_verif
 
 const sendNotification = require("../../utils/push_notification");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
+const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 
 router.get("/listing/buyer/verification", async (req, res) => {
   try {
