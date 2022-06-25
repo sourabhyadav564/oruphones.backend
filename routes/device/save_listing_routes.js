@@ -645,6 +645,19 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
     //   userUniqueId: userUniqueId,
     // })
 
+    let favList = [];
+    if (userUniqueId !== "Guest") {
+      const getFavObject = await favoriteModal.findOne({
+        userUniqueId: userUniqueId,
+      });
+
+      if (getFavObject) {
+        favList = getFavObject.fav_listings;
+      } else {
+        favList = [];
+      }
+    }
+
     const getListing = await saveListingModal.findOne({
       listingId: listingid,
     });
@@ -757,7 +770,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       let currentPercentage;
       currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-      console.log("currentPercentage", currentPercentage);
       // let newDataObject = {};
       // if (getListing.isOtherVendor == "Y") {
       //   newDataObject = {
@@ -778,7 +790,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
       //   // return bestDeals;
       // }
 
-      console.log("price", price);
       const VENDORS = {
         6: "Amazon",
         7: "Quikr",
@@ -809,7 +820,6 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
           type: "buy",
         });
 
-        console.log("scrappedModels", scrappedModels);
         // console.log("scrappedModel1", getListing?.marketingName);
         // console.log("scrappedModel2", getListing?.deviceStorage);
 
@@ -869,8 +879,25 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
           // leastSellingPrice = Math.max(...selectdModels);
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
-
         dataObject = { externalSource, ...getListing._doc };
+        let tempArray = [];
+        tempArray.push(dataObject);
+
+        if (userUniqueId !== "Guest") {
+          // add favorite listings to the final list
+          tempArray.forEach((item, index) => {
+            if (favList.includes(item.listingId)) {
+              dataObject = {...dataObject, favorite: true};
+              // dataObject[index].favourite = true;
+              // finalBestDeals[index].favourite = true;
+            } else {
+              dataObject = {...dataObject, favorite: false};
+              // dataObject[index].favourite = false;
+              // finalBestDeals[index].favourite = false;
+            }
+          });
+        }
+
         // console.log("externalSource", dataObject);
       }
       // if(externalSource.length > 0) {

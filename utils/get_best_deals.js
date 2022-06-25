@@ -37,9 +37,6 @@ const getBestDeals = async (
   let updatedBestDeals = [];
 
   try {
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
 
     let favList = [];
     if (userUniqueId !== "Guest") {
