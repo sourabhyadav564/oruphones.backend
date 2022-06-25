@@ -105,7 +105,7 @@ router.post("/otp/validate", async (req, res) => {
     } else {
       res.status(401).json({
         reason: "You have entered an invalid OTP",
-        statusCode: 401,
+        statusCode: 200,
         status: "FAILED",
         dataObject: {
           submitCountIncrement: 0,
