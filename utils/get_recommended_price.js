@@ -47,7 +47,7 @@ const getRecommendedPrice = async (
     let scrappedModels = [];
     scrappedModels = await lspModal.find({
       model: marketingname,
-      storage: [storage, "-- GB"],
+      storage: [storage],
       condition: condition,
     });
 
