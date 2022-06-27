@@ -13,7 +13,7 @@ const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listingsbymake", async (req, res) => {
   // const initialMake = req.query.make;
-  const make = req.query.make;
+  let make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
 
