@@ -60,9 +60,9 @@ const getThirdPartyVendors = async (model_name, make) => {
       .toString()
       .toLowerCase()}_logo.png`;
 
-    // let imagePath = await getDefaultImage(element.model_name);
+    let imagePath = await getDefaultImage(element.model_name);
     // let imagePath = getImage(element.model_name);
-    let imagePath = "";
+    // let imagePath = "";
     let condition = "";
     
     if (element.mobiru_condition.includes("Like New")) {
@@ -100,9 +100,13 @@ const getThirdPartyVendors = async (model_name, make) => {
       earphone: "Y",
       originalbox: "Y",
       defaultImage: {
-        fullImage: "",
+        // fullImage: "",
+        fullImage: imagePath,
       },
-      images: []
+      images: [{
+        fullImage: imagePath,
+        thumbnailImage: imagePath,
+      }]
     };
 
     dataArray.push(dataObject);
