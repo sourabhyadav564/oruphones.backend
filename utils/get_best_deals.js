@@ -178,7 +178,7 @@ const getBestDeals = async (
           console.log("notional price", notionalPrice);
           console.log("percent", currentPercentage);
           console.log("---------");
-          console.log("item", item);
+          // console.log("item", item);
           console.log("----------------------------------------------");
 
           let newDataObject = {};

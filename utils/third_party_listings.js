@@ -45,12 +45,14 @@ const getThirdPartyVendors = async (model_name, make) => {
     //     filterd.push(item);
     //   }
     // });
-    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
+    filterd = await scrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
   } else if (model_name != "") {
-    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
+    filterd = await scrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
   } else {
-    filterd = await testScrappedModal.find({ type: "buy" }).limit(50);
+    filterd = await scrappedModal.find({ type: "buy" }).limit(50);
   }
+
+  console.log("fffff ",filterd.length);
 
   let dataObject = {};
   let dataArray = [];
@@ -60,9 +62,10 @@ const getThirdPartyVendors = async (model_name, make) => {
       .toString()
       .toLowerCase()}_logo.png`;
 
-    let imagePath = await getDefaultImage(element.model_name);
+    // let imagePath = await getDefaultImage(element.model_name);
+    // console.log("imagePath", imagePath);
     // let imagePath = getImage(element.model_name);
-    // let imagePath = "";
+    let imagePath = "";
     let condition = "";
     
     if (element.mobiru_condition.includes("Like New")) {
@@ -100,16 +103,18 @@ const getThirdPartyVendors = async (model_name, make) => {
       earphone: "Y",
       originalbox: "Y",
       defaultImage: {
-        // fullImage: "",
-        fullImage: imagePath,
+        fullImage: "",
+        // fullImage: imagePath,
       },
-      images: [{
-        fullImage: imagePath,
-        thumbnailImage: imagePath,
-      }]
+      // images: [{
+      //   fullImage: imagePath,
+      //   thumbnailImage: imagePath,
+      // }]
+      images: [],
     };
 
     dataArray.push(dataObject);
+    console.log("dataArray", dataArray.length);
   });
 
   return dataArray;
