@@ -102,27 +102,44 @@ router.get("/listing/sendverification", async (req, res) => {
             let sellerUniqueId = listingObject.userUniqueId;
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
+            console.log("sellerUniqueId", sellerUniqueId);
+            console.log("marketingName", marketingName);
+            console.log("sellerName", sellerName);
             const response = await sendNotification(
               sellerUniqueId,
               true,
               marketingName,
               sellerName
             );
-            const addToFavorite = await favoriteModal.findOneAndUpdate(
-              userUniqueId,
-              {
-                $push: {
-                  fav_listings: listingId,
-                },
-              },
-              { new: true }
-            );
-            res.status(201).json({
-              reason: "Request sent successfully",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject,
+            const findFavorite = await favoriteModal.findOne({
+              userUniqueId: userUniqueId,
             });
+
+            let addToFavorite = {};
+            if (findFavorite && findFavorite.userUniqueId) {
+              addToFavorite = await favoriteModal.findByIdAndUpdate(
+                findFavorite._id,
+                {
+                  $push: {
+                    fav_listings: listingId,
+                  },
+                },
+                { new: true }
+              );
+            } else {
+              addToFavorite = await favoriteModal.create({
+                userUniqueId: userUniqueId,
+                fav_listings: [listingId],
+              });
+            }
+            if (addToFavorite) {
+              res.status(201).json({
+                reason: "Request sent successfully",
+                statusCode: 200,
+                status: "SUCCESS",
+                dataObject,
+              });
+            }
           } else {
             res.status(200).json({
               reason: "You can't send verification request to yourself",
