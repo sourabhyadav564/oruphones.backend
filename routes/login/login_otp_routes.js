@@ -85,23 +85,32 @@ router.post("/otp/validate", async (req, res) => {
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
+  console.log(mobileNumber, countryCode, otp);
+
   try {
-    const getOtp = await userModal.find({
+    const getOtp = await userModal.findOne({
       mobileNumber: mobileNumber,
       otp: otp,
     });
-    savedOtp = getOtp[0]?.otp?.toString();
+    // savedOtp = getOtp[0]?.otp?.toString();
+    savedOtp = getOtp?.otp?.toString();
     if (savedOtp === otp) {
-      res.status(200).json({
-        reason: "OTP validated",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          submitCountIncrement: 0,
-          maxRetryCount: "3",
-          mobileNumber: mobileNumber,
-        },
+      const delete_user = await userModal.findOneAndRemove({
+        mobileNumber: req.query.mobileNumber,
+        otp: otp,
       });
+      if (delete_user) {
+        res.status(200).json({
+          reason: "OTP validated",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            submitCountIncrement: 0,
+            maxRetryCount: "3",
+            mobileNumber: mobileNumber,
+          },
+        });
+      }
     } else {
       res.status(200).json({
         reason: "You have entered an invalid OTP",
