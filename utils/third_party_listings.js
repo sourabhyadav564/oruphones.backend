@@ -45,11 +45,11 @@ const getThirdPartyVendors = async (model_name, make) => {
     //     filterd.push(item);
     //   }
     // });
-    filterd = await scrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
+    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
   } else if (model_name != "") {
-    filterd = await scrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
+    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
   } else {
-    filterd = await scrappedModal.find({ type: "buy" }).limit(50);
+    filterd = await testScrappedModal.find({ type: "buy" }).limit(50);
   }
 
   console.log("fffff ",filterd.length);
