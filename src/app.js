@@ -10,7 +10,7 @@ const allCron = require("../utils/filter_cron_job_data")
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
-  // origin: "http://localhost:3000",
+  origin: ["https://www.oruphones.com", "https://dev.oruphones.com"],
   // credentials: true,
 };
 
