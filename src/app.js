@@ -10,7 +10,7 @@ const allCron = require("../utils/filter_cron_job_data")
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
-  origin: ["https://www.oruphones.com", "https://dev.oruphones.com"],
+  origin: ["https://www.oruphones.com", "https://api.oruphones.com", "https://new-test-application-001.herokuapp.com/api/v1/global/tinyurl"],
   // credentials: true,
 };
 
@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob('54 16 * * * ', function(){
+schedule.scheduleJob('18 12 * * * ', function(){
   console.log('The answer to life, the universe, and everything!');
   // start_migration();
   // start_migrating_external_source_buy();
