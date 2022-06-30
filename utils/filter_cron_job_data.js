@@ -31,20 +31,22 @@ let currentDate = new Date();
 let dateFormat = moment(currentDate).add(10, "days").calendar();
 
 const allCronJobs = () => {
-  // let dataObject = [];
   let foundObjects = [];
   let allModelFound = [];
   let allModelNotFound = [];
-  // console.log("fileData: " + fileData.length);
-  // console.log("allgsmData: " + allgsmData.length);
-  const allgsmData = JSON.parse(fs.readFileSync("allGSMwithRamRom.json"));
+  const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
   const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
 
-  let gsmData = allgsmData.filter((item) => item.models.length > 1);
+  let gsmData = allgsmData.filter((item) => item.models.length >= 1);
   gsmData.forEach((element, index) => {
+    // let make = element.make;
     let marketingName =
       element.marketingName.charAt(0).toUpperCase() +
       element.marketingName.slice(1);
+    if (marketingName.includes("(")) {
+      let tempName = marketingName.split("(")[0];
+      marketingName = tempName.trim();
+    }
     console.log("enters in gsm loop for ", index, marketingName);
     let cond = ["Like New", "Excellent", "Good", "Fair"];
     element.storage.forEach((el) => {
@@ -52,33 +54,27 @@ const allCronJobs = () => {
         // TODO file data will be all the data from all the 10 data files
         // TODO .map() will be replaced by .find() for mongoDB
         let variable = fileData.filter((elm) => {
+          // console.log("elm", elm);
           let mdl = elm.model_name != null ? elm.model_name.toString() : "";
           if (mdl.includes("(")) {
-            let tempName = mdl.split("(")[0];
-            mdl = tempName.trim();
+            let tempName2 = mdl.split("(")[0];
+            mdl = tempName2.trim();
           }
           if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             el.includes(elm.storage) &&
             elm.mobiru_condition.includes(con)
           ) {
-            console.log(
-              "enters in if                    ***************************************",
-              elm.type
-            );
+            // console.log("enters in if                    ***************************************", elm.type);
 
             return elm;
           } else if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             elm.storage == "--" &&
             elm.mobiru_condition.includes(con) &&
-            // && elm.type == eType
             elm.price != null
           ) {
-            console.log(
-              "enters in else if                    ***************************************",
-              elm.type
-            );
+            // console.log("enters in else if                    ***************************************", elm.type);
             return elm;
           } else if (
             mdl.toLowerCase().includes(marketingName.toLowerCase()) &&
@@ -90,7 +86,6 @@ const allCronJobs = () => {
           }
         });
         if (variable) {
-          console.log("len", variable.length);
           variable = variable.filter(
             (value, index, self) =>
               index ===
@@ -104,173 +99,230 @@ const allCronJobs = () => {
                   t.vendor_id === value.vendor_id
               )
           );
-          console.log("len2", variable.length);
 
           allModelFound.push(marketingName);
           variable.forEach((elm) => {
-            console.log("enters in complete data loop");
+            // let elm = variable[0];
             let make = element.make;
             let model = element.marketingName;
+            // let model_id = elm.model_id;
             let storage = elm.storage ? `${elm.storage} GB` : "--";
             let ram = elm.ram ? `${elm.ram} GB` : "--";
-            let condition = elm.mobiru_condition;
-            let price = parseInt(elm.price.toString());
+            let condition = con;
+            let tempPrice = elm.price != null ? elm.price.toString() : "";
+            if (tempPrice.includes(".")) {
+              tempPrice = tempPrice.toString().split(".")[0].toString();
+            }
+            if (tempPrice.includes(",")) {
+              tempPrice = tempPrice.toString().replace(",", "").toString();
+            }
+
+            let price = parseInt(tempPrice);
             let type = elm.type;
             let vendor_id = elm.vendor_id;
+            // let link = elm.link;
+            // let warranty = elm.warranty;
 
             let dataObj = {
               make,
               model,
+              // model_id,
               storage,
               ram,
               condition,
               price,
               type,
               vendor_id,
+              // link,
+              // warranty,
             };
+            // console.log("dataObj", dataObj);
             foundObjects.push(dataObj);
           });
         } else {
           if (!allModelNotFound.includes("GSM: " + marketingName)) {
             allModelNotFound.push("GSM: " + marketingName);
           }
-          console.log("enters in complete data loop11111111111111");
+          // console.log("enters in complete data loop11111111111111");
         }
+        // });
+        // });
       });
     });
+    // fs.writeFileSync(
+    //     "foundObjects.json",
+    //     JSON.stringify(foundObjects, null, 2)
+    // );
 
     if (index == gsmData.length - 1) {
-      console.log(
-        "enters in gsm loop for last*************************************************"
-      );
-      let finalData = [];
-      gsmData.forEach((element2, index2) => {
-        element2.storage.forEach((str) => {
-          let newArray = foundObjects.filter(function (obj) {
-            return (
-              obj.make == element2.make &&
-              obj.model == element2.marketingName &&
-              (obj.storage == "-- GB" || str.includes(obj.storage)) &&
-              (obj.ram == "-- GB" || str.includes(obj.ram.charAt(0)))
-            );
-          });
-          if (newArray.length > 0) {
-            let conditions = ["Like New", "Excellent", "Good", "Fair"];
-            conditions.forEach((con2) => {
-              const obj = newArray.find((obj2) => obj2.condition == con2);
-              if (obj) {
-                let vendorObj = {
-                  price: obj.price,
-                  type: obj.type,
-                  vendor_id: obj.vendor_id,
-                };
-                let dataObject2 = {
-                  make: element2.make,
-                  model: element2.marketingName,
-                  storage: obj.storage,
-                  ram: obj.ram,
-                  condition: con2,
-                };
-                const foundInFinalData = finalData.find(
-                  (elm) =>
-                    elm.model == element2.marketingName &&
-                    elm.storage == obj.storage &&
-                    elm.condition == con2 &&
-                    elm.ram == obj.ram
-                );
-                if (foundInFinalData) {
-                  foundInFinalData.vendor.push(vendorObj);
-                  foundInFinalData.lsp =
-                    foundInFinalData.lsp < obj.price
-                      ? foundInFinalData.lsp
-                      : obj.price;
-                  foundInFinalData.isDerived = false;
-                  foundInFinalData.type =
-                    foundInFinalData.lsp < obj.price
-                      ? foundInFinalData.type
-                      : obj.type;
-                  finalData.push(...[foundInFinalData]);
-                } else {
-                  dataObject2.vendor = [];
-                  dataObject2.vendor.push(vendorObj);
-                  dataObject2.lsp = obj.price;
-                  dataObject2.isDerived = false;
-                  dataObject2.type = obj.type;
-                  finalData.push(dataObject2);
-                }
-              } else {
-                let derivedPrice = lsp(
-                  con2,
-                  newArray[0].condition,
-                  newArray[0].price
-                );
-                let obj = newArray[0];
-                let vendorObj = {
-                  price: derivedPrice,
-                  type: obj.type,
-                  vendor_id: obj.vendor_id,
-                };
-                let dataObject2 = {
-                  make: element2.make,
-                  model: element2.marketingName,
-                  storage: obj.storage,
-                  ram: obj.ram,
-                  condition: con2,
-                };
-                const foundInFinalData = finalData.find(
-                  (elm) =>
-                    elm.model == element2.marketingName &&
-                    elm.storage == obj.storage &&
-                    elm.condition == con2 &&
-                    elm.ram == obj.ram
-                );
-                if (foundInFinalData) {
-                  foundInFinalData.vendor.push(vendorObj);
-                  foundInFinalData.lsp =
-                    foundInFinalData.lsp < derivedPrice
-                      ? foundInFinalData.lsp
-                      : derivedPrice;
-                  foundInFinalData.isDerived = true;
-                  foundInFinalData.type =
-                    foundInFinalData.lsp < derivedPrice
-                      ? foundInFinalData.type
-                      : obj.type;
-                  finalData.push(...[foundInFinalData]);
-                } else {
-                  dataObject2.vendor = [];
-                  dataObject2.vendor.push(vendorObj);
-                  dataObject2.lsp = obj.price;
-                  dataObject2.isDerived = false;
-                  dataObject2.type = obj.type;
-                  finalData.push(dataObject2);
+      let lspFinalData = [];
+      let allModels = [];
+      foundObjects.forEach((eachObject, indx) => {
+        let modelObj = {
+          model: eachObject.model,
+          storage: eachObject.storage,
+          ram: eachObject.ram,
+        };
+        if (!allModels.includes(modelObj)) {
+          allModels.push(modelObj);
+        }
+        let objIndex = lspFinalData.findIndex((elm) => {
+          return (
+            elm.make == eachObject.make &&
+            elm.model == eachObject.model &&
+            // elm.storage == "-- GB" ||
+            elm.storage == eachObject.storage &&
+            // elm.ram == "-- GB" ||
+            elm.ram == eachObject.ram &&
+            elm.condition == eachObject.condition
+          );
+        });
+        if (objIndex == -1) {
+          let newObj = {
+            make: eachObject.make,
+            model: eachObject.model,
+            storage: eachObject.storage,
+            ram: eachObject.ram,
+            condition: eachObject.condition,
+            vendor: [
+              {
+                price: eachObject.price < 100 ? 100 : eachObject.price,
+                type: eachObject.type,
+                vendor_id: eachObject.vendor_id,
+              },
+            ],
+            lsp: eachObject.price < 100 ? 100 : eachObject.price,
+            isDerived: false,
+            type: eachObject.type,
+          };
+          lspFinalData.push(newObj);
+        } else {
+          let vendorObj = {
+            price: eachObject.price < 100 ? 100 : eachObject.price,
+            type: eachObject.type,
+            vendor_id: eachObject.vendor_id,
+          };
+          lspFinalData[objIndex].vendor.push(vendorObj);
+
+          lspFinalData[objIndex].vendor = lspFinalData[objIndex].vendor.filter(
+            (value, index, self) =>
+              index ===
+              self.findIndex(
+                // (t) => t == value
+                (t) =>
+                  t.price === value.price &&
+                  t.type === value.type &&
+                  t.vendor_id === value.vendor_id
+              )
+          );
+
+          if (lspFinalData[objIndex].vendor.length > 1) {
+            let foundBuy = false;
+            let leastPrice = lspFinalData[objIndex].lsp;
+            let newType = lspFinalData[objIndex].type;
+            lspFinalData[objIndex].vendor.forEach((eachVendor, i) => {
+              if (eachVendor.price >= 100) {
+                if (foundBuy == false || eachVendor.type == "buy") {
+                  lspFinalData[objIndex].lsp =
+                    leastPrice > eachVendor.price
+                      ? eachVendor.price
+                      : leastPrice;
+                  lspFinalData[objIndex].type =
+                    leastPrice > eachVendor.price ? eachVendor.type : newType;
+                  leastPrice = eachVendor.price;
+
+                  if (eachVendor.type == "buy") {
+                    foundBuy = true;
+                  }
                 }
               }
             });
           }
-        });
-        if (index2 == gsmData.length - 1) {
-          finalData = finalData.filter(
-            (value, index, self) =>
-              index ===
-              self.findIndex(
-                (t) =>
-                  t.make === value.make &&
-                  t.model === value.model &&
-                  t.storage === value.storage &&
-                  t.ram === value.ram &&
-                  t.condition === value.condition &&
-                  t.lsp === value.lsp &&
-                  t.type === value.type &&
-                  t.isDerived === value.isDerived
-              )
-          );
+        }
+        if (indx == foundObjects.length - 1) {
+          let derivedData = [];
+          let conditions = ["Like New", "Excellent", "Good", "Fair"];
+          allModels.forEach((model, modelIndex) => {
+            let arrWithOutCond = lspFinalData.filter(
+              (obj2) =>
+                obj2.model == model.model &&
+                obj2.storage == model.storage &&
+                obj2.ram == model.ram
+            );
+            if (arrWithOutCond.length > 0) {
+              conditions.forEach((con2) => {
+                let obj = arrWithOutCond.filter(
+                  (obj3) => obj3.condition == con2
+                );
+                if (obj && obj.length > 0) {
+                  derivedData.push(obj[0]);
+                } else {
+                  let derivedPrice = lspFunction(
+                    con2,
+                    arrWithOutCond[0].condition,
+                    arrWithOutCond[0].lsp
+                  );
+
+                  let newVendors = [];
+
+                  arrWithOutCond[0].vendor.forEach((eachVendor) => {
+                    let dpv = lspFunction(con2, arrWithOutCond[0].condition, eachVendor.price);
+                    let pVendor = {
+                      price: dpv,
+                      type: eachVendor.type,
+                      vendor_id: eachVendor.vendor_id,
+                    }
+                    newVendors.push(pVendor);
+                  });
+
+                  // if(derivedPrice){
+                  let derivedObj = {
+                    make: arrWithOutCond[0].make,
+                    model: arrWithOutCond[0].model,
+                    storage: arrWithOutCond[0].storage,
+                    ram: arrWithOutCond[0].ram,
+                    condition: con2,
+                    vendor: newVendors,
+                    lsp: derivedPrice,
+                    isDerived: true,
+                    type: arrWithOutCond[0].type,
+                  };
+
+                  derivedData.push(derivedObj);
+                  console.log("drvDataLen:", derivedData.length);
+                  // }
+                }
+                console.log("indx", modelIndex, allModels.length);
+
+                if (modelIndex == allModels.length - 1) {
+                  derivedData = derivedData.filter(
+                    (value, index, self) =>
+                      index ===
+                      self.findIndex(
+                        // (t) => t == value
+                        (t) =>
+                          t.make === value.make &&
+                          t.model === value.model &&
+                          t.storage === value.storage &&
+                          t.ram === value.ram &&
+                          t.condition === value.condition &&
+                          t.type === value.type &&
+                          t.vendor_id === value.vendor_id &&
+                          t.isDerived === value.isDerived &&
+                          t.lsp === value.lsp
+                      )
+                  );
+                  // fs.writeFileSync(
+                  //     "lspDerivedData.json",
+                  //     JSON.stringify(derivedData, null, 2)
+                  // );
+                }
+              });
+            }
+          });
+          collectData(derivedData);
         }
       });
-      fs.writeFileSync(
-        "finalData.json",
-        JSON.stringify(finalData, null, 2)
-      );
-      // collectData(finalData);
     }
   });
 };
@@ -319,7 +371,7 @@ const collectData = async (data) => {
   }
 };
 
-function lsp(condition, gotDataFrom, leastSellingPrice) {
+function lspFunction(condition, gotDataFrom, leastSellingPrice) {
   if (condition === "Good") {
     if (gotDataFrom === "Good") {
       return leastSellingPrice;
@@ -528,3 +580,5 @@ const allCron = async () => {
 };
 
 module.exports = allCron;
+
+// _____________________________________________________________________________________________________________________________
