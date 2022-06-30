@@ -65,6 +65,10 @@ router.get("/listings/best/nearall", async (req, res) => {
         listingLocation: location,
         status: "Active"
       });
+      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      thirdPartyVendors.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
+      });
       if (!defaultDataObject2.length) {
         res.status(200).json({
           reason: "No best deals found",
