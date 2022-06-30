@@ -67,7 +67,7 @@ router.get("/listings/best/nearall", async (req, res) => {
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "");
       thirdPartyVendors.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
+        defaultDataObject2.push(thirdPartyVendor);
       });
       if (!defaultDataObject2.length) {
         res.status(200).json({
