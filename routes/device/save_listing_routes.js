@@ -821,7 +821,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
                 .toString()
                 .toLowerCase()}_logo.png`;
               let vendorObject = {
-                externalSourcePrice: item.price,
+                externalSourcePrice: item.lsp,
                 externalSourceImage: vendorImage,
               };
               if (!pushedVendors.includes(vendorName)) {
