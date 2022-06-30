@@ -68,88 +68,71 @@ router.post("/listings/search", async (req, res) => {
       });
     }
 
+    allListings = listing;
 
-    listing.forEach((item, index) => {
-      if (make.length > 0) {
-        if (make.includes(item.make)) {
-          // allListings.push(item);
-          if (
-            color.length > 0 &&
-            // && make.length === 0
-            reqPage !== "TSM"
-          ) {
-            if (color.includes(item.color)) {
-              allListings.push(item);
-            }
-          } else if (
-            deviceCondition.length > 0 &&
-            // make.length === 0 &&
-            reqPage !== "TSM"
-          ) {
-            if (deviceCondition.includes(item.deviceCondition)) {
-              allListings.push(item);
-            }
-          } else if (deviceStorage.length > 0 
-            // && make.length === 0
-            ) {
-            if (deviceStorage.includes(item.deviceStorage)) {
-              allListings.push(item);
-            }
-          } else if (listingLocation != "India" && listingLocation === item.listingLocation) {
-            let tempListings = [];
-            tempListings = allListings.filter((item, index) => {
-              return item.listingLocation === listingLocation;
-            });
-            allListings = tempListings;
-          } else if (parseInt(maxsellingPrice) > parseInt(item.listingPrice)) {
-            allListings.push(item);
-          } else if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
-            allListings.push(item);
-          } else {
-            allListings.push(item);
-          }
-        }
+    if (make.length > 0) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return make.includes(item.make);
+      });
+      allListings = tempListings;
+    }
 
-      } else if (
-        color.length > 0 &&
-        // && make.length === 0
-        reqPage !== "TSM"
-      ) {
-        if (color.includes(item.color)) {
-          allListings.push(item);
-        }
-      } else if (
-        deviceCondition.length > 0 &&
-        // make.length === 0 &&
-        reqPage !== "TSM"
-      ) {
-        if (deviceCondition.includes(item.deviceCondition)) {
-          allListings.push(item);
-        }
-      } else if (deviceStorage.length > 0 
-        // && make.length === 0
-        ) {
-        if (deviceStorage.includes(item.deviceStorage)) {
-          allListings.push(item);
-        }
-      } else if (listingLocation === item.listingLocation) {
-        let tempListings = [];
-        tempListings = allListings.filter((item, index) => {
-          return item.listingLocation === listingLocation;
-        });
-        allListings = tempListings;
-      } else if (parseInt(maxsellingPrice) > parseInt(item.listingPrice)) {
-        allListings.push(item);
-      } else if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
-        allListings.push(item);
-      } else {
-        allListings.push(item);
-      }
+    if (color.length > 0 && reqPage !== "TSM") {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return color.includes(item.color);
+      });
+      allListings = tempListings;
+    }
 
-      // if(warenty === item.warenty){
-      //     allListings.push(item);
-      // }
-    });
+    if (deviceStorage.length > 0) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return deviceStorage.includes(item.deviceStorage);
+      });
+      allListings = tempListings;
+    }
+
+    if (deviceCondition.length > 0 && reqPage !== "TSM") {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return deviceCondition.includes(item.deviceCondition);
+      });
+      allListings = tempListings;
+    }
+
+    if (listingLocation != "India") {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return item.listingLocation === listingLocation;
+      });
+      allListings = tempListings;
+    }
+
+    if (parseInt(maxsellingPrice) > parseInt(minsellingPrice)) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return parseInt(item.listingPrice) <= parseInt(maxsellingPrice);
+      });
+      allListings = tempListings;
+    }
+
+    if (parseInt(minsellingPrice) < parseInt(maxsellingPrice)) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return parseInt(item.listingPrice) >= parseInt(minsellingPrice);
+      });
+      allListings = tempListings;
+    }
+
+    if (warenty != "") {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return item.warenty === warenty;
+      });
+      allListings = tempListings;
+    }
 
     if (verified === true) {
       let tempListings = [];
