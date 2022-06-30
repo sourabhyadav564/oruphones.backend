@@ -772,6 +772,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
         20: "Quickmobile",
         21: "mbr_Buyblynk",
         22: "mbr_Electronicbazaar",
+        23: "Flipkart"
       };
 
       const externalSource = [];
@@ -801,25 +802,37 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
         let pushedVendors = [];
 
         scrappedModels.forEach((item, index) => {
+          console.log("model_name", item.model);
+          console.log("item storage", item.storage);
+          console.log("mobiru_condition", item.condition);
+
+          console.log("marketingname", marketingname);
+          console.log("condition", condition);
+          console.log("storage", storage);
+
           if (
-            item.model_name === marketingname &&
-            item.mobiru_condition === condition &&
+            item.model === marketingname &&
+            item.condition === condition &&
             item.storage === storage
           ) {
-            vendorName = VENDORS[item.vendor_id];
-            vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
-              .toString()
-              .toLowerCase()}_logo.png`;
-            let vendorObject = {
-              externalSourcePrice: item.price,
-              externalSourceImage: vendorImage,
-            };
-            if (!pushedVendors.includes(vendorName)) {
-              selectdModels.push(vendorObject);
-              pushedVendors.push(vendorName);
-            }
+            item.vendor.forEach((vendor) => {
+              vendorName = VENDORS[vendor.vendor_id];
+              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+                .toString()
+                .toLowerCase()}_logo.png`;
+              let vendorObject = {
+                externalSourcePrice: item.price,
+                externalSourceImage: vendorImage,
+              };
+              if (!pushedVendors.includes(vendorName)) {
+                selectdModels.push(vendorObject);
+                pushedVendors.push(vendorName);
+              }
+            })
           }
         });
+
+        console.log("externalSource", externalSource);
 
         if (selectdModels.length > 0) {
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
