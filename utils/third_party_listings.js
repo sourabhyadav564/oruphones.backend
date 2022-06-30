@@ -68,9 +68,9 @@ const getThirdPartyVendors = async (model_name, make) => {
     let imagePath = "";
     let condition = "";
     
-    if (element.mobiru_condition.includes("Like New")) {
+    if (element.mobiru_condition.includes("Like New") || element.mobiru_condition.includes("Superb")) {
       condition = "Like New";
-    } else if (element.mobiru_condition.includes("Excellent")) {
+    } else if (element.mobiru_condition.includes("Excellent") || element.mobiru_condition.includes("Very Good")) {
       condition = "Excellent";
     } else if (element.mobiru_condition.includes("Good")) {
       condition = "Good";

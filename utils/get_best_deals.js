@@ -18,6 +18,19 @@ const getBestDeals = async (
   //   const location = req.query.userLocation;
   //   const userUniqueId = req.headers.useruniqueid;
 
+  if (defaultDataObject.length == 0) {
+    res.status(200).json({
+      reason: "Sorry!!! Listings not found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: {
+        otherListings: [],
+        bestDeals: [],
+      },
+    });
+    return;
+  }
+
   let basePrice;
   let notionalPrice;
   const verified_percentage = allMatrix.bestDealFigures.verified_percentage;

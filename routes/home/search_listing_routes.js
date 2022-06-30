@@ -33,7 +33,7 @@ router.post("/listings/search", async (req, res) => {
       listing.push(...ourListing);
       i = 0;
       while (i < marketingName.length) {
-        console.log("i", i);
+        console.log("i1", i);
         let newListings = await getThirdPartyVendors(marketingName[i], "");
         newListings.forEach((thirdPartyVendor) => {
           listing.push(thirdPartyVendor);
@@ -41,11 +41,14 @@ router.post("/listings/search", async (req, res) => {
         i++;
       }
     } else if (make.length > 0) {
-      let ourListing = await saveListingModal.find({ make: make, status: "Active" }, { _id: 0 });
+      let ourListing = await saveListingModal.find(
+        { make: make, status: "Active" },
+        { _id: 0 }
+      );
       listing.push(...ourListing);
       i = 0;
       while (i < make.length) {
-        console.log("i", i);
+        console.log("i2", i);
         let newListings = await getThirdPartyVendors("", make[i]);
         newListings.forEach((thirdPartyVendor) => {
           listing.push(thirdPartyVendor);
@@ -53,31 +56,80 @@ router.post("/listings/search", async (req, res) => {
         i++;
       }
     } else {
-      console.log("no make");
+      let ourListing = await saveListingModal.find(
+        { status: "Active" },
+        { _id: 0 }
+      );
+      listing.push(...ourListing);
+      console.log("no make and no model");
       const thirdPartyVendors = await getThirdPartyVendors("", "");
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         listing.push(thirdPartyVendor);
       });
     }
 
-    listing.filter((item, index) => {
+
+    listing.forEach((item, index) => {
+      console.log("item", item.deviceCondition);
       if (make.length > 0) {
         if (make.includes(item.make)) {
-          allListings.push(item);
+          // allListings.push(item);
+          if (
+            color.length > 0 &&
+            // && make.length === 0
+            reqPage !== "TSM"
+          ) {
+            if (color.includes(item.color)) {
+              allListings.push(item);
+            }
+          } else if (
+            deviceCondition.length > 0 &&
+            // make.length === 0 &&
+            reqPage !== "TSM"
+          ) {
+            if (deviceCondition.includes(item.deviceCondition)) {
+              allListings.push(item);
+            }
+          } else if (deviceStorage.length > 0 
+            // && make.length === 0
+            ) {
+            if (deviceStorage.includes(item.deviceStorage)) {
+              allListings.push(item);
+            }
+          } else if (listingLocation === item.listingLocation) {
+            let tempListings = [];
+            tempListings = allListings.filter((item, index) => {
+              return item.listingLocation === listingLocation;
+            });
+            allListings = tempListings;
+          } else if (parseInt(maxsellingPrice) > parseInt(item.listingPrice)) {
+            allListings.push(item);
+          } else if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
+            allListings.push(item);
+          } else {
+            // allListings.push(item);
+          }
         }
-      } else if (color.length > 0 && make.length === 0 && reqPage !== "TSM") {
+
+      } else if (
+        color.length > 0 &&
+        // && make.length === 0
+        reqPage !== "TSM"
+      ) {
         if (color.includes(item.color)) {
           allListings.push(item);
         }
       } else if (
         deviceCondition.length > 0 &&
-        make.length === 0 &&
+        // make.length === 0 &&
         reqPage !== "TSM"
       ) {
         if (deviceCondition.includes(item.deviceCondition)) {
           allListings.push(item);
         }
-      } else if (deviceStorage.length > 0 && make.length === 0) {
+      } else if (deviceStorage.length > 0 
+        // && make.length === 0
+        ) {
         if (deviceStorage.includes(item.deviceStorage)) {
           allListings.push(item);
         }
@@ -175,6 +227,8 @@ router.post("/listings/search", async (req, res) => {
       defaultDataObject = allListings;
     }
 
+    console.log("defaultDataObject", defaultDataObject);
+
     getBestDeals(defaultDataObject, userUniqueId, res, false);
 
     // const filterData = async () => {
@@ -226,14 +280,14 @@ router.post("/listings/search", async (req, res) => {
     //           item.listingPrice.toString().replace(",", "")
     //         );
     //         // notionalPrice = basePrice;
-  
+
     //         if ("verified" in item === true) {
     //           if (item.verified === true) {
     //             notionalPrice =
     //               notionalPrice - (basePrice / 100) * verified_percentage;
     //           }
     //         }
-  
+
     //         if ("warranty" in item === true) {
     //           if (item.warranty === "0-3 months") {
     //             notionalPrice =
@@ -249,28 +303,28 @@ router.post("/listings/search", async (req, res) => {
     //               notionalPrice - (basePrice / 100) * warranty_percentage4;
     //           }
     //         }
-  
+
     //         if ("charger" in item === true) {
     //           if (item.charger === "Y") {
     //             notionalPrice =
     //               notionalPrice - (basePrice / 100) * has_charger_percentage;
     //           }
     //         }
-  
+
     //         if ("earphone" in item === true) {
     //           if (item.earphone === "Y") {
     //             notionalPrice =
     //               notionalPrice - (basePrice / 100) * has_earphone_percentage;
     //           }
     //         }
-  
+
     //         if ("originalbox" in item === true) {
     //           if (item.originalbox === "Y") {
     //             notionalPrice =
     //               notionalPrice - (basePrice / 100) * has_original_box_percentage;
     //           }
     //         }
-  
+
     //         let currentPercentage;
     //         // if (item.listingPrice > notionalPrice) {
     //         //   currentPercentage =
@@ -400,7 +454,7 @@ router.post("/listings/search", async (req, res) => {
 
     //   finalBestDeals.forEach((item, index) => {
     //     if (
-    //       updatedBestDeals.length <= 5 
+    //       updatedBestDeals.length <= 5
     //       // &&
     //       // item.notionalPercentage > 0 &&
     //       // item.notionalPercentage < 50
