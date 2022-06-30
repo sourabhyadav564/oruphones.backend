@@ -70,7 +70,6 @@ router.post("/listings/search", async (req, res) => {
 
 
     listing.forEach((item, index) => {
-      console.log("item", item.deviceCondition);
       if (make.length > 0) {
         if (make.includes(item.make)) {
           // allListings.push(item);
@@ -96,7 +95,7 @@ router.post("/listings/search", async (req, res) => {
             if (deviceStorage.includes(item.deviceStorage)) {
               allListings.push(item);
             }
-          } else if (listingLocation === item.listingLocation) {
+          } else if (listingLocation != "India" && listingLocation === item.listingLocation) {
             let tempListings = [];
             tempListings = allListings.filter((item, index) => {
               return item.listingLocation === listingLocation;
@@ -107,7 +106,7 @@ router.post("/listings/search", async (req, res) => {
           } else if (parseInt(minsellingPrice) < parseInt(item.listingPrice)) {
             allListings.push(item);
           } else {
-            // allListings.push(item);
+            allListings.push(item);
           }
         }
 
