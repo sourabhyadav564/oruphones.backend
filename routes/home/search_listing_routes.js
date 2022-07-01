@@ -22,6 +22,89 @@ router.post("/listings/search", async (req, res) => {
   const warenty = req.body.warenty;
   const marketingName = req.body.marketingName;
 
+  let tempMake = make.toLowerCase();
+
+  switch (tempMake) {
+    case "samsung":
+      make = "Samsung";
+      break;
+    case "oneplus":
+      make = "OnePlus";
+      break;
+    case "huawei":
+      make = "Huawei";
+      break;
+    case "xiaomi":
+      make = "Xiaomi";
+      break;
+    case "vivo":
+      make = "Vivo";
+      break;
+    case "oppo":
+      make = "Oppo";
+      break;
+    case "google":
+      make = "Google";
+      break;
+    case "htc":
+      make = "HTC";
+      break;
+    case "lenovo":
+      make = "Lenovo";
+      break;
+    case "apple":
+      make = "Apple";
+      break;
+    case "sony":
+      make = "Sony";
+      break;
+    case "nokia":
+      make = "Nokia";
+      break;
+    case "infinix":
+      make = "Infinix";
+      break;
+    case "acer":
+      make = "Acer";
+      break;
+    case "asus":
+      make = "Asus";
+      break;
+    case "honor":
+      make = "Honor";
+      break;
+    case "microsoft":
+      make = "Microsoft";
+      break;
+    case "lg":
+      make = "LG";
+      break;
+    case "alcatel":
+      make = "Alcatel";
+      break;
+    case "micromax":
+      make = "Micromax";
+      break;
+    case "motorola":
+      make = "Motorola";
+      break;
+    case "panasonic":
+      make = "Panasonic";
+      break;
+    case "realme":
+      make = "Realme";
+      break;
+    case "tenco":
+      make = "Tenco";
+      break;
+    case "lava":
+      make = "Lava";
+      break;
+    case "gionee":
+      make = "Gionee";
+      break;
+  }
+
   try {
     let allListings = [];
     let listing = [];
