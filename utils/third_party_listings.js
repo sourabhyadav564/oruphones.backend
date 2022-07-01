@@ -52,7 +52,7 @@ const getThirdPartyVendors = async (model_name, make) => {
     filterd = await testScrappedModal.find({ type: "buy" }).limit(50);
   }
 
-  console.log("fffff ",filterd.length);
+  console.log("filterd data ", filterd);
 
   let dataObject = {};
   let dataArray = [];
@@ -77,7 +77,6 @@ const getThirdPartyVendors = async (model_name, make) => {
     } else if (element.mobiru_condition.includes("Fair")) {
       condition = "Fair";
     }
-
     dataObject = {
       //   marketingName: element.marketing_name,
       marketingName: element.model_name,
@@ -86,7 +85,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       deviceStorage: element.storage === "0 GB" || element.storage === "--" ? "--" : (element.storage.toString() + " GB"),
       warranty: element.warranty,
       vendorLogo: vendorImage,
-      vendorLink: element.link,
+      vendorLink: element.link ? element.link : "",
       vendorId: element.vendor_id,
       isOtherVendor: "Y",
       imagePath: imagePath,
@@ -114,7 +113,6 @@ const getThirdPartyVendors = async (model_name, make) => {
     };
 
     dataArray.push(dataObject);
-    console.log("dataArray", dataArray.length);
   });
 
   return dataArray;

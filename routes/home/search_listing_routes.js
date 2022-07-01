@@ -209,8 +209,6 @@ router.post("/listings/search", async (req, res) => {
       defaultDataObject = allListings;
     }
 
-    console.log("defaultDataObject", defaultDataObject);
-
     getBestDeals(defaultDataObject, userUniqueId, res, false);
 
     // const filterData = async () => {
