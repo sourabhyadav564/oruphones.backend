@@ -5,7 +5,7 @@ const moment = require("moment");
 require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
-const connection = require("../../src/database/mysql_connection");
+// const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");

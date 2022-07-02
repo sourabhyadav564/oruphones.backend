@@ -15,7 +15,7 @@ const createUserModal = require("../../src/database/modals/login/login_create_us
 const scrappedModal = require("../../src/database/modals/others/scrapped_models");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const scrappedExternalSourceModal = require("../../src/database/modals/others/scrapped_for_external_source_models");
-const connection = require("../../src/database/mysql_connection");
+// const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");

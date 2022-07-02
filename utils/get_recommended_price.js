@@ -1,5 +1,5 @@
 const express = require("express");
-const connection = require("../src/database/mysql_connection");
+// const connection = require("../src/database/mysql_connection");
 
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const smartphoneModal = require("../src/database/modals/others/smartphone_models");

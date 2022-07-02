@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const connection = require("../../src/database/mysql_connection");
+// const connection = require("../../src/database/mysql_connection");
 const fs = require("fs");
 
 const getRecommendedPrice = require("../../utils/get_recommended_price");

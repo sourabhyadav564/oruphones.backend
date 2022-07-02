@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
 const logEvent = require("../../src/middleware/event_logging");
 const getDefaultImage = require("../../utils/get_default_image");
-const connection = require("../../src/database/mysql_connection");
+// const connection = require("../../src/database/mysql_connection");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const newMakeAndModal = require("../../src/database/modals/others/new_make_and_model");
 
