@@ -12,7 +12,7 @@ const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
   origin: [
     "https://www.oruphones.com",
-    "https://image.oruphones.com/",
+    "https://image.oruphones.com",
     "https://mip.oruphones.com/",
     "https://api.oruphones.com",
     "https://new-test-application-001.herokuapp.com",
