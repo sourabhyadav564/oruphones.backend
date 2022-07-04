@@ -16,7 +16,6 @@ const testScrappedModal = require("../src/database/modals/others/test_scrapped_m
 const getDefaultImage = require("./get_default_image");
 
 const getThirdPartyVendors = async (model_name, make) => {
-  
   const VENDORS = {
     6: "Amazon",
     7: "Quikr",
@@ -45,9 +44,13 @@ const getThirdPartyVendors = async (model_name, make) => {
     //     filterd.push(item);
     //   }
     // });
-    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
+    filterd = await testScrappedModal
+      .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
+      .limit(10);
   } else if (model_name != "") {
-    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
+    filterd = await testScrappedModal
+      .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
+      .limit(20);
   } else {
     filterd = await testScrappedModal.find({ type: "buy" }).limit(50);
   }
@@ -67,10 +70,16 @@ const getThirdPartyVendors = async (model_name, make) => {
     // let imagePath = getImage(element.model_name);
     let imagePath = "";
     let condition = "";
-    
-    if (element.mobiru_condition.includes("Like New") || element.mobiru_condition.includes("Superb")) {
+
+    if (
+      element.mobiru_condition.includes("Like New") ||
+      element.mobiru_condition.includes("Superb")
+    ) {
       condition = "Like New";
-    } else if (element.mobiru_condition.includes("Excellent") || element.mobiru_condition.includes("Very Good")) {
+    } else if (
+      element.mobiru_condition.includes("Excellent") ||
+      element.mobiru_condition.includes("Very Good")
+    ) {
       condition = "Excellent";
     } else if (element.mobiru_condition.includes("Good")) {
       condition = "Good";
@@ -82,7 +91,10 @@ const getThirdPartyVendors = async (model_name, make) => {
       marketingName: element.model_name,
       make: element.model_name.split(" ")[0],
       listingPrice: element.price.toString(),
-      deviceStorage: element.storage === "0 GB" || element.storage === "--" ? "--" : (element.storage.toString() + " GB"),
+      deviceStorage:
+        element.storage === "0 GB" || element.storage === "--"
+          ? "--"
+          : element.storage.toString() + " GB",
       warranty: element.warranty,
       vendorLogo: vendorImage,
       vendorLink: element.link ? element.link : "",

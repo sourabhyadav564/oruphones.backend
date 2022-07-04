@@ -263,17 +263,17 @@ const allCronJobs = () => {
                     arrWithOutCond[0].lsp
                   );
 
-                  let newVendors = [];
+                  // let newVendors = [];
 
-                  arrWithOutCond[0].vendor.forEach((eachVendor) => {
-                    let dpv = lspFunction(con2, arrWithOutCond[0].condition, eachVendor.price);
-                    let pVendor = {
-                      price: dpv,
-                      type: eachVendor.type,
-                      vendor_id: eachVendor.vendor_id,
-                    }
-                    newVendors.push(pVendor);
-                  });
+                  // arrWithOutCond[0].vendor.forEach((eachVendor) => {
+                  //   let dpv = lspFunction(con2, arrWithOutCond[0].condition, eachVendor.price);
+                  //   let pVendor = {
+                  //     price: dpv,
+                  //     type: eachVendor.type,
+                  //     vendor_id: eachVendor.vendor_id,
+                  //   }
+                  //   newVendors.push(pVendor);
+                  // });
 
                   // if(derivedPrice){
                   let derivedObj = {
@@ -282,7 +282,7 @@ const allCronJobs = () => {
                     storage: arrWithOutCond[0].storage,
                     ram: arrWithOutCond[0].ram,
                     condition: con2,
-                    vendor: newVendors,
+                    vendor: [],
                     lsp: derivedPrice,
                     isDerived: true,
                     type: arrWithOutCond[0].type,
@@ -580,5 +580,3 @@ const allCron = async () => {
 };
 
 module.exports = allCron;
-
-// _____________________________________________________________________________________________________________________________
