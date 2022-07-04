@@ -6,11 +6,23 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const start_migration = require("../utils/calculate_LSP");
 const start_migrating_external_source_buy = require("../utils/get_external_source_data");
-const allCron = require("../utils/filter_cron_job_data")
+const allCron = require("../utils/filter_cron_job_data");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
-  origin: ["https://www.oruphones.com", "https://api.oruphones.com", "https://new-test-application-001.herokuapp.com", "http://localhost:3000", "http://localhost:3001", "https://oru-phones-web.vercel.app", "https://oru-phones-mobile-web.vercel.app"],
+  origin: [
+    "https://www.oruphones.com",
+    "https://image.oruphones.com/",
+    "https://mip.oruphones.com/",
+    "https://api.oruphones.com",
+    "https://new-test-application-001.herokuapp.com",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "https://oru-phones-web.vercel.app",
+    "https://oru-phones-mobile-web.vercel.app",
+    "https://oru-phones-mip-portal.vercel.app",
+  ],
   // credentials: true,
 };
 
@@ -28,10 +40,10 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors(corsOptions));
 
-let schedule = require('node-schedule');
+let schedule = require("node-schedule");
 
-schedule.scheduleJob('18 12 * * * ', function(){
-  console.log('The answer to life, the universe, and everything!');
+schedule.scheduleJob("18 12 * * * ", function () {
+  console.log("The answer to life, the universe, and everything!");
   // start_migration();
   // start_migrating_external_source_buy();
   allCron();
