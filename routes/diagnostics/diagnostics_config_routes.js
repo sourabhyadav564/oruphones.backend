@@ -1286,11 +1286,11 @@ router.post("/grade/price", async (req, res) => {
 router.post("/logDiagTransaction", async (req, res) => {
   try {
     console.log("req.body", req.body);
-    const getLogData = dignosticsLogsModal.findOne({
+    const getLogData = dignosticsLogsModal.find({
       sessionId: req.body.sessionId,
     });
 
-    if (getLogData) {
+    if (getLogData.length > 0) {
       const updateLogData = await dignosticsLogsModal.updateOne(
         { sessionId: req.body.sessionId },
         {
