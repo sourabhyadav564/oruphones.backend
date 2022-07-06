@@ -1285,10 +1285,11 @@ router.post("/grade/price", async (req, res) => {
 
 router.post("/logDiagTransaction", async (req, res) => {
   try {
-    console.log("req.body", req.body);
-    const getLogData = dignosticsLogsModal.find({
+    // console.log("req.body", req.body);
+    const getLogData = await dignosticsLogsModal.find({
       sessionId: req.body.sessionId,
     });
+    console.log("getLogData", getLogData);
 
     if (getLogData.length > 0) {
       const updateLogData = await dignosticsLogsModal.updateOne(
