@@ -12,6 +12,7 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 // const connection = require("../../src/database/mysql_connection");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const questionModal = require("../../src/database/modals/master/get_question");
+const dignosticsLogsModal = require("../../src/database/modals/diagnostics/diagnostics_log_transection");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -433,9 +434,15 @@ router.post("/grade/price", async (req, res) => {
         console.log("item.childQuestions", item.childQuestions);
         if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
           warrantyPeriod = "zero";
-        } else if (item.childQuestions[0] == "13" || item.childQuestions[0] == 13) {
+        } else if (
+          item.childQuestions[0] == "13" ||
+          item.childQuestions[0] == 13
+        ) {
           warrantyPeriod = "four";
-        } else if (item.childQuestions[0] == "14" || item.childQuestions[0] == 14) {
+        } else if (
+          item.childQuestions[0] == "14" ||
+          item.childQuestions[0] == 14
+        ) {
           warrantyPeriod = "seven";
         } else {
           warrantyPeriod = "more";
@@ -1270,6 +1277,24 @@ router.post("/grade/price", async (req, res) => {
     });
     // }
     // });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.post("/logDiagTransaction", async (req, res) => {
+  try {
+    console.log("req.body", req.body);
+    console.log("req.body.commandDetails", req.body.commandDetails);
+    const dataToBeSave = new dignosticsLogsModal(req.body);
+    const createLog = await dataToBeSave.save();
+    res.status(200).json({
+      reason: "Diagnostics logs saved successfully",
+      statusCode: 201,
+      status: "SUCCESS",
+      // data: createLog,
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
