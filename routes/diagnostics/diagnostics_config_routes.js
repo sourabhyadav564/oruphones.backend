@@ -1300,9 +1300,10 @@ router.post("/logDiagTransaction", async (req, res) => {
         }
       );
       res.status(200).json({
-        reason: "Logs updated successfully",
-        statusCode: 200,
+        message: "Logs updated successfully",
+        sessionId: req.body.sessionId.toString(),
         status: "SUCCESS",
+        data: updateLogData || {},
       });
     } else {
       const saveLogData = await dignosticsLogsModal.create({
@@ -1310,8 +1311,9 @@ router.post("/logDiagTransaction", async (req, res) => {
       });
       res.status(200).json({
         reason: "Logs saved successfully",
-        statusCode: 200,
         status: "SUCCESS",
+        sessionId: req.body.sessionId.toString(),
+        data: saveLogData || {},
       });
     }
     // const dataToBeSave = new dignosticsLogsModal(req.body);

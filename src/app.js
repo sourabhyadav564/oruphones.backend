@@ -82,6 +82,8 @@ const getInfoTemplateRoutes = require("../routes/global/get_info_template_routes
 const getMIPLoginRoutes = require("../routes/mip/mip_login_routes");
 const getMIPImageVerificationRoutes = require("../routes/mip/mip_image_verification_route");
 const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes");
+const addSubscriptionRoute = require("../routes/global/subscription_routes");
+const addContactUsRoute = require("../routes/global/contact_us_route");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -121,6 +123,8 @@ app.use("/api/v1/favorite", favoriteRoute);
 app.use("/api/v1/cscglobal", searchSuggestionRoute);
 app.use("/api/v1/cscglobal", logEventInfoRoute);
 app.use("/api/v1/user", getMIPLoginRoutes);
+app.use("/api/v1/global", addSubscriptionRoute);
+app.use("/api/v1/global", addContactUsRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);
