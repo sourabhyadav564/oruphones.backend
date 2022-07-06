@@ -33,7 +33,13 @@ router.get("/logeventinfo", async (req, res) => {
           statusCode: 200,
           reason: "Event logged successfully",
         });
-      } 
+      } else {
+        res.status(200).send({
+          status: "FAILED",
+          statusCode: 200,
+          reason: "User not authorized to log event",
+        });
+      }
     } else {
       res.status(200).send({
         status: "SESSION_INVALID",
