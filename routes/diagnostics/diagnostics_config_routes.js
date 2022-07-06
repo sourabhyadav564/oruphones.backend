@@ -14,7 +14,7 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const questionModal = require("../../src/database/modals/master/get_question");
 const dignosticsLogsModal = require("../../src/database/modals/diagnostics/diagnostics_log_transection");
 
-router.post("/diagConfig", async (req, res) => {
+router.post("/diagConfig", logEvent, async (req, res) => {
   const randomNumber = generateRandomNumber();
   let diagnosticsDataObject = await diagnosticsAllTests.find();
 
@@ -254,7 +254,7 @@ router.post("/diagConfig", async (req, res) => {
   }
 });
 
-router.post("/grade/price", async (req, res) => {
+router.post("/grade/price", logEvent, async (req, res) => {
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
@@ -1283,7 +1283,7 @@ router.post("/grade/price", async (req, res) => {
   }
 });
 
-router.post("/logDiagTransaction", async (req, res) => {
+router.post("/logDiagTransaction", logEvent, async (req, res) => {
   try {
     console.log("req.body", req.body);
     const getLogData = await dignosticsLogsModal.find({
@@ -1330,7 +1330,7 @@ router.post("/logDiagTransaction", async (req, res) => {
   }
 });
 
-router.get("/getDiagLogs", async (req, res) => {
+router.get("/getDiagLogs", logEvent, async (req, res) => {
   try {
     const getLogData = await dignosticsLogsModal.find({
       sessionId: req.query.sessionId,

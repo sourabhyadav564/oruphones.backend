@@ -1,11 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const logEvent = require("../../src/middleware/event_logging");
 const router = express.Router();
 
 require("../../src/database/connection");
 
-router.get("/getImages", async (req, res) => {
+router.get("/getImages", logEvent, async (req, res) => {
   try {
     const listings = await saveListingModal.find({
       images: { $exists: true, $ne: [] },
@@ -44,7 +45,7 @@ router.get("/getImages", async (req, res) => {
   }
 });
 
-router.post("/verifyImage", async (req, res) => {
+router.post("/verifyImage", logEvent, async (req, res) => {
   try {
     const listingId = req.body.listingId;
     const imageStatus = req.body.imageStatus;

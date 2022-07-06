@@ -8,7 +8,7 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const getBestDeals = require("../../utils/get_best_deals");
 
-router.post("/listings/search", async (req, res) => {
+router.post("/listings/search", logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;

@@ -4,10 +4,11 @@ const fs = require("fs");
 const MIPLoginModal = require("../../src/database/modals/login/mip_login_user_modal");
 const generateHash = require("../../utils/generate_hash");
 var bcrypt = require("bcryptjs");
+const logEvent = require("../../src/middleware/event_logging");
 
 require("../../src/database/connection");
 
-router.post("/validateUser", async (req, res) => {
+router.post("/validateUser", logEvent, async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
@@ -36,7 +37,7 @@ router.post("/validateUser", async (req, res) => {
   }
 });
 
-router.post("/createUser", async (req, res) => {
+router.post("/createUser", logEvent, async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;

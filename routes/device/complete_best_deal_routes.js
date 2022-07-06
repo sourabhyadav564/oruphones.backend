@@ -11,7 +11,7 @@ const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 const getBestDeals = require("../../utils/get_best_deals");
 
-router.get("/listings/best/nearall", async (req, res) => {
+router.get("/listings/best/nearall", logEvent, async (req, res) => {
   const location = req.query.userLocation;
   // Put keys always in lower case when get data from headers
   const userUniqueId = req.headers.useruniqueid;
