@@ -6,7 +6,7 @@ const createUserModal = require("../../src/database/modals/login/login_create_us
 const logEvent = require("../../src/middleware/event_logging");
 const moment = require("moment");
 
-router.get("/user/details", logEvent, async (req, res) => {
+router.get("/user/details", async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
   const countryCode = req.query.countryCode;
 
