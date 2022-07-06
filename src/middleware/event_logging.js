@@ -18,7 +18,7 @@ const logEvent = async (req, res, next) => {
       const eventData = getEvent.events;
       console.log("eventData", eventData);
 
-      if (userUniqueId === getEvent.userUniqueId || userUniqueId === "Guest") {
+      // if (userUniqueId === getEvent.userUniqueId || userUniqueId === "Guest") {
         const updateEvent = await eventModal.findByIdAndUpdate(
           getEvent._id,
           {
@@ -31,9 +31,9 @@ const logEvent = async (req, res, next) => {
           { new: true }
         );
         console.log("updateEvent", updateEvent);
-      } else {
-        console.log("Event can't be updated");
-      }
+      // } else {
+      //   console.log("Event can't be updated");
+      // }
       next();
     } else {
       res.status(301).send({
