@@ -41,6 +41,7 @@ const getRecommendedPrice = async (
     20: "Quickmobile",
     21: "mbr_Buyblynk",
     22: "mbr_Electronicbazaar",
+    23: "Flipkart"
   };
 
   try {

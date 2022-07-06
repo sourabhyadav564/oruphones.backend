@@ -34,6 +34,7 @@ const getThirdPartyVendors = async (model_name, make) => {
     20: "Quickmobile",
     21: "mbr_Buyblynk",
     22: "mbr_Electronicbazaar",
+    23: "Flipkart"
   };
 
   let filterd = [];
@@ -62,7 +63,7 @@ const getThirdPartyVendors = async (model_name, make) => {
   let dataObject = {};
   let dataArray = [];
   filterd.forEach(async (element) => {
-    consoel.log("element ", element.vendor_id);
+    console.log("element ", element.vendor_id);
     let vendorName = VENDORS[element.vendor_id];
     console.log("vendorName ", vendorName);
     let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName

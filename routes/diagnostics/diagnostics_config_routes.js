@@ -1328,4 +1328,31 @@ router.post("/logDiagTransaction", async (req, res) => {
   }
 });
 
+router.get("/getDiagLogs", async (req, res) => {
+  try {
+    const getLogData = await dignosticsLogsModal.find({
+      sessionId: req.query.sessionId,
+    });
+
+    if (getLogData.length > 0) {
+      res.status(200).json({
+        reason: "Logs found successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        data: getLogData,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Logs not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        data: [],
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+})
+
 module.exports = router;

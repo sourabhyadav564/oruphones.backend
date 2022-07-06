@@ -80,6 +80,7 @@ router.post("/price/externalsellsource", async (req, res) => {
     20: "Quickmobile",
     21: "mbr_Buyblynk",
     22: "mbr_Electronicbazaar",
+    23: "Flipkart"
   };
 
   try {
