@@ -3,8 +3,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const contactUsModal = require("../../src/database/modals/global/user_contact_us_modal");
+const logEvent = require("../../src/middleware/event_logging");
 
-router.post("/contactUs", async (req, res) => {
+router.post("/contactUs", logEvent, async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
   const mobile = req.body.mobile;
