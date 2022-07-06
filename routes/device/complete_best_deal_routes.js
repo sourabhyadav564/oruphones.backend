@@ -10,6 +10,7 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 const getBestDeals = require("../../utils/get_best_deals");
+const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearall", logEvent, async (req, res) => {
   const location = req.query.userLocation;
