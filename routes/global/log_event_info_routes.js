@@ -1,4 +1,5 @@
 const express = require("express");
+const eventModal = require("../../src/database/modals/others/event_logs");
 const router = express.Router();
 
 const logEvent = require("../../src/middleware/event_logging");
