@@ -21,32 +21,47 @@ const logEvent = async (req, res, next) => {
       //   });
       //   return;
       // } else {
-        const arr = [];
-        getEvent.events.forEach((item) => {
-          arr.push(item);
-        });
-        // console.log("arr", arr);
-        arr.push({eventName: events});
-        // console.log("arr2", arr);
-        let eventData = {
-          events: arr,
-        };
+        // const arr = [];
+        // getEvent.events.forEach((item) => {
+        //   arr.push(item);
+        // });
+        // // console.log("arr", arr);
+        // arr.push({eventName: events});
+        // // console.log("arr2", arr);
+        // let eventData = {
+        //   events: arr,
+        // };
 
-        if(userUniqueId !== "Guest" && userUniqueId !== getEvent.userUniqueId) {
-          eventData = {...eventData, userUniqueId: userUniqueId};
-        }
+        // if(userUniqueId !== "Guest" && userUniqueId !== getEvent.userUniqueId) {
+        //   eventData = {...eventData, userUniqueId: userUniqueId};
+        // }
+
+        const eventData = getEvent.events;
 
         console.log("eventData", eventData);
 
-        const updateEvent = await eventModal.findOneAndUpdate(
-          sessionId,
-          eventData,
-          {
-            new: true,
-          }
-        );
+        // const updateEvent = await eventModal.findOneAndUpdate(
+        //   sessionId,
+        //   eventData,
+        //   {
+        //     new: true,
+        //   }
+        // );
 
-        console.log("updateEvent", updateEvent);
+        if (userUniqueId !== "Guest" && userUniqueId !== getEvent.userUniqueId) {
+          const updateEvent = await eventModal.findByIdAndUpdate(
+            getEvent._id,
+            {
+              $push: {
+                events: {
+                  eventName: events,
+                }
+              }
+            },{ new: true }
+          )
+          console.log("updateEvent", updateEvent);
+        }
+
         next();
       // }
     } else {
