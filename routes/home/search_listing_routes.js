@@ -7,6 +7,7 @@ const getThirdPartyVendors = require("../../utils/third_party_listings");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const getBestDeals = require("../../utils/get_best_deals");
+const logEvent = require("../../src/middleware/event_logging");
 
 router.post("/listings/search", logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;

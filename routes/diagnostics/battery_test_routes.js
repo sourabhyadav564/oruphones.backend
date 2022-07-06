@@ -1,5 +1,6 @@
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
 const express = require("express");
+const logEvent = require("../../src/middleware/event_logging");
 const router = express.Router();
 
 require("../../src/database/connection");

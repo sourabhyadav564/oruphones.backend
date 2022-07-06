@@ -4,6 +4,7 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const scrappedModal = require("../../src/database/modals/others/scrapped_models");
+const logEvent = require("../../src/middleware/event_logging");
 const allMatrix = require("../../utils/matrix_figures");
 
 router.post("/price/externalsellsource", logEvent, async (req, res) => {
