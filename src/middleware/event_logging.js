@@ -32,11 +32,7 @@ const logEvent = async (req, res, next) => {
         );
         console.log("updateEvent", updateEvent);
       } else {
-        res.status(200).send({
-          status: "FAILED",
-          statusCode: 200,
-          reason: "User not authorized to log event",
-        });
+        console.log("Event can't be updated");
       }
       next();
     } else {
