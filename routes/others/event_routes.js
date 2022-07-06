@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const eventModal = require("../../src/database/modals/others/event_logs");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/sessionid", logEvent, async (req, res) => {
+router.get("/sessionid", async (req, res) => {
   const userUniqueId = req.headers.useruniqueid;
   const eventName = req.headers.eventname;
   const srcFrom = req.headers.srcfrom;
