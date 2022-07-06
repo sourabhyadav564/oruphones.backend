@@ -23,7 +23,7 @@ const filterSchema = new mongoose.Schema({
         }],
         required: true,
     },
-    Condition: {
+    Conditions: {
         type: [{
             type: 'String',
             required: true,
