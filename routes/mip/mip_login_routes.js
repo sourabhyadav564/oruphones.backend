@@ -8,7 +8,7 @@ const logEvent = require("../../src/middleware/event_logging");
 
 require("../../src/database/connection");
 
-router.post("/validateUser", logEvent, async (req, res) => {
+router.post("/validateUser", async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
@@ -37,7 +37,7 @@ router.post("/validateUser", logEvent, async (req, res) => {
   }
 });
 
-router.post("/createUser", logEvent, async (req, res) => {
+router.post("/createUser", async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
