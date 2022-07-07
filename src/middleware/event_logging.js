@@ -41,8 +41,7 @@ const logEvent = async (req, res, next) => {
         statusCode: 200,
         reason: "User session invalid",
       });
-      // return;
-      next();
+      return;
     }
   } catch (error) {
     console.log(error);
