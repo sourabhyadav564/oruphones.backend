@@ -20,7 +20,7 @@ const logEvent = require("../../src/middleware/event_logging");
 //   apiSecret: "ApasBxeJHAuzso7f",
 // });
 
-router.post("/otp/generate", logEvent, async (req, res) => {
+router.post("/otp/generate", async (req, res) => {
   const mobileNumber = req.query.mobileNumber;
   const countryCode = req.query.countryCode;
   const clientOTP = generateOTP();
@@ -80,7 +80,7 @@ router.post("/otp/generate", logEvent, async (req, res) => {
   }
 });
 
-router.post("/otp/validate", logEvent, async (req, res) => {
+router.post("/otp/validate", async (req, res) => {
   const mobileNumber = req.query.mobileNumber?.toString();
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
@@ -129,7 +129,7 @@ router.post("/otp/validate", logEvent, async (req, res) => {
   }
 });
 
-router.post("/otp/resend", logEvent, async (req, res) => {
+router.post("/otp/resend", async (req, res) => {
   const mobileNumber = req.query.mobileNumber;
   const countryCode = req.query.countryCode;
   const clientOTP = generateOTP();

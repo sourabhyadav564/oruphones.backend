@@ -5,7 +5,7 @@ const router = express.Router();
 
 require("../../src/database/connection");
 
-router.post("/batteryTest/mah", logEvent, async (req, res) => {
+router.post("/batteryTest/mah", async (req, res) => {
   let make = req.body.make;
   let marketingName = req.body.marketingName;
 

@@ -10,7 +10,7 @@ const getBestDeals = require("../../utils/get_best_deals");
 
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 
-router.get("/listings/best/nearme", logEvent, async (req, res) => {
+router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
   // Put keys always in lower case when get data from headers
   const userUniqueId = req.headers.useruniqueid;

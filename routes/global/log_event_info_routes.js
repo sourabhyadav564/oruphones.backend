@@ -3,7 +3,7 @@ const router = express.Router();
 
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/logeventinfo", logEvent, async (req, res) => {
+router.get("/logeventinfo", async (req, res) => {
   try {
     res.status(200).send({
         status: "SUCCESS",

@@ -11,7 +11,7 @@ const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listingsbymake", logEvent, async (req, res) => {
+router.get("/listingsbymake", async (req, res) => {
   // const initialMake = req.query.make;
   let make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
@@ -149,7 +149,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
   getBestDeals(defaultDataObject, userUniqueId, res, false);
 });
 
-router.get("/listbymarketingname", logEvent, async (req, res) => {
+router.get("/listbymarketingname", async (req, res) => {
   const marketingname = req.query.marketingName;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;

@@ -9,7 +9,7 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const getBestDeals = require("../../utils/get_best_deals");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.post("/listings/search", logEvent, async (req, res) => {
+router.post("/listings/search", async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;

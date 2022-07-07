@@ -3,7 +3,7 @@ const searchFilterModal = require("../../src/database/modals/global/search_filte
 const logEvent = require("../../src/middleware/event_logging");
 const router = express.Router();
 
-router.post("/search", logEvent, async (req, res) => {
+router.post("/search", async (req, res) => {
   const userInputText = req.body.userInputText;
   try {
     const resultData = await searchFilterModal.find({});

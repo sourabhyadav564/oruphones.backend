@@ -5,7 +5,7 @@ const subscriptionModal = require("../../src/database/modals/global/subscription
 const logEvent = require("../../src/middleware/event_logging");
 require("../../src/database/connection");
 
-router.post("/addsubscription", logEvent, async (req, res) => {
+router.post("/addsubscription", async (req, res) => {
   let email = req.query.email;
 
   let dataToBeSave = {
