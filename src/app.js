@@ -10,20 +10,21 @@ const allCron = require("../utils/filter_cron_job_data");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
-  origin: [
-    "https://www.oruphones.com",
-    "https://dev.oruphones.com",
-    "https://image.oruphones.com",
-    "https://mip.oruphones.com",
-    "https://api.oruphones.com",
-    "https://new-test-application-001.herokuapp.com",
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:3002",
-    "https://oru-phones-web.vercel.app",
-    "https://oru-phones-mobile-web.vercel.app",
-    "https://oru-phones-mip-portal.vercel.app",
-  ],
+  // origin: [
+  //   "https://www.oruphones.com",
+  //   "https://dev.oruphones.com",
+  //   "https://image.oruphones.com",
+  //   "https://mip.oruphones.com",
+  //   "https://api.oruphones.com",
+  //   "https://new-test-application-001.herokuapp.com",
+  //   "http://localhost:3000",
+  //   "http://localhost:3001",
+  //   "http://localhost:3002",
+  //   "https://oru-phones-web.vercel.app",
+  //   "https://oru-phones-mobile-web.vercel.app",
+  //   "https://oru-phones-mip-portal.vercel.app",
+  // ],
+  optionsSuccessStatus: 200
   // credentials: true,
 };
 
