@@ -6,7 +6,7 @@ const router = express.Router();
 
 require("../../src/database/connection");
 
-router.get("/getImages", logEvent, async (req, res) => {
+router.get("/getImages", async (req, res) => {
   try {
     const listings = await saveListingModal.find({
       images: { $exists: true, $ne: [] },
@@ -45,7 +45,7 @@ router.get("/getImages", logEvent, async (req, res) => {
   }
 });
 
-router.post("/verifyImage", logEvent, async (req, res) => {
+router.post("/verifyImage", async (req, res) => {
   try {
     const listingId = req.body.listingId;
     const imageStatus = req.body.imageStatus;
