@@ -12,17 +12,18 @@ router.get("/getinfotemplates", async (req, res) => {
     let dataObject = {};
     dataObject["serverUrl"] = process.env.SERVER_URL;
     dataObject["templateUrls"] = {
-      "VERIFICATION": "/verification.html",
-      "CONDITIONS": "/condition.html",
-      "TERMS_CONDITIONS": "/terms_conditions.html",
-      "FAQ": "/faq",
-      "ABOUT_US": "/about-us",
-      "WARRANTY": "/warranty",
-      "HOW_TO_BUY": "/how-to-buy",
-      "HOW_TO_SELL": "/how-to-sell",
-    }
+      VERIFICATION: "/verification.html",
+      CONDITIONS: "/condition.html",
+      TERMS_CONDITIONS: "/terms_conditions.html",
+      FAQ: "/faq.html",
+      ABOUT_US: "/about-us.html",
+      WARRANTY: "/warranty",
+      PRIVACY: "privacy-policy.html",
+      HOW_TO_BUY: "/how-to-buy",
+      HOW_TO_SELL: "/how-to-sell",
+    };
     res.status(200).json({
-      reason: "Product link generated successfully",
+      reason: "Templet link generated successfully",
       statusCode: 200,
       status: "SUCCESS",
       dataObject,
