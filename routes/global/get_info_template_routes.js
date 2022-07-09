@@ -7,7 +7,7 @@ require("../../src/database/connection");
 const logEvent = require("../../src/middleware/event_logging");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 
-router.get("/getinfotemplates", async (req, res) => {
+router.get("/getinfotemplates", logEvent, async (req, res) => {
   try {
     let dataObject = {};
     dataObject["serverUrl"] = process.env.SERVER_URL;

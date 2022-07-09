@@ -47,7 +47,7 @@ const lspModal = require("../../src/database/modals/others/new_scrapped_models")
 //   }
 // });
 
-router.get("/listings", async (req, res) => {
+router.get("/listings", logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     let dataObject = await saveListingModal.find({ userUniqueId });
@@ -70,7 +70,7 @@ router.get("/listings", async (req, res) => {
   }
 });
 
-router.post("/listing/save", async (req, res) => {
+router.post("/listing/save", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const userDetails = await createUserModal.find({
     userUniqueId: userUniqueId,
@@ -159,7 +159,7 @@ router.post("/listing/save", async (req, res) => {
   }
 });
 
-router.post("/listing/delete", async (req, res) => {
+router.post("/listing/delete", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -198,7 +198,7 @@ router.post("/listing/delete", async (req, res) => {
   }
 });
 
-router.post("/listing/update", async (req, res) => {
+router.post("/listing/update", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
   const charger = req.body.charger;
@@ -275,7 +275,7 @@ router.post("/listing/update", async (req, res) => {
   }
 });
 
-router.post("/listing/pause", async (req, res) => {
+router.post("/listing/pause", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -325,7 +325,7 @@ router.post("/listing/pause", async (req, res) => {
   }
 });
 
-router.post("/listing/activate", async (req, res) => {
+router.post("/listing/activate", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -376,7 +376,7 @@ router.post("/listing/activate", async (req, res) => {
   }
 });
 
-router.get("/listing/user/mobilenumber", async (req, res) => {
+router.get("/listing/user/mobilenumber", logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     const listingId = req.query.listingId;
@@ -439,7 +439,7 @@ router.get("/listing/user/mobilenumber", async (req, res) => {
   }
 });
 
-router.get("/listing/detail", async (req, res) => {
+router.get("/listing/detail", logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     const listingId = req.query.listingid;
@@ -473,7 +473,7 @@ router.get("/listing/detail", async (req, res) => {
   }
 });
 
-router.post("/listing/updatefordiag", async (req, res) => {
+router.post("/listing/updatefordiag", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -636,7 +636,7 @@ router.post("/listing/updatefordiag", async (req, res) => {
   }
 });
 
-router.post("/listing/detailwithuserinfo", async (req, res) => {
+router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
   const listingid = req.query.listingid;
   const isOtherVendor = req.query.isOtherVendor;
   const userUniqueId = req.query.userUniqueId;
@@ -866,7 +866,7 @@ router.post("/listing/detailwithuserinfo", async (req, res) => {
   }
 });
 
-router.get("/listing/bydeviceid", async (req, res) => {
+router.get("/listing/bydeviceid", logEvent, async (req, res) => {
   const deviceId = req.query.deviceId;
   const userUniqueId = req.query.userUniqueId;
 

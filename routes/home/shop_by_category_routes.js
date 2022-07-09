@@ -11,7 +11,7 @@ const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listings/category", async (req, res) => {
+router.get("/listings/category", logEvent, async (req, res) => {
   const location = req.query.location;
   const category = req.query.category;
   const userUniqueId = req.query.userUniqueId;

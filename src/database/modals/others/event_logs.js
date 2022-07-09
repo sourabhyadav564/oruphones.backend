@@ -27,6 +27,14 @@ const eventSchema = new mongoose.Schema(
       type: String || Number,
       // required: true,
     },
+    accessToken: {
+      type: String,
+      // required: true,
+    },
+    refreshToken: {
+      type: String,
+      // required: true,
+    }
   },
   { timestamps: true }
 );

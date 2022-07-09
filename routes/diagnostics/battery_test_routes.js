@@ -4,8 +4,9 @@ const logEvent = require("../../src/middleware/event_logging");
 const router = express.Router();
 
 require("../../src/database/connection");
+const { authenticateAccessToken } = require("../../src/middleware/auth_token");
 
-router.post("/batteryTest/mah", async (req, res) => {
+router.post("/batteryTest/mah", logEvent, async (req, res) => {
   let make = req.body.make;
   let marketingName = req.body.marketingName;
 
@@ -113,21 +114,15 @@ router.post("/batteryTest/mah", async (req, res) => {
             }
           }
           mKeys.forEach((newKey, j) => {
-            // console.log("Battery", item[key]["Misc"]["Models"])
             if (
               newKey.includes("Type")
-              //   &&
-              //   item[key]["Misc"]["Models"].includes(model)
             ) {
-              // modelName = key;
               mAh = item[key]["Battery"]["Type"];
-              mAh = parseInt(mAh.split('mAh')[0].replace(/\D/g, ""));
-              //  console.log("modelName", modelName);
+              mAh = parseInt(mAh.split("mAh")[0].replace(/\D/g, ""));
             }
           });
         });
       });
-      // return `${mAh} mAh`;
       return mAh;
     } catch (error) {
       console.log("error", error);
@@ -139,12 +134,12 @@ router.post("/batteryTest/mah", async (req, res) => {
   try {
     if (!getBatterymAhResult) {
       res.status(204).json({
-        status: 204,
+        statusCode: 204,
         reason: "Battery mAh not found",
       });
     }
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       reason: "Battery mAh found successfully",
       batterymAh: getBatterymAhResult,
     });

@@ -7,7 +7,7 @@ const saveNotificationModel = require("../../src/database/modals/notification/no
 const sendNotification = require("../../utils/push_notification");
 const notificationModel = require("../../src/database/modals/notification/complete_notifications");
 
-router.post("/save/token", async (req, res) => {
+router.post("/save/token", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const deviceId = req.body.deviceId;
   const tokenId = req.body.tokenId;
@@ -52,7 +52,7 @@ router.post("/save/token", async (req, res) => {
   }
 });
 
-router.post("/delete/token", async (req, res) => {
+router.post("/delete/token", logEvent, async (req, res) => {
   const tokenId = req.body.tokenId;
   const deviceId = req.body.deviceId;
   const userUniqueId = req.body.userUniqueId;
@@ -83,7 +83,7 @@ router.post("/delete/token", async (req, res) => {
   }
 });
 
-router.get("/byUserId/:uuid", async (req, res) => {
+router.get("/byUserId/:uuid", logEvent, async (req, res) => {
   const userUniqueId = req.params.uuid;
 
   try {
@@ -129,7 +129,7 @@ router.get("/byUserId/:uuid", async (req, res) => {
   }
 });
 
-router.get("/read", async (req, res) => {
+router.get("/read", logEvent, async (req, res) => {
   const notificationId = req.query.id;
   const userUniqueId = req.query.userUniqueId;
 

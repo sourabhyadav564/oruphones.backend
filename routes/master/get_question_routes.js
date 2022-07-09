@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const questionModal = require("../../src/database/modals/master/get_question");
 const logEvent = require("../../src/middleware/event_logging");
 
-router.get("/getQuestions", async (req, res) => {
+router.get("/getQuestions", logEvent, async (req, res) => {
   try {
     const dataObject = await questionModal.find().sort({ questionId: 1});
     res
