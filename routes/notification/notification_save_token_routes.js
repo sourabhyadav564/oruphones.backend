@@ -91,11 +91,10 @@ router.get("/byUserId/:uuid", logEvent, async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    notificationArray.notification.reverse();
-
     let dataToBeSend = {};
     let unReadCount = 0;
     if (notificationArray) {
+      notificationArray.notification.reverse();
       notificationArray?.notification?.forEach((element, index) => {
         if (element.isUnRead === 0) {
           unReadCount++;

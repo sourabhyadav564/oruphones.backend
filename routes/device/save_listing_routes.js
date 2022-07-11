@@ -51,12 +51,12 @@ router.get("/listings", logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     let dataObject = await saveListingModal.find({ userUniqueId });
-    dataObject.reverse();
 
     if (!dataObject) {
       res.status(404).json({ message: "User unique ID not found" });
       return;
     } else {
+      dataObject.reverse();
       res.status(200).json({
         reason: "Listings found successfully",
         statusCode: 200,
