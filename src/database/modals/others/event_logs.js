@@ -34,6 +34,10 @@ const eventSchema = new mongoose.Schema(
     refreshToken: {
       type: String,
       // required: true,
+    },
+    location: {
+      type: String,
+      // required: true,
     }
   },
   { timestamps: true }
