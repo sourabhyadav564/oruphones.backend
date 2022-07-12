@@ -6,6 +6,7 @@ const logEvent = async (req, res, next) => {
   const events = req.headers.eventname;
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
+  const location = req.headers.location;
 
   const getEvent = await eventModal.findOne({ sessionId: sessionId });
   const currentTime = moment(Date.now()).format("LTS");
@@ -22,6 +23,8 @@ const logEvent = async (req, res, next) => {
         const updateEvent = await eventModal.findByIdAndUpdate(
           getEvent._id,
           {
+            userUniqueId: userUniqueId,
+            location: location,
             $push: {
               events: {
                 eventName: events,

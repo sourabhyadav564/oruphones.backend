@@ -147,7 +147,7 @@ router.post("/user/update", logEvent, async (req, res) => {
   }
 });
 
-router.post("/address/addSearchLocation", async (req, res) => {
+router.post("/address/addSearchLocation", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const city = req.body.city;
   const locationId = req.body.locationId;
