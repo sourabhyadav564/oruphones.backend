@@ -9,7 +9,7 @@ const getDefaultImage = require("../../utils/get_default_image");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const newMakeAndModal = require("../../src/database/modals/others/new_make_and_model");
 
-router.post("/marketingNameByModel", logEvent, async (req, res) => {
+router.post("/marketingNameByModel", async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   let make = req.body.make;
@@ -118,7 +118,8 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   } else {
     objects = await newMakeAndModal.find({
       make: make,
-      marketingName: {"$regex": model, "$options": "i"},
+      // marketingName: {"$regex": model, "$options": "i"},
+      marketingName: `${make} ${model}`,
     });
   }
     let modelName = objects[0].marketingName;
