@@ -9,12 +9,12 @@ const getDefaultImage = require("../../utils/get_default_image");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const newMakeAndModal = require("../../src/database/modals/others/new_make_and_model");
 
-router.post("/marketingNameByModel", async (req, res) => {
+router.post("/marketingNameByModel", logEvent, async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   let make = req.body.make;
   const ram = req.body.ram;
-  const marketingName = req.body.marketingName;
+  // const marketingName = req.body.marketingName;
 
   // let newMake = make.split(" ").map((currentValue) => {
   //   let newText = currentValue[0].toUpperCase() + currentValue.slice(1);
@@ -118,7 +118,7 @@ router.post("/marketingNameByModel", async (req, res) => {
   } else {
     objects = await newMakeAndModal.find({
       make: make,
-      marketingName: {"$regex": marketingName, "$options": "i"},
+      marketingName: {"$regex": model, "$options": "i"},
     });
   }
     let modelName = objects[0].marketingName;
