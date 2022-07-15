@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const start_migration = require("../utils/calculate_LSP");
 const start_migrating_external_source_buy = require("../utils/get_external_source_data");
 const allCron = require("../utils/filter_cron_job_data");
+const backupMongoDB = require("../utils/backup_mongodb");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -44,11 +45,12 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-schedule.scheduleJob("43 13 * * *", function () {
+schedule.scheduleJob("05 15 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   // start_migration();
   // start_migrating_external_source_buy();
-  allCron();
+  // allCron();
+  // backupMongoDB();
 });
 
 const testRoute = require("../routes/others/test_routes");
@@ -85,6 +87,7 @@ const getMIPImageVerificationRoutes = require("../routes/mip/mip_image_verificat
 const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes");
 const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
+const getNewTokenRoute = require("../routes/login/get_new_token");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -126,6 +129,7 @@ app.use("/api/v1/cscglobal", logEventInfoRoute);
 app.use("/api/v1/user", getMIPLoginRoutes);
 app.use("/api/v1/global", addSubscriptionRoute);
 app.use("/api/v1/global", addContactUsRoute);
+app.use("/api/v1/auth", getNewTokenRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);

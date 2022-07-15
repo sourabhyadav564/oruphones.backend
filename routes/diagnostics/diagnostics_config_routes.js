@@ -259,8 +259,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
   const listingId = req.body.listingId;
-  // const make = req.body.make;
-  // const marketingName = req.body.marketingName;
   const questionnaireResults = req.body.questionnaireResults;
   const deviceUniqueId = req.body.deviceUniqueId;
   const ram = req.body.ram;
@@ -269,13 +267,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
   const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
   const deviceFinalGrade = req.body.deviceFinalGrade;
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
-  // fs.writeFileSync(`${listingId}.json`, JSON.stringify(req.body));
   const saveData = req.body.saveData;
-  console.log("req.body", req.body);
-
-  // PASS
-  // OPTIMIZABLE
-  // FAIL
 
   try {
     const severityLow = [
@@ -313,9 +305,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
     let index = 0;
 
     const getQuestions = await questionModal.find({});
-    // console.log("getQuestions", getQuestions);
 
-    // functionalTestResults.forEach((item, i) => {
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
         if (item.testStatus !== "PASS") {
@@ -360,8 +350,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
         break;
       }
     }
-
-    // let cIndex = 0;
 
     for (item of questionnaireResults) {
       if (item.questionId === 1 && item.childQuestions.length > 0) {
@@ -451,11 +439,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
     }
     console.log("warrantyPeriod", warrantyPeriod);
 
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // try {
-
     if (grade === "S" && cosmeticGrade === "S") {
       finalGrade = "S";
     } else if (grade === "S" && cosmeticGrade !== "S") {
@@ -482,66 +465,42 @@ router.post("/grade/price", logEvent, async (req, res) => {
 
     const listing = await saveListingModal.findOne({ listingId: listingId });
 
-    // console.log(listing);
-
     let questionArray = req.body.questionnaireResults;
-    // console.log("questionArray", questionArray);
 
     let finalQuestionArray = [];
 
     questionArray.forEach((item, index) => {
-      // console.log("childQuestions", item.childQuestions);
       let childQuestions = item.childQuestions;
       if (childQuestions.length > 0) {
         let exactChildQuestions = [];
         childQuestions.forEach((child) => {
-          // console.log("getQuestions", getQuestions)
           let currentQuestion = getQuestions.find(
             (element) => element.questionId === item.questionId
           );
-          // console.log("current Questions", currentQuestion);
           let currentChildQuestion = currentQuestion["childQuestions"].find(
             (element2) => element2.questionId === child
           );
-          // console.log("currentChildQuestion", currentChildQuestion);
-          // currentChildQuestion.question;
-          // questionArray[index].childQuestions[]
           exactChildQuestions.push(currentChildQuestion["question"]);
-          // let anyVar = questionArray[index]["childQuestions"].indexOf(child);
-          // questionArray[index]["childQuestions"][anyVar] = currentChildQuestion["question"];
         });
-        // questionArray[index].childQuestions = [];
-        // questionArray[index]["childQuestions"] = exactChildQuestions;
         const updatedChildQuestionArray = {
           ...questionArray[index],
           childQuestions: exactChildQuestions,
         };
-        // let questionObject = {
-        //   questionId: item.questionId,
-        //   question: item.question,
-        //   childQuestions: updatedChildQuestionArray,
-        //   result: item.result,
-        // };
         finalQuestionArray.push(updatedChildQuestionArray);
       } else {
         finalQuestionArray.push(item);
       }
     });
 
-    // console.log("questionArrayyyyyyyyyyyyyy: ", finalQuestionArray);
-
     const dataToBeUpdate = {
       deviceFunctionalGrade: grade,
       functionalTestResults: req.body.functionalTestResults,
-      // questionnaireResults: req.body.questionnaireResults,
       questionnaireResults: finalQuestionArray,
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
       deviceUniqueId: deviceUniqueId,
       deviceStorage: req.body.storage,
     };
-
-    // console.log("dataToBeUpdate", dataToBeUpdate);
 
     if (!listing) {
       res.status(200).json({
@@ -559,658 +518,18 @@ router.post("/grade/price", logEvent, async (req, res) => {
           }
         );
       }
-      // if (updatedListing) {
-      //   console.log("Hurryyyyyyyyyyyyyyyyyyyyyyyyy");
-      // } else {
-      //   console.log("Lagee rahoo...................!!");
-      // }
     }
 
-    // const listing = await saveListingModal.findByIdAndUpdate(
-    //   listingId,
-    //   {
-    //     deviceFunctionalGrade: grade,
-    //     functionalTestResults: req.body.functionalTestResults,
-    //     questionnaireResults: req.body.questionnaireResults,
-    //     deviceCosmeticGrade: cosmeticGrade,
-    //     deviceFinalGrade: finalGrade,
-    //   },
-    //   {
-    //     new: true,
-    //   }
-    // );
-
-    // let query =
-    //   "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 10 day;select * from `web_scraper_model`;";
-
-    // connection.query(query, [2, 1], async (err, results, fields) => {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     let models = results[1];
-    //     let scrappedModels = results[0];
-    //     let selectdModels = [];
-    //     // let minPrice;
-    //     // let maxPrice;
-    //     let itemId = "";
-    //     // let make = "OnePlus";
-    //     // let marketingname = "OnePlus 7";
-    //     // let condition = "Excellent";
-    //     // let storage = "128";
     const make = req.body.make;
     const marketingname = req.body.marketingName;
     // const condition = "Good"; //TODO: Need to make create the dynamic condition
-    // const storage = req.body.storage.split(" ")[0].toString();
     const storage = req.body.storage;
-    // const hasCharger = req.body.charger === "Y" ? true : false;
-    // const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
-    // const hasEarphone = req.body.earPhones === "Y" ? true : false;
-    // const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
-    // const hasOrignalBox = req.body.originalBox === "Y" ? true : false;
-    // const isVarified = req.body.verified === "no" ? false : true;
     const hasCharger = listing.charger === "Y" ? true : false;
     const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
     const hasEarphone = listing.earphone === "Y" ? true : false;
     const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
     const hasOrignalBox = listing.orignalBox === "Y" ? true : false;
     const isVarified = true;
-
-    //     let leastSellingPrice;
-    //     let lowerRangeMatrix = 0.7;
-    //     let upperRangeMatrix = 0.9;
-    //     let isAppleCharger = 0.1;
-    //     let isNonAppleCharger = 0.05;
-    //     let isAppleEarphone = 0.1;
-    //     let isNonAppleEarphone = 0.05;
-    //     let isOriginalBox = 0.03;
-
-    //     models.forEach((item, index) => {
-    //       if (item.name === marketingname) {
-    //         itemId = item.id;
-    //         return;
-    //       }
-    //     });
-
-    //     let gotDataFrom = "";
-
-    //     // scrappedModels.forEach((item, index) => {
-    //     for (var item of scrappedModels) {
-    //       if (
-    //         item.model_id === itemId &&
-    //         item.mobiru_condition === condition &&
-    //         item.storage === parseInt(storage)
-    //       ) {
-    //         selectdModels.push(item.price);
-    //         gotDataFrom = condition;
-    //         break;
-    //       }
-    //       if (condition === "Good" && gotDataFrom === "") {
-    //         if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Excellent"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Excellent";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Like New"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Like New";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Fair"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Fair";
-    //           break;
-    //         }
-    //       } else if (condition === "Excellent" && gotDataFrom === "") {
-    //         if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Good"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Good";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Like New"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Like New";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Fair"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Fair";
-    //           break;
-    //         }
-    //       } else if (condition === "Like New" && gotDataFrom === "") {
-    //         if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Good"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Good";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Excellent"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Excellent";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Fair"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Fair";
-    //           break;
-    //         }
-    //       } else if (condition === "Fair" && gotDataFrom === "") {
-    //         if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Good"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Good";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Excellent"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Excellent";
-    //           break;
-    //         } else if (
-    //           item.model_id === itemId &&
-    //           item.storage === parseInt(storage) &&
-    //           item.mobiru_condition === "Like New"
-    //         ) {
-    //           selectdModels.push(item.price);
-    //           gotDataFrom = "Like New";
-    //           break;
-    //         }
-    //       }
-    //     }
-
-    //     leastSellingPrice = Math.min(...selectdModels);
-
-    //     let bool = false;
-
-    //     if (condition === "Good") {
-    //       if (gotDataFrom === "Good") {
-    //         bool = true;
-    //         // return;
-    //       } else if (gotDataFrom === "Excellent") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 1300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 1700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 2500;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 3500;
-    //           bool = true;
-    //         }
-    //       } else if (gotDataFrom === "Like New") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 1500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 2500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 3500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 5500;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 8000;
-    //           bool = true;
-    //         }
-    //       }
-    //     } else if (condition === "Excellent") {
-    //       if (gotDataFrom === "Excellent") {
-    //         console.log("return from Excellent");
-    //         bool = true;
-    //         // return;
-    //       } else if (gotDataFrom === "Good") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice + 300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 1300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 1700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 2500;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice + 3500;
-    //           bool = true;
-    //         }
-    //       } else if (gotDataFrom === "Like New") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 400;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 800;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 1200;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 2300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 3000;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 4500;
-    //           bool = true;
-    //         }
-    //       }
-    //     } else if (condition === "Like New") {
-    //       if (gotDataFrom === "Like New") {
-    //         bool = true;
-    //         // return;
-    //       } else if (gotDataFrom === "Good") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice + 700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 1500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 2500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 3500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 5500;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice + 8000;
-    //           bool = true;
-    //         }
-    //       } else if (gotDataFrom === "Excellent") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice + 400;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 800;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 1200;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 2300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice + 3000;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice + 4500;
-    //           bool = true;
-    //         }
-    //       }
-    //     } else if (condition === "Fair") {
-    //       if (gotDataFrom === "Good") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 1500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 2500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 3500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 5500;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 8000;
-    //           bool = true;
-    //         }
-    //       } else if (gotDataFrom === "Excellent") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 1200;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 2300;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 3700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 4700;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 8000;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 11500;
-    //           bool = true;
-    //         }
-    //       } else if (gotDataFrom === "Like New") {
-    //         if (leastSellingPrice <= 10000) {
-    //           leastSellingPrice = leastSellingPrice - 1500;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 20000 &&
-    //           leastSellingPrice > 10000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 3000;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 30000 &&
-    //           leastSellingPrice > 20000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 5000;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 50000 &&
-    //           leastSellingPrice > 30000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 7000;
-    //           bool = true;
-    //         } else if (
-    //           leastSellingPrice <= 70000 &&
-    //           leastSellingPrice > 50000
-    //         ) {
-    //           leastSellingPrice = leastSellingPrice - 11000;
-    //           bool = true;
-    //         } else if (leastSellingPrice > 70000) {
-    //           leastSellingPrice = leastSellingPrice - 16000;
-    //           bool = true;
-    //         }
-    //       }
-    //     }
-
-    //     // if (bool) {
-    //     // console.log("leastSellingPrice: " + leastSellingPrice);
-    //     // console.log("gotDataFrom: " + gotDataFrom);
-    //     // }
-
-    //     // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${
-    //     //   0.9 * Math.max(...selectdModels)
-    //     // }`;
-
-    //     let recommendedPriceRangeLowerLimit = Math.ceil(
-    //       lowerRangeMatrix * leastSellingPrice
-    //     );
-    //     let recommendedPriceRangeUpperLimit = Math.ceil(
-    //       upperRangeMatrix * leastSellingPrice
-    //     );
-
-    //     if (hasCharger && hasEarphone && hasOrignalBox) {
-    //       if (isAppleEarphoneIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix +
-    //             isAppleEarphone +
-    //             isOriginalBox +
-    //             isAppleCharger) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix +
-    //             isAppleEarphone +
-    //             isOriginalBox +
-    //             isAppleCharger) *
-    //             leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix +
-    //             isNonAppleEarphone +
-    //             isOriginalBox +
-    //             isNonAppleCharger) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix +
-    //             isNonAppleEarphone +
-    //             isOriginalBox +
-    //             isNonAppleCharger) *
-    //             leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasCharger && hasEarphone) {
-    //       if (isAppleChargerIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isAppleCharger + isAppleEarphone) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isAppleCharger + isAppleEarphone) *
-    //             leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isNonAppleCharger + isNonAppleEarphone) *
-    //             leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasCharger && hasOrignalBox) {
-    //       if (isAppleChargerIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isAppleCharger + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isAppleCharger + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isNonAppleCharger + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isNonAppleCharger + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasEarphone && hasOrignalBox) {
-    //       if (isAppleEarphoneIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isAppleEarphone + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isAppleEarphone + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isNonAppleEarphone + isOriginalBox) *
-    //             leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasCharger) {
-    //       if (isAppleChargerIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isAppleCharger) * leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isAppleCharger) * leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isNonAppleCharger) * leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isNonAppleCharger) * leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasEarphone) {
-    //       if (isAppleEarphoneIncluded) {
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isAppleEarphone) * leastSellingPrice
-    //         );
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isAppleEarphone) * leastSellingPrice
-    //         );
-    //       } else {
-    //         recommendedPriceRangeLowerLimit = Math.ceil(
-    //           (lowerRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-    //         );
-    //         recommendedPriceRangeUpperLimit = Math.ceil(
-    //           (upperRangeMatrix + isNonAppleEarphone) * leastSellingPrice
-    //         );
-    //       }
-    //     } else if (hasOrignalBox) {
-    //       recommendedPriceRangeUpperLimit = Math.ceil(
-    //         (upperRangeMatrix + isOriginalBox) * leastSellingPrice
-    //       );
-    //       recommendedPriceRangeLowerLimit = Math.ceil(
-    //         (lowerRangeMatrix + isOriginalBox) * leastSellingPrice
-    //       );
-    //     }
 
     const price = await getRecommendedPrice(
       make,
@@ -1236,38 +555,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
     dataObject["functionalGrade"] = grade;
     dataObject["cosmaticGrade"] = cosmeticGrade;
     dataObject["condition"] = condition;
-    // dataObject["yourBody"] = req.body.questionnaireResults;
     dataObject["finalQuestionArray"] = finalQuestionArray;
-
-    // if (selectdModels.length) {
-    //   // if (selectdModels.length > 1) {
-    //   //   minPrice = Math.min(...selectdModels);
-    //   //   maxPrice = Math.max(...selectdModels);
-    //   // } else {
-    //   //   minPrice = selectdModels[0];
-    //   //   maxPrice = selectdModels[0];
-    //   // }
-    //   res.status(200).json({
-    //     reason: "Models Found Successfully",
-    //     statusCode: 200,
-    //     status: "SUCCESS",
-    //     // marketingname: marketingname,
-    //     // minPrice: minPrice,
-    //     // maxPrice: maxPrice,
-    //     // recommendedPriceRange: `${recommendedPriceRangeLowerLimit} to ${recommendedPriceRangeUpperLimit}`,
-    //     dataObject: dataObject,
-    //   });
-    // } else {
-    //   res.status(200).json({
-    //     reason: "Models Found Successfully",
-    //     statusCode: 200,
-    //     status: "SUCCESS",
-    //     // marketingname: marketingname,
-    //     // minPrice: "NA",
-    //     // maxPrice: "NA",
-    //     dataObject: dataObject,
-    //   });
-    // }
 
     res.status(200).json({
       reason: "Listing saved successfully",
@@ -1275,8 +563,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
       status: "SUCCESS",
       dataObject,
     });
-    // }
-    // });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -1355,6 +641,6 @@ router.get("/getDiagLogs", async (req, res) => {
     console.log(error);
     res.status(400).json(error);
   }
-})
+});
 
 module.exports = router;
