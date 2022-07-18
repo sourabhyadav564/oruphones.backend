@@ -38,6 +38,10 @@ const testScrappedSchema = new mongoose.Schema(
     actualPrice: {
       type: Number || String,
       // required: true,
+    },
+    link: {
+      type: String,
+      // required: true,
     }
   },
   { timestamps: true }

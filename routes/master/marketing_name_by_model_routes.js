@@ -110,18 +110,18 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
     // FURTHER: use aggregate to get the data when complex query is needed
     // let Object = await gsmarenaModal.aggregate([{ $match: { make: make } }]);
     let objects = {}
-    if (make != "Apple") {
+    // if (make != "Apple") {
     objects = await newMakeAndModal.find({
       make: make,
       models: { $in: model },
     });
-  } else {
-    objects = await newMakeAndModal.find({
-      make: make,
-      // marketingName: {"$regex": model, "$options": "i"},
-      marketingName: `${make} ${model}`,
-    });
-  }
+  // } else {
+  //   objects = await newMakeAndModal.find({
+  //     make: make,
+  //     // marketingName: {"$regex": model, "$options": "i"},
+  //     marketingName: `${make} ${model}`,
+  //   });
+  // }
     let modelName = objects[0].marketingName;
     console.log("objects", objects);
     // let modelName = "";

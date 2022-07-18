@@ -38,6 +38,10 @@ const eventSchema = new mongoose.Schema(
     location: {
       type: String,
       // required: true,
+    },
+    devicePlatform: {
+      type: String,
+      // required: true,
     }
   },
   { timestamps: true }
