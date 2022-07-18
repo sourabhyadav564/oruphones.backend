@@ -664,17 +664,17 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
     let getListing = [];
 
-    if (isOtherVendor === "N") {
+    // if (isOtherVendor === "N") {
       getListing = await saveListingModal.findOne({
         listingId: listingid,
       });
       console.log("getListing", getListing);
-    } else {
-      getListing = await testScrappedModal.findOne({
-        listingId: listingid,
-      });
-      console.log("getListing", getListing);
-    }
+    // } else {
+    //   getListing = await testScrappedModal.findOne({
+    //     listingId: listingid,
+    //   });
+    //   console.log("getListing", getListing);
+    // }
 
     if (!getListing) {
       res.status(200).json({
