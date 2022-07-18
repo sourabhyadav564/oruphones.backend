@@ -854,7 +854,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
       const externalSource = [];
 
-      let dataObject = { externalSource, ...getListing._doc };
+      let dataObject = { externalSource, ...(getListing._doc || getListing) };
       if (currentPercentage > -3) {
         console.log("getListing", getListing);
         console.log("getListing", getListing?.marketingName);
@@ -929,7 +929,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         }
       }
       res.status(200).json({
-        reason: "Listing updated successfully",
+        reason: "Listing found successfully",
         statusCode: 200,
         status: "SUCCESS",
         dataObject,
