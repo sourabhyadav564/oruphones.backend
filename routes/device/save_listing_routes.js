@@ -8,6 +8,7 @@ dotenv.config();
 
 // const FCM = require("fcm-node");
 const fetch = require("node-fetch");
+const ObjectId = require("mongodb").ObjectId;
 
 // require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
@@ -643,13 +644,34 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
   const isOtherVendor = req.query.isOtherVendor;
   const userUniqueId = req.query.userUniqueId;
 
+  const VENDORS = {
+    6: "Amazon",
+    7: "Quikr",
+    8: "Cashify",
+    9: "2Gud",
+    10: "Budli",
+    11: "Paytm",
+    12: "Yaantra",
+    13: "Shopcluse",
+    14: "Sahivalue",
+    15: "Xtracover",
+    16: "Mobigarage",
+    17: "Instacash",
+    18: "Cashforphone",
+    19: "Recycledevice",
+    20: "Quickmobile",
+    21: "mbr_Buyblynk",
+    22: "mbr_Electronicbazaar",
+    23: "Flipkart",
+  };
+
   try {
     // const isValidUser = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // })
 
     let favList = [];
-    if (userUniqueId !== "Guest") {
+    if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
       const getFavObject = await favoriteModal.findOne({
         userUniqueId: userUniqueId,
       });
@@ -663,23 +685,84 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
     console.log("favList", favList);
 
-    const getListing = await saveListingModal.findOne({
-      listingId: listingid,
-    });
-
-    // let getListing = [];
-
-    // if (isOtherVendor === "N") {
-    // getListing = await saveListingModal.findOne({
+    // const getListing = await saveListingModal.findOne({
     //   listingId: listingid,
     // });
-    // console.log("getListing", getListing);
-    // } else {
-    //   getListing = await testScrappedModal.findOne({
-    //     listingId: listingid,
-    //   });
-    //   console.log("getListing", getListing);
-    // }
+
+    let getListing = {};
+
+    if (isOtherVendor === "N") {
+      getListing = await saveListingModal.findOne({
+        listingId: listingid,
+      });
+      console.log("getListing from save", getListing);
+    } else {
+      getThirdsListing = await testScrappedModal.findOne({
+        _id: ObjectId(listingid),
+      });
+
+      let vendorName = VENDORS[getThirdsListing.vendor_id];
+      let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+        .toString()
+        .toLowerCase()}_logo.png`;
+
+      // let imagePath = await getDefaultImage(element.model_name);
+      // console.log("imagePath", imagePath);
+      // let imagePath = getImage(element.model_name);
+      let imagePath = "";
+      let condition = "";
+
+      if (
+        getThirdsListing.mobiru_condition.includes("Like New") ||
+        getThirdsListing.mobiru_condition.includes("Superb")
+      ) {
+        condition = "Like New";
+      } else if (
+        getThirdsListing.mobiru_condition.includes("Excellent") ||
+        getThirdsListing.mobiru_condition.includes("Very Good")
+      ) {
+        condition = "Excellent";
+      } else if (getThirdsListing.mobiru_condition.includes("Good")) {
+        condition = "Good";
+      } else if (getThirdsListing.mobiru_condition.includes("Fair")) {
+        condition = "Fair";
+      }
+      getListing = {
+        //   marketingName: element.marketing_name,
+        marketingName: getThirdsListing.model_name,
+        make: getThirdsListing.model_name.split(" ")[0],
+        listingPrice: getThirdsListing.price.toString(),
+        deviceStorage:
+          getThirdsListing.storage === "0 GB" ||
+          getThirdsListing.storage === "--"
+            ? "--"
+            : getThirdsListing.storage.toString() + " GB",
+        warranty: getThirdsListing.warranty,
+        vendorLogo: vendorImage,
+        vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
+        vendorId: getThirdsListing.vendor_id,
+        isOtherVendor: "Y",
+        imagePath: imagePath,
+        verified: false,
+        favourite: false,
+        listingLocation: "India",
+        deviceFinalGrade: null,
+        deviceCondition: condition,
+        listingId: getThirdsListing._id,
+        listingDate: "",
+        modifiedDate: "",
+        verifiedDate: "",
+        charger: "Y",
+        earphone: "Y",
+        originalbox: "Y",
+        defaultImage: {
+          fullImage: "",
+        },
+        images: [],
+      };
+
+      console.log("getListing from scrapped", getListing);
+    }
 
     if (!getListing) {
       res.status(200).json({
@@ -769,27 +852,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       console.log("basePrice", basePrice);
       console.log("notionalPrice", notionalPrice);
 
-      const VENDORS = {
-        6: "Amazon",
-        7: "Quikr",
-        8: "Cashify",
-        9: "2Gud",
-        10: "Budli",
-        11: "Paytm",
-        12: "Yaantra",
-        13: "Shopcluse",
-        14: "Sahivalue",
-        15: "Xtracover",
-        16: "Mobigarage",
-        17: "Instacash",
-        18: "Cashforphone",
-        19: "Recycledevice",
-        20: "Quickmobile",
-        21: "mbr_Buyblynk",
-        22: "mbr_Electronicbazaar",
-        23: "Flipkart",
-      };
-
       const externalSource = [];
 
       let dataObject = { externalSource, ...getListing._doc };
@@ -851,12 +913,12 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         if (selectdModels.length > 0) {
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
-        dataObject = { externalSource, ...getListing._doc };
+        dataObject = { externalSource, ...(getListing._doc || getListing) };
         let tempArray = [];
         tempArray.push(dataObject);
 
         // add favorite listings to the final list
-        if (userUniqueId !== "Guest") {
+        if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
           tempArray.forEach((item, index) => {
             if (favList.includes(item.listingId)) {
               dataObject = { ...dataObject, favourite: true };
