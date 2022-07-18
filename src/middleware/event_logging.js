@@ -7,6 +7,7 @@ const logEvent = async (req, res, next) => {
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
   const location = req.headers.location;
+  const devicePlatform = req.headers.devicePlatform;
 
   const getEvent = await eventModal.findOne({ sessionId: sessionId });
   const currentTime = moment(Date.now()).format("LTS");
@@ -20,20 +21,22 @@ const logEvent = async (req, res, next) => {
       console.log("eventData", eventData);
 
       // if (userUniqueId === getEvent.userUniqueId || userUniqueId === "Guest") {
-        const updateEvent = await eventModal.findByIdAndUpdate(
-          getEvent._id,
-          {
-            userUniqueId: userUniqueId,
-            location: location,
-            $push: {
-              events: {
-                eventName: events,
-              },
+      const updateEvent = await eventModal.findByIdAndUpdate(
+        getEvent._id,
+        {
+          userUniqueId: userUniqueId,
+          location: location,
+          devicePlatform: devicePlatform,
+          srcFrom: srcFrom,
+          $push: {
+            events: {
+              eventName: events,
             },
           },
-          { new: true }
-        );
-        console.log("updateEvent", updateEvent);
+        },
+        { new: true }
+      );
+      console.log("updateEvent", updateEvent);
       // } else {
       //   console.log("Event can't be updated");
       // }
