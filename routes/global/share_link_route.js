@@ -5,7 +5,7 @@ require("../../src/database/connection");
 const logEvent = require("../../src/middleware/event_logging");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 
-router.get("/share/link", logEvent, async (req, res) => {
+router.get("/share/link", async (req, res) => {
   const listingId = req.query.listingId;
   const userUniqueId = req.query.userUniqueId;
   try {

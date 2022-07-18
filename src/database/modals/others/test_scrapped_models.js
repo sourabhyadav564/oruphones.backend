@@ -42,11 +42,23 @@ const testScrappedSchema = new mongoose.Schema(
     link: {
       type: String,
       // required: true,
-    }
+    },
+    listingId: {
+      type: String,
+      // required: true,
+    },
   },
   { timestamps: true }
 );
 
-const testScrappedModal = new mongoose.model("testing_scrapped_datas", testScrappedSchema);
+testScrappedSchema.pre("save", async function (next) {
+  this.listingId = this._id;
+  next();
+});
+
+const testScrappedModal = new mongoose.model(
+  "testing_scrapped_datas",
+  testScrappedSchema
+);
 
 module.exports = testScrappedModal;

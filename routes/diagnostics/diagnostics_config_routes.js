@@ -254,7 +254,7 @@ router.post("/diagConfig", async (req, res) => {
   }
 });
 
-router.post("/grade/price", logEvent, async (req, res) => {
+router.post("/grade/price", async (req, res) => {
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;

@@ -45,7 +45,7 @@ router.get("/uploadimage/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", upload.single("image"), logEvent, async (req, res) => {
+router.post("/uploadimage", upload.single("image"), async (req, res) => {
 
   try {
     const file = req.file;

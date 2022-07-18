@@ -9,7 +9,7 @@ const getDefaultImage = require("../../utils/get_default_image");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const newMakeAndModal = require("../../src/database/modals/others/new_make_and_model");
 
-router.post("/marketingNameByModel", logEvent, async (req, res) => {
+router.post("/marketingNameByModel", async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   let make = req.body.make;
@@ -207,7 +207,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   }
 });
 
-router.get("/makemodellist", logEvent, async (req, res) => {
+router.get("/makemodellist", async (req, res) => {
   let make = req.query.make;
   const isPrimary = req.query.isPrimary;
 

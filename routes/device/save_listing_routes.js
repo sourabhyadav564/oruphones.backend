@@ -24,6 +24,7 @@ const saveNotificationModel = require("../../src/database/modals/notification/no
 const notificationModel = require("../../src/database/modals/notification/complete_notifications");
 const makeRandomString = require("../../utils/generate_random_string");
 const lspModal = require("../../src/database/modals/others/new_scrapped_models");
+const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 
 // router.get("/listing", async (req, res) => {
 //   try {
@@ -661,9 +662,19 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
     console.log("favList", favList);
 
-    const getListing = await saveListingModal.findOne({
-      listingId: listingid,
-    });
+    let getListing = [];
+
+    if (isOtherVendor === "N") {
+      getListing = await saveListingModal.findOne({
+        listingId: listingid,
+      });
+      console.log("getListing", getListing);
+    } else {
+      getListing = await testScrappedModal.findOne({
+        listingId: listingid,
+      });
+      console.log("getListing", getListing);
+    }
 
     if (!getListing) {
       res.status(200).json({
