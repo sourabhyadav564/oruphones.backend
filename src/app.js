@@ -14,6 +14,7 @@ const corsOptions = {
   origin: [
     "https://www.oruphones.com",
     "https://dev.oruphones.com",
+    "https://dev1oru2phones3.oruphones.com",
     "https://image.oruphones.com",
     "https://mip.oruphones.com",
     "https://api.oruphones.com",
