@@ -7,7 +7,7 @@ const scrappedModal = require("../../src/database/modals/others/scrapped_models"
 const logEvent = require("../../src/middleware/event_logging");
 const allMatrix = require("../../utils/matrix_figures");
 
-router.post("/price/externalsellsource", async (req, res) => {
+router.post("/price/externalsellsource", logEvent, async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const make = req.body.make;
   const marketingName = req.body.marketingName;
