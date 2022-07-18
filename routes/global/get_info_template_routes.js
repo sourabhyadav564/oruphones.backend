@@ -19,8 +19,8 @@ router.get("/getinfotemplates", logEvent, async (req, res) => {
       ABOUT_US: "/about-us.html",
       WARRANTY: "/warranty",
       PRIVACY: "privacy-policy.html",
-      HOW_TO_BUY: "/how-to-buy",
-      HOW_TO_SELL: "/how-to-sell",
+      HOW_TO_BUY: "/#how_to_buy",
+      HOW_TO_SELL: "/#how_to_sell",
     };
     res.status(200).json({
       reason: "Templet link generated successfully",
