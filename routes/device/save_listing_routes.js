@@ -600,22 +600,23 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
             userUniqueId: user,
             notification: [notificationData],
           };
-  
+
           const notificationObject = await notificationModel.findOne({
             userUniqueId: user,
           });
-  
+
           if (!notificationObject) {
             const saveNotification = new notificationModel(dataToBeSave);
             let dataObject = await saveNotification.save();
           } else {
-            const updateNotification = await notificationModel.findByIdAndUpdate(
-              notificationObject._id,
-              { $push: { notification: notificationData } },
-              { new: true }
-            );
+            const updateNotification =
+              await notificationModel.findByIdAndUpdate(
+                notificationObject._id,
+                { $push: { notification: notificationData } },
+                { new: true }
+              );
           }
-        })
+        });
 
         res.status(200).json({
           reason: "Listing updated successfully",
@@ -662,13 +663,17 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
     console.log("favList", favList);
 
-    let getListing = [];
+    const getListing = await saveListingModal.findOne({
+      listingId: listingid,
+    });
+
+    // let getListing = [];
 
     // if (isOtherVendor === "N") {
-      getListing = await saveListingModal.findOne({
-        listingId: listingid,
-      });
-      console.log("getListing", getListing);
+    // getListing = await saveListingModal.findOne({
+    //   listingId: listingid,
+    // });
+    // console.log("getListing", getListing);
     // } else {
     //   getListing = await testScrappedModal.findOne({
     //     listingId: listingid,
@@ -684,7 +689,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       });
       return;
     } else {
-
       let getMake = getListing?.make;
       let getMarketingName = getListing?.marketingName;
       let getCondition = getListing?.deviceCondition;
@@ -783,14 +787,13 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         20: "Quickmobile",
         21: "mbr_Buyblynk",
         22: "mbr_Electronicbazaar",
-        23: "Flipkart"
+        23: "Flipkart",
       };
 
       const externalSource = [];
 
       let dataObject = { externalSource, ...getListing._doc };
       if (currentPercentage > -3) {
-
         console.log("getListing", getListing);
         console.log("getListing", getListing?.marketingName);
         console.log("getListing", getListing?.deviceStorage);
@@ -839,7 +842,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
                 selectdModels.push(vendorObject);
                 pushedVendors.push(vendorName);
               }
-            })
+            });
           }
         });
 
@@ -856,13 +859,12 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         if (userUniqueId !== "Guest") {
           tempArray.forEach((item, index) => {
             if (favList.includes(item.listingId)) {
-              dataObject = {...dataObject, favourite: true};
+              dataObject = { ...dataObject, favourite: true };
             } else {
-              dataObject = {...dataObject, favourite: false};
+              dataObject = { ...dataObject, favourite: false };
             }
           });
         }
-
       }
       res.status(200).json({
         reason: "Listing updated successfully",
