@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const dotenv = require("dotenv");
+dotenv.config();
 
 require("../../src/database/connection");
 const logEvent = require("../../src/middleware/event_logging");
@@ -15,7 +17,7 @@ router.get("/share/link", logEvent, async (req, res) => {
     const model = listing.marketingName.replaceAll(" ", "");
     const productId = listing.listingId;
 
-    const static_link = `${"https://oru-phones-web.vercel.app"}/product/listings/${make}/${model}/${productId}?isOtherVendor=N`;
+    const static_link = `${process.env.SERVER_URL}/product/listings/${make}/${model}/${productId}?isOtherVendor=N`;
 
     const dataObject = {
       url: static_link,
