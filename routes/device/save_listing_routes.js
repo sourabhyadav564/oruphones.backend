@@ -893,7 +893,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
           ) {
             item.vendor.forEach((vendor) => {
               vendorName = VENDORS[vendor.vendor_id];
-              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
                 .toString()
                 .toLowerCase()}_logo.png`;
               let vendorObject = {
@@ -901,8 +901,12 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
                 externalSourceImage: vendorImage,
               };
               if (!pushedVendors.includes(vendorName)) {
-                selectdModels.push(vendorObject);
-                pushedVendors.push(vendorName);
+                if (
+                  getListing?.vendorLogo != vendorObject.externalSourceImage
+                ) {
+                  selectdModels.push(vendorObject);
+                  pushedVendors.push(vendorName);
+                }
               }
             });
           }
