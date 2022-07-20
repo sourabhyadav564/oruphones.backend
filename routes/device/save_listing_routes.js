@@ -899,7 +899,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
               let vendorObject = {
                 externalSourcePrice: item.lsp,
                 externalSourceImage: vendorImage,
-                externalSourceLink: vendor.link,
               };
               if (!pushedVendors.includes(vendorName)) {
                 if (
