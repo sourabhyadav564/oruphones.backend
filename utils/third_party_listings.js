@@ -66,7 +66,7 @@ const getThirdPartyVendors = async (model_name, make) => {
     console.log("element ", element.vendor_id);
     let vendorName = VENDORS[element.vendor_id];
     console.log("vendorName ", vendorName);
-    let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+    let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
       .toString()
       .toLowerCase()}_logo.png`;
 

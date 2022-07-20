@@ -133,7 +133,7 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
           finalPrice = element.price;
         }
         finalPrice = Math.ceil(finalPrice);
-        let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/vendors/${vendorName
+        let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
           .toString()
           .toLowerCase()}_logo.png`;
         filterData["externalSourcePrice"] =
