@@ -47,14 +47,12 @@ const allCronJobs = () => {
       let tempName = marketingName.split("(")[0];
       marketingName = tempName.trim();
     }
-    console.log("enters in gsm loop for ", index, marketingName);
     let cond = ["Like New", "Excellent", "Good", "Fair"];
     element.storage.forEach((el) => {
       cond.forEach((con) => {
         // TODO file data will be all the data from all the 10 data files
         // TODO .map() will be replaced by .find() for mongoDB
         let variable = fileData.filter((elm) => {
-          // console.log("elm", elm);
           let mdl = elm.model_name != null ? elm.model_name.toString() : "";
           if (mdl.includes("(")) {
             let tempName2 = mdl.split("(")[0];
@@ -65,7 +63,6 @@ const allCronJobs = () => {
             el.includes(elm.storage) &&
             elm.mobiru_condition.includes(con)
           ) {
-            // console.log("enters in if                    ***************************************", elm.type);
 
             return elm;
           } else if (
@@ -74,7 +71,6 @@ const allCronJobs = () => {
             elm.mobiru_condition.includes(con) &&
             elm.price != null
           ) {
-            // console.log("enters in else if                    ***************************************", elm.type);
             return elm;
           } else if (
             mdl.toLowerCase().includes(marketingName.toLowerCase()) &&
@@ -136,14 +132,12 @@ const allCronJobs = () => {
               // link,
               // warranty,
             };
-            // console.log("dataObj", dataObj);
             foundObjects.push(dataObj);
           });
         } else {
           if (!allModelNotFound.includes("GSM: " + marketingName)) {
             allModelNotFound.push("GSM: " + marketingName);
           }
-          // console.log("enters in complete data loop11111111111111");
         }
         // });
         // });
@@ -289,10 +283,8 @@ const allCronJobs = () => {
                   };
 
                   derivedData.push(derivedObj);
-                  console.log("drvDataLen:", derivedData.length);
                   // }
                 }
-                console.log("indx", modelIndex, allModels.length);
 
                 if (modelIndex == allModels.length - 1) {
                   derivedData = derivedData.filter(
@@ -570,7 +562,6 @@ function lspFunction(condition, gotDataFrom, leastSellingPrice) {
 }
 
 const allCron = async () => {
-  console.log("Function Initialized");
   const allgsmData = await newMakeAndModal.find(
     { models: { $exists: true, $ne: [] } },
     { _id: 0 }

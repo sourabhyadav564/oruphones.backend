@@ -39,7 +39,6 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
     //     if (err) {
     //         console.log(err);
     //     } else {
-    //         // console.log(scrappedModels);
     //         res.status(200).json({
     //             reason: "Scrapped Models Found Successfully",
     //             statusCode: 200,
@@ -53,7 +52,6 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
     //     if (err) {
     //         console.log(err);
     //     } else {
-    //         // console.log(Models);
     //         res.status(200).json({
     //             reason: "Models Found Successfully",
     //             statusCode: 200,
@@ -107,7 +105,6 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
           warrantyPeriod
         );
       
-        console.log("recomended price", recommendedPrice);
 
         // let leastSellingPrice;
         // let lowerRangeMatrix = 0.7;
@@ -249,7 +246,6 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
 
         // let bool = false;
 
-        // console.log("leastSellingPrice first: " + leastSellingPrice);
 
         // if (condition === "Good") {
         //   if (gotDataFrom === "Good") {
@@ -453,8 +449,6 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
         // }
 
         // // if (bool) {
-        // // console.log("leastSellingPrice: " + leastSellingPrice);
-        // // console.log("gotDataFrom: " + gotDataFrom);
         // // }
 
         // // let recommendedPriceRange = `${0.7 * Math.max(...selectdModels)} to ${

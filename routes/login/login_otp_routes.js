@@ -61,7 +61,6 @@ router.post("/otp/generate", logEvent, async (req, res) => {
     // .catch((error) => console.log(error));
 
     const sendMessage = sendLoginOtp(mobileNumber, clientOTP);
-    console.log("message sent successfully!");
 
     res.status(200).json({
       reason: "OTP generated successfully",
@@ -85,7 +84,6 @@ router.post("/otp/validate", logEvent, async (req, res) => {
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
-  console.log(mobileNumber, countryCode, otp);
 
   try {
     const getOtp = await userModal.findOne({
@@ -153,7 +151,6 @@ router.post("/otp/resend", logEvent, async (req, res) => {
     // const response = await fast2sms.sendMessage(options); //Asynchronous Function.
 
     const sendMessage = sendLoginOtp(mobileNumber, clientOTP);
-    console.log("message sent successfully!");
 
     res.status(200).json({
       reason: "OTP generated successfully",

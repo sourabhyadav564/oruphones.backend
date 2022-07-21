@@ -36,7 +36,6 @@ router.get("/test/:id", async (req, res) => {
 
 router.post("/test" , async (req, res) => {
   const user = new testModal(req.body);
-  console.log(req.body);
 
   try {
     const createUser = await user.save();

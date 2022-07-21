@@ -21,7 +21,6 @@ const logEvent = async (req, res, next) => {
     if (process.env.EVENT === "Active") {
       if (getEvent) {
         const eventData = getEvent.events;
-        console.log("eventData", eventData);
 
         // if (userUniqueId === getEvent.userUniqueId || userUniqueId === "Guest") {
         const updateEvent = await eventModal.findByIdAndUpdate(
@@ -39,7 +38,6 @@ const logEvent = async (req, res, next) => {
           },
           { new: true }
         );
-        console.log("updateEvent", updateEvent);
         // } else {
         //   console.log("Event can't be updated");
         // }

@@ -18,7 +18,6 @@ router.get("/topselling/models", async (req, res) => {
         let modelName = item.marketingName;
 
         if (!modelVals.includes(modelName)) {
-          console.log(modelName);
           let data = {
             make: item.make,
             marketingName: item.marketingName,
@@ -64,7 +63,6 @@ router.get("/topselling/models", async (req, res) => {
               let objIndex = dataObject.findIndex(
                 (obj) => obj.marketingName === mObj.marketingName
               );
-              console.log(data.marketingName, objIndex);
               dataObject[objIndex] = data;
         }
       });

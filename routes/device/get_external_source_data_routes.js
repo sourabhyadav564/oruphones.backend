@@ -53,15 +53,12 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
   if (hasCharger === "N") {
     totalPercentageToBeReduced += chargerPercentage;
   }
-  console.log("Total1: ", totalPercentageToBeReduced);
   if (hasEarphone === "N") {
     totalPercentageToBeReduced += earphonePercentage;
   }
-  console.log("Total2: ", totalPercentageToBeReduced);
   if (hasOriginalBox === "N") {
     totalPercentageToBeReduced += originalBoxPercentage;
   }
-  console.log("Total3: ", totalPercentageToBeReduced);
 
   const VENDORS = {
     6: "Amazon",
@@ -85,7 +82,6 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
   };
 
   try {
-   console.log("sss", deviceStorage, deviceCondition, marketingName)
     // const listings = await scrappedModal.find({
     //   type: "sell",
     //   storage: [deviceStorage, '--'],
@@ -119,7 +115,6 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
       })
 
       vendorListings.forEach(async (element) => {
-        console.log("element: ", element);
         let filterData = {};
         let vendorName = VENDORS[element.vendor_id];
         let finalPrice;

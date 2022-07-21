@@ -39,7 +39,6 @@ router.get("/listings/best/nearme", async (req, res) => {
   //   isVarified
   // );
 
-  // console.log("recomended price", price);
 
   // let basePrice;
   // let notionalPrice;
@@ -76,7 +75,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //   favList = [];
     // }
 
-    // console.log("Favorite listings", favList);
 
     let defaultDataObject = [];
     if (location === "India") {
@@ -125,7 +123,6 @@ router.get("/listings/best/nearme", async (req, res) => {
 
     getBestDeals(defaultDataObject, userUniqueId, res, true);
 
-    // console.log("defaultDataObject", defaultDataObject);
     // const filterData = async () => {
     //   let bestDeals = [];
     //   let dIndex = 0;
@@ -144,7 +141,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //     item
     //   ) => {
     //     const getPrice = async () => {
-    //       // console.log("into getPrice");
     //       const price = await getRecommendedPrice(
     //         make,
     //         marketingname,
@@ -158,7 +154,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //         isVarified,
     //         false
     //       );
-    //       // console.log("price", price);
     //       if (price !== null) {
     //         afterGetPrice(price);
     //         return price;
@@ -170,7 +165,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //     // getPrice().then((price) => {
     //       const afterGetPrice = async (price) => {
     //         basePrice = price.actualLSP;
-    //         // console.log("basePrice", basePrice);
     //         notionalPrice = parseInt(
     //           item.listingPrice.toString().replace(",", "")
     //         );
@@ -249,8 +243,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //         bestDeals.push(newDataObject);
     //         // });
     //         dIndex++;
-    //         // console.log("index", dIndex);
-    //         // console.log("length", defaultDataObject.length);
     //         if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
     //           // console.error("bestDeals22", bestDeals);
     //           afterGetingBestDeals(bestDeals);
@@ -298,8 +290,6 @@ router.get("/listings/best/nearme", async (req, res) => {
 
     // // filterData().then((bestDeals) => {
     // const afterGetingBestDeals = async (bestDeals) => {
-    //   // console.log("bestDeals", bestDeals);
-    //   // console.log("bestDeals", bestDeals);
     //   bestDeals.forEach((item, index) => {
     //     if (item.notionalPercentage > 0) {
     //       finalBestDeals.push(item);
@@ -349,7 +339,6 @@ router.get("/listings/best/nearme", async (req, res) => {
     //   });
 
     //   // return finalBestDeals
-    //   // console.log("finalbestdeals", finalBestDeals);
 
     //   if (finalBestDeals.length > 0 || otherListings.length > 0) {
     //     res.status(200).json({

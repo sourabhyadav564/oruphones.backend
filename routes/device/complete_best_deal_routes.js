@@ -112,7 +112,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //     item
     //   ) => {
     //     const getPrice = async () => {
-    //       // console.log("into getPrice");
     //       const price = await getRecommendedPrice(
     //         make,
     //         marketingname,
@@ -126,7 +125,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //         isVarified,
     //         false
     //       );
-    //       // console.log("price", price);
     //       if (price !== null) {
     //         afterGetPrice(price);
     //         return price;
@@ -138,7 +136,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //     // getPrice().then((price) => {
     //     const afterGetPrice = async (price) => {
     //       basePrice = price.actualLSP;
-    //       // console.log("basePrice", basePrice);
     //       notionalPrice = parseInt(
     //         item.listingPrice.toString().replace(",", "")
     //       );
@@ -218,8 +215,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //       bestDeals.push(newDataObject);
     //       // });
     //       dIndex++;
-    //       // console.log("index", dIndex);
-    //       // console.log("length", defaultDataObject.length);
     //       if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
     //         // console.error("bestDeals22", bestDeals);
     //         afterGetingBestDeals(bestDeals);
@@ -267,8 +262,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
 
     // // filterData().then((bestDeals) => {
     // const afterGetingBestDeals = async (bestDeals) => {
-    //   // console.log("bestDeals", bestDeals);
-    //   // console.log("bestDeals", bestDeals);
     //   bestDeals.forEach((item, index) => {
     //     if (item.notionalPercentage > 0) {
     //       finalBestDeals.push(item);
@@ -330,7 +323,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //   let nullOtherList = [];
 
     //   otherListings.forEach((item, index) => {
-    //     console.log(item.notionalPercentage.toString());
     //     if (item.notionalPercentage.toString() === "NaN") {
     //       nullOtherList.push(item);
     //       otherListings.splice(index, 1);
@@ -344,7 +336,6 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
     //   otherListings.push(...nullOtherList);
 
     //   // return finalBestDeals
-    //   // console.log("finalbestdeals", finalBestDeals);
 
     //   if (finalBestDeals.length > 0 || otherListings.length > 0) {
     //     res.status(200).json({

@@ -15,7 +15,6 @@ router.post("/add", logEvent, async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    // console.log("getFavObject", getFavObject);
 
     // To update a particular document, whether it is existing or not. You need to first get all the elements out of the array and push into another array. And then get the ID of that object and save it using "findByIdAndUpdate" ----> getFavObject._id,
 
@@ -40,7 +39,6 @@ router.post("/add", logEvent, async (req, res) => {
             new: true,
           }
         );
-        //   console.log("updateList", updateList);
         res.status(200).json({
           reason: "Favorite listings updated successfully",
           statusCode: 200,

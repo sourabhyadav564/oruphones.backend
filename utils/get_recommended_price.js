@@ -129,7 +129,6 @@ const getRecommendedPrice = async (
 
       let bool = false;
 
-      console.log("leastSellingPrice first: " + leastSellingPrice);
 
       if (gotType === "sell") {
         let price_with_added_percentage = make === "Samsung" ? 1.4 : 1.2;

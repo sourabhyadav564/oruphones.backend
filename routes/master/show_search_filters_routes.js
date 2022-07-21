@@ -10,7 +10,6 @@ router.get("/showserchFilters", logEvent, async (req, res) => {
     // Data object for the search filters
     const data = await filterModal.find({}, { _id: 0 });
     const dataObject = data[0]
-    console.log(dataObject);
     res
       .status(200)
       .json({

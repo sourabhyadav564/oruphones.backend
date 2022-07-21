@@ -277,7 +277,6 @@ router.get("/logs/geteventinfo", async (req, res) => {
           )[0];
           const _fav_most_repeated_model_name_value =
             fav_most_repeated_model_name[fav_most_repeated_model_name_key];
-          // console.log("most_repeated_model_name", fav_most_repeated_model_name);
           // console.log(
           //   "most_repeated_model_name_value",
           //   _fav_most_repeated_model_name_value
@@ -296,11 +295,9 @@ router.get("/logs/geteventinfo", async (req, res) => {
       listing_with_real_name.push(listing.listedBy);
     });
 
-    // console.log("listing_with_real_name", listing_with_real_name);
     const listing_with_real_name_unique = listing_with_real_name.filter(
       (item, index, array) => array.indexOf(item) === index
     );
-    // console.log("listing_with_real_name_unique", listing_with_real_name_unique);
 
     const total_users_registered_today = await createUserModal.countDocuments({
       createdAt: {
@@ -315,23 +312,18 @@ router.get("/logs/geteventinfo", async (req, res) => {
         (session.updatedAt.getTime() - session.createdAt.getTime()) / 1000;
       session_duration_in_seconds.push(session_duration);
     });
-    // console.log("session_duration_in_seconds", session_duration_in_seconds);
     // const session_duration_in_seconds_sum = session_duration_in_seconds.reduce(
     //   (acc, curr) => acc + curr
     // );
-    // console.log("session_duration_in_seconds_sum", session_duration_in_seconds_sum);
     // const session_duration_in_seconds_avg =
     //   session_duration_in_seconds_sum / session_duration_in_seconds.length;
-    // console.log("session_duration_in_seconds_avg", session_duration_in_seconds_avg);
 
     // const total_sessions = await eventModal.countDocuments({});
     // const total_sessions_duration =
     //   session_duration_in_seconds_sum / total_sessions;
-    // console.log("total_sessions_duration", total_sessions_duration);
 
     // const total_sessions_duration_avg =
     //   session_duration_in_seconds_avg / total_sessions;
-    // console.log("total_sessions_duration_avg", total_sessions_duration_avg);
 
     let complete_marketing_name = [];
     const total_marketing_name_from_listing = await saveListingModal.find({
@@ -342,11 +334,9 @@ router.get("/logs/geteventinfo", async (req, res) => {
       complete_marketing_name.push(listing.marketingName);
     });
 
-    // console.log("complete_marketing_name", complete_marketing_name);
     const complete_marketing_name_unique = complete_marketing_name.filter(
       (item, index, array) => array.indexOf(item) === index
     );
-    // console.log("complete_marketing_name_unique", complete_marketing_name_unique);
 
     const total_user_device_platform = await eventModal.find({});
     let user_device_platform = [];
@@ -364,8 +354,6 @@ router.get("/logs/geteventinfo", async (req, res) => {
         user_device_platform_ios.push(user?.devicePlatform);
       }
     });
-    // console.log("user_device_platform_android", user_device_platform_android);
-    // console.log("user_device_platform_ios", user_device_platform_ios);
 
     res.json({
       total_logs_captured,

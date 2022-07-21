@@ -38,7 +38,6 @@ const get_external_source_buy = async () => {
       } else {
         let models = results[1];
         let scrappedModels = results[0];
-        // console.log("models", scrappedModels.length);
         // fs.writeFileSync("scrapped.json", JSON.stringify(scrappedModels));
 
         scrappedModels.forEach(async (item, index) => {
@@ -68,12 +67,10 @@ const get_external_source_buy = async () => {
           if (!found) {
             const matchedModel = models.find((elem) => {
               // elem.id === item.model_id;
-              // console.log("elem", elem);
               if (elem.id === item.model_id) {
                 return elem;
               }
             });
-            // console.log("matchedModel", matchedModel);
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = item.price;
@@ -122,7 +119,6 @@ const get_external_source_buy = async () => {
         } catch (error) {
           console.log(error);
         }
-        // console.log("lspArray", lspArray);
         // fs.writeFileSync("lsp.json", JSON.stringify(lspArray));
       }
     });
@@ -134,9 +130,7 @@ const get_external_source_buy = async () => {
 
 const start_migrating_external_source_buy = async () => {
   // calculate_LSP_BUY().then(() => {
-  //   console.log("entered into then");
   //   calculate_LSP_SELL()
-  //   console.log("exited from then");
   // });
   get_external_source_buy();
 };

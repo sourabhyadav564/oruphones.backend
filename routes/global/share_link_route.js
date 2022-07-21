@@ -12,7 +12,6 @@ router.get("/share/link", logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
   try {
     const listing = await saveListingModal.findOne({ listingId: listingId });
-    console.log("listing", listing);
     const make = listing.make;
     const model = listing.marketingName.replaceAll(" ", "");
     const productId = listing.listingId;

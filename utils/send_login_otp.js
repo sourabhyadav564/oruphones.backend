@@ -37,11 +37,6 @@ AWS.config.update({
 // }
 
 const sendLoginOtp = (number, message) => {
-  console.log("message", message);
-  console.log("number", number);
-  // console.log("Message = " + req.query.message);
-  // console.log("Number = " + req.query.number);
-  // console.log("Subject = " + req.query.subject);
   var params = {
     Message: `${message} is your login OTP for your registration process. Please enter the OTP to Proceed. Team ORU Phones`,
     Subject: "ORU Phones",

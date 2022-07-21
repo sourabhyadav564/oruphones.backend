@@ -16,7 +16,6 @@ router.get("/getImages", async (req, res) => {
 
     listings.forEach((listing) => {
       listing.images.forEach((image) => {
-        console.log(image);
         if ("isVarified" in image && image.isVarified === "default") {
           let dataObject = {};
           dataObject = {

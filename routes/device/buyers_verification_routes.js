@@ -24,14 +24,12 @@ router.get("/listing/buyer/verification", logEvent, async (req, res) => {
       mobileNumber: mobileNumber,
       listingId: listingId,
     });
-    // console.log("getListingObject", getListingObject);
 
     if (getListingObject) {
       const userUniqueId = getListingObject.userUniqueId;
       const userDetails = await createUserModal.findOne({
         userUniqueId: userUniqueId,
       });
-      // console.log("userDetails", userDetails.mobileNumber);
 
       const isMatchFound = userDetails.mobileNumber === mobileNumber;
       if (!isMatchFound) {
@@ -102,9 +100,6 @@ router.get("/listing/sendverification", logEvent, async (req, res) => {
             let sellerUniqueId = listingObject.userUniqueId;
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
-            console.log("sellerUniqueId", sellerUniqueId);
-            console.log("marketingName", marketingName);
-            console.log("sellerName", sellerName);
             const response = await sendNotification(
               sellerUniqueId,
               true,

@@ -121,7 +121,6 @@ router.post("/user/update", logEvent, async (req, res) => {
       }
     );
 
-    console.log("updateUser", updateUser);
 
     if (!updateUser) {
       res.status(404).json({
@@ -190,7 +189,6 @@ router.post("/address/addSearchLocation", logEvent, async (req, res) => {
           userAddress.push(dataToBeSend);
         }
 
-        console.log("userAddress", userAddress);
         const dataObject = {
           address: userAddress,
         };

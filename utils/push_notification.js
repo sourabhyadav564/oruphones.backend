@@ -22,7 +22,6 @@ const sendNotification = async (
 
   const string = await makeRandomString(25);
   // const hashCode = await generateHash(string);
-  // console.log("hashCode", hashCode);
 
   let tokenObject = await saveNotificationModel.find({
     userUniqueId: sellerUniqueId,

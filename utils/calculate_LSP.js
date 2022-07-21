@@ -59,7 +59,6 @@ const calculate_LSP_BUY = async () => {
       } else {
         let models = results[1];
         let scrappedModels = results[0];
-        // console.log("models", scrappedModels.length);
         // fs.writeFileSync("scrapped.json", JSON.stringify(scrappedModels));
 
         scrappedModels.forEach(async (item, index) => {
@@ -89,12 +88,10 @@ const calculate_LSP_BUY = async () => {
           if (!found) {
             const matchedModel = models.find((elem) => {
               // elem.id === item.model_id;
-              // console.log("elem", elem);
               if (elem.id === item.model_id) {
                 return elem;
               }
             });
-            // console.log("matchedModel", matchedModel);
             lspObject["model_id"] = item.model_id;
             lspObject["model_name"] = matchedModel.name;
             lspObject["price"] = item.price;
@@ -137,7 +134,6 @@ const calculate_LSP_BUY = async () => {
         // } catch (error) {
         //   console.log(error);
         // }
-        // console.log("lspArray", lspArray);
         // fs.writeFileSync("lsp.json", JSON.stringify(lspArray));
       }
     });
@@ -158,7 +154,6 @@ const calculate_LSP_SELL = async () => {
       } else {
         let models = results[1];
         let scrappedModels = results[0];
-        // console.log("models", scrappedModels.length);
         // fs.writeFileSync("scrapped.json", JSON.stringify(scrappedModels));
 
         // let lspArray = [];
@@ -184,12 +179,10 @@ const calculate_LSP_SELL = async () => {
           if (!found) {
             const matchedModel = models.find((elem) => {
               // elem.id === item.model_id;
-              // console.log("elem", elem);
               if (elem.id === item.model_id) {
                 return elem;
               }
             });
-            // console.log("matchedModel", matchedModel);
             // let derivedPrice = 0;
             // if (item.heading != null) {
             //   derivedPrice = item.heading.includes("Samsung")
@@ -494,7 +487,6 @@ const calculate_LSP_SELL = async () => {
         // } catch (error) {
         //   console.log(error);
         // }
-        // console.log("finalScrappedModelObject", finalScrappedModelObject);
         // fs.writeFileSync("lsp.json", JSON.stringify(finalScrappedModelObject));
       }
     });

@@ -64,20 +64,16 @@ const getThirdPartyVendors = async (model_name, make) => {
     filterd = await testScrappedModal.find({ type: "buy" });
   }
 
-  console.log("filterd data ", filterd);
 
   let dataObject = {};
   let dataArray = [];
   filterd.forEach(async (element) => {
-    console.log("element ", element.vendor_id);
     let vendorName = VENDORS[element.vendor_id];
-    console.log("vendorName ", vendorName);
     let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
       .toString()
       .toLowerCase()}_logo.png`;
 
     // let imagePath = await getDefaultImage(element.model_name);
-    // console.log("imagePath", imagePath);
     // let imagePath = getImage(element.model_name);
     let imagePath = "";
     let condition = "";
@@ -97,7 +93,6 @@ const getThirdPartyVendors = async (model_name, make) => {
     } else if (element.mobiru_condition.includes("Fair")) {
       condition = "Fair";
     }
-    console.log("storing data ", element.storage);
     dataObject = {
       //   marketingName: element.marketing_name,
       marketingName: element.model_name == null ? "--" : element.model_name,

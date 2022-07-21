@@ -188,7 +188,6 @@ router.get("/listings/category", logEvent, async (req, res) => {
 
     //     const afterGetPrice = async (price) => {
     //       basePrice = price.actualLSP;
-    //       // console.log("basePrice", basePrice);
     //       notionalPrice = parseInt(
     //         item.listingPrice.toString().replace(",", "")
     //       );
@@ -267,8 +266,6 @@ router.get("/listings/category", logEvent, async (req, res) => {
     //       bestDeals.push(newDataObject);
     //       // });
     //       dIndex++;
-    //       // console.log("index", dIndex);
-    //       // console.log("length", defaultDataObject.length);
     //       if (dIndex === defaultDataObject.length && bestDeals.length > 0) {
     //         // console.error("bestDeals22", bestDeals);
     //         afterGetingBestDeals(bestDeals);
@@ -372,7 +369,6 @@ router.get("/listings/category", logEvent, async (req, res) => {
     //   let nullOtherList = [];
 
     //   otherListings.forEach((item, index) => {
-    //     console.log(item.notionalPercentage.toString());
     //     if (item.notionalPercentage.toString() === "NaN") {
     //       nullOtherList.push(item);
     //       otherListings.splice(index, 1);

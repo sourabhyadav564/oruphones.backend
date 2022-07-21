@@ -286,7 +286,6 @@ router.post("/listing/pause", logEvent, async (req, res) => {
       listingId: listingId,
     });
 
-    console.log("activateListing", pauseListing);
 
     if (!pauseListing) {
       res.status(200).json({
@@ -312,7 +311,6 @@ router.post("/listing/pause", logEvent, async (req, res) => {
             new: true,
           }
         );
-        console.log("pausedListing", pausedListing);
         res.status(200).json({
           reason: "Listing paused successfully",
           statusCode: 200,
@@ -336,7 +334,6 @@ router.post("/listing/activate", logEvent, async (req, res) => {
       listingId: listingId,
     });
 
-    console.log("activateListing", activateListing);
 
     if (!activateListing) {
       res.status(200).json({
@@ -362,7 +359,6 @@ router.post("/listing/activate", logEvent, async (req, res) => {
             new: true,
           }
         );
-        console.log("activatedListing", activatedListing);
 
         res.status(200).json({
           reason: "Listing activated successfully",
@@ -526,14 +522,12 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
           fav_listings: listingId,
         });
 
-        // console.log("userFromFavorite", userFromFavorite);
 
         const sendNotificationToUser = [];
         userFromFavorite.forEach((item, index) => {
           sendNotificationToUser.push(item.userUniqueId);
         });
 
-        // console.log("sendNotificationToUser", sendNotificationToUser);
 
         const now = new Date();
         const currentDate = moment(now).format("L");
@@ -544,7 +538,6 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
           userUniqueId: sendNotificationToUser,
         });
 
-        // console.log("tokenObject", tokenObject);
 
         let notificationTokens = [];
         tokenObject.forEach((item, index) => {
@@ -594,7 +587,6 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
           createdDate: currentDate,
         };
 
-        console.log("sendNotificationToUser", sendNotificationToUser);
 
         sendNotificationToUser.forEach(async (user, index) => {
           let dataToBeSave = {
@@ -683,7 +675,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       }
     }
 
-    console.log("favList", favList);
 
     // const getListing = await saveListingModal.findOne({
     //   listingId: listingid,
@@ -695,7 +686,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       getListing = await saveListingModal.findOne({
         listingId: listingid,
       });
-      console.log("getListing from save", getListing);
     } else {
       getThirdsListing = await testScrappedModal.findOne({
         _id: ObjectId(listingid),
@@ -707,7 +697,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         .toLowerCase()}_logo.png`;
 
       // let imagePath = await getDefaultImage(element.model_name);
-      // console.log("imagePath", imagePath);
       // let imagePath = getImage(element.model_name);
       let imagePath = "";
       let condition = "";
@@ -761,7 +750,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         images: [],
       };
 
-      console.log("getListing from scrapped", getListing);
     }
 
     if (!getListing) {
@@ -799,7 +787,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         false
       );
 
-      console.log("price", price);
 
       let basePrice;
       let notionalPrice;
@@ -848,17 +835,11 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       let currentPercentage;
       currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-      console.log("currentPercentage", currentPercentage);
-      console.log("basePrice", basePrice);
-      console.log("notionalPrice", notionalPrice);
 
       const externalSource = [];
 
       let dataObject = { externalSource, ...(getListing._doc || getListing) };
       if (currentPercentage > -3) {
-        console.log("getListing", getListing);
-        console.log("getListing", getListing?.marketingName);
-        console.log("getListing", getListing?.deviceStorage);
 
         let scrappedModels = await lspModal.find({
           model: getListing?.marketingName,
@@ -866,7 +847,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
           type: "buy",
         });
 
-        console.log("scrappedModels", scrappedModels);
 
         let selectdModels = [];
         let itemId = "";
@@ -878,13 +858,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         let pushedVendors = [];
 
         scrappedModels.forEach((item, index) => {
-          console.log("model_name", item.model);
-          console.log("item storage", item.storage);
-          console.log("mobiru_condition", item.condition);
-
-          console.log("marketingname", marketingname);
-          console.log("condition", condition);
-          console.log("storage", storage);
 
           if (
             item.model === marketingname &&
@@ -912,7 +885,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
           }
         });
 
-        console.log("externalSource", externalSource);
 
         if (selectdModels.length > 0) {
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.

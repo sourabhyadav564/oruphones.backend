@@ -114,7 +114,6 @@ router.post("/diagConfig", async (req, res) => {
     category.push(verify_category);
     data["category"] = category;
     data["checkMyDevice"] = check_category;
-    // console.log("validate1", data);
   } else {
     const battery_category = filtered("BatteryCharging");
     const system_crash_category = filtered("SystemCrash");
@@ -133,7 +132,6 @@ router.post("/diagConfig", async (req, res) => {
     category.push(run_all_category);
     data["category"] = category;
     data["checkMyDevice"] = check_category;
-    // console.log("validate2", data);
   }
 
   const getMarketingName = async (make, model) => {
@@ -160,7 +158,6 @@ router.post("/diagConfig", async (req, res) => {
               item[key]["Misc"]["Models"].includes(model)
             ) {
               modelName = key;
-              //  console.log("modelName", modelName);
             }
           });
         });
@@ -419,7 +416,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
     let warrantyPeriod;
     for (item of questionnaireResults) {
       if (item.questionId === 11 && item.childQuestions.length > 0) {
-        console.log("item.childQuestions", item.childQuestions);
         if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
           warrantyPeriod = "zero";
         } else if (
@@ -437,7 +433,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
         }
       }
     }
-    console.log("warrantyPeriod", warrantyPeriod);
 
     if (grade === "S" && cosmeticGrade === "S") {
       finalGrade = "S";
@@ -546,7 +541,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
       warrantyPeriod
     );
 
-    console.log("price", price);
 
     const dataObject = {};
     dataObject["minPrice"] = price.leastSellingprice ?? "-";
@@ -571,7 +565,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
 
 router.post("/logDiagTransaction", async (req, res) => {
   try {
-    console.log("req.body", req.body);
     const getLogData = await dignosticsLogsModal.find({
       sessionId: req.body.sessionId,
     });

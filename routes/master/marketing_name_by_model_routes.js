@@ -123,7 +123,6 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   //   });
   // }
     let modelName = objects[0].marketingName;
-    console.log("objects", objects);
     // let modelName = "";
     // let makeArray = Object[0][make];
     // // Get the model name from the make array based on the model number
@@ -149,7 +148,6 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
     // });
 
     const image = await getDefaultImage(modelName);
-    console.log("image", image);
 
     try {
       const marketingname = modelName;
@@ -361,7 +359,6 @@ router.get("/makemodellist", logEvent, async (req, res) => {
   //               .split(" ")
   //               .find((item) => item.indexOf("GB"))
   //               .slice(0, -2);
-  //             // console.log("int", intStorage);
   //             finalStorageArray.push(intStorage + " GB");
   //           });
   //           // storage = item[key]["Memory"]["Internal"].split(", ");

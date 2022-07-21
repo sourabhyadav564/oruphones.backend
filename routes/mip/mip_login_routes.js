@@ -22,7 +22,6 @@ router.post("/validateUser", async (req, res) => {
       return;
     } else {
       passwordCompare = await bcrypt.compare(password, getUser.password);
-      console.log("passwordCompare", passwordCompare);
       if (!passwordCompare) {
         res.status(401).json({ message: "Invalid login credentials", code: 1 });
         return;
@@ -43,7 +42,6 @@ router.post("/createUser", async (req, res) => {
     const password = req.body.password;
 
     const hashedPassword = await generateHash(password);
-    console.log("hashedPassword", hashedPassword);
 
     const getUser = await MIPLoginModal.findOne({ username: username });
     if (getUser) {
