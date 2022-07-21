@@ -100,16 +100,16 @@ const getThirdPartyVendors = async (model_name, make) => {
     console.log("storing data ", element.storage);
     dataObject = {
       //   marketingName: element.marketing_name,
-      marketingName: element.model_name === null ? "--" : element.model_name,
+      marketingName: element.model_name == null ? "--" : element.model_name,
       make:
-        element.model_name === null ? "--" : element.model_name.split(" ")[0],
-      listingPrice: element.price === null ? "--" : element.price.toString(),
+        element.model_name == null ? "--" : element.model_name.split(" ")[0],
+      listingPrice: element.price == null ? "--" : element.price.toString(),
       deviceStorage:
         element.storage === "0 GB" ||
         element.storage === "--" ||
-        element.storage === null
+        element.storage == null
           ? "--"
-          : element.storage.toString() + " GB",
+          : `${element.storage} GB`,
       warranty: element.warranty,
       vendorLogo: vendorImage,
       vendorLink: element.link ? element.link : "",
