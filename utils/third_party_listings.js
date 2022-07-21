@@ -34,7 +34,7 @@ const getThirdPartyVendors = async (model_name, make) => {
     20: "Quickmobile",
     21: "mbr_Buyblynk",
     22: "mbr_Electronicbazaar",
-    23: "Flipkart"
+    23: "Flipkart",
   };
 
   let filterd = [];
@@ -48,12 +48,18 @@ const getThirdPartyVendors = async (model_name, make) => {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
     //   .limit(10);
-    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} });
+    filterd = await testScrappedModal.find({
+      type: "buy",
+      model_name: { $regex: make },
+    });
   } else if (model_name != "") {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
     //   .limit(20);
-    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name });
+    filterd = await testScrappedModal.find({
+      type: "buy",
+      model_name: model_name,
+    });
   } else {
     filterd = await testScrappedModal.find({ type: "buy" });
   }
@@ -93,11 +99,14 @@ const getThirdPartyVendors = async (model_name, make) => {
     }
     dataObject = {
       //   marketingName: element.marketing_name,
-      marketingName: element.model_name,
-      make: element.model_name.split(" ")[0],
-      listingPrice: element.price ? element.price.toString() : "--",
+      marketingName: element.model_name === null ? "--" : element.model_name,
+      make:
+        element.model_name === null ? "--" : element.model_name.split(" ")[0],
+      listingPrice: element.storage === null ? "--" : element.price.toString(),
       deviceStorage:
-        element.storage === "0 GB" || element.storage === "--"
+        element.storage === "0 GB" ||
+        element.storage === "--" ||
+        element.storage === null
           ? "--"
           : element.storage.toString() + " GB",
       warranty: element.warranty,
