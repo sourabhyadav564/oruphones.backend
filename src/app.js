@@ -89,6 +89,7 @@ const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes"
 const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
 const getNewTokenRoute = require("../routes/login/get_new_token");
+const wordpressRoute = require("../routes/others/wordpress_route");
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -131,6 +132,7 @@ app.use("/api/v1/user", getMIPLoginRoutes);
 app.use("/api/v1/global", addSubscriptionRoute);
 app.use("/api/v1/global", addContactUsRoute);
 app.use("/api/v1/auth", getNewTokenRoute);
+app.use("/api/v1/wordpress", wordpressRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);

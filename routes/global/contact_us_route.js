@@ -38,7 +38,7 @@ router.post("/contactUs", logEvent, async (req, res) => {
         to: "contact@oruphones.com",
         subject: "A new contact us request has been received",
         text:
-        `Hi ${name},\n\nThank you for contacting us.\n\nYour email is: ${email}.\n\nYour enquiry is: ${message}\n.`,
+        `Hi ${name},\n\nThank you for contacting us.\n\nYour email is: ${email}.\n\nYour contact number is: ${mobile}\n\nYour enquiry is: ${message}\n.`,
       };
 
       config.sendMail(mailOptions, function (err, result) {
