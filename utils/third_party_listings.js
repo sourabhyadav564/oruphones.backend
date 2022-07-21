@@ -95,7 +95,7 @@ const getThirdPartyVendors = async (model_name, make) => {
       //   marketingName: element.marketing_name,
       marketingName: element.model_name,
       make: element.model_name.split(" ")[0],
-      listingPrice: element.price.toString(),
+      listingPrice: element.price ? element.price.toString() : "--",
       deviceStorage:
         element.storage === "0 GB" || element.storage === "--"
           ? "--"
