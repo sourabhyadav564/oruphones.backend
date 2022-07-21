@@ -48,14 +48,14 @@ const getThirdPartyVendors = async (model_name, make) => {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
     //   .limit(10);
-    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} }).limit(10);
+    filterd = await testScrappedModal.find({ type: "buy", model_name: {"$regex": make} });
   } else if (model_name != "") {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
     //   .limit(20);
-    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name }).limit(20);
+    filterd = await testScrappedModal.find({ type: "buy", model_name: model_name });
   } else {
-    filterd = await testScrappedModal.find({ type: "buy" }).limit(50);
+    filterd = await testScrappedModal.find({ type: "buy" });
   }
 
   console.log("filterd data ", filterd);
