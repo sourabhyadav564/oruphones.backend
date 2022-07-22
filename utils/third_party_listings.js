@@ -115,6 +115,8 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       condition = "Good";
     } else if (element.mobiru_condition.includes("Fair")) {
       condition = "Fair";
+    } else {
+      condition = element.mobiru_condition;
     }
     dataObject = {
       //   marketingName: element.marketing_name,
