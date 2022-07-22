@@ -22,7 +22,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
   const verified = req.body.verified === "verified" ? true : false;
   const warenty = req.body.warenty;
   const marketingName = req.body.marketingName;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
 
   try {
     let allListings = [];

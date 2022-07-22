@@ -14,7 +14,8 @@ const logEvent = require("../../src/middleware/event_logging");
 
 router.get("/listings/best/nearall", logEvent, async (req, res) => {
   const location = req.query.userLocation;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
   // Put keys always in lower case when get data from headers
   const userUniqueId = req.headers.useruniqueid;
 

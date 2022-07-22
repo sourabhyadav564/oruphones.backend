@@ -15,7 +15,8 @@ router.get("/listings/category", logEvent, async (req, res) => {
   const location = req.query.location;
   const category = req.query.category;
   const userUniqueId = req.query.userUniqueId;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
 
   try {
     

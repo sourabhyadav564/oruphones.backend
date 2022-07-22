@@ -12,7 +12,8 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
   // Put keys always in lower case when get data from headers
   const userUniqueId = req.headers.useruniqueid;
 

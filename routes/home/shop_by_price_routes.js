@@ -17,7 +17,8 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
   const location = req.query.listingLocation;
   const userUniqueId = req.query.userUniqueId;
 
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
 
   try {
     let defaultDataObject = [];

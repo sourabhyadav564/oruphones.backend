@@ -16,7 +16,8 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
   let make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
 
   // let make;
   // initialMake.split(" ").map((currentValue) => {
@@ -182,7 +183,8 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
   const marketingname = req.query.marketingName;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;
-  const page = req.query.pageNumber;
+  let page = req.query.pageNumber;
+  page = parseInt(page.toString());
 
   let defaultDataObject = [];
   let totalProducts;
