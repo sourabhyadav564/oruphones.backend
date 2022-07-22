@@ -20,28 +20,48 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
 
   try {
     let defaultDataObject = [];
+    let totalProducts;
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
-      let defaultDataObject2 = await saveListingModal.find({
-        status: "Active",
-      }).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({
+          status: "Active",
+        })
+        .countDocuments();
+      let defaultDataObject2 = await saveListingModal
+        .find({
+          status: "Active",
+        })
+        .skip(parseInt(page) * 20)
+        .limit(20);
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
+      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
+      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     } else {
       // defaultDataObject = await bestDealHomeModel.find({
-      let defaultDataObject2 = await saveListingModal.find({
-        listingLocation: location,
-        status: "Active",
-      }).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({
+          listingLocation: location,
+          status: "Active",
+        })
+        .countDocuments();
+      let defaultDataObject2 = await saveListingModal
+        .find({
+          listingLocation: location,
+          status: "Active",
+        })
+        .skip(parseInt(page) * 20)
+        .limit(20);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
+      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
         defaultDataObject2.push(thirdPartyVendor);
       });
+      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
       if (!defaultDataObject2.length) {
         res.status(200).json({
           reason: "No best deals found",
@@ -54,17 +74,19 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
         });
         return;
       } else {
-        defaultDataObject2.forEach((element) => {
-          defaultDataObject.push(element);
-        });
-        const thirdPartyVendors = await getThirdPartyVendors("", "", page);
-        thirdPartyVendors.forEach((thirdPartyVendor) => {
-          defaultDataObject.push(thirdPartyVendor);
-        });
+        defaultDataObject.push(...defaultDataObject2);
+        // defaultDataObject2.forEach((element) => {
+        //   defaultDataObject.push(element);
+        // });
+        // const thirdPartyVendors = await getThirdPartyVendors("", "", page);
+        // thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+        //   defaultDataObject.push(thirdPartyVendor);
+        // });
+        // totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
       }
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, false);
+    getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

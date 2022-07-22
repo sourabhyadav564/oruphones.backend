@@ -107,24 +107,50 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
   }
 
   let defaultDataObject = [];
+  let totalProducts;
   if (location === "India") {
-    let defaultDataObject2 = await saveListingModal.find({
-      make: make,
-      status: "Active"
-    }).skip( parseInt(page) * 20).limit(20);
+    let saveListingLength = await saveListingModal
+      .find({
+        make: make,
+        status: "Active",
+      })
+      .countDocuments();
+    let defaultDataObject2 = await saveListingModal
+      .find({
+        make: make,
+        status: "Active",
+      })
+      .skip(parseInt(page) * 20)
+      .limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
     const thirdPartyVendors = await getThirdPartyVendors("", make, page);
-    thirdPartyVendors.forEach((thirdPartyVendor) => {
+    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
       defaultDataObject.push(thirdPartyVendor);
     });
+    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
   } else {
-    let defaultDataObject2 = await saveListingModal.find({
-      listingLocation: location,
-      make: make,
-      status: "Active"
-    }).skip( parseInt(page) * 20).limit(20);
+    let saveListingLength = await saveListingModal
+      .find({
+        listingLocation: location,
+        make: make,
+        status: "Active",
+      })
+      .countDocuments();
+    let defaultDataObject2 = await saveListingModal
+      .find({
+        listingLocation: location,
+        make: make,
+        status: "Active",
+      })
+      .skip(parseInt(page) * 20)
+      .limit(20);
+    const thirdPartyVendors = await getThirdPartyVendors("", make, page);
+    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+      defaultDataObject.push(thirdPartyVendor);
+    });
+    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",
@@ -137,43 +163,72 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       });
       return;
     } else {
-      defaultDataObject2.forEach((element) => {
-        defaultDataObject.push(element);
-      });
-      const thirdPartyVendors = await getThirdPartyVendors("", make, page);
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
-      });
+      defaultDataObject.push(...defaultDataObject2);
+      // defaultDataObject2.forEach((element) => {
+      //   defaultDataObject.push(element);
+      // });
+      // const thirdPartyVendors = await getThirdPartyVendors("", make, page);
+      // thirdPartyVendors.forEach((thirdPartyVendor) => {
+      //   defaultDataObject.push(thirdPartyVendor);
+      // });
+      // totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     }
   }
 
-  getBestDeals(defaultDataObject, userUniqueId, res, false);
+  getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
 });
 
 router.get("/listbymarketingname", logEvent, async (req, res) => {
   const marketingname = req.query.marketingName;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;
+  const page = req.query.pageNumber;
 
   let defaultDataObject = [];
+  let totalProducts;
   if (location === "India") {
-    let defaultDataObject2 = await saveListingModal.find({
-      marketingName: marketingname,
-      status: "Active"
-    }).skip( parseInt(page) * 20).limit(20);
+    let saveListingLength = await saveListingModal
+      .find({
+        marketingName: marketingname,
+        status: "Active",
+      })
+      .countDocuments();
+    let defaultDataObject2 = await saveListingModal
+      .find({
+        marketingName: marketingname,
+        status: "Active",
+      })
+      .skip(parseInt(page) * 20)
+      .limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
-    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "", page);
-    thirdPartyVendors.forEach((thirdPartyVendor) => {
+    const thirdPartyVendors = await getThirdPartyVendors(
+      marketingname,
+      "",
+      page
+    );
+    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
       defaultDataObject.push(thirdPartyVendor);
     });
+    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
   } else {
-    let defaultDataObject2 = await saveListingModal.find({
-      listingLocation: location,
-      marketingName: marketingname,
-      status: "Active"
-    }).skip( parseInt(page) * 20).limit(20);
+    let saveListingLength = await saveListingModal
+      .find({
+        listingLocation: location,
+        marketingName: marketingname,
+        status: "Active",
+      })
+      .countDocuments();
+    let defaultDataObject2 = await saveListingModal
+      .find({
+        listingLocation: location,
+        marketingName: marketingname,
+        status: "Active",
+      })
+      .skip(parseInt(page) * 20)
+      .limit(20);
+    totalProducts = saveListingLength;
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",
@@ -189,14 +244,19 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      const thirdPartyVendors = await getThirdPartyVendors(marketingname, "", page);
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
+      const thirdPartyVendors = await getThirdPartyVendors(
+        marketingname,
+        "",
+        page
+      );
+      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
+      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     }
   }
 
-  getBestDeals(defaultDataObject, userUniqueId, res, false);
+  getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
 });
 
 module.exports = router;

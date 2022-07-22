@@ -13,7 +13,8 @@ const getBestDeals = async (
   defaultDataObject,
   userUniqueId,
   res,
-  forNearMe
+  forNearMe,
+  totalProducts
 ) => {
   //   const location = req.query.userLocation;
   //   const userUniqueId = req.headers.useruniqueid;
@@ -296,6 +297,7 @@ const getBestDeals = async (
           dataObject: {
             otherListings: otherListings,
             bestDeals: updatedBestDeals,
+            totalProducts: totalProducts
           },
         });
       } else {

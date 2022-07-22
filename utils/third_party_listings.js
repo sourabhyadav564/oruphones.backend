@@ -16,6 +16,7 @@ const testScrappedModal = require("../src/database/modals/others/test_scrapped_m
 const getDefaultImage = require("./get_default_image");
 
 const getThirdPartyVendors = async (model_name, make, page) => {
+  let dataLength = 0;
   const VENDORS = {
     6: "Amazon",
     7: "Quikr",
@@ -48,6 +49,12 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
     //   .limit(10);
+    dataLength = await testScrappedModal
+      .find({
+        type: "buy",
+        model_name: { $regex: make.toLowerCase(), $options: "i" },
+      })
+      .countDocuments();
     filterd = await testScrappedModal
       .find({
         type: "buy",
@@ -59,6 +66,13 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
     //   .limit(20);
+    dataLength = await testScrappedModal
+      .find({
+        type: "buy",
+        model_name: model_name,
+      })
+      .countDocuments();
+
     filterd = await testScrappedModal
       .find({
         type: "buy",
@@ -67,6 +81,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       .skip(parseInt(page) * 20)
       .limit(20);
   } else {
+    dataLength = await testScrappedModal.find({ type: "buy" }).countDocuments();
     filterd = await testScrappedModal
       .find({ type: "buy" })
       .skip(parseInt(page) * 20)
@@ -145,7 +160,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     dataArray.push(dataObject);
   });
 
-  return dataArray;
+  return {dataArray, dataLength};
 };
 
 module.exports = getThirdPartyVendors;

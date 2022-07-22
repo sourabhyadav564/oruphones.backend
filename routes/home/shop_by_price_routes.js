@@ -21,20 +21,39 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
 
   try {
     let defaultDataObject = [];
+    let totalProducts;
     if (location === "India") {
       let defaultDataObject2 = [];
       //  if (category === "Fifteen") {
-      defaultDataObject2 = await saveListingModal.find({
-        $expr: {
-          $lte: [
-            {
-              $toInt: "$listingPrice",
-            },
-            parseInt(endPrice.toString()),
-          ],
-        },
-        status: "Active",
-      }).skip( parseInt(page) * 20).limit(20);
+
+      let saveListingLength = await saveListingModal
+        .find({
+          $expr: {
+            $lte: [
+              {
+                $toInt: "$listingPrice",
+              },
+              parseInt(endPrice.toString()),
+            ],
+          },
+          status: "Active",
+        })
+        .countDocuments();
+      defaultDataObject2 = await saveListingModal
+        .find({
+          $expr: {
+            $lte: [
+              {
+                $toInt: "$listingPrice",
+              },
+              parseInt(endPrice.toString()),
+            ],
+          },
+          status: "Active",
+        })
+        .skip(parseInt(page) * 20)
+        .limit(20);
+      totalProducts = saveListingLength;
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
           parseInt(item.listingPrice.toString()) >=
@@ -51,10 +70,20 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
       //     defaultDataObject.push(thirdPartyVendor);
       //   });
     } else {
-      defaultDataObject = await saveListingModal.find({
-        listingLocation: location,
-        status: "Active",
-      }).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({
+          listingLocation: location,
+          status: "Active",
+        })
+        .countDocuments();
+      defaultDataObject = await saveListingModal
+        .find({
+          listingLocation: location,
+          status: "Active",
+        })
+        .skip(parseInt(page) * 20)
+        .limit(20);
+      totalProducts = saveListingLength;
 
       if (!defaultDataObject.length) {
         res.status(200).json({
@@ -68,28 +97,45 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
         });
         return;
       } else {
-        defaultDataObject = await saveListingModal.find({
-          $expr: {
-            $lte: [
-              {
-                $toInt: "$listingPrice",
-              },
-              parseInt(endPrice.toString()),
-            ],
-          },
-          status: "Active",
-        }).skip( parseInt(page) * 20).limit(20);
+        let saveListingLength = await saveListingModal
+          .find({
+            $expr: {
+              $lte: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                parseInt(endPrice.toString()),
+              ],
+            },
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            $expr: {
+              $lte: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                parseInt(endPrice.toString()),
+              ],
+            },
+            status: "Active",
+          })
+          .skip(parseInt(page) * 20)
+          .limit(20);
         let defaultDataObject3 = defaultDataObject.filter((item, index) => {
           return (
             parseInt(item.listingPrice.toString()) >=
             parseInt(startPrice.toString())
           );
         });
+        totalProducts = saveListingLength;
         defaultDataObject = defaultDataObject3;
       }
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, true);
+    getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

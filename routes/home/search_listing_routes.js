@@ -27,25 +27,37 @@ router.post("/listings/search", logEvent, async (req, res) => {
   try {
     let allListings = [];
     let listing = [];
+    let totalProducts;
     if (marketingName && marketingName.length > 0) {
-      let ourListing = await saveListingModal.find(
-        { marketingName: marketingName[0], status: "Active" },
-        { _id: 0 }
-      ).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
+        .countDocuments();
+      let ourListing = await saveListingModal
+        .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
+        .skip(parseInt(page) * 20)
+        .limit(20);
       listing.push(...ourListing);
       i = 0;
       while (i < marketingName.length) {
-        let newListings = await getThirdPartyVendors(marketingName[i], "", page);
+        let newListings = await getThirdPartyVendors(
+          marketingName[i],
+          "",
+          page
+        );
         newListings.forEach((thirdPartyVendor) => {
           listing.push(thirdPartyVendor);
         });
         i++;
+        totalProducts = saveListingLength + newListings?.dataLength;
       }
     } else if (make.length > 0) {
-      let ourListing = await saveListingModal.find(
-        { make: make, status: "Active" },
-        { _id: 0 }
-      ).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({ make: make, status: "Active" }, { _id: 0 })
+        .countDocuments();
+      let ourListing = await saveListingModal
+        .find({ make: make, status: "Active" }, { _id: 0 })
+        .skip(parseInt(page) * 20)
+        .limit(20);
       listing.push(...ourListing);
       i = 0;
       while (i < make.length) {
@@ -54,17 +66,22 @@ router.post("/listings/search", logEvent, async (req, res) => {
           listing.push(thirdPartyVendor);
         });
         i++;
+        totalProducts = saveListingLength + newListings?.dataLength;
       }
     } else {
-      let ourListing = await saveListingModal.find(
-        { status: "Active" },
-        { _id: 0 }
-      ).skip( parseInt(page) * 20).limit(20);
+      let saveListingLength = await saveListingModal
+        .find({ status: "Active" }, { _id: 0 })
+        .countDocuments();
+      let ourListing = await saveListingModal
+        .find({ status: "Active" }, { _id: 0 })
+        .skip(parseInt(page) * 20)
+        .limit(20);
       listing.push(...ourListing);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         listing.push(thirdPartyVendor);
       });
+      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     }
 
     allListings = listing;
@@ -145,8 +162,6 @@ router.post("/listings/search", logEvent, async (req, res) => {
 
     let location = listingLocation;
 
-    
-
     let defaultDataObject = [];
     if (location === "India") {
       let defaultDataObject2 = allListings;
@@ -165,9 +180,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
       defaultDataObject = allListings;
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, false);
-
-    
+    getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);

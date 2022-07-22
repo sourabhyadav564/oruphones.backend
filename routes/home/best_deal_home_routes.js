@@ -18,8 +18,12 @@ router.get("/listings/best/nearme", async (req, res) => {
 
   try {
     let defaultDataObject = [];
+    let totalProducts;
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
+        let saveListingLength = await saveListingModal
+        .find()
+        .countDocuments();
       let defaultDataObject2 = await saveListingModal
         .find()
         .skip(parseInt(page) * 20)
@@ -31,7 +35,14 @@ router.get("/listings/best/nearme", async (req, res) => {
       // thirdPartyVendors.forEach((thirdPartyVendor) => {
       //   defaultDataObject.push(thirdPartyVendor);
       // });
+      totalProducts = saveListingLength;
     } else {
+      let saveListingLength = await saveListingModal
+      .find({
+        listingLocation: location,
+        status: "Active",
+      })
+      .countDocuments();
       let defaultDataObject2 = await saveListingModal
         .find({
           listingLocation: location,
@@ -54,6 +65,7 @@ router.get("/listings/best/nearme", async (req, res) => {
         defaultDataObject2.forEach((element) => {
           defaultDataObject.push(element);
         });
+        totalProducts = saveListingLength;
       }
       // TODO: can be enabled in future
       // const thirdPartyVendors = await getThirdPartyVendors("", "");
@@ -62,7 +74,7 @@ router.get("/listings/best/nearme", async (req, res) => {
       // });
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, true);
+    getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);
