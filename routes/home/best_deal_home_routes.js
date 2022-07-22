@@ -9,6 +9,7 @@ const logEvent = require("../../src/middleware/event_logging");
 const getBestDeals = require("../../utils/get_best_deals");
 
 const getRecommendedPrice = require("../../utils/get_recommended_price");
+const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
@@ -32,11 +33,11 @@ router.get("/listings/best/nearme", async (req, res) => {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      // const thirdPartyVendors = await getThirdPartyVendors("", "");
-      // thirdPartyVendors.forEach((thirdPartyVendor) => {
-      //   defaultDataObject.push(thirdPartyVendor);
-      // });
-      totalProducts = saveListingLength;
+      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+        defaultDataObject.push(thirdPartyVendor);
+      });
+      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     } else {
       let saveListingLength = await saveListingModal
       .find({
@@ -66,13 +67,13 @@ router.get("/listings/best/nearme", async (req, res) => {
         defaultDataObject2.forEach((element) => {
           defaultDataObject.push(element);
         });
-        totalProducts = saveListingLength;
+        // TODO: can be enabled in future
+        const thirdPartyVendors = await getThirdPartyVendors("", "");
+        thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+          defaultDataObject.push(thirdPartyVendor);
+        });
+        totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
       }
-      // TODO: can be enabled in future
-      // const thirdPartyVendors = await getThirdPartyVendors("", "");
-      // thirdPartyVendors.forEach((thirdPartyVendor) => {
-      //   defaultDataObject.push(thirdPartyVendor);
-      // });
     }
 
     getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
