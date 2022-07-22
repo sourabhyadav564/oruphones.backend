@@ -64,31 +64,6 @@ const getBestDeals = async (
       }
     }
 
-    // let defaultDataObject = [];
-    // if (location === "India") {
-    //   let defaultDataObject2 = await saveListingModal.find(
-    //     {}
-    //   );
-    //   defaultDataObject2.forEach((element) => {
-    //     defaultDataObject.push(element);
-    //   });
-    //   const thirdPartyVendors = await getThirdPartyVendors("", "");
-    //   thirdPartyVendors.forEach((thirdPartyVendor) => {
-    //     defaultDataObject.push(thirdPartyVendor);
-    //   });
-    // } else {
-    //   let defaultDataObject2 = await saveListingModal.find({
-    //     listingLocation: location,
-    //   });
-    //   defaultDataObject2.forEach((element) => {
-    //     defaultDataObject.push(element);
-    //   });
-    //   const thirdPartyVendors = await getThirdPartyVendors("", "");
-    //   thirdPartyVendors.forEach((thirdPartyVendor) => {
-    //     defaultDataObject.push(thirdPartyVendor);
-    //   });
-    // }
-
     const filterData = async () => {
       let bestDeals = [];
       let dIndex = 0;

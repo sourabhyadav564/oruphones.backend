@@ -6,11 +6,28 @@ require("../../src/database/connection");
 // const connection = require("../../src/database/mysql_connection");
 const testModal = require("../../src/database/modals/others/test_modal");
 const gsmarenaModal = require("../../src/database/modals/master/marketing_name_by_model");
+const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 
 router.get("/test", async (req, res) => {
   try {
     const getUser = await testModal.find();
     res.status(200).json({ message: "Users found", getUser });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.get("/test/case", async (req, res) => {
+  try {
+    // const getUser = await testScrappedModal.find({}).limit(10);
+    // res.status(200).json({ message: "Users found", getUser });
+    let page = req.query.pageNumber;
+    const getUser = await testScrappedModal.find({}).skip(
+      parseInt(page) * 50
+    ).limit(50);
+    res.status(200).json({ message: "Users found", getUser });
+
   } catch (error) {
     console.log(error);
     res.status(400).json(error);

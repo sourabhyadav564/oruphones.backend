@@ -15,7 +15,7 @@ const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 const getDefaultImage = require("./get_default_image");
 
-const getThirdPartyVendors = async (model_name, make) => {
+const getThirdPartyVendors = async (model_name, make, page) => {
   const VENDORS = {
     6: "Amazon",
     7: "Quikr",
@@ -48,22 +48,30 @@ const getThirdPartyVendors = async (model_name, make) => {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
     //   .limit(10);
-    filterd = await testScrappedModal.find({
-      type: "buy",
-      model_name: { $regex: make },
-    });
+    filterd = await testScrappedModal
+      .find({
+        type: "buy",
+        model_name: { $regex: make },
+      })
+      .skip(parseInt(page) * 50)
+      .limit(50);
   } else if (model_name != "") {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
     //   .limit(20);
-    filterd = await testScrappedModal.find({
-      type: "buy",
-      model_name: model_name,
-    });
+    filterd = await testScrappedModal
+      .find({
+        type: "buy",
+        model_name: model_name,
+      })
+      .skip(parseInt(page) * 50)
+      .limit(50);
   } else {
-    filterd = await testScrappedModal.find({ type: "buy" });
+    filterd = await testScrappedModal
+      .find({ type: "buy" })
+      .skip(parseInt(page) * 50)
+      .limit(50);
   }
-
 
   let dataObject = {};
   let dataArray = [];

@@ -16,6 +16,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
   let make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.listingLocation;
+  const page = req.query.pageNumber;
 
   // let make;
   // initialMake.split(" ").map((currentValue) => {
@@ -110,11 +111,11 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       make: make,
       status: "Active"
-    });
+    }).skip( parseInt(page) * 50).limit(50);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
-    const thirdPartyVendors = await getThirdPartyVendors("", make);
+    const thirdPartyVendors = await getThirdPartyVendors("", make, page);
     thirdPartyVendors.forEach((thirdPartyVendor) => {
       defaultDataObject.push(thirdPartyVendor);
     });
@@ -123,7 +124,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       listingLocation: location,
       make: make,
       status: "Active"
-    });
+    }).skip( parseInt(page) * 50).limit(50);
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",
@@ -139,7 +140,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      const thirdPartyVendors = await getThirdPartyVendors("", make);
+      const thirdPartyVendors = await getThirdPartyVendors("", make, page);
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
@@ -159,11 +160,11 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       marketingName: marketingname,
       status: "Active"
-    });
+    }).skip( parseInt(page) * 50).limit(50);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
-    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
+    const thirdPartyVendors = await getThirdPartyVendors(marketingname, "", page);
     thirdPartyVendors.forEach((thirdPartyVendor) => {
       defaultDataObject.push(thirdPartyVendor);
     });
@@ -172,7 +173,7 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
       listingLocation: location,
       marketingName: marketingname,
       status: "Active"
-    });
+    }).skip( parseInt(page) * 50).limit(50);
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",
@@ -188,7 +189,7 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      const thirdPartyVendors = await getThirdPartyVendors(marketingname, "");
+      const thirdPartyVendors = await getThirdPartyVendors(marketingname, "", page);
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
