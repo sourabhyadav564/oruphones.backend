@@ -53,8 +53,8 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         type: "buy",
         model_name: { $regex: make },
       })
-      .skip(parseInt(page) * 50)
-      .limit(50);
+      .skip(parseInt(page) * 20)
+      .limit(20);
   } else if (model_name != "") {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
@@ -64,13 +64,13 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         type: "buy",
         model_name: model_name,
       })
-      .skip(parseInt(page) * 50)
-      .limit(50);
+      .skip(parseInt(page) * 20)
+      .limit(20);
   } else {
     filterd = await testScrappedModal
       .find({ type: "buy" })
-      .skip(parseInt(page) * 50)
-      .limit(50);
+      .skip(parseInt(page) * 20)
+      .limit(20);
   }
 
   let dataObject = {};

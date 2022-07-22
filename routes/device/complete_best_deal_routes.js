@@ -24,7 +24,7 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
       // defaultDataObject = await bestDealHomeModel.find(
       let defaultDataObject2 = await saveListingModal.find({
         status: "Active",
-      }).skip( parseInt(page) * 50).limit(50);
+      }).skip( parseInt(page) * 20).limit(20);
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -37,7 +37,7 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
       let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
         status: "Active",
-      }).skip( parseInt(page) * 50).limit(50);
+      }).skip( parseInt(page) * 20).limit(20);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       thirdPartyVendors.forEach((thirdPartyVendor) => {
         defaultDataObject2.push(thirdPartyVendor);

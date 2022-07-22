@@ -34,7 +34,7 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
           ],
         },
         status: "Active",
-      }).skip( parseInt(page) * 50).limit(50);
+      }).skip( parseInt(page) * 20).limit(20);
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
           parseInt(item.listingPrice.toString()) >=
@@ -54,7 +54,7 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
       defaultDataObject = await saveListingModal.find({
         listingLocation: location,
         status: "Active",
-      }).skip( parseInt(page) * 50).limit(50);
+      }).skip( parseInt(page) * 20).limit(20);
 
       if (!defaultDataObject.length) {
         res.status(200).json({
@@ -78,7 +78,7 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
             ],
           },
           status: "Active",
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
         let defaultDataObject3 = defaultDataObject.filter((item, index) => {
           return (
             parseInt(item.listingPrice.toString()) >=

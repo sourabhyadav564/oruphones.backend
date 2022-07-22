@@ -22,8 +22,8 @@ router.get("/listings/best/nearme", async (req, res) => {
       // defaultDataObject = await bestDealHomeModel.find(
       let defaultDataObject2 = await saveListingModal
         .find()
-        .skip(parseInt(page) * 50)
-        .limit(50);
+        .skip(parseInt(page) * 20)
+        .limit(20);
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -37,8 +37,8 @@ router.get("/listings/best/nearme", async (req, res) => {
           listingLocation: location,
           status: "Active",
         })
-        .skip(parseInt(page) * 50)
-        .limit(50);
+        .skip(parseInt(page) * 20)
+        .limit(20);
       if (!defaultDataObject2.length) {
         res.status(200).json({
           reason: "No best deals found",

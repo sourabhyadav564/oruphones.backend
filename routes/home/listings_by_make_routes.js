@@ -111,7 +111,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       make: make,
       status: "Active"
-    }).skip( parseInt(page) * 50).limit(50);
+    }).skip( parseInt(page) * 20).limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
@@ -124,7 +124,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       listingLocation: location,
       make: make,
       status: "Active"
-    }).skip( parseInt(page) * 50).limit(50);
+    }).skip( parseInt(page) * 20).limit(20);
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",
@@ -160,7 +160,7 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
     let defaultDataObject2 = await saveListingModal.find({
       marketingName: marketingname,
       status: "Active"
-    }).skip( parseInt(page) * 50).limit(50);
+    }).skip( parseInt(page) * 20).limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
@@ -173,7 +173,7 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
       listingLocation: location,
       marketingName: marketingname,
       status: "Active"
-    }).skip( parseInt(page) * 50).limit(50);
+    }).skip( parseInt(page) * 20).limit(20);
     if (!defaultDataObject2.length) {
       res.status(200).json({
         reason: "No best deals found",

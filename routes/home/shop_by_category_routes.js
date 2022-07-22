@@ -27,22 +27,22 @@ router.get("/listings/category", logEvent, async (req, res) => {
         defaultDataObject2 = await saveListingModal.find({
           verified: true,
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Storage") {
         defaultDataObject2 = await saveListingModal.find({
           deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Like New") {
         defaultDataObject2 = await saveListingModal.find({
           deviceCondition: "Like New",
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Excellent") {
         defaultDataObject2 = await saveListingModal.find({
           deviceCondition: "Excellent",
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Thirty") {
         defaultDataObject2 = await saveListingModal.find({
           $expr: {
@@ -53,7 +53,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
               30000,
             ],
           }, status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Fifteen") {
         defaultDataObject2 = await saveListingModal.find({
           $expr: {
@@ -64,7 +64,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
               15000,
             ],
           }, status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       }
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
@@ -78,22 +78,22 @@ router.get("/listings/category", logEvent, async (req, res) => {
       //   listingLocation: location,
       // });
       if (category === "Verified") {
-        defaultDataObject = await saveListingModal.find({ verified: true, status: "Active" }).skip( parseInt(page) * 50).limit(50);
+        defaultDataObject = await saveListingModal.find({ verified: true, status: "Active" }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Storage") {
         defaultDataObject = await saveListingModal.find({
           deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Like New") {
         defaultDataObject = await saveListingModal.find({
           deviceCondition: "Like New",
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Excellent") {
         defaultDataObject = await saveListingModal.find({
           deviceCondition: "Excellent",
           status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Thirty") {
         defaultDataObject = await saveListingModal.find({
           $expr: {
@@ -104,7 +104,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
               30000,
             ],
           }, status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       } else if (category === "Fifteen") {
         defaultDataObject = await saveListingModal.find({
           $expr: {
@@ -115,7 +115,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
               15000,
             ],
           }, status: "Active"
-        }).skip( parseInt(page) * 50).limit(50);
+        }).skip( parseInt(page) * 20).limit(20);
       }
     }
 
