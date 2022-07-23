@@ -45,7 +45,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
           "",
           page
         );
-        newListings.forEach((thirdPartyVendor) => {
+        newListings?.dataArray?.forEach((thirdPartyVendor) => {
           listing.push(thirdPartyVendor);
         });
         i++;
@@ -63,7 +63,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
       i = 0;
       while (i < make.length) {
         let newListings = await getThirdPartyVendors("", make[i], page);
-        newListings.forEach((thirdPartyVendor) => {
+        newListings?.dataArray?.forEach((thirdPartyVendor) => {
           listing.push(thirdPartyVendor);
         });
         i++;
@@ -79,7 +79,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .limit(20);
       listing.push(...ourListing);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
-      thirdPartyVendors.forEach((thirdPartyVendor) => {
+      newListings?.dataArray?.forEach((thirdPartyVendor) => {
         listing.push(thirdPartyVendor);
       });
       totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
