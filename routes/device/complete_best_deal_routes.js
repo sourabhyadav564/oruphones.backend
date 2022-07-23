@@ -33,8 +33,8 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
         .find({
           status: "Active",
         })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
@@ -56,8 +56,8 @@ router.get("/listings/best/nearall", logEvent, async (req, res) => {
           listingLocation: location,
           status: "Active",
         })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
         defaultDataObject2.push(thirdPartyVendor);

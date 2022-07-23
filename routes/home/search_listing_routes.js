@@ -35,8 +35,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await saveListingModal
         .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       i = 0;
       while (i < marketingName.length) {
@@ -57,8 +57,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await saveListingModal
         .find({ make: make, status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       i = 0;
       while (i < make.length) {
@@ -75,8 +75,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await saveListingModal
         .find({ status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       newListings?.dataArray?.forEach((thirdPartyVendor) => {

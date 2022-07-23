@@ -19,107 +19,127 @@ router.get("/listings/category", logEvent, async (req, res) => {
   page = parseInt(page.toString());
 
   try {
-    
-
     let defaultDataObject = [];
     let totalProducts;
     if (location === "India") {
       let defaultDataObject2 = [];
       if (category == "Verified") {
         let saveListingLength = await saveListingModal
-        .find({
-          verified: true,
-          status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          verified: true,
-          status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            verified: true,
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            verified: true,
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Storage") {
         let saveListingLength = await saveListingModal
-        .find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-          status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-          status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Like New") {
         let saveListingLength = await saveListingModal
-        .find({
-          deviceCondition: "Like New",
-          status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          deviceCondition: "Like New",
-          status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            deviceCondition: "Like New",
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            deviceCondition: "Like New",
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Excellent") {
         let saveListingLength = await saveListingModal
-        .find({
-          deviceCondition: "Excellent",
-          status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          deviceCondition: "Excellent",
-          status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            deviceCondition: "Excellent",
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            deviceCondition: "Excellent",
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Thirty") {
         let saveListingLength = await saveListingModal
-        .find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              30000,
-            ],
-          }, status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              30000,
-            ],
-          }, status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                30000,
+              ],
+            },
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                30000,
+              ],
+            },
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Fifteen") {
         let saveListingLength = await saveListingModal
-        .find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          }, status: "Active"
-        })
-        .countDocuments();
-        defaultDataObject2 = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          }, status: "Active"
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                15000,
+              ],
+            },
+            status: "Active",
+          })
+          .countDocuments();
+        defaultDataObject2 = await saveListingModal
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                15000,
+              ],
+            },
+            status: "Active",
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       }
       defaultDataObject2.forEach((element) => {
@@ -135,101 +155,134 @@ router.get("/listings/category", logEvent, async (req, res) => {
       // });
       if (category === "Verified") {
         let saveListingLength = await saveListingModal
-        .find({
-          verified: true, status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({ verified: true, status: "Active", listingLocation: location }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            verified: true,
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({ verified: true, status: "Active", listingLocation: location })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Storage") {
         let saveListingLength = await saveListingModal
-        .find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-          status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({
-          deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-          status: "Active", listingLocation: location
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
+            status: "Active",
+            listingLocation: location,
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Like New") {
         let saveListingLength = await saveListingModal
-        .find({
-          verified: true, status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({
-          deviceCondition: "Like New",
-          status: "Active", listingLocation: location
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            verified: true,
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            deviceCondition: "Like New",
+            status: "Active",
+            listingLocation: location,
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Excellent") {
         let saveListingLength = await saveListingModal
-        .find({
-          deviceCondition: "Excellent",
-          status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({
-          deviceCondition: "Excellent",
-          status: "Active", listingLocation: location
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            deviceCondition: "Excellent",
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            deviceCondition: "Excellent",
+            status: "Active",
+            listingLocation: location,
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Thirty") {
         let saveListingLength = await saveListingModal
-        .find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              30000,
-            ],
-          }, status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              30000,
-            ],
-          }, status: "Active", listingLocation: location
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                30000,
+              ],
+            },
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                30000,
+              ],
+            },
+            status: "Active",
+            listingLocation: location,
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       } else if (category === "Fifteen") {
         let saveListingLength = await saveListingModal
-        .find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          }, status: "Active", listingLocation: location
-        })
-        .countDocuments();
-        defaultDataObject = await saveListingModal.find({
-          $expr: {
-            $lt: [
-              {
-                $toInt: "$listingPrice",
-              },
-              15000,
-            ],
-          }, status: "Active", listingLocation: location
-        }).skip( parseInt(page) * 20).limit(20);
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                15000,
+              ],
+            },
+            status: "Active",
+            listingLocation: location,
+          })
+          .countDocuments();
+        defaultDataObject = await saveListingModal
+          .find({
+            $expr: {
+              $lt: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                15000,
+              ],
+            },
+            status: "Active",
+            listingLocation: location,
+          })
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         totalProducts = saveListingLength;
       }
     }
 
     getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
-
-    
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

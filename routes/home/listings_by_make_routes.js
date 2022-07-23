@@ -121,8 +121,8 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
         make: make,
         status: "Active",
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
@@ -145,8 +145,8 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
         make: make,
         status: "Active",
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
     const thirdPartyVendors = await getThirdPartyVendors("", make, page);
     thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
       defaultDataObject.push(thirdPartyVendor);
@@ -200,8 +200,8 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
         marketingName: marketingname,
         status: "Active",
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
     defaultDataObject2.forEach((element) => {
       defaultDataObject.push(element);
     });
@@ -228,8 +228,8 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
         marketingName: marketingname,
         status: "Active",
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
     totalProducts = saveListingLength;
     if (!defaultDataObject2.length) {
       res.status(200).json({

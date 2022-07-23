@@ -52,8 +52,8 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
           },
           status: "Active",
         })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       totalProducts = saveListingLength;
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
@@ -82,8 +82,8 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
           listingLocation: location,
           status: "Active",
         })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       totalProducts = saveListingLength;
 
       if (!defaultDataObject.length) {
@@ -123,8 +123,8 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
             },
             status: "Active",
           })
-          .skip(parseInt(page) * 20)
-          .limit(20);
+          // .skip(parseInt(page) * 20)
+          // .limit(20);
         let defaultDataObject3 = defaultDataObject.filter((item, index) => {
           return (
             parseInt(item.listingPrice.toString()) >=

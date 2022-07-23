@@ -23,35 +23,33 @@ router.get("/listings/best/nearme", async (req, res) => {
     let totalProducts;
     if (location === "India") {
       // defaultDataObject = await bestDealHomeModel.find(
-        let saveListingLength = await saveListingModal
-        .find()
-        .countDocuments();
+      let saveListingLength = await saveListingModal.find().countDocuments();
       let defaultDataObject2 = await saveListingModal
         .find()
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      const thirdPartyVendors = await getThirdPartyVendors("", "");
+      const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
         defaultDataObject.push(thirdPartyVendor);
       });
       totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     } else {
       let saveListingLength = await saveListingModal
-      .find({
-        listingLocation: location,
-        status: "Active",
-      })
-      .countDocuments();
+        .find({
+          listingLocation: location,
+          status: "Active",
+        })
+        .countDocuments();
       let defaultDataObject2 = await saveListingModal
         .find({
           listingLocation: location,
           status: "Active",
         })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       if (!defaultDataObject2.length) {
         res.status(200).json({
           reason: "No best deals found",
@@ -68,7 +66,7 @@ router.get("/listings/best/nearme", async (req, res) => {
           defaultDataObject.push(element);
         });
         // TODO: can be enabled in future
-        const thirdPartyVendors = await getThirdPartyVendors("", "");
+        const thirdPartyVendors = await getThirdPartyVendors("", "", page);
         thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
           defaultDataObject.push(thirdPartyVendor);
         });
