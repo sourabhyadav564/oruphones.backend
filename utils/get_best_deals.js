@@ -260,9 +260,9 @@ const getBestDeals = async (
         });
       }
 
-      if (forNearMe) {
-        otherListings = [];
-      }
+      // if (forNearMe) {
+      //   otherListings = [];
+      // }
       let ArrayLen = forNearMe ? 15 : 5;
       finalBestDeals.forEach((item, index) => {
         if (updatedBestDeals.length < ArrayLen) {

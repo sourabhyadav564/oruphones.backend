@@ -74,7 +74,8 @@ router.get("/listings/best/nearme", async (req, res) => {
       }
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
+    // getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
+    getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);
