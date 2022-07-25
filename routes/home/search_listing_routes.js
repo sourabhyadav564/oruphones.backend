@@ -9,7 +9,9 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const getBestDeals = require("../../utils/get_best_deals");
 const logEvent = require("../../src/middleware/event_logging");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
-const bestDealsForSearchListing = require("../../utils/best_deals_helper_routes");
+const {
+  bestDealsForSearchListing,
+} = require("../../utils/best_deals_helper_routes");
 
 router.post("/listings/search", logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;

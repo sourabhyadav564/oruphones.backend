@@ -11,7 +11,7 @@ const getThirdPartyVendors = require("../../utils/third_party_listings");
 
 const getBestDeals = require("../../utils/get_best_deals");
 const logEvent = require("../../src/middleware/event_logging");
-const bestDealsNearAll = require("../../utils/best_deals_helper_routes");
+const { bestDealsNearAll } = require("../../utils/best_deals_helper_routes");
 
 router.get("/listings/best/nearall", logEvent, async (req, res) => {
   const location = req.query.userLocation;

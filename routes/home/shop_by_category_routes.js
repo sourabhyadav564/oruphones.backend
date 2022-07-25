@@ -8,7 +8,9 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 // const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
-const bestDealsForShopByCategory = require("../../utils/best_deals_helper_routes");
+const {
+  bestDealsForShopByCategory,
+} = require("../../utils/best_deals_helper_routes");
 const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");

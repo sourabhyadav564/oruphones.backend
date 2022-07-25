@@ -92,7 +92,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
   }
 };
 
-module.exports = bestDealsNearMe;
+exports.bestDealsNearMe = bestDealsNearMe;
 
 const bestDealsNearAll = async (location, page, userUniqueId, res) => {
   try {
@@ -184,7 +184,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
   }
 };
 
-module.exports = bestDealsNearAll;
+exports.bestDealsNearAll = bestDealsNearAll;
 
 const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
   try {
@@ -278,7 +278,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
   }
 };
 
-module.exports = bestDealsByMake;
+exports.bestDealsByMake = bestDealsByMake;
 
 const bestDealsByMarketingName = async (
   location,
@@ -378,7 +378,7 @@ const bestDealsByMarketingName = async (
   }
 };
 
-module.exports = bestDealsByMarketingName;
+exports.bestDealsByMarketingName = bestDealsByMarketingName;
 
 const bestDealsForSearchListing = async (
   location,
@@ -464,7 +464,7 @@ const bestDealsForSearchListing = async (
   }
 };
 
-module.exports = bestDealsForSearchListing;
+exports.bestDealsForSearchListing = bestDealsForSearchListing;
 
 const bestDealsForShopByCategory = async (
   page,
@@ -521,7 +521,7 @@ const bestDealsForShopByCategory = async (
   }
 };
 
-module.exports = bestDealsForShopByCategory;
+exports.bestDealsForShopByCategory = bestDealsForShopByCategory;
 
 const bestDealsForShopByPrice = async (
   page,
@@ -578,4 +578,4 @@ const bestDealsForShopByPrice = async (
   }
 };
 
-module.exports = bestDealsForShopByPrice;
+exports.bestDealsForShopByPrice = bestDealsForShopByPrice;

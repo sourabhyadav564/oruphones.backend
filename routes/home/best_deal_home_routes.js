@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-const bestDealsNearMe = require("../../utils/best_deals_helper_routes");
+const { bestDealsNearMe } = require("../../utils/best_deals_helper_routes");
 
 router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;

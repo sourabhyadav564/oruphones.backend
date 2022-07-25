@@ -6,8 +6,10 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
-const bestDealsByMarketingName = require("../../utils/best_deals_helper_routes");
-const bestDealsByMake = require("../../utils/best_deals_helper_routes");
+const {
+  bestDealsByMake,
+  bestDealsByMarketingName,
+} = require("../../utils/best_deals_helper_routes");
 const getBestDeals = require("../../utils/get_best_deals");
 // const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
@@ -109,7 +111,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       break;
   }
 
-  bestDealsByMake(location, make, page, userUniqueId, res)
+  bestDealsByMake(location, make, page, userUniqueId, res);
 });
 
 router.get("/listbymarketingname", logEvent, async (req, res) => {
