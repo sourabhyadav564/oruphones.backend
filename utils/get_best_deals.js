@@ -9,28 +9,91 @@ const getRecommendedPrice = require("../utils/get_recommended_price");
 const getThirdPartyVendors = require("../utils/third_party_listings");
 const allMatrix = require("../utils/matrix_figures");
 
+const nodemailer = require("nodemailer");
+const moment = require("moment");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const config = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mobiruindia22@gmail.com",
+    pass: "eghguoshcuniexbf",
+  },
+});
+
+var MongoClient = require("mongodb").MongoClient;
+var url = process.env.MONGO;
+
+let currentDate = new Date();
+let dateFormat = moment(currentDate).add(10, "days").calendar();
+
+const collectData = async (data) => {
+  try {
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db("testing_application_data");
+      dbo
+        .collection("complete_best_deals")
+        .deleteMany({})
+        .then(() => {
+          dbo
+            .collection("complete_best_deals")
+            .insertMany(data, function (err, res) {
+              if (err) throw err;
+              console.log(
+                `${data.length} documents inserted successfully on ${dateFormat})}`
+              );
+              db.close();
+            });
+        });
+    });
+
+    let mailOptions = {
+      from: "mobiruindia22@gmail.com",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+      subject: "Best Deals data has successfully been migrated to MongoDB",
+      text:
+        "Best Deals data has been successfully migrated to MongoDB in the master best deals collection and the number of deals are: " +
+        data.length +
+        ". The data is not ready to use for other business logics",
+    };
+
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + result.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getBestDeals = async (
   defaultDataObject,
   userUniqueId,
-  res,
+  // res,
   forNearMe,
-  totalProducts
+  // totalProducts
 ) => {
   //   const location = req.query.userLocation;
   //   const userUniqueId = req.headers.useruniqueid;
 
-  if (defaultDataObject.length == 0) {
-    res.status(200).json({
-      reason: "Sorry!!! Listings not found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        otherListings: [],
-        bestDeals: [],
-      },
-    });
-    return;
-  }
+  // if (defaultDataObject.length == 0) {
+  //   res.status(200).json({
+  //     reason: "Sorry!!! Listings not found",
+  //     statusCode: 200,
+  //     status: "SUCCESS",
+  //     dataObject: {
+  //       otherListings: [],
+  //       bestDeals: [],
+  //     },
+  //   });
+  //   return;
+  // }
 
   let basePrice;
   let notionalPrice;
@@ -289,27 +352,32 @@ const getBestDeals = async (
 
       otherListings.push(...nullOtherList);
 
+      // TEMP CHANGE STARTED
+      updatedBestDeals.push(...otherListings);
+      // TEMP CHANGE ENDED
+
       if (finalBestDeals.length > 0 || otherListings.length > 0) {
-        res.status(200).json({
-          reason: "Best deals found",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject: {
-            otherListings: otherListings,
-            bestDeals: updatedBestDeals,
-            totalProducts: totalProducts
-          },
-        });
+        // res.status(200).json({
+        //   reason: "Best deals found",
+        //   statusCode: 200,
+        //   status: "SUCCESS",
+        //   dataObject: {
+        //     // otherListings: otherListings,
+        //     bestDeals: updatedBestDeals,
+        //     totalProducts: totalProducts
+        //   },
+        // });
+        collectData(updatedBestDeals);
       } else {
-        res.status(200).json({
-          reason: "Best deals found",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject: {
-            otherListings: [],
-            bestDeals: [],
-          },
-        });
+        // res.status(200).json({
+        //   reason: "Best deals found",
+        //   statusCode: 200,
+        //   status: "SUCCESS",
+        //   dataObject: {
+        //     otherListings: [],
+        //     bestDeals: [],
+        //   },
+        // });
       }
       // let dataObject = {
       //             otherListings: otherListings || [],

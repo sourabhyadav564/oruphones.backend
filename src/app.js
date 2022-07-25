@@ -6,8 +6,9 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const start_migration = require("../utils/calculate_LSP");
 const start_migrating_external_source_buy = require("../utils/get_external_source_data");
-const allCron = require("../utils/filter_cron_job_data");
+const startCalculatingLSP = require("../utils/filter_cron_job_data");
 const backupMongoDB = require("../utils/backup_mongodb");
+const startSavingBestDeals = require("../utils/best_deals_cron_job");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -46,12 +47,14 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-schedule.scheduleJob("05 15 * * *", function () {
+schedule.scheduleJob("05 18 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
-  // start_migration();
-  // start_migrating_external_source_buy();
-  // allCron();
-  // backupMongoDB();
+  startCalculatingLSP();
+});
+
+schedule.scheduleJob("0/50 * * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+  startSavingBestDeals();
 });
 
 const testRoute = require("../routes/others/test_routes");

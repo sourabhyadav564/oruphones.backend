@@ -6,6 +6,8 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
+const bestDealsByMarketingName = require("../../utils/best_deals_helper_routes");
+const bestDealsByMake = require("../../utils/best_deals_helper_routes");
 const getBestDeals = require("../../utils/get_best_deals");
 // const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
@@ -107,76 +109,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
       break;
   }
 
-  let defaultDataObject = [];
-  let totalProducts;
-  if (location === "India") {
-    let saveListingLength = await saveListingModal
-      .find({
-        make: make,
-        status: "Active",
-      })
-      .countDocuments();
-    let defaultDataObject2 = await saveListingModal
-      .find({
-        make: make,
-        status: "Active",
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
-    defaultDataObject2.forEach((element) => {
-      defaultDataObject.push(element);
-    });
-    const thirdPartyVendors = await getThirdPartyVendors("", make, page);
-    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-      defaultDataObject.push(thirdPartyVendor);
-    });
-    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-  } else {
-    let saveListingLength = await saveListingModal
-      .find({
-        listingLocation: location,
-        make: make,
-        status: "Active",
-      })
-      .countDocuments();
-    let defaultDataObject2 = await saveListingModal
-      .find({
-        listingLocation: location,
-        make: make,
-        status: "Active",
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
-    const thirdPartyVendors = await getThirdPartyVendors("", make, page);
-    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-      defaultDataObject.push(thirdPartyVendor);
-    });
-    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-    if (!defaultDataObject2.length) {
-      res.status(200).json({
-        reason: "No best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          otherListings: [],
-          bestDeals: [],
-        },
-      });
-      return;
-    } else {
-      defaultDataObject.push(...defaultDataObject2);
-      // defaultDataObject2.forEach((element) => {
-      //   defaultDataObject.push(element);
-      // });
-      // const thirdPartyVendors = await getThirdPartyVendors("", make, page);
-      // thirdPartyVendors.forEach((thirdPartyVendor) => {
-      //   defaultDataObject.push(thirdPartyVendor);
-      // });
-      // totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-    }
-  }
-
-  getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
+  bestDealsByMake(location, make, page, userUniqueId, res)
 });
 
 router.get("/listbymarketingname", logEvent, async (req, res) => {
@@ -186,79 +119,7 @@ router.get("/listbymarketingname", logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
-  let defaultDataObject = [];
-  let totalProducts;
-  if (location === "India") {
-    let saveListingLength = await saveListingModal
-      .find({
-        marketingName: marketingname,
-        status: "Active",
-      })
-      .countDocuments();
-    let defaultDataObject2 = await saveListingModal
-      .find({
-        marketingName: marketingname,
-        status: "Active",
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
-    defaultDataObject2.forEach((element) => {
-      defaultDataObject.push(element);
-    });
-    const thirdPartyVendors = await getThirdPartyVendors(
-      marketingname,
-      "",
-      page
-    );
-    thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-      defaultDataObject.push(thirdPartyVendor);
-    });
-    totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-  } else {
-    let saveListingLength = await saveListingModal
-      .find({
-        listingLocation: location,
-        marketingName: marketingname,
-        status: "Active",
-      })
-      .countDocuments();
-    let defaultDataObject2 = await saveListingModal
-      .find({
-        listingLocation: location,
-        marketingName: marketingname,
-        status: "Active",
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
-    totalProducts = saveListingLength;
-    if (!defaultDataObject2.length) {
-      res.status(200).json({
-        reason: "No best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          otherListings: [],
-          bestDeals: [],
-        },
-      });
-      return;
-    } else {
-      defaultDataObject2.forEach((element) => {
-        defaultDataObject.push(element);
-      });
-      const thirdPartyVendors = await getThirdPartyVendors(
-        marketingname,
-        "",
-        page
-      );
-      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
-      });
-      totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-    }
-  }
-
-  getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
+  bestDealsByMarketingName(location, marketingname, page, userUniqueId, res);
 });
 
 module.exports = router;

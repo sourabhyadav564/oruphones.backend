@@ -5,8 +5,10 @@ require("../../src/database/connection");
 // const bestDealHomeModel = require("../../src/database/modals/home/best_deals_home");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 // const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
+const bestDealsForShopByPrice = require("../../utils/best_deals_helper_routes");
 const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
@@ -27,33 +29,43 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
       let defaultDataObject2 = [];
       //  if (category === "Fifteen") {
 
-      let saveListingLength = await saveListingModal
+      let saveListingLength = await bestDealsModal
         .find({
           $expr: {
-            $lte: [
+            $and: [
+              { $ne: ["$listingPrice", "--"] },
               {
-                $toInt: "$listingPrice",
+                $lte: [
+                  {
+                    $toInt: "$listingPrice",
+                  },
+                  parseInt(endPrice.toString()),
+                ],
               },
-              parseInt(endPrice.toString()),
             ],
           },
           status: "Active",
         })
         .countDocuments();
-      defaultDataObject2 = await saveListingModal
+      defaultDataObject2 = await bestDealsModal
         .find({
           $expr: {
-            $lte: [
+            $and: [
+              { $ne: ["$listingPrice", "--"] },
               {
-                $toInt: "$listingPrice",
+                $lte: [
+                  {
+                    $toInt: "$listingPrice",
+                  },
+                  parseInt(endPrice.toString()),
+                ],
               },
-              parseInt(endPrice.toString()),
             ],
           },
           status: "Active",
         })
-        // .skip(parseInt(page) * 20)
-        // .limit(20);
+        .skip(parseInt(page) * 20)
+        .limit(20);
       totalProducts = saveListingLength;
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
@@ -71,19 +83,19 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
       //     defaultDataObject.push(thirdPartyVendor);
       //   });
     } else {
-      let saveListingLength = await saveListingModal
+      let saveListingLength = await bestDealsModal
         .find({
-          listingLocation: location,
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
           status: "Active",
         })
         .countDocuments();
-      defaultDataObject = await saveListingModal
+      defaultDataObject = await bestDealsModal
         .find({
-          listingLocation: location,
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
           status: "Active",
         })
-        // .skip(parseInt(page) * 20)
-        // .limit(20);
+        .skip(parseInt(page) * 20)
+        .limit(20);
       totalProducts = saveListingLength;
 
       if (!defaultDataObject.length) {
@@ -98,33 +110,45 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
         });
         return;
       } else {
-        let saveListingLength = await saveListingModal
+        let saveListingLength = await bestDealsModal
           .find({
             $expr: {
-              $lte: [
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
                 {
-                  $toInt: "$listingPrice",
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
                 },
-                parseInt(endPrice.toString()),
               ],
             },
             status: "Active",
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
-        defaultDataObject = await saveListingModal
+        defaultDataObject = await bestDealsModal
           .find({
             $expr: {
-              $lte: [
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
                 {
-                  $toInt: "$listingPrice",
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
                 },
-                parseInt(endPrice.toString()),
               ],
             },
             status: "Active",
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
-          // .skip(parseInt(page) * 20)
-          // .limit(20);
+          .skip(parseInt(page) * 20)
+          .limit(20);
         let defaultDataObject3 = defaultDataObject.filter((item, index) => {
           return (
             parseInt(item.listingPrice.toString()) >=
@@ -136,7 +160,14 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
       }
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
+    // getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
+    bestDealsForShopByPrice(
+      page,
+      userUniqueId,
+      defaultDataObject,
+      totalProducts,
+      res
+    );
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

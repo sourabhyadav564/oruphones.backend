@@ -561,7 +561,7 @@ function lspFunction(condition, gotDataFrom, leastSellingPrice) {
   }
 }
 
-const allCron = async () => {
+const startCalculatingLSP = async () => {
   const allgsmData = await newMakeAndModal.find(
     { models: { $exists: true, $ne: [] } },
     { _id: 0 }
@@ -570,4 +570,4 @@ const allCron = async () => {
   allCronJobs();
 };
 
-module.exports = allCron;
+module.exports = startCalculatingLSP;

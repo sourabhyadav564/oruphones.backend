@@ -60,8 +60,8 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         type: "buy",
         model_name: { $regex: make },
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
   } else if (model_name != "") {
     // filterd = await testScrappedModal
     //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
@@ -78,14 +78,14 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         type: "buy",
         model_name: model_name,
       })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
   } else {
     dataLength = await testScrappedModal.find({ type: "buy" }).countDocuments();
     filterd = await testScrappedModal
       .find({ type: "buy" })
-      .skip(parseInt(page) * 20)
-      .limit(20);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
   }
 
   let dataObject = {};
@@ -157,6 +157,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       //   thumbnailImage: imagePath,
       // }]
       images: [],
+      status: "Active",
     };
 
     dataArray.push(dataObject);
