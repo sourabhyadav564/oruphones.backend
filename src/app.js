@@ -52,7 +52,7 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-// schedule.scheduleJob("5 13 * * *", function () {
+// schedule.scheduleJob("05 15 * * *", function () {
 //   console.log("The answer to life, the universe, and everything!");
 //   startSavingBestDeals();
 // });

@@ -88,7 +88,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     //   .toString()
     //   .toLowerCase()
     //   .repalce(/ /g, "_")}.jpg`;
-    let condition = "";
+    let condition = element.mobiru_condition;
 
     dataObject = {
       //   marketingName: element.marketing_name,

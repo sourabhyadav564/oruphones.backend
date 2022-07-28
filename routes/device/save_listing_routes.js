@@ -699,7 +699,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       // let imagePath = await getDefaultImage(element.model_name);
       // let imagePath = getImage(element.model_name);
       let imagePath = "";
-      let condition = "";
+      let condition = getThirdsListing.mobiru_condition;
 
       getListing = {
        //   marketingName: element.marketing_name,
