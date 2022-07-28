@@ -170,6 +170,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
         marketingname,
         condition,
         storage,
+        ram,
         hasCharger,
         isAppleChargerIncluded,
         hasEarphone,

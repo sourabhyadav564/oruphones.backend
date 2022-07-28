@@ -9,6 +9,7 @@ const allMatrix = require("../../utils/matrix_figures");
 
 router.post("/price/externalsellsource", logEvent, async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
+  const deviceRam = req.body.deviceRam;
   const make = req.body.make;
   const marketingName = req.body.marketingName;
   const deviceCondition = req.body.deviceCondition;
@@ -78,7 +79,7 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
     20: "Quickmobile",
     21: "mbr_Buyblynk",
     22: "mbr_Electronicbazaar",
-    23: "Flipkart"
+    23: "Flipkart",
   };
 
   try {
@@ -90,7 +91,9 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
     // });
     const listings = await lspModal.find({
       type: "sell",
-      storage: [deviceStorage, '--', '-- GB'],
+      storage: [deviceStorage, "--", "-- GB"],
+      ram: [deviceRam, "--", "-- GB"],
+      make: make,
       model: marketingName,
       condition: deviceCondition,
     });
@@ -108,23 +111,23 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
 
       listings.forEach((listing) => {
         listing.vendor.forEach((vendor) => {
-          if(vendor.type == 'sell'){
+          if (vendor.type == "sell") {
             vendorListings.push(vendor);
           }
-        })
-      })
+        });
+      });
 
       vendorListings.forEach(async (element) => {
         let filterData = {};
         let vendorName = VENDORS[element.vendor_id];
         let finalPrice;
-        if(element.vendor_id != 6) {
+        if (element.vendor_id != 6) {
           finalPrice =
             element.price != null
               ? element.price -
                 (element.price * totalPercentageToBeReduced) / 100
               : 0;
-        }else{
+        } else {
           finalPrice = element.price;
         }
         finalPrice = Math.ceil(finalPrice);
@@ -135,7 +138,7 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
           element.price != null ? finalPrice.toString() : "";
         filterData["externalSourceImage"] = vendorImage;
         finalDataArray.push(filterData);
-      })
+      });
 
       finalDataArray.filter((element) => {
         if (element.price === "") {

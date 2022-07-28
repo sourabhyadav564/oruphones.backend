@@ -37,7 +37,7 @@ const allCronJobs = () => {
   const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
   const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
 
-  let gsmData = allgsmData.filter((item) => item.models.length >= 1);
+  let gsmData = allgsmData.filter((item) => item.models.length >= 0);
   gsmData.forEach((element, index) => {
     // let make = element.make;
     let marketingName =
@@ -58,12 +58,15 @@ const allCronJobs = () => {
             let tempName2 = mdl.split("(")[0];
             mdl = tempName2.trim();
           }
+          if (mdl.includes("|")) {
+            let tempName2 = mdl.split("|")[0];
+            mdl = tempName2.trim();
+          }
           if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             el.includes(elm.storage) &&
             elm.mobiru_condition.includes(con)
           ) {
-
             return elm;
           } else if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
@@ -72,14 +75,15 @@ const allCronJobs = () => {
             elm.price != null
           ) {
             return elm;
-          } else if (
-            mdl.toLowerCase().includes(marketingName.toLowerCase()) &&
-            el.includes(elm.storage) &&
-            el.includes(elm.ram) &&
-            elm.mobiru_condition.includes(con)
-          ) {
-            return elm;
           }
+          // else if (
+          //   mdl.toLowerCase().includes(marketingName.toLowerCase()) &&
+          //   el.includes(elm.storage) &&
+          //   el.includes(elm.ram) &&
+          //   elm.mobiru_condition.includes(con)
+          // ) {
+          //   return elm;
+          // }
         });
         if (variable) {
           variable = variable.filter(
@@ -180,19 +184,19 @@ const allCronJobs = () => {
             condition: eachObject.condition,
             vendor: [
               {
-                price: eachObject.price < 100 ? 100 : eachObject.price,
+                price: eachObject.price < 1000 ? 1000 : eachObject.price,
                 type: eachObject.type,
                 vendor_id: eachObject.vendor_id,
               },
             ],
-            lsp: eachObject.price < 100 ? 100 : eachObject.price,
+            lsp: eachObject.price < 1000 ? 1000 : eachObject.price,
             isDerived: false,
             type: eachObject.type,
           };
           lspFinalData.push(newObj);
         } else {
           let vendorObj = {
-            price: eachObject.price < 100 ? 100 : eachObject.price,
+            price: eachObject.price < 1000 ? 1000 : eachObject.price,
             type: eachObject.type,
             vendor_id: eachObject.vendor_id,
           };
@@ -215,15 +219,23 @@ const allCronJobs = () => {
             let leastPrice = lspFinalData[objIndex].lsp;
             let newType = lspFinalData[objIndex].type;
             lspFinalData[objIndex].vendor.forEach((eachVendor, i) => {
-              if (eachVendor.price >= 100) {
+              if (eachVendor.price >= 1000) {
                 if (foundBuy == false || eachVendor.type == "buy") {
-                  lspFinalData[objIndex].lsp =
-                    leastPrice > eachVendor.price
-                      ? eachVendor.price
-                      : leastPrice;
+                  // lspFinalData[objIndex].lsp =
+                  //   leastPrice > eachVendor.price
+                  //     ? eachVendor.price
+                  //     : leastPrice;
+                  let lspPrice =
+                    leastPrice < eachVendor.price
+                      ? leastPrice
+                      : eachVendor.price;
+                  lspFinalData[objIndex] = {
+                    ...lspFinalData[objIndex],
+                    lsp: lspPrice,
+                  };
                   lspFinalData[objIndex].type =
                     leastPrice > eachVendor.price ? eachVendor.type : newType;
-                  leastPrice = eachVendor.price;
+                  leastPrice = lspPrice;
 
                   if (eachVendor.type == "buy") {
                     foundBuy = true;
@@ -260,12 +272,16 @@ const allCronJobs = () => {
                   let newVendors = [];
 
                   arrWithOutCond[0].vendor.forEach((eachVendor) => {
-                    let dpv = lspFunction(con2, arrWithOutCond[0].condition, eachVendor.price);
+                    let dpv = lspFunction(
+                      con2,
+                      arrWithOutCond[0].condition,
+                      eachVendor.price
+                    );
                     let pVendor = {
                       price: dpv,
                       type: eachVendor.type,
                       vendor_id: eachVendor.vendor_id,
-                    }
+                    };
                     newVendors.push(pVendor);
                   });
 
@@ -305,18 +321,52 @@ const allCronJobs = () => {
                       )
                   );
                   // fs.writeFileSync(
-                  //     "lspDerivedData.json",
-                  //     JSON.stringify(derivedData, null, 2)
+                  //   "lspDerivedData.json",
+                  //   JSON.stringify(derivedData, null, 2)
                   // );
                 }
               });
             }
           });
-          collectData(derivedData);
+          calculatingFinalLSP(derivedData);
         }
       });
     }
   });
+};
+
+const calculatingFinalLSP = async (lspFinalData) => {
+  for (let objIndex = 0; objIndex < lspFinalData.length; objIndex++) {
+    let foundBuy = false;
+    let leastPrice = lspFinalData[objIndex].lsp;
+    let newType = lspFinalData[objIndex].type;
+    lspFinalData[objIndex].vendor.forEach((eachVendor, i) => {
+      if (eachVendor.price >= 1000) {
+        if (foundBuy == false || eachVendor.type == "buy") {
+          let lspPrice =
+            leastPrice < eachVendor.price ? leastPrice : eachVendor.price;
+          lspFinalData[objIndex] = {
+            ...lspFinalData[objIndex],
+            lsp: lspPrice,
+          };
+          lspFinalData[objIndex].type =
+            leastPrice > eachVendor.price ? eachVendor.type : newType;
+          leastPrice = lspPrice;
+
+          if (eachVendor.type == "buy") {
+            foundBuy = true;
+          }
+        }
+      }
+    });
+    if (objIndex == lspFinalData.length - 1) {
+      // fs.writeFileSync(
+      //   "lspDerivedData.json",
+      //   JSON.stringify(lspFinalData, null, 2)
+      // );
+      collectData(lspFinalData);
+    }
+  }
 };
 
 const collectData = async (data) => {

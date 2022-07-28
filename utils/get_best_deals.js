@@ -76,7 +76,7 @@ const getBestDeals = async (
   defaultDataObject,
   userUniqueId,
   // res,
-  forNearMe,
+  forNearMe
   // totalProducts
 ) => {
   //   const location = req.query.userLocation;
@@ -114,7 +114,6 @@ const getBestDeals = async (
   let updatedBestDeals = [];
 
   try {
-
     let favList = [];
     if (userUniqueId !== "Guest") {
       const getFavObject = await favoriteModal.findOne({
@@ -137,6 +136,7 @@ const getBestDeals = async (
         marketingname,
         condition,
         storage,
+        ram,
         hasCharger,
         isAppleChargerIncluded,
         hasEarphone,
@@ -151,6 +151,7 @@ const getBestDeals = async (
             marketingname,
             condition,
             storage,
+            ram,
             hasCharger,
             isAppleChargerIncluded,
             hasEarphone,
@@ -220,7 +221,6 @@ const getBestDeals = async (
           let currentPercentage;
           currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
             newDataObject = {
@@ -250,11 +250,11 @@ const getBestDeals = async (
           item.make === "Apple"
             ? allMatrix.bestDealFigures.has_apple_earphone_percentage
             : allMatrix.bestDealFigures.has_non_apple_earphone_percentage;
-
         let make = item.make;
         let marketingname = item.marketingName;
         let condition = item.deviceCondition;
         let storage = item.deviceStorage;
+        let ram = item.deviceRam;
         const hasCharger = item.charger === "Y" ? true : false;
         const isAppleChargerIncluded =
           item.make === "Apple" ? hasCharger : false;
@@ -262,13 +262,15 @@ const getBestDeals = async (
         const isAppleEarphoneIncluded =
           item.make === "Apple" ? hasEarphone : false;
         const hasOrignalBox = item.originalbox === "Y" ? true : false;
-        const isVarified = item.verified === "no" ? false : true;
+        const isVarified =
+          item.verified === "no" || !item.verified ? false : true;
 
         filterData2(
           make,
           marketingname,
           condition,
           storage,
+          ram,
           hasCharger,
           isAppleChargerIncluded,
           hasEarphone,
@@ -326,16 +328,19 @@ const getBestDeals = async (
       // if (forNearMe) {
       //   otherListings = [];
       // }
+      let otherBestDeals = [];
       let ArrayLen = forNearMe ? 15 : 5;
       finalBestDeals.forEach((item, index) => {
         if (updatedBestDeals.length < ArrayLen) {
           updatedBestDeals.push(item);
         } else {
           if (!forNearMe) {
-            otherListings.push(item);
+            otherBestDeals.push(item);
           }
         }
       });
+      otherBestDeals.push(...otherListings);
+      otherBestDeals = otherBestDeals;
 
       let nullOtherList = [];
 

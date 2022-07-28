@@ -14,6 +14,7 @@ const getRecommendedPrice = async (
   marketingname,
   condition,
   storage,
+  ram,
   hasCharger,
   isAppleChargerIncluded,
   hasEarphone,
@@ -50,6 +51,7 @@ const getRecommendedPrice = async (
       model: marketingname,
       storage: [storage],
       condition: condition,
+      ram: [ram],
     });
 
     if (scrappedModels.length > 0) {

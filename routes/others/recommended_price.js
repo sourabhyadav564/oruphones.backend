@@ -80,6 +80,7 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
         const condition = req.body.deviceCondition;
         // const storage = req.body.devicestorage.split(" ")[0].toString();
         const storage = req.body.devicestorage;
+        const ram = req.body.deviceRam;
         const hasCharger = req.body.charger === "Y" ? true : false;
         const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
         const hasEarphone = req.body.earPhones === "Y" ? true : false;
@@ -95,6 +96,7 @@ router.post("/recomanded/price", logEvent, async (req, res) => {
           marketingname,
           condition,
           storage,
+          ram,
           hasCharger,
           isAppleChargerIncluded,
           hasEarphone,

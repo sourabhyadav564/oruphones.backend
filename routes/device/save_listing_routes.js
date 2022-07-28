@@ -701,53 +701,56 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       let imagePath = "";
       let condition = "";
 
-      if (
-        getThirdsListing.mobiru_condition.includes("Like New") ||
-        getThirdsListing.mobiru_condition.includes("Superb")
-      ) {
-        condition = "Like New";
-      } else if (
-        getThirdsListing.mobiru_condition.includes("Excellent") ||
-        getThirdsListing.mobiru_condition.includes("Very Good")
-      ) {
-        condition = "Excellent";
-      } else if (getThirdsListing.mobiru_condition.includes("Good")) {
-        condition = "Good";
-      } else if (getThirdsListing.mobiru_condition.includes("Fair")) {
-        condition = "Fair";
-      }
       getListing = {
-        //   marketingName: element.marketing_name,
-        marketingName: getThirdsListing.model_name,
-        make: getThirdsListing.model_name.split(" ")[0],
-        listingPrice: getThirdsListing.price.toString(),
-        deviceStorage:
-          getThirdsListing.storage === "0 GB" ||
-          getThirdsListing.storage === "--"
-            ? "--"
-            : getThirdsListing.storage.toString() + " GB",
-        warranty: getThirdsListing.warranty,
-        vendorLogo: vendorImage,
-        vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
-        vendorId: getThirdsListing.vendor_id,
-        isOtherVendor: "Y",
-        imagePath: imagePath,
-        verified: false,
-        favourite: false,
-        listingLocation: "India",
-        deviceFinalGrade: null,
-        deviceCondition: condition,
-        listingId: getThirdsListing._id,
-        listingDate: "",
-        modifiedDate: "",
-        verifiedDate: "",
-        charger: "Y",
-        earphone: "Y",
-        originalbox: "Y",
-        defaultImage: {
-          fullImage: "",
-        },
-        images: [],
+       //   marketingName: element.marketing_name,
+      marketingName: getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name,
+      make:
+      getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name.split(" ")[0],
+      listingPrice: getThirdsListing.price == null ? "--" : getThirdsListing.price.toString(),
+      deviceStorage:
+      getThirdsListing.storage === "0 GB" ||
+      getThirdsListing.storage === "--" ||
+      getThirdsListing.storage == null
+          ? "--"
+          : `${getThirdsListing.storage} GB`,
+      deviceRam:
+      getThirdsListing.ram === "0 GB" ||
+      getThirdsListing.ram === "--" ||
+      getThirdsListing.ram == null
+          ? "--"
+          : `${getThirdsListing.ram} GB`,
+      warranty: getThirdsListing.warranty,
+      vendorLogo: vendorImage,
+      vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
+      vendorId: getThirdsListing.vendor_id,
+      isOtherVendor: "Y",
+      imagePath: imagePath,
+      verified: false,
+      favourite: false,
+      listingLocation: "India",
+      deviceFinalGrade: " ",
+      deviceCosmeticGrade: " ",
+      deviceFunctionalGrade: " ",
+      imei: " ",
+      model: getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name,
+      deviceCondition: condition,
+      listingId: getThirdsListing._id,
+      listingDate: "",
+      modifiedDate: "",
+      verifiedDate: "",
+      charger: "Y",
+      earphone: "Y",
+      originalbox: "Y",
+      defaultImage: {
+        fullImage: "",
+        // fullImage: imagePath,
+      },
+      // images: [{
+      //   fullImage: imagePath,
+      //   thumbnailImage: imagePath,
+      // }]
+      images: [],
+      status: "Active",
       };
 
     }
@@ -764,6 +767,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       let getMarketingName = getListing?.marketingName;
       let getCondition = getListing?.deviceCondition;
       let getStorage = getListing?.deviceStorage;
+      let getRam = getListing?.deviceRam;
       let getCharger = getListing?.charger === "Y" ? true : false;
       let isAppleChargerIncluded =
         getCharger?.make === "Apple" ? getCharger : false;
@@ -778,6 +782,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         getMarketingName,
         getCondition,
         getStorage,
+        getRam,
         getCharger,
         isAppleChargerIncluded,
         getEarphone,

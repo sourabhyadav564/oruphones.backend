@@ -272,12 +272,12 @@ router.post("/grade/price", logEvent, async (req, res) => {
       "BarometerTest",
       "MagneticSensorTest",
       "LinearAccelerationSensorTest",
-      "BluetoothToggleTest",
     ];
     const severityMedium = [
       "VibrationTest",
       "BluetoothOffTest",
       "BluetoothOnTest",
+      "BluetoothToggleTest",
       "QuickBatteryAutoTest",
       "WLANOnTest",
       "GameRotationSensorTest",
@@ -531,6 +531,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
       marketingname,
       condition,
       storage,
+      ram,
       hasCharger,
       isAppleChargerIncluded,
       hasEarphone,

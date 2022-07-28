@@ -40,32 +40,19 @@ const getThirdPartyVendors = async (model_name, make, page) => {
 
   let filterd = [];
   if (make != "") {
-    // let newFilterd = await scrappedModal.find({ type: "buy" });
-    // newFilterd.filter((item) => {
-    //   if (item.model_name.includes(make)) {
-    //     filterd.push(item);
-    //   }
-    // });
-    // filterd = await testScrappedModal
-    //   .find({ type: "buy", model_name: { $regex: make.toLowerCase(), $options: "i" } })
-    //   .limit(10);
     dataLength = await testScrappedModal
       .find({
         type: "buy",
         model_name: { $regex: make.toLowerCase(), $options: "i" },
       })
       .countDocuments();
-    filterd = await testScrappedModal
-      .find({
-        type: "buy",
-        model_name: { $regex: make },
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
+    filterd = await testScrappedModal.find({
+      type: "buy",
+      model_name: { $regex: make },
+    });
+    // .skip(parseInt(page) * 20)
+    // .limit(20);
   } else if (model_name != "") {
-    // filterd = await testScrappedModal
-    //   .find({ type: "buy", model_name: { $regex: model_name.toLowerCase(), $options: "i" } })
-    //   .limit(20);
     dataLength = await testScrappedModal
       .find({
         type: "buy",
@@ -73,19 +60,17 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       })
       .countDocuments();
 
-    filterd = await testScrappedModal
-      .find({
-        type: "buy",
-        model_name: model_name,
-      })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
+    filterd = await testScrappedModal.find({
+      type: "buy",
+      model_name: model_name,
+    });
+    // .skip(parseInt(page) * 20)
+    // .limit(20);
   } else {
     dataLength = await testScrappedModal.find({ type: "buy" }).countDocuments();
-    filterd = await testScrappedModal
-      .find({ type: "buy" })
-      // .skip(parseInt(page) * 20)
-      // .limit(20);
+    filterd = await testScrappedModal.find({ type: "buy" });
+    // .skip(parseInt(page) * 20)
+    // .limit(20);
   }
 
   let dataObject = {};
@@ -99,25 +84,12 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     // let imagePath = await getDefaultImage(element.model_name);
     // let imagePath = getImage(element.model_name);
     let imagePath = "";
+    // let imagePath = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/allModelsImg/${element.model_name
+    //   .toString()
+    //   .toLowerCase()
+    //   .repalce(/ /g, "_")}.jpg`;
     let condition = "";
 
-    if (
-      element.mobiru_condition.includes("Like New") ||
-      element.mobiru_condition.includes("Superb")
-    ) {
-      condition = "Like New";
-    } else if (
-      element.mobiru_condition.includes("Excellent") ||
-      element.mobiru_condition.includes("Very Good")
-    ) {
-      condition = "Excellent";
-    } else if (element.mobiru_condition.includes("Good")) {
-      condition = "Good";
-    } else if (element.mobiru_condition.includes("Fair")) {
-      condition = "Fair";
-    } else {
-      condition = element.mobiru_condition;
-    }
     dataObject = {
       //   marketingName: element.marketing_name,
       marketingName: element.model_name == null ? "--" : element.model_name,
@@ -130,6 +102,12 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         element.storage == null
           ? "--"
           : `${element.storage} GB`,
+      deviceRam:
+        element.ram === "0 GB" ||
+        element.storage === "--" ||
+        element.storage == null
+          ? "--"
+          : `${element.ram} GB`,
       warranty: element.warranty,
       vendorLogo: vendorImage,
       vendorLink: element.link ? element.link : "",
@@ -139,7 +117,11 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       verified: false,
       favourite: false,
       listingLocation: "India",
-      deviceFinalGrade: null,
+      deviceFinalGrade: " ",
+      deviceCosmeticGrade: " ",
+      deviceFunctionalGrade: " ",
+      imei: " ",
+      model: element.model_name == null ? "--" : element.model_name,
       deviceCondition: condition,
       listingId: element._id,
       listingDate: "",
@@ -163,7 +145,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     dataArray.push(dataObject);
   });
 
-  return {dataArray, dataLength};
+  return { dataArray, dataLength };
 };
 
 module.exports = getThirdPartyVendors;

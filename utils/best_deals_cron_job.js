@@ -59,7 +59,7 @@ const startSavingBestDeals = async () => {
       }
     }
 
-    getBestDeals(defaultDataObject, userUniqueId, false, totalProducts);
+    getBestDeals(defaultDataObject, userUniqueId, false);
   } catch (error) {
     console.log(error);
   }
