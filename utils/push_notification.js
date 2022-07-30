@@ -10,13 +10,30 @@ const generateHash = require("../utils/generate_hash");
 const fetch = require("node-fetch");
 const saveNotificationModel = require("../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../src/database/modals/notification/complete_notifications");
+const sendverificationSMS = require("./send_verification_sms");
 
 const sendNotification = async (
   sellerUniqueId,
   isVerification,
   marketingName,
-  sellerName
+  sellerName,
+  sellerContactNumber
 ) => {
+  let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName}.`;
+
+  console.log(
+    "message",
+    message,
+    "sellerUniqueId",
+    sellerUniqueId,
+    "sellerName",
+    sellerName,
+    "sellerContactNumber",
+    sellerContactNumber
+  );
+
+  const sendMessage = sendverificationSMS(sellerContactNumber, message);
+
   const now = new Date();
   const currentDate = moment(now).format("L");
 
@@ -57,6 +74,7 @@ const sendNotification = async (
           : `Click here to visit your favourites and contact seller before they sold out!!`,
       },
       appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
+      webEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
     },
   };
 
@@ -79,6 +97,7 @@ const sendNotification = async (
   //Save notification to database
   let notificationData = {
     appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
+    webEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
     messageContent: isVerification
       ? `Click here to visit your listings and complete verification for your ${marketingName}.`
       : `Click here to visit your favourites and contact seller before they sold out!!`,
@@ -123,6 +142,7 @@ const sendNotification = async (
   //           "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
   //       },
   //       appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
+  //       webEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
   //     },
   //   };
   //   fcm.send(message, function (err, response) {

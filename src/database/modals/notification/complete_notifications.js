@@ -33,6 +33,10 @@ const notificationSchema = new mongoose.Schema(
             type: String,
             // required: true,
           },
+          webEventAction: {
+            type: String,
+            // required: true,
+          },
           messageContent: {
             type: String,
             // required: true,
