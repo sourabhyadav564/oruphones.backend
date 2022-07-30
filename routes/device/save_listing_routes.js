@@ -75,24 +75,21 @@ router.get("/listings", logEvent, async (req, res) => {
 router.post("/listing/save", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listedBy = req.body.listedBy;
-  const userDetails = await createUserModal.find({
+  const userDetails = await createUserModal.findOne({
     userUniqueId: userUniqueId,
   });
 
   if (userDetails) {
-    console.log("userDetails", userDetails);
-    if (userDetails[0]?.userName === "") {
-      console.log(
-        "userDetails[0]?.userName?.length",
-        userDetails[0]?.userName?.length
-      );
+    console.log("userDetails", userDetails, userDetails?.userName);
+    if (userDetails?.userName.length === 0) {
+      console.log("userDetailsssssss", userDetails);
       const userName = listedBy;
-      const userUniqueId = userDetails[0].userUniqueId;
       const dataToBeUpdate = {
-        userName: userName, 
-      }
-      let data = await createUserModal.findOneAndUpdate(
-        userUniqueId,
+        userName: userName,
+      };
+      console.log("userUniqueId", userUniqueId);
+      let data = await createUserModal.findByIdAndUpdate(
+        userDetails._id,
         dataToBeUpdate,
         {
           new: true,
@@ -101,7 +98,7 @@ router.post("/listing/save", logEvent, async (req, res) => {
       console.log("data", data);
     }
   }
-  const mobileNumber = userDetails[0]?.mobileNumber;
+  const mobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
