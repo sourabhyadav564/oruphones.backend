@@ -74,17 +74,31 @@ router.get("/listings", logEvent, async (req, res) => {
 
 router.post("/listing/save", logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
+  const listedBy = req.body.listedBy;
   const userDetails = await createUserModal.find({
     userUniqueId: userUniqueId,
   });
 
   if (userDetails) {
-    if (userDetails[0]?.userName?.length > 0) {
-      const userName = userDetails[0].userName;
+    console.log("userDetails", userDetails);
+    if (userDetails[0]?.userName === "") {
+      console.log(
+        "userDetails[0]?.userName?.length",
+        userDetails[0]?.userName?.length
+      );
+      const userName = listedBy;
       const userUniqueId = userDetails[0].userUniqueId;
-      await createUserModal.findByIdAndUpdate(userUniqueId, userName, {
-        new: true,
-      });
+      const dataToBeUpdate = {
+        userName: userName, 
+      }
+      let data = await createUserModal.findOneAndUpdate(
+        userUniqueId,
+        dataToBeUpdate,
+        {
+          new: true,
+        }
+      );
+      console.log("data", data);
     }
   }
   const mobileNumber = userDetails[0]?.mobileNumber;
@@ -94,7 +108,6 @@ router.post("/listing/save", logEvent, async (req, res) => {
   const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
   const deviceFinalGrade = req.body.deviceFinalGrade;
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
-  const listedBy = req.body.listedBy;
   const deviceStorage = req.body.deviceStorage;
   const earphone = req.body.earphone;
   const images = req.body.images;
