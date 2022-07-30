@@ -77,6 +77,17 @@ router.post("/listing/save", logEvent, async (req, res) => {
   const userDetails = await createUserModal.find({
     userUniqueId: userUniqueId,
   });
+
+  if (userDetails) {
+    if (userDetails[0]?.userName?.length > 0) {
+      const userName = userDetails[0].userName;
+      const userId = userDetails[0]._id;
+
+      await createUserModal.findByIdAndUpdate(userId, userName, {
+        new: true,
+      });
+    }
+  }
   const mobileNumber = userDetails[0]?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
@@ -100,6 +111,24 @@ router.post("/listing/save", logEvent, async (req, res) => {
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const deviceImagesAvailable = images.length ? true : false;
   const deviceRam = req.body.deviceRam;
+  let deviceWarranty = req.body.warranty;
+
+  switch (deviceWarranty) {
+    case "zero":
+      deviceWarranty = "0 - 3 Months";
+      break;
+    case "four":
+      deviceWarranty = "4 - 6 Months";
+      break;
+    case "seven":
+      deviceWarranty = "7 - 11 Months";
+      break;
+    case "more":
+      deviceWarranty = "More than 11 Months";
+      break;
+    default:
+      deviceWarranty = "More than 11 Months";
+  }
 
   const now = new Date();
   const dateFormat = moment(now).format("L");
@@ -143,6 +172,7 @@ router.post("/listing/save", logEvent, async (req, res) => {
     defaultImage,
     deviceRam,
     listingDate: dateFormat,
+    warranty: deviceWarranty,
   };
 
   const modalInfo = new saveListingModal(data);
@@ -286,7 +316,6 @@ router.post("/listing/pause", logEvent, async (req, res) => {
       listingId: listingId,
     });
 
-
     if (!pauseListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
@@ -333,7 +362,6 @@ router.post("/listing/activate", logEvent, async (req, res) => {
     const activateListing = await saveListingModal.find({
       listingId: listingId,
     });
-
 
     if (!activateListing) {
       res.status(200).json({
@@ -522,12 +550,10 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
           fav_listings: listingId,
         });
 
-
         const sendNotificationToUser = [];
         userFromFavorite.forEach((item, index) => {
           sendNotificationToUser.push(item.userUniqueId);
         });
-
 
         const now = new Date();
         const currentDate = moment(now).format("L");
@@ -537,7 +563,6 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
         let tokenObject = await saveNotificationModel.find({
           userUniqueId: sendNotificationToUser,
         });
-
 
         let notificationTokens = [];
         tokenObject.forEach((item, index) => {
@@ -560,6 +585,7 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
               messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
             },
             appEventAction: "MY_FAVORITES",
+            webEventAction: "MY_FAVORITES",
           },
         };
 
@@ -582,11 +608,11 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
         //Save notification to database
         let notificationData = {
           appEventAction: "MY_FAVORITES",
+          webEventAction: "MY_FAVORITES",
           messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
           notificationId: string,
           createdDate: currentDate,
         };
-
 
         sendNotificationToUser.forEach(async (user, index) => {
           let dataToBeSave = {
@@ -675,7 +701,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       }
     }
 
-
     // const getListing = await saveListingModal.findOne({
     //   listingId: listingid,
     // });
@@ -702,57 +727,67 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       let condition = getThirdsListing.mobiru_condition;
 
       getListing = {
-       //   marketingName: element.marketing_name,
-      marketingName: getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name,
-      make:
-      getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name.split(" ")[0],
-      listingPrice: getThirdsListing.price == null ? "--" : getThirdsListing.price.toString(),
-      deviceStorage:
-      getThirdsListing.storage === "0 GB" ||
-      getThirdsListing.storage === "--" ||
-      getThirdsListing.storage == null
-          ? "--"
-          : `${getThirdsListing.storage} GB`,
-      deviceRam:
-      getThirdsListing.ram === "0 GB" ||
-      getThirdsListing.ram === "--" ||
-      getThirdsListing.ram == null
-          ? "--"
-          : `${getThirdsListing.ram} GB`,
-      warranty: getThirdsListing.warranty,
-      vendorLogo: vendorImage,
-      vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
-      vendorId: getThirdsListing.vendor_id,
-      isOtherVendor: "Y",
-      imagePath: imagePath,
-      verified: false,
-      favourite: false,
-      listingLocation: "India",
-      deviceFinalGrade: " ",
-      deviceCosmeticGrade: " ",
-      deviceFunctionalGrade: " ",
-      imei: " ",
-      model: getThirdsListing.model_name == null ? "--" : getThirdsListing.model_name,
-      deviceCondition: condition,
-      listingId: getThirdsListing._id,
-      listingDate: "",
-      modifiedDate: "",
-      verifiedDate: "",
-      charger: "Y",
-      earphone: "Y",
-      originalbox: "Y",
-      defaultImage: {
-        fullImage: "",
-        // fullImage: imagePath,
-      },
-      // images: [{
-      //   fullImage: imagePath,
-      //   thumbnailImage: imagePath,
-      // }]
-      images: [],
-      status: "Active",
+        //   marketingName: element.marketing_name,
+        marketingName:
+          getThirdsListing.model_name == null
+            ? "--"
+            : getThirdsListing.model_name,
+        make:
+          getThirdsListing.model_name == null
+            ? "--"
+            : getThirdsListing.model_name.split(" ")[0],
+        listingPrice:
+          getThirdsListing.price == null
+            ? "--"
+            : getThirdsListing.price.toString(),
+        deviceStorage:
+          getThirdsListing.storage === "0 GB" ||
+          getThirdsListing.storage === "--" ||
+          getThirdsListing.storage == null
+            ? "--"
+            : `${getThirdsListing.storage} GB`,
+        deviceRam:
+          getThirdsListing.ram === "0 GB" ||
+          getThirdsListing.ram === "--" ||
+          getThirdsListing.ram == null
+            ? "--"
+            : `${getThirdsListing.ram} GB`,
+        warranty: getThirdsListing.warranty,
+        vendorLogo: vendorImage,
+        vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
+        vendorId: getThirdsListing.vendor_id,
+        isOtherVendor: "Y",
+        imagePath: imagePath,
+        verified: false,
+        favourite: false,
+        listingLocation: "India",
+        deviceFinalGrade: " ",
+        deviceCosmeticGrade: " ",
+        deviceFunctionalGrade: " ",
+        imei: " ",
+        model:
+          getThirdsListing.model_name == null
+            ? "--"
+            : getThirdsListing.model_name,
+        deviceCondition: condition,
+        listingId: getThirdsListing._id,
+        listingDate: "",
+        modifiedDate: "",
+        verifiedDate: "",
+        charger: "Y",
+        earphone: "Y",
+        originalbox: "Y",
+        defaultImage: {
+          fullImage: "",
+          // fullImage: imagePath,
+        },
+        // images: [{
+        //   fullImage: imagePath,
+        //   thumbnailImage: imagePath,
+        // }]
+        images: [],
+        status: "Active",
       };
-
     }
 
     if (!getListing) {
@@ -791,7 +826,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         getisVarified,
         false
       );
-
 
       let basePrice;
       let notionalPrice;
@@ -840,18 +874,15 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       let currentPercentage;
       currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
-
       const externalSource = [];
 
       let dataObject = { externalSource, ...(getListing._doc || getListing) };
       if (currentPercentage > -3) {
-
         let scrappedModels = await lspModal.find({
           model: getListing?.marketingName,
           storage: [getListing?.deviceStorage, "-- GB"],
           type: "buy",
         });
-
 
         let selectdModels = [];
         let itemId = "";
@@ -863,7 +894,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         let pushedVendors = [];
 
         scrappedModels.forEach((item, index) => {
-
           if (
             item.model === marketingname &&
             item.condition === condition &&
@@ -889,7 +919,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
             });
           }
         });
-
 
         if (selectdModels.length > 0) {
           externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
