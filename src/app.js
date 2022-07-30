@@ -96,7 +96,7 @@ const wordpressRoute = require("../routes/others/wordpress_route");
 
 app.get("/", (req, res) => {
   res.status(200).json({
-    message: "Backend Server Running Successfully",
+    message: "Backend Testing Server Running Successfully",
   });
 });
 
