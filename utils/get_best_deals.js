@@ -8,10 +8,12 @@ const logEvent = require("../src/middleware/event_logging");
 const getRecommendedPrice = require("../utils/get_recommended_price");
 const getThirdPartyVendors = require("../utils/third_party_listings");
 const allMatrix = require("../utils/matrix_figures");
+const fs = require("fs");
 
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 const dotenv = require("dotenv");
+// const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 dotenv.config();
 
 const config = nodemailer.createTransport({
@@ -99,6 +101,8 @@ const getBestDeals = async (
   let notionalPrice;
   const verified_percentage = allMatrix.bestDealFigures.verified_percentage;
   const warranty_percentage1 = allMatrix.bestDealFigures.warranty_percentage1;
+  const warranty_percentage2 = allMatrix.bestDealFigures.warranty_percentage2;
+  const warranty_percentage3 = allMatrix.bestDealFigures.warranty_percentage3;
   // const warranty_percentage2 = 8;
   // const warranty_percentage3 = 5;
   // const warranty_percentage4 = 0;
@@ -108,6 +112,8 @@ const getBestDeals = async (
     allMatrix.bestDealFigures.has_non_apple_earphone_percentage;
   const has_original_box_percentage =
     allMatrix.bestDealFigures.has_original_box_percentage;
+  const third_party_warranty_percentage =
+    allMatrix.bestDealFigures.third_party_warranty_percentage;
 
   let finalBestDeals = [];
   let otherListings = [];
@@ -169,57 +175,145 @@ const getBestDeals = async (
         getPrice();
 
         const afterGetPrice = async (price) => {
+          let deduction = 0;
           basePrice = price.actualLSP;
           notionalPrice = parseInt(
             item.listingPrice.toString().replace(",", "")
           );
 
-          if ("verified" in item === true && item.isOtherVendor === "N") {
-            if (item.verified != true) {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * verified_percentage;
-            }
-          }
+          // if ("verified" in item === true && item.isOtherVendor === "N") {
+          //   if (item.verified != true) {
+          //     notionalPrice =
+          //       notionalPrice + (basePrice / 100) * verified_percentage;
+          //   }
+          // }
 
-          if ("warranty" in item != true && item.isOtherVendor === "N") {
-            // if (item.warranty === "0-3 months") {
-            notionalPrice =
-              notionalPrice + (basePrice / 100) * warranty_percentage1;
-            // } else if (item.warranty === "4-6 months") {
-            //   notionalPrice =
-            //     notionalPrice + (basePrice / 100) * warranty_percentage2;
-            // } else if (item.warranty === "7-10 months") {
-            //   notionalPrice =
-            //     notionalPrice + (basePrice / 100) * warranty_percentage3;
-            // } else {
-            //   notionalPrice =
-            //     notionalPrice + (basePrice / 100) * warranty_percentage4;
-            // }
-          }
+          // if ("warranty" in item != true && item.isOtherVendor === "N") {
+          //   // if (item.warranty === "0-3 months") {
+          //   deduction = deduction + warranty_percentage1;
+          //   warrantyWeight = warranty_percentage1;
+
+          //   // notionalPrice =
+          //   //   notionalPrice + (basePrice / 100) * warranty_percentage1;
+
+          //   // } else if (item.warranty === "4-6 months") {
+          //   //   notionalPrice =
+          //   //     notionalPrice + (basePrice / 100) * warranty_percentage2;
+          //   // } else if (item.warranty === "7-11 months") {
+          //   //   notionalPrice =
+          //   //     notionalPrice + (basePrice / 100) * warranty_percentage3;
+          //   // } else {
+          //   //   notionalPrice =
+          //   //     notionalPrice + (basePrice / 100) * warranty_percentage4;
+          //   // }
+          // }
 
           if ("charger" in item === true) {
             if (item.charger === "N") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_charger_percentage;
+              deduction = deduction + has_charger_percentage;
+              // notionalPrice =
+              // notionalPrice + (basePrice / 100) * has_charger_percentage;
             }
           }
 
           if ("earphone" in item === true) {
             if (item.earphone === "N") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_earphone_percentage;
+              deduction = deduction + has_earphone_percentage;
+              // notionalPrice =
+              //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
             }
           }
 
           if ("originalbox" in item === true) {
             if (item.originalbox === "N") {
-              notionalPrice =
-                notionalPrice + (basePrice / 100) * has_original_box_percentage;
+              deduction = deduction + has_original_box_percentage;
+              // notionalPrice =
+              //   notionalPrice + (basePrice / 100) * has_original_box_percentage;
             }
           }
 
+          notionalPrice = notionalPrice - (basePrice / 100) * deduction;
+          console.log(
+            "notionalData1 D N B",
+            deduction,
+            notionalPrice,
+            basePrice
+          );
+
+          let testScrappedModal = JSON.parse(
+            fs.readFileSync("testing_scrapped_datas.json")
+          );
+
+          // let getCashifyListing = await testScrappedModal.findOne({
+          //   model_name: marketingname,
+          //   make: make,
+          //   storage: parseInt(storage.toString().split(" ")[0].toString()),
+          //   type: "sell",
+          //   vendor_id: 8,
+          // });
+
+          let getCashifyListingList = testScrappedModal.filter((item) => {
+            if (
+              item.model_name === marketingname &&
+              item.make === make &&
+              item.storage ===
+                parseInt(storage.toString().split(" ")[0].toString()) &&
+              item.type === "sell" &&
+              item.vendor_id === 8
+            ) {
+              return item;
+            }
+          });
+
+          let getCashifyListing = getCashifyListingList[0];
+
+          if ("warranty" in item == true && item.isOtherVendor === "N") {
+            let cashify_upto_price = 0;
+
+            console.log("data --->", marketingname, storage, make);
+
+            console.log("getCashifyListing", getCashifyListing);
+            if (getCashifyListing) {
+              cashify_upto_price = getCashifyListing.price;
+
+              let warrantyWeight = 0;
+              const warranty = item.warranty;
+              console.log("warrantyData", warranty, cashify_upto_price);
+
+              if (warranty == "0 - 3 Months") {
+                warrantyWeight = warranty_percentage1;
+              } else if (warranty == "4 - 6 Months") {
+                warrantyWeight = warranty_percentage2;
+              } else if (warranty == "7 - 11 Months") {
+                warrantyWeight = warranty_percentage3;
+              }
+
+              notionalPrice =
+                notionalPrice - (cashify_upto_price / 100) * warrantyWeight;
+            }
+          }
+
+          let thirdPartyDeduction =
+            has_charger_percentage +
+            has_earphone_percentage +
+            has_original_box_percentage +
+            third_party_warranty_percentage;
+
+          let newBasePrice =
+            basePrice - (basePrice / 100) * thirdPartyDeduction;
+
+          console.log(
+            "notionalData2 D N B",
+            thirdPartyDeduction,
+            notionalPrice,
+            newBasePrice
+          );
+
           let currentPercentage;
-          currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
+          currentPercentage =
+            ((newBasePrice - notionalPrice) / newBasePrice) * 100;
+
+          console.log("currentPercentage", currentPercentage);
 
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {

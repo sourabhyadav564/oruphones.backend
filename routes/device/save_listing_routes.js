@@ -81,9 +81,8 @@ router.post("/listing/save", logEvent, async (req, res) => {
   if (userDetails) {
     if (userDetails[0]?.userName?.length > 0) {
       const userName = userDetails[0].userName;
-      const userId = userDetails[0]._id;
-
-      await createUserModal.findByIdAndUpdate(userId, userName, {
+      const userUniqueId = userDetails[0].userUniqueId;
+      await createUserModal.findByIdAndUpdate(userUniqueId, userName, {
         new: true,
       });
     }
