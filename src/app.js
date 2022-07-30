@@ -52,10 +52,10 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-// schedule.scheduleJob("05 15 * * *", function () {
-//   console.log("The answer to life, the universe, and everything!");
-//   startSavingBestDeals();
-// });
+schedule.scheduleJob("49 19 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+  startSavingBestDeals();
+});
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
