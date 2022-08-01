@@ -153,10 +153,28 @@ router.post("/listings/search", logEvent, async (req, res) => {
       allListings = tempListings;
     }
 
-    if (warenty != "") {
+    // if (warenty != "") {
+    //   let tempListings = [];
+    //   tempListings = allListings.filter((item, index) => {
+    //     return item.warenty === warenty;
+    //   });
+    //   allListings = tempListings;
+    // }
+
+    if (warenty.length > 0 && reqPage !== "TSM") {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        return item.warenty === warenty;
+        warenty.forEach((element) => {
+          if (element === "Brand Warranty") {
+            return (
+              item.warenty === "zero" ||
+              item.warenty === "four" ||
+              item.warenty === "seven"
+            );
+          } else if (element === "Seller Warranty") {
+            return item.isOtherVendor === "Y";
+          }
+        });
       });
       allListings = tempListings;
     }

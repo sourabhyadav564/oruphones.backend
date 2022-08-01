@@ -306,15 +306,19 @@ router.post("/grade/price", logEvent, async (req, res) => {
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
         if (item.testStatus !== "PASS") {
-          grade = "C";
-          condition = "Fair";
+          // grade = "C";
+          grade = "D";
+          // condition = "Fair";
+          condition = "Needs Repair";
           break;
         }
       } else if (severityMedium.includes(item.commandName)) {
         if (item.testStatus !== "PASS") {
           if (count <= 3) {
-            grade = "B";
-            condition = "Good";
+            // grade = "B";
+            // condition = "Good";
+            grade = "D";
+            condition = "Needs Repair";
             count++;
           } else {
             grade = "C";
