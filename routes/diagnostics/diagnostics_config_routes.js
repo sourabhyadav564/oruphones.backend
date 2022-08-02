@@ -352,90 +352,105 @@ router.post("/grade/price", logEvent, async (req, res) => {
       }
     }
 
-    for (item of questionnaireResults) {
-      if (item.questionId === 1 && item.childQuestions.length > 0) {
-        if (item.childQuestions.length === 3) {
-          cosmeticGrade = "C";
-          break;
-        } else if (item.childQuestions.length === 2) {
-          cosmeticGrade = "B";
-          break;
-        } else if (
-          item.childQuestions.includes(3) ||
-          item.childQuestions.includes(5)
-        ) {
-          cosmeticGrade = "B";
-          break;
-        } else if (item.childQuestions.includes(4)) {
-          cosmeticGrade = "A";
-          break;
-        }
-      } else if (item.questionId === 6 && item.childQuestions.length > 0) {
-        if (item.childQuestions.length >= 3) {
-          cosmeticGrade = "C";
-          break;
-        } else if (item.childQuestions.length === 2) {
-          if (
-            item.childQuestions.includes(7) &&
-            item.childQuestions.includes(8)
-          ) {
-            cosmeticGrade = "C";
-            break;
-          } else if (
-            (item.childQuestions.includes(7) &&
-              item.childQuestions.includes(9)) ||
-            (item.childQuestions.includes(7) &&
-              item.childQuestions.includes(10)) ||
-            (item.childQuestions.includes(8) &&
-              item.childQuestions.includes(9)) ||
-            (item.childQuestions.includes(8) &&
-              item.childQuestions.includes(10))
-          ) {
-            cosmeticGrade = "B";
-            break;
-          } else if (
-            item.childQuestions.includes(9) ||
-            item.childQuestions.includes(10)
-          ) {
-            cosmeticGrade = "A";
-          }
-        } else if (
-          item.childQuestions.includes(7) ||
-          item.childQuestions.includes(8)
-        ) {
-          cosmeticGrade = "B";
-          break;
-        } else if (
-          item.childQuestions.includes(9) ||
-          item.childQuestions.includes(10)
-        ) {
-          cosmeticGrade = "A";
-          break;
-        }
-      } else if (item.childQuestions.length === 0) {
-        cosmeticGrade = "S";
-      }
-    }
+    // for (item of questionnaireResults) {
+    //   if (item.questionId === 1 && item.childQuestions.length > 0) {
+    //     if (item.childQuestions.length === 3) {
+    //       cosmeticGrade = "C";
+    //       break;
+    //     } else if (item.childQuestions.length === 2) {
+    //       cosmeticGrade = "B";
+    //       break;
+    //     } else if (
+    //       item.childQuestions.includes(3) ||
+    //       item.childQuestions.includes(5)
+    //     ) {
+    //       cosmeticGrade = "B";
+    //       break;
+    //     } else if (item.childQuestions.includes(4)) {
+    //       cosmeticGrade = "A";
+    //       break;
+    //     }
+    //   } else if (item.questionId === 6 && item.childQuestions.length > 0) {
+    //     if (item.childQuestions.length >= 3) {
+    //       cosmeticGrade = "C";
+    //       break;
+    //     } else if (item.childQuestions.length === 2) {
+    //       if (
+    //         item.childQuestions.includes(7) &&
+    //         item.childQuestions.includes(8)
+    //       ) {
+    //         cosmeticGrade = "C";
+    //         break;
+    //       } else if (
+    //         (item.childQuestions.includes(7) &&
+    //           item.childQuestions.includes(9)) ||
+    //         (item.childQuestions.includes(7) &&
+    //           item.childQuestions.includes(10)) ||
+    //         (item.childQuestions.includes(8) &&
+    //           item.childQuestions.includes(9)) ||
+    //         (item.childQuestions.includes(8) &&
+    //           item.childQuestions.includes(10))
+    //       ) {
+    //         cosmeticGrade = "B";
+    //         break;
+    //       } else if (
+    //         item.childQuestions.includes(9) ||
+    //         item.childQuestions.includes(10)
+    //       ) {
+    //         cosmeticGrade = "A";
+    //       }
+    //     } else if (
+    //       item.childQuestions.includes(7) ||
+    //       item.childQuestions.includes(8)
+    //     ) {
+    //       cosmeticGrade = "B";
+    //       break;
+    //     } else if (
+    //       item.childQuestions.includes(9) ||
+    //       item.childQuestions.includes(10)
+    //     ) {
+    //       cosmeticGrade = "A";
+    //       break;
+    //     }
+    //   } else if (item.childQuestions.length === 0) {
+    //     cosmeticGrade = "S";
+    //   }
+    // }
 
-    let warrantyPeriod;
-    for (item of questionnaireResults) {
-      if (item.questionId === 11 && item.childQuestions.length > 0) {
-        if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
-          warrantyPeriod = "zero";
-        } else if (
-          item.childQuestions[0] == "13" ||
-          item.childQuestions[0] == 13
-        ) {
-          warrantyPeriod = "four";
-        } else if (
-          item.childQuestions[0] == "14" ||
-          item.childQuestions[0] == 14
-        ) {
-          warrantyPeriod = "seven";
-        } else {
-          warrantyPeriod = "more";
-        }
-      }
+    // let warrantyPeriod;
+    // for (item of questionnaireResults) {
+    //   if (item.questionId === 11 && item.childQuestions.length > 0) {
+    //     if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
+    //       warrantyPeriod = "zero";
+    //     } else if (
+    //       item.childQuestions[0] == "13" ||
+    //       item.childQuestions[0] == 13
+    //     ) {
+    //       warrantyPeriod = "four";
+    //     } else if (
+    //       item.childQuestions[0] == "14" ||
+    //       item.childQuestions[0] == 14
+    //     ) {
+    //       warrantyPeriod = "seven";
+    //     } else {
+    //       warrantyPeriod = "more";
+    //     }
+    //   }
+    // }
+
+    const listing = await saveListingModal.findOne({ listingId: listingId });
+    let deviceCondition = listing.deviceCondition;
+
+    if (deviceCondition === "Like New") {
+      cosmeticGrade = "S";
+    } else if (deviceCondition === "Excellent") {
+      cosmeticGrade = "A";
+    } else if (deviceCondition === "Good") {
+      cosmeticGrade = "B";
+    } else if (deviceCondition === "Fair") {
+      cosmeticGrade = "C";
+    } else if (deviceCondition === "Needs Repair") {
+      cosmeticGrade = "D";
     }
 
     if (grade === "S" && cosmeticGrade === "S") {
@@ -461,40 +476,40 @@ router.post("/grade/price", logEvent, async (req, res) => {
     } else if (finalGrade === "C") {
       condition = "Fair";
     }
+    
 
-    const listing = await saveListingModal.findOne({ listingId: listingId });
+    // let questionArray = req.body.questionnaireResults;
 
-    let questionArray = req.body.questionnaireResults;
+    // let finalQuestionArray = [];
 
-    let finalQuestionArray = [];
-
-    questionArray.forEach((item, index) => {
-      let childQuestions = item.childQuestions;
-      if (childQuestions.length > 0) {
-        let exactChildQuestions = [];
-        childQuestions.forEach((child) => {
-          let currentQuestion = getQuestions.find(
-            (element) => element.questionId === item.questionId
-          );
-          let currentChildQuestion = currentQuestion["childQuestions"].find(
-            (element2) => element2.questionId === child
-          );
-          exactChildQuestions.push(currentChildQuestion["question"]);
-        });
-        const updatedChildQuestionArray = {
-          ...questionArray[index],
-          childQuestions: exactChildQuestions,
-        };
-        finalQuestionArray.push(updatedChildQuestionArray);
-      } else {
-        finalQuestionArray.push(item);
-      }
-    });
+    // questionArray.forEach((item, index) => {
+    //   let childQuestions = item.childQuestions;
+    //   if (childQuestions.length > 0) {
+    //     let exactChildQuestions = [];
+    //     childQuestions.forEach((child) => {
+    //       let currentQuestion = getQuestions.find(
+    //         (element) => element.questionId === item.questionId
+    //       );
+    //       let currentChildQuestion = currentQuestion["childQuestions"].find(
+    //         (element2) => element2.questionId === child
+    //       );
+    //       exactChildQuestions.push(currentChildQuestion["question"]);
+    //     });
+    //     const updatedChildQuestionArray = {
+    //       ...questionArray[index],
+    //       childQuestions: exactChildQuestions,
+    //     };
+    //     finalQuestionArray.push(updatedChildQuestionArray);
+    //   } else {
+    //     finalQuestionArray.push(item);
+    //   }
+    // });
 
     const dataToBeUpdate = {
       deviceFunctionalGrade: grade,
       functionalTestResults: req.body.functionalTestResults,
-      questionnaireResults: finalQuestionArray,
+      // questionnaireResults: finalQuestionArray,
+      questionnaireResults: req.body.questionnaireResults,
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
       deviceUniqueId: deviceUniqueId,

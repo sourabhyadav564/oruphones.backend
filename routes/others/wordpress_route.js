@@ -56,8 +56,9 @@ router.get("/blogs/info", async (req, res) => {
           let imageSrc = image[0].match(/src="([^"]+)"/g);
           let imageUrl = imageSrc[0].match(/"([^"]+)"/g)[0].replace(/"/g, "");
 
-          let content = parsed.split("<!-- /wp:image -->")[1];
-          let plainText = content.replace(/<[^>]*>/g, "");
+          // let content = parsed.split("<!-- /wp:image -->")[1];
+          // let plainText = content.replace(/<[^>]*>/g, "");
+          let plainText = parsed.replace(/<[^>]*>/g, "");
           let parsedBlogs = [];
           plainText.split("\n").forEach((item) => {
             if (item.trim() !== "") {
