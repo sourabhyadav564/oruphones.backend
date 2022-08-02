@@ -144,7 +144,7 @@ const saveListingSchema = new mongoose.Schema(
     },
     warranty: {
       type: String,
-      default: "more",
+      default: "None",
     },
     isOtherVendor: {
       type: String,

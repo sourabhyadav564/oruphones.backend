@@ -417,7 +417,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
     //   }
     // }
 
-    // let warrantyPeriod;
+    let warrantyPeriod;
     // for (item of questionnaireResults) {
     //   if (item.questionId === 11 && item.childQuestions.length > 0) {
     //     if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
@@ -440,6 +440,17 @@ router.post("/grade/price", logEvent, async (req, res) => {
 
     const listing = await saveListingModal.findOne({ listingId: listingId });
     let deviceCondition = listing.deviceCondition;
+    let deviceAge = listing.warranty;
+
+    if (deviceAge === "More than 9 months") {
+      warrantyPeriod = "zero";
+    } else if (deviceAge === "More than 6 months") {
+      warrantyPeriod = "four";
+    } else if (deviceAge === "More than 3 months") {
+      warrantyPeriod = "seven";
+    } else if (deviceAge === "None") {
+      warrantyPeriod = "more";
+    }
 
     if (deviceCondition === "Like New") {
       cosmeticGrade = "S";
@@ -476,7 +487,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
     } else if (finalGrade === "C") {
       condition = "Fair";
     }
-    
 
     // let questionArray = req.body.questionnaireResults;
 
@@ -560,7 +570,6 @@ router.post("/grade/price", logEvent, async (req, res) => {
       false,
       warrantyPeriod
     );
-
 
     const dataObject = {};
     dataObject["minPrice"] = price.leastSellingprice ?? "-";

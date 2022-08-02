@@ -124,19 +124,19 @@ router.post("/listing/save", logEvent, async (req, res) => {
 
   switch (deviceWarranty) {
     case "zero":
-      deviceWarranty = "0 - 3 Months";
+      deviceWarranty = "More than 9 months";
       break;
     case "four":
-      deviceWarranty = "4 - 6 Months";
+      deviceWarranty = "More than 6 months";
       break;
     case "seven":
-      deviceWarranty = "7 - 11 Months";
+      deviceWarranty = "More than 3 months";
       break;
     case "more":
-      deviceWarranty = "More than 11 Months";
+      deviceWarranty = "None";
       break;
     default:
-      deviceWarranty = "More than 11 Months";
+      deviceWarranty = "None";
   }
 
   const now = new Date();
