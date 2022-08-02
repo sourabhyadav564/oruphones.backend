@@ -578,7 +578,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
     dataObject["functionalGrade"] = grade;
     dataObject["cosmaticGrade"] = cosmeticGrade;
     dataObject["condition"] = condition;
-    dataObject["finalQuestionArray"] = finalQuestionArray;
+    // dataObject["finalQuestionArray"] = finalQuestionArray;
 
     res.status(200).json({
       reason: "Listing saved successfully",
