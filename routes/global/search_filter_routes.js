@@ -30,7 +30,7 @@ router.post("/search", logEvent, async (req, res) => {
         if (
           element.toLowerCase().includes(userInputText.toString().toLowerCase())
         ) {
-          if (results.length < 15) {
+          if (results.length < 50) {
             results.push(element);
           }
           if (brandList.length <= 1) {
