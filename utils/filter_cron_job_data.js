@@ -30,15 +30,17 @@ let finalScrappedModelObject = [];
 let currentDate = new Date();
 let dateFormat = moment(currentDate).add(10, "days").calendar();
 
-const allCronJobs = () => {
+const allCronJobs = async () => {
   let foundObjects = [];
   let allModelFound = [];
   let allModelNotFound = [];
   const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
-  const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
+  // const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
+  const fileData = await testScrappedModal.find({}, { _id: 0 });
 
   let gsmData = allgsmData.filter((item) => item.models.length >= 0);
   gsmData.forEach((element, index) => {
+    console.log("gg", index);
     // let make = element.make;
     let marketingName =
       element.marketingName.charAt(0).toUpperCase() +
@@ -156,6 +158,8 @@ const allCronJobs = () => {
       let lspFinalData = [];
       let allModels = [];
       foundObjects.forEach((eachObject, indx) => {
+    console.log("fo", index);
+
         let modelObj = {
           model: eachObject.model,
           storage: eachObject.storage,

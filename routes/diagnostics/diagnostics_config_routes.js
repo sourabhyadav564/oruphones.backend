@@ -519,7 +519,7 @@ router.post("/grade/price", logEvent, async (req, res) => {
       deviceFunctionalGrade: grade,
       functionalTestResults: req.body.functionalTestResults,
       // questionnaireResults: finalQuestionArray,
-      questionnaireResults: req.body.questionnaireResults,
+      questionnaireResults: [],
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
       deviceUniqueId: deviceUniqueId,

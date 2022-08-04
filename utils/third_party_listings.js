@@ -12,10 +12,18 @@ require("../src/database/connection");
 // const getDefaultImage = require("../../utils/get_default_image");
 
 const scrappedModal = require("../src/database/modals/others/scrapped_models");
+const testDefaultImageModal = require("../src/database/modals/others/test_model_default_images");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 const getDefaultImage = require("./get_default_image");
+const allImageUrls = [];
 
 const getThirdPartyVendors = async (model_name, make, page) => {
+  if (allImageUrls.length == 0) {
+    const modalImageData = await testDefaultImageModal.find({}, { _id: 0 });
+    modalImageData.forEach((element) => {
+      allImageUrls.push(element);
+    });
+  }
   let dataLength = 0;
   const VENDORS = {
     6: "Amazon",
@@ -84,10 +92,16 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     // let imagePath = await getDefaultImage(element.model_name);
     // let imagePath = getImage(element.model_name);
     let imagePath = "";
+    let tempModel = element.model_name.toLowerCase().replace("+", "plus");
+    allImageUrls.find((item) => {
+      if (item.name == tempModel) {
+        imagePath = item.img;
+      }
+    });
     // let imagePath = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/allModelsImg/${element.model_name
     //   .toString()
     //   .toLowerCase()
-    //   .repalce(/ /g, "_")}.jpg`;
+    //   .repalce(/+/g, "plus")}.jpg`;
     let condition = element.mobiru_condition;
 
     dataObject = {
@@ -124,21 +138,21 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       model: element.model_name == null ? "--" : element.model_name,
       deviceCondition: condition,
       listingId: element._id,
-      listingDate: "",
+      listingDate: element.created_at,
       modifiedDate: "",
       verifiedDate: "",
       charger: "Y",
       earphone: "Y",
       originalbox: "Y",
       defaultImage: {
-        fullImage: "",
-        // fullImage: imagePath,
+        // fullImage: "",
+        fullImage: imagePath,
       },
-      // images: [{
-      //   fullImage: imagePath,
-      //   thumbnailImage: imagePath,
-      // }]
-      images: [],
+      images: [{
+        fullImage: imagePath,
+        thumbnailImage: imagePath,
+      }],
+      // images: [],
       status: "Active",
     };
 

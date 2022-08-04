@@ -157,7 +157,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
       // defaultDataObject = await saveListingModal.find({
       //   listingLocation: location,
       // });
-      if (category === "Verified") {
+      if (category === "verified") {
         let saveListingLength = await bestDealsModal
           .find({
             verified: true,
@@ -174,7 +174,32 @@ router.get("/listings/category", logEvent, async (req, res) => {
           .skip(parseInt(page) * 20)
           .limit(20);
         totalProducts = saveListingLength;
-      } else if (category === "Storage") {
+      } else if (category === "warranty") {
+        let saveListingLength = await bestDealsModal
+          .find({
+            warranty: [
+              "More than 9 months",
+              "More than 6 months",
+              "More than 3 months",
+            ],
+            status: "Active",
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
+          .countDocuments();
+        defaultDataObject = await bestDealsModal
+          .find({
+            warranty: [
+              "More than 9 months",
+              "More than 6 months",
+              "More than 3 months",
+            ],
+            status: "Active",
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
+          .skip(parseInt(page) * 20)
+          .limit(20);
+        totalProducts = saveListingLength;
+      } else if (category === "storage") {
         let saveListingLength = await bestDealsModal
           .find({
             deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
@@ -191,7 +216,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
           .skip(parseInt(page) * 20)
           .limit(20);
         totalProducts = saveListingLength;
-      } else if (category === "Like New") {
+      } else if (category === "like new") {
         let saveListingLength = await bestDealsModal
           .find({
             verified: true,
@@ -208,7 +233,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
           .skip(parseInt(page) * 20)
           .limit(20);
         totalProducts = saveListingLength;
-      } else if (category === "Excellent") {
+      } else if (category === "excellent") {
         let saveListingLength = await bestDealsModal
           .find({
             deviceCondition: "Excellent",
@@ -225,7 +250,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
           .skip(parseInt(page) * 20)
           .limit(20);
         totalProducts = saveListingLength;
-      } else if (category === "Thirty") {
+      } else if (category === "thirty") {
         let saveListingLength = await bestDealsModal
           .find({
             $expr: {
@@ -256,7 +281,7 @@ router.get("/listings/category", logEvent, async (req, res) => {
           .skip(parseInt(page) * 20)
           .limit(20);
         totalProducts = saveListingLength;
-      } else if (category === "Fifteen") {
+      } else if (category === "fifteen") {
         let saveListingLength = await bestDealsModal
           .find({
             $expr: {

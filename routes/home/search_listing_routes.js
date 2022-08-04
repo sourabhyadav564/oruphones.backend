@@ -167,9 +167,9 @@ router.post("/listings/search", logEvent, async (req, res) => {
         warenty.forEach((element) => {
           if (element === "Brand Warranty") {
             return (
-              item.warenty === "zero" ||
-              item.warenty === "four" ||
-              item.warenty === "seven"
+              item.warenty === "More than 3 months" ||
+              item.warenty === "More than 6 months" ||
+              item.warenty === "More than 9 months"
             );
           } else if (element === "Seller Warranty") {
             return item.isOtherVendor === "Y";

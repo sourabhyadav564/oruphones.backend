@@ -13,7 +13,7 @@ const fs = require("fs");
 const nodemailer = require("nodemailer");
 const moment = require("moment");
 const dotenv = require("dotenv");
-// const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
+const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 dotenv.config();
 
 const config = nodemailer.createTransport({
@@ -96,6 +96,8 @@ const getBestDeals = async (
   //   });
   //   return;
   // }
+
+  let testScrappedModalData = await testScrappedModal.find({});
 
   let basePrice;
   let notionalPrice;
@@ -181,33 +183,6 @@ const getBestDeals = async (
             item.listingPrice.toString().replace(",", "")
           );
 
-          // if ("verified" in item === true && item.isOtherVendor === "N") {
-          //   if (item.verified != true) {
-          //     notionalPrice =
-          //       notionalPrice + (basePrice / 100) * verified_percentage;
-          //   }
-          // }
-
-          // if ("warranty" in item != true && item.isOtherVendor === "N") {
-          //   // if (item.warranty === "0-3 months") {
-          //   deduction = deduction + warranty_percentage1;
-          //   warrantyWeight = warranty_percentage1;
-
-          //   // notionalPrice =
-          //   //   notionalPrice + (basePrice / 100) * warranty_percentage1;
-
-          //   // } else if (item.warranty === "4-6 months") {
-          //   //   notionalPrice =
-          //   //     notionalPrice + (basePrice / 100) * warranty_percentage2;
-          //   // } else if (item.warranty === "7-11 months") {
-          //   //   notionalPrice =
-          //   //     notionalPrice + (basePrice / 100) * warranty_percentage3;
-          //   // } else {
-          //   //   notionalPrice =
-          //   //     notionalPrice + (basePrice / 100) * warranty_percentage4;
-          //   // }
-          // }
-
           if ("charger" in item === true) {
             if (item.charger === "N") {
               deduction = deduction + has_charger_percentage;
@@ -240,9 +215,9 @@ const getBestDeals = async (
             basePrice
           );
 
-          let testScrappedModal = JSON.parse(
-            fs.readFileSync("testing_scrapped_datas.json")
-          );
+          // let testScrappedModal = JSON.parse(
+          //   fs.readFileSync("testing_scrapped_datas.json")
+          // );
 
           // let getCashifyListing = await testScrappedModal.findOne({
           //   model_name: marketingname,
@@ -252,7 +227,7 @@ const getBestDeals = async (
           //   vendor_id: 8,
           // });
 
-          let getCashifyListingList = testScrappedModal.filter((item) => {
+          let getCashifyListingList = testScrappedModalData.filter((item) => {
             if (
               item.model_name === marketingname &&
               item.make === make &&
@@ -398,6 +373,16 @@ const getBestDeals = async (
         } else {
           finalBestDeals[index].imagePath = item.images[0].fullImage;
         }
+        let tempDate = moment(item.createdAt).format("MMM Do");
+        finalBestDeals[index].listingDate = tempDate.toString();
+
+        let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
+          maximumFractionDigits: 2,
+          style: "currency",
+          currency: "INR",
+        });
+        console.log("formattedPrice", formattedPrice);
+        finalBestDeals[index].listingPrice = formattedPrice.toString();
       });
 
       otherListings.forEach((item, index) => {
@@ -406,6 +391,16 @@ const getBestDeals = async (
         } else {
           otherListings[index].imagePath = item.images[0].fullImage;
         }
+        let tempDate = moment(item.createdAt).format("MMM Do");
+        otherListings[index].listingDate = tempDate.toString();
+
+        let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
+          maximumFractionDigits: 2,
+          style: "currency",
+          currency: "INR",
+        });
+        console.log("formattedPrice", formattedPrice);
+        otherListings[index].listingPrice = formattedPrice.toString();
       });
 
       if (userUniqueId !== "Guest") {
