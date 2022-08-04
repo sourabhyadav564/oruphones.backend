@@ -255,11 +255,11 @@ const getBestDeals = async (
               const warranty = item.warranty;
               console.log("warrantyData", warranty, cashify_upto_price);
 
-              if (warranty == "0 - 3 Months") {
+              if (warranty == "More than 9 months") {
                 warrantyWeight = warranty_percentage1;
-              } else if (warranty == "4 - 6 Months") {
+              } else if (warranty == "More than 6 months") {
                 warrantyWeight = warranty_percentage2;
-              } else if (warranty == "7 - 11 Months") {
+              } else if (warranty == "More than 3 months") {
                 warrantyWeight = warranty_percentage3;
               }
 
@@ -429,7 +429,7 @@ const getBestDeals = async (
         }
       });
       otherBestDeals.push(...otherListings);
-      otherBestDeals = otherBestDeals;
+      // otherBestDeals = otherBestDeals;
 
       let nullOtherList = [];
 
@@ -447,7 +447,8 @@ const getBestDeals = async (
       otherListings.push(...nullOtherList);
 
       // TEMP CHANGE STARTED
-      updatedBestDeals.push(...otherListings);
+      updatedBestDeals.push(...otherBestDeals);
+      // updatedBestDeals.push(...otherListings);
       // TEMP CHANGE ENDED
 
       if (finalBestDeals.length > 0 || otherListings.length > 0) {
@@ -462,6 +463,7 @@ const getBestDeals = async (
         //   },
         // });
         collectData(updatedBestDeals);
+        // fs.writeFileSync(`updatedBestDeals.json`, JSON.stringify(updatedBestDeals));
       } else {
         // res.status(200).json({
         //   reason: "Best deals found",

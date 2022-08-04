@@ -1023,6 +1023,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       const externalSource = [];
 
       let dataObject = { externalSource, ...(getListing._doc || getListing) };
+      console.log("currentPercentage", currentPercentage);
       if (currentPercentage > -3) {
         let scrappedModels = await lspModal.find({
           model: getListing?.marketingName,
@@ -1069,7 +1070,8 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         });
 
         if (selectdModels.length > 0) {
-          externalSource.push(...selectdModels); //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          externalSource.push(...selectdModels); 
+          //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
         dataObject = { externalSource, ...(getListing._doc || getListing) };
         let tempArray = [];
