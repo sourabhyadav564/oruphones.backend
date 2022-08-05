@@ -20,6 +20,8 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   const ram = req.body.ram;
   const marketingName = req.body.marketingName;
 
+  console.log("req", req.body)
+
   // let newMake = make.split(" ").map((currentValue) => {
   //   let newText = currentValue[0].toUpperCase() + currentValue.slice(1);
   //   return newText;
@@ -127,7 +129,8 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
         marketingName: marketingName,
       });
     }
-    if ("make" in objects) {
+    console.log("objects", objects);
+    if ("make" in objects[0]) {
       let modelName = objects[0].marketingName;
       // let modelName = "";
       // let makeArray = Object[0][make];
@@ -154,6 +157,8 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
       // });
 
       const image = await getDefaultImage(modelName);
+
+      console.log("image", image);
 
       try {
         const marketingname = modelName;
@@ -182,6 +187,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
           true
         );
 
+        console.log("price", price);
         let dataObject = {
           deviceStorage: deviceStorage,
           deviceRam: ram,
