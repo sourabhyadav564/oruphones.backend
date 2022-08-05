@@ -15,7 +15,7 @@ const corsOptions = {
   origin: [
     "https://www.oruphones.com",
     "https://dev.oruphones.com",
-    "https://dev1oru2phones3.oruphones.com",
+    "https://betav1.oruphones.com",
     "https://image.oruphones.com",
     "https://mip.oruphones.com",
     "https://api.oruphones.com",
@@ -47,12 +47,12 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-// schedule.scheduleJob("06 17 * * *", function () {
+// schedule.scheduleJob("18 12 * * *", function () {
 //   console.log("The answer to life, the universe, and everything!");
 //   startCalculatingLSP();
 // });
 
-// schedule.scheduleJob("21 15 * * *", function () {
+// schedule.scheduleJob("26 12 * * *", function () {
 //   console.log("The answer to life, the universe, and everything!");
 //   startSavingBestDeals();
 // });

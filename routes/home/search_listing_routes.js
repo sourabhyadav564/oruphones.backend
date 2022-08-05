@@ -141,11 +141,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
     if (parseInt(maxsellingPrice) > parseInt(minsellingPrice)) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        return (
-          parseInt(
-            item.listingPrice.replace("₹", "").replace(",", "").split(".")[0]
-          ) <= parseInt(maxsellingPrice)
-        );
+        return parseInt(item.listingPrice) <= parseInt(maxsellingPrice);
       });
       allListings = tempListings;
     }
@@ -154,11 +150,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
     if (parseInt(minsellingPrice) < parseInt(maxsellingPrice)) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        return (
-          parseInt(
-            item.listingPrice.replace("₹", "").replace(",", "").split(".")[0]
-          ) >= parseInt(minsellingPrice)
-        );
+        return parseInt(item.listingPrice) >= parseInt(minsellingPrice);
       });
       allListings = tempListings;
     }

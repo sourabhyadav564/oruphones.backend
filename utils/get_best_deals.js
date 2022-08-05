@@ -376,13 +376,13 @@ const getBestDeals = async (
         let tempDate = moment(item.createdAt).format("MMM Do");
         finalBestDeals[index].listingDate = tempDate.toString();
 
-        let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
-          maximumFractionDigits: 2,
-          style: "currency",
-          currency: "INR",
-        });
-        console.log("formattedPrice", formattedPrice);
-        finalBestDeals[index].listingPrice = formattedPrice.toString();
+        // let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
+        //   maximumFractionDigits: 2,
+        //   style: "currency",
+        //   currency: "INR",
+        // });
+        // console.log("formattedPrice", formattedPrice);
+        // finalBestDeals[index].listingPrice = formattedPrice.toString();
       });
 
       otherListings.forEach((item, index) => {
@@ -394,13 +394,13 @@ const getBestDeals = async (
         let tempDate = moment(item.createdAt).format("MMM Do");
         otherListings[index].listingDate = tempDate.toString();
 
-        let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
-          maximumFractionDigits: 2,
-          style: "currency",
-          currency: "INR",
-        });
-        console.log("formattedPrice", formattedPrice);
-        otherListings[index].listingPrice = formattedPrice.toString();
+        // let formattedPrice = parseInt(item.listingPrice).toLocaleString("en-IN", {
+        //   maximumFractionDigits: 2,
+        //   style: "currency",
+        //   currency: "INR",
+        // });
+        // console.log("formattedPrice", formattedPrice);
+        // otherListings[index].listingPrice = formattedPrice.toString();
       });
 
       if (userUniqueId !== "Guest") {
