@@ -24,7 +24,7 @@ const corsOptions = {
     "http://localhost:3001",
     "http://localhost:3002",
     "https://localhost:3003",
-    "http://localhost:5500",
+    "http://127.0.0.1:5500",
     "https://oru-phones-web.vercel.app",
     "https://oru-phones-mobile-web.vercel.app",
     "https://oru-phones-mip-portal.vercel.app",
