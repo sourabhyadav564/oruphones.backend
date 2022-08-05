@@ -110,6 +110,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
       allListings = tempListings;
     }
 
+    console.log("color", allListings);
     if (deviceStorage.length > 0) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
@@ -140,15 +141,24 @@ router.post("/listings/search", logEvent, async (req, res) => {
     if (parseInt(maxsellingPrice) > parseInt(minsellingPrice)) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        return parseInt(item.listingPrice) <= parseInt(maxsellingPrice);
+        return (
+          parseInt(
+            item.listingPrice.replace("₹", "").replace(",", "").split(".")[0]
+          ) <= parseInt(maxsellingPrice)
+        );
       });
       allListings = tempListings;
     }
+    console.log("maxsellingPrice", allListings);
 
     if (parseInt(minsellingPrice) < parseInt(maxsellingPrice)) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        return parseInt(item.listingPrice) >= parseInt(minsellingPrice);
+        return (
+          parseInt(
+            item.listingPrice.replace("₹", "").replace(",", "").split(".")[0]
+          ) >= parseInt(minsellingPrice)
+        );
       });
       allListings = tempListings;
     }
@@ -161,33 +171,33 @@ router.post("/listings/search", logEvent, async (req, res) => {
     //   allListings = tempListings;
     // }
 
-    if (warenty.length > 0 && reqPage !== "TSM") {
-      let tempListings = [];
-      tempListings = allListings.filter((item, index) => {
-        warenty.forEach((element) => {
-          if (element === "Brand Warranty") {
-            return (
-              item.warenty === "More than 3 months" ||
-              item.warenty === "More than 6 months" ||
-              item.warenty === "More than 9 months"
-            );
-          } else if (element === "Seller Warranty") {
-            return item.isOtherVendor === "Y";
-          }
-        });
-      });
-      allListings = tempListings;
-    }
+    // if (warenty.length > 0 && reqPage !== "TSM") {
+    //   let tempListings = [];
+    //   tempListings = allListings.filter((item, index) => {
+    //     warenty.forEach((element) => {
+    //       if (element === "Brand Warranty") {
+    //         return (
+    //           item.warenty === "More than 3 months" ||
+    //           item.warenty === "More than 6 months" ||
+    //           item.warenty === "More than 9 months"
+    //         );
+    //       } else if (element === "Seller Warranty") {
+    //         return item.isOtherVendor === "Y";
+    //       }
+    //     });
+    //   });
+    //   allListings = tempListings;
+    // }
 
-    if (verified === true) {
-      let tempListings = [];
-      tempListings = allListings.filter((item, index) => {
-        if (item.verified === true) {
-          return true;
-        }
-      });
-      allListings = tempListings;
-    }
+    // if (verified === true) {
+    //   let tempListings = [];
+    //   tempListings = allListings.filter((item, index) => {
+    //     if (item.verified === true) {
+    //       return true;
+    //     }
+    //   });
+    //   allListings = tempListings;
+    // }
 
     let location = listingLocation;
 
@@ -208,7 +218,6 @@ router.post("/listings/search", logEvent, async (req, res) => {
     //   // });
     //   defaultDataObject = allListings;
     // }
-
     // getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
     bestDealsForSearchListing(
       location,
