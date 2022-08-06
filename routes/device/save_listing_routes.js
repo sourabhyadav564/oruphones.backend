@@ -1054,7 +1054,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
                 .toString()
                 .toLowerCase()}_logo.png`;
               let vendorObject = {
-                externalSourcePrice: item.lsp,
+                externalSourcePrice: vendor.price,
                 externalSourceImage: vendorImage,
               };
               if (!pushedVendors.includes(vendorName)) {
@@ -1068,6 +1068,8 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
             });
           }
         });
+
+        console.log("selectdModels", selectdModels);
 
         if (selectdModels.length > 0) {
           externalSource.push(...selectdModels); 
