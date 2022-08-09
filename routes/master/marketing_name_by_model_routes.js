@@ -20,7 +20,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   const ram = req.body.ram;
   const marketingName = req.body.marketingName;
 
-  console.log("req", req.body)
+  console.log("req", req.body);
 
   // let newMake = make.split(" ").map((currentValue) => {
   //   let newText = currentValue[0].toUpperCase() + currentValue.slice(1);
@@ -232,7 +232,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
   }
 });
 
-router.get("/makemodellist", logEvent, async (req, res) => {
+router.get("/makemodellist", async (req, res) => {
   if (cache.has("makeAndModal")) {
     res.status(200).json({
       reason: "Modals found",
@@ -340,89 +340,6 @@ router.get("/makemodellist", logEvent, async (req, res) => {
           break;
       }
     }
-    // let dataObject = [];
-    // let newModels = [];
-    // let makes = await gsmarenaModal.find({}, { make: 1, _id: 0 });
-    // let allBrand = [];
-    // makes.forEach((item) => {
-    //   let currentBrand = Object.values(item)[2].make;
-    //   allBrand.push(currentBrand);
-    // });
-
-    // allBrand.forEach(async (brandName) => {
-    //   // Loop through the makes will be starting from here
-    //   let models = await gsmarenaModal.aggregate([
-    //     { $match: { make: brandName } },
-    //   ]);
-
-    //   let modelArray = await models[0][brandName];
-    //   let newModels = [];
-
-    //   modelArray.forEach((item, index) => {
-    //     let marketingname = "";
-    //     let color = [];
-    //     let storage = [];
-    //     let keys = [];
-    //     for (let key in item) {
-    //       if (key !== "_id") keys.push(key);
-    //     }
-    //     keys.forEach((key, i) => {
-    //       marketingname = key;
-    //       let mKeys = [];
-    //       for (let mKey in item[key]["Misc"]) {
-    //         mKeys.push(mKey);
-    //       }
-
-    //       mKeys.forEach((colorKey, j) => {
-    //         if (colorKey.includes("Colors")) {
-    //           color = item[key]["Misc"]["Colors"].split(", ");
-    //         }
-    //       });
-
-    //       let memKeys = [];
-    //       for (let memKey in item[key]["Memory"]) {
-    //         memKeys.push(memKey);
-    //       }
-
-    //       memKeys.forEach((storageKey, j) => {
-    //         if (storageKey.includes("Internal")) {
-    //           let storageArray = item[key]["Memory"]["Internal"].split(", ");
-    //           let intStorage;
-    //           let finalStorageArray = [];
-    //           storageArray.forEach((storageItem) => {
-    //             intStorage = storageItem
-    //               .split(" ")
-    //               .find((item) => item.indexOf("GB"))
-    //               .slice(0, -2);
-    //             finalStorageArray.push(intStorage + " GB");
-    //           });
-    //           // storage = item[key]["Memory"]["Internal"].split(", ");
-    //           storage = finalStorageArray;
-    //         }
-    //       });
-    //     });
-
-    //     newModels.push({
-    //       marketingname,
-    //       color,
-    //       storage,
-    //     });
-    //   });
-
-    //   dataObject.push({
-    //     make: brandName,
-    //     models: newModels,
-    //   });
-
-    //   if (allBrand.length === dataObject.length) {
-    //     res.status(200).json({
-    //       reason: "Modals found",
-    //       statusCode: 200,
-    //       status: "SUCCESS",
-    //       dataObject,
-    //     });
-    //   }
-    // });
 
     let object;
     if (isPrimary === "Y") {
