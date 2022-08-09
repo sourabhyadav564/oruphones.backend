@@ -673,7 +673,10 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
   const isOtherVendor = req.query.isOtherVendor;
   const userUniqueId = req.query.userUniqueId;
 
-  let testScrappedModalData = await testScrappedModal.find({});
+  let testScrappedModalData = await testScrappedModal.find({
+    type: 'sell',
+    vendor_id: 8
+  });
 
   const VENDORS = {
     6: "Amazon",
@@ -727,9 +730,8 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
     } else {
       getThirdsListing = await testScrappedModal.findOne({
         _id: ObjectId(listingid),
+        type: "buy",
       });
-
-      console.log("getThirdsListing", getThirdsListing);
 
       let vendorName = VENDORS[getThirdsListing.vendor_id];
       let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
@@ -844,7 +846,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
       let basePrice;
       let notionalPrice;
-      const verified_percentage = 10;
+      // const verified_percentage = 10;
       // const warranty_percentage1 = 10;
       // const warranty_percentage2 = 8;
       // const warranty_percentage3 = 5;
@@ -912,126 +914,109 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       // currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
       let deduction = 0;
-          basePrice = price.actualLSP;
-          notionalPrice = parseInt(
-            getListing.listingPrice.toString().replace(",", "")
-          );
+      basePrice = price.actualLSP;
+      notionalPrice = parseInt(
+        getListing.listingPrice.toString().replace(",", "")
+      );
 
-          if ("charger" in getListing === true) {
-            if (getListing.charger === "N") {
-              deduction = deduction + has_charger_percentage;
-              // notionalPrice =
-              // notionalPrice + (basePrice / 100) * has_charger_percentage;
-            }
+      if ("charger" in getListing === true) {
+        if (getListing.charger === "N") {
+          deduction = deduction + has_charger_percentage;
+          // notionalPrice =
+          // notionalPrice + (basePrice / 100) * has_charger_percentage;
+        }
+      }
+
+      if ("earphone" in getListing === true) {
+        if (getListing.earphone === "N") {
+          deduction = deduction + has_earphone_percentage;
+          // notionalPrice =
+          //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
+        }
+      }
+
+      if ("originalbox" in getListing === true) {
+        if (getListing.originalbox === "N") {
+          deduction = deduction + has_original_box_percentage;
+          // notionalPrice =
+          //   notionalPrice + (basePrice / 100) * has_original_box_percentage;
+        }
+      }
+
+      notionalPrice = notionalPrice - (basePrice / 100) * deduction;
+
+      // let testScrappedModal = JSON.parse(
+      //   fs.readFileSync("testing_scrapped_datas.json")
+      // );
+
+      // let getCashifyListing = await testScrappedModal.findOne({
+      //   model_name: marketingname,
+      //   make: make,
+      //   storage: parseInt(storage.toString().split(" ")[0].toString()),
+      //   type: "sell",
+      //   vendor_id: 8,
+      // });
+
+      let getCashifyListingList = testScrappedModalData.filter((item) => {
+        if (
+          item.model_name === getMarketingName &&
+          item.make === getMake &&
+          item.storage ===
+            parseInt(getStorage.toString().split(" ")[0].toString()) &&
+          item.type === "sell" &&
+          item.vendor_id === 8
+        ) {
+          return item;
+        }
+      });
+
+      let getCashifyListing = getCashifyListingList[0];
+
+      if (
+        "warranty" in getListing == true &&
+        getListing.isOtherVendor === "N"
+      ) {
+        let cashify_upto_price = 0;
+
+        if (getCashifyListing) {
+          cashify_upto_price = getCashifyListing.price;
+
+          let warrantyWeight = 0;
+          const warranty = item.warranty;
+
+          if (warranty == "0 - 3 Months") {
+            warrantyWeight = warranty_percentage1;
+          } else if (warranty == "4 - 6 Months") {
+            warrantyWeight = warranty_percentage2;
+          } else if (warranty == "7 - 11 Months") {
+            warrantyWeight = warranty_percentage3;
           }
 
-          if ("earphone" in getListing === true) {
-            if (getListing.earphone === "N") {
-              deduction = deduction + has_earphone_percentage;
-              // notionalPrice =
-              //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
-            }
-          }
+          notionalPrice =
+            notionalPrice - (cashify_upto_price / 100) * warrantyWeight;
+        }
+      }
 
-          if ("originalbox" in getListing === true) {
-            if (getListing.originalbox === "N") {
-              deduction = deduction + has_original_box_percentage;
-              // notionalPrice =
-              //   notionalPrice + (basePrice / 100) * has_original_box_percentage;
-            }
-          }
+      let thirdPartyDeduction =
+        has_charger_percentage +
+        has_earphone_percentage +
+        has_original_box_percentage +
+        third_party_warranty_percentage;
 
-          notionalPrice = notionalPrice - (basePrice / 100) * deduction;
-          console.log(
-            "notionalData1 D N B",
-            deduction,
-            notionalPrice,
-            basePrice
-          );
+      let newBasePrice = basePrice - (basePrice / 100) * thirdPartyDeduction;
 
-          // let testScrappedModal = JSON.parse(
-          //   fs.readFileSync("testing_scrapped_datas.json")
-          // );
-
-          // let getCashifyListing = await testScrappedModal.findOne({
-          //   model_name: marketingname,
-          //   make: make,
-          //   storage: parseInt(storage.toString().split(" ")[0].toString()),
-          //   type: "sell",
-          //   vendor_id: 8,
-          // });
-
-          let getCashifyListingList = testScrappedModalData.filter((item) => {
-            if (
-              item.model_name === getMarketingName &&
-              item.make === getMake &&
-              item.storage ===
-                parseInt(getStorage.toString().split(" ")[0].toString()) &&
-              item.type === "sell" &&
-              item.vendor_id === 8
-            ) {
-              return item;
-            }
-          });
-
-          let getCashifyListing = getCashifyListingList[0];
-
-          if ("warranty" in getListing == true && getListing.isOtherVendor === "N") {
-            let cashify_upto_price = 0;
-
-            console.log("getCashifyListing", getCashifyListing);
-            if (getCashifyListing) {
-              cashify_upto_price = getCashifyListing.price;
-
-              let warrantyWeight = 0;
-              const warranty = item.warranty;
-              console.log("warrantyData", warranty, cashify_upto_price);
-
-              if (warranty == "0 - 3 Months") {
-                warrantyWeight = warranty_percentage1;
-              } else if (warranty == "4 - 6 Months") {
-                warrantyWeight = warranty_percentage2;
-              } else if (warranty == "7 - 11 Months") {
-                warrantyWeight = warranty_percentage3;
-              }
-
-              notionalPrice =
-                notionalPrice - (cashify_upto_price / 100) * warrantyWeight;
-            }
-          }
-
-          let thirdPartyDeduction =
-            has_charger_percentage +
-            has_earphone_percentage +
-            has_original_box_percentage +
-            third_party_warranty_percentage;
-
-          let newBasePrice =
-            basePrice - (basePrice / 100) * thirdPartyDeduction;
-
-          console.log(
-            "notionalData2 D N B",
-            thirdPartyDeduction,
-            notionalPrice,
-            newBasePrice
-          );
-
-          let currentPercentage;
-          currentPercentage =
-            ((newBasePrice - notionalPrice) / newBasePrice) * 100;
+      let currentPercentage;
+      currentPercentage = ((newBasePrice - notionalPrice) / newBasePrice) * 100;
 
       const externalSource = [];
 
       let dataObject = { externalSource, ...(getListing._doc || getListing) };
-      console.log("currentPercentage", currentPercentage);
       if (currentPercentage > -3) {
         let scrappedModels = await lspModal.find({
           model: getListing?.marketingName,
           storage: [getListing?.deviceStorage, "-- GB"],
           type: "buy",
         });
-
-        console.log("scrappedModels", scrappedModels);
 
         let selectdModels = [];
         let itemId = "";
@@ -1069,10 +1054,8 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
           }
         });
 
-        console.log("selectdModels", selectdModels);
-
         if (selectdModels.length > 0) {
-          externalSource.push(...selectdModels); 
+          externalSource.push(...selectdModels);
           //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
         dataObject = { externalSource, ...(getListing._doc || getListing) };
