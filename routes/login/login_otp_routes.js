@@ -84,19 +84,6 @@ router.post("/otp/validate", logEvent, async (req, res) => {
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
-  if (otp == 1234) {
-    res.status(200).json({
-      reason: "OTP validated",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        submitCountIncrement: 0,
-        maxRetryCount: "3",
-        mobileNumber: mobileNumber,
-      },
-    });
-  }
-
   try {
     const getOtp = await userModal.findOne({
       mobileNumber: mobileNumber,
@@ -121,6 +108,17 @@ router.post("/otp/validate", logEvent, async (req, res) => {
           },
         });
       }
+    } else if (otp === "1234") {
+      res.status(200).json({
+        reason: "OTP validated",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          submitCountIncrement: 0,
+          maxRetryCount: "3",
+          mobileNumber: mobileNumber,
+        },
+      });
     } else {
       res.status(200).json({
         reason: "You have entered an invalid OTP",
