@@ -171,6 +171,7 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
         const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
         const hasOrignalBox = true;
         const isVarified = true;
+        const warranty = "zero"
 
         const price = await getRecommendedPrice(
           make,
@@ -184,7 +185,8 @@ router.post("/marketingNameByModel", logEvent, async (req, res) => {
           isAppleEarphoneIncluded,
           hasOrignalBox,
           isVarified,
-          true
+          true,
+          warranty
         );
 
         console.log("price", price);

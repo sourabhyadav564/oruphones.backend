@@ -64,6 +64,7 @@ const allCronJobs = async () => {
             let tempName2 = mdl.split("|")[0];
             mdl = tempName2.trim();
           }
+          mdl = mdl.toLowerCase().replace(/5g/g, "").trim();
           if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             el.includes(elm.storage) &&

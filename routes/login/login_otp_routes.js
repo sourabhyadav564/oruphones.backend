@@ -80,7 +80,7 @@ router.post("/otp/generate", logEvent, async (req, res) => {
 });
 
 router.post("/otp/validate", logEvent, async (req, res) => {
-  const mobileNumber = req.query.mobileNumber?.toString();
+  const mobileNumber = req.query.mobileNumber?.toString(); 
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
