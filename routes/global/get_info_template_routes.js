@@ -12,13 +12,15 @@ router.get("/getinfotemplates", logEvent, async (req, res) => {
     let dataObject = {};
     dataObject["serverUrl"] = process.env.SERVER_URL;
     dataObject["templateUrls"] = {
-      VERIFICATION: "/verification.html",
-      CONDITIONS: "/condition.html",
+      VERIFICATION: "/new_verification.html",
+      CONDITIONS: "/new_condition.html",
       TERMS_CONDITIONS: "/terms_conditions.html",
-      FAQ: "/faq.html",
+      FAQ: "/new_faq.html",
       ABOUT_US: "/about-us.html",
-      WARRANTY: "/warranty",
-      PRIVACY: "privacy-policy.html",
+      WARRANTY: "/warranty.html",
+      PRIVACY: "/new_privacy-policy.html",
+      APPLE_STORAGE: "/apple_storage_check.html",
+      ANDROID_STORAGE: "/android_storage_check.html",
       HOW_TO_BUY: "/#how_to_buy",
       HOW_TO_SELL: "/#how_to_sell",
     };

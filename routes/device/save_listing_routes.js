@@ -673,10 +673,10 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
   const isOtherVendor = req.query.isOtherVendor;
   const userUniqueId = req.query.userUniqueId;
 
-  let testScrappedModalData = await testScrappedModal.find({
-    type: 'sell',
-    vendor_id: 8
-  });
+  // let testScrappedModalData = await testScrappedModal.find({
+  //   type: 'sell',
+  //   vendor_id: 8
+  // });
 
   const VENDORS = {
     6: "Amazon",
@@ -846,14 +846,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
       let basePrice;
       let notionalPrice;
-      // const verified_percentage = 10;
-      // const warranty_percentage1 = 10;
-      // const warranty_percentage2 = 8;
-      // const warranty_percentage3 = 5;
-      // const warranty_percentage4 = 0;
-      // let has_charger_percentage = 0;
-      // let has_earphone_percentage = 0;
-      // const has_original_box_percentage = 3;
 
       const warranty_percentage1 =
         allMatrix.bestDealFigures.warranty_percentage1;
@@ -861,9 +853,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         allMatrix.bestDealFigures.warranty_percentage2;
       const warranty_percentage3 =
         allMatrix.bestDealFigures.warranty_percentage3;
-      // const warranty_percentage2 = 8;
-      // const warranty_percentage3 = 5;
-      // const warranty_percentage4 = 0;
       let has_charger_percentage =
         allMatrix.bestDealFigures.has_non_apple_charger_percentage;
       let has_earphone_percentage =
@@ -872,46 +861,6 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
         allMatrix.bestDealFigures.has_original_box_percentage;
       const third_party_warranty_percentage =
         allMatrix.bestDealFigures.third_party_warranty_percentage;
-
-      // let deduction = 0;
-      // basePrice = price.actualLSP;
-      // notionalPrice = parseInt(
-      //   getListing.listingPrice.toString().replace(",", "")
-      // );
-
-      // // if ("verified" in getListing === true) {
-      // //   if (getListing.verified === true) {
-      // //     notionalPrice =
-      // //       notionalPrice - (basePrice / 100) * verified_percentage;
-      // //   }
-      // // }
-
-      // if ("charger" in getListing === true) {
-      //   if (getListing.charger === "Y") {
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_charger_percentage;
-      //     deduction = deduction + has_charger_percentage;
-      //   }
-      // }
-
-      // if ("earphone" in getListing === true) {
-      //   if (getListing.earphone === "Y") {
-      //     deduction = deduction + has_earphone_percentage;
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_earphone_percentage;
-      //   }
-      // }
-
-      // if ("originalbox" in getListing === true) {
-      //   if (getListing.originalbox === "Y") {
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_original_box_percentage;
-      //     deduction = deduction + has_original_box_percentage;
-      //   }
-      // }
-
-      // let currentPercentage;
-      // currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
 
       let deduction = 0;
       basePrice = price.actualLSP;
@@ -945,17 +894,13 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
 
       notionalPrice = notionalPrice - (basePrice / 100) * deduction;
 
-      // let testScrappedModal = JSON.parse(
-      //   fs.readFileSync("testing_scrapped_datas.json")
-      // );
-
-      // let getCashifyListing = await testScrappedModal.findOne({
-      //   model_name: marketingname,
-      //   make: make,
-      //   storage: parseInt(storage.toString().split(" ")[0].toString()),
-      //   type: "sell",
-      //   vendor_id: 8,
-      // });
+      let testScrappedModalData = await testScrappedModal.find({
+        type: 'sell',
+        vendor_id: 8,
+        make: getMake,
+        model_name: getMarketingName,
+        storage: parseInt(getStorage.toString().split(" ")[0].toString()),
+      });
 
       let getCashifyListingList = testScrappedModalData.filter((item) => {
         if (
