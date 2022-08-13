@@ -48,15 +48,15 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-schedule.scheduleJob("30 20 * * *", function () {
-  console.log("The answer to life, the universe, and everything!");
-  startCalculatingLSP();
-});
+// schedule.scheduleJob("30 20 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   startCalculatingLSP();
+// });
 
-schedule.scheduleJob("0/20 * * * *", function () {
-  console.log("The answer to life, the universe, and everything!");
-  startSavingBestDeals();
-});
+// schedule.scheduleJob("0/20 * * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   startSavingBestDeals();
+// });
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
