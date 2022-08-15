@@ -686,8 +686,8 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
     10: "Budli",
     11: "Paytm",
     12: "Yaantra",
-    13: "Shopcluse",
-    14: "Sahivalue",
+    13: "Sahivalue",
+    14: "Shopcluse",
     15: "Xtracover",
     16: "Mobigarage",
     17: "Instacash",
@@ -1030,6 +1030,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
             item.storage === storage
           ) {
             item.vendor.forEach((vendor) => {
+              console.log("vendor", vendor);
               vendorName = VENDORS[vendor.vendor_id];
               vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
                 .toString()
