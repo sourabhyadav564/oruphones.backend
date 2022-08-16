@@ -18,6 +18,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
   const deviceStorage = req.body.deviceStorage;
+  const deviceRam = req.body.deviceRam;
   let make = req.body.make;
   const listingLocation = req.body.listingLocation;
   const maxsellingPrice = req.body.maxsellingPrice;
@@ -39,8 +40,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await bestDealsModal
         .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       // i = 0;
       // while (i < marketingName.length) {
@@ -62,8 +63,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await bestDealsModal
         .find({ make: make, status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       // i = 0;
       // while (i < make.length) {
@@ -81,8 +82,8 @@ router.post("/listings/search", logEvent, async (req, res) => {
         .countDocuments();
       let ourListing = await bestDealsModal
         .find({ status: "Active" }, { _id: 0 })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        // .skip(parseInt(page) * 20)
+        // .limit(20);
       listing.push(...ourListing);
       // const thirdPartyVendors = await getThirdPartyVendors("", "", page);
       // newListings?.dataArray?.forEach((thirdPartyVendor) => {
@@ -110,11 +111,18 @@ router.post("/listings/search", logEvent, async (req, res) => {
       allListings = tempListings;
     }
 
-    console.log("color", allListings);
     if (deviceStorage.length > 0) {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
         return deviceStorage.includes(item.deviceStorage);
+      });
+      allListings = tempListings;
+    }
+
+    if (deviceRam && deviceRam.length > 0) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return deviceRam.includes(item.deviceRam);
       });
       allListings = tempListings;
     }
@@ -145,7 +153,6 @@ router.post("/listings/search", logEvent, async (req, res) => {
       });
       allListings = tempListings;
     }
-    console.log("maxsellingPrice", allListings);
 
     if (parseInt(minsellingPrice) < parseInt(maxsellingPrice)) {
       let tempListings = [];
