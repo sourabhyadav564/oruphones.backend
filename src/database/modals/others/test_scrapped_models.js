@@ -4,11 +4,11 @@ const validator = require("validator");
 const testScrappedSchema = new mongoose.Schema(
   {
     storage: {
-      type: Number || String,
+      type: mongoose.Schema.Types.Mixed,
       // required: true,
     },
     ram: {
-      type: Number || String,
+      type: mongoose.Schema.Types.Mixed,
       // required: true,
     },
     warranty: {
