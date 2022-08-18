@@ -7,7 +7,7 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const eventModal = require("../../src/database/modals/others/event_logs");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 
-router.get("/logeventinfo", async (req, res) => {
+router.get("/logeventinfo", logEvent, async (req, res) => {
   try {
     res.status(200).send({
       status: "SUCCESS",
@@ -28,193 +28,310 @@ router.get("/logs/geteventinfo", async (req, res) => {
       createdAt: currentDate,
     });
 
-    // const total_logs_captured_geographically = await eventModal.countDocuments({
-    //   location: location,
-    // });
+    const total_logs_captured_geographically = await eventModal.countDocuments({
+      location: location,
+    });
 
     const total_unique_users = await eventModal
       .distinct("userUniqueId")
       .countDocuments();
 
     const total_app_opens = await eventModal.countDocuments({
-      events: { $elemMatch: { eventName: "SESSION_CREATED" } },
+      events: {
+        $elemMatch: {
+          $or: [
+            { eventName: "SESSION_CREATED" },
+            { eventName: "FETCH_USER_DETAILS" },
+          ],
+        },
+      },
+      srcFrom: "App",
     });
 
     const total_unique_users_with_app_opens = await eventModal
       .distinct("userUniqueId", {})
       .countDocuments({
         events: { $elemMatch: { eventName: "SESSION_CREATED" } },
+        srcFrom: "App",
       });
 
-    const total_new_listing_attempted = await eventModal.countDocuments({
-      events: { $elemMatch: { eventName: "HOME_SELLNOW_SELECTED" } },
-    });
-
-    const total_new_listing_completed = await eventModal.countDocuments({
-      events: { $elemMatch: { eventName: "ADDLISTING_ADD_SUCCESS" } },
-    });
-
-    const total_new_listing_completed_without_photos =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            $and: [
-              { eventName: { $eq: "ADDLISTING_ADD_SUCCESS" } },
-              {
-                eventName: {
-                  $not: { $ne: "ADDLISTING_UPLOAD_PHOTOS_SUCCESS" },
-                },
-              },
-            ],
-          },
-        },
-      });
-
-    const total_listings_verification_attempted =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            // eventName: "ADDLISTING_VERIFY_NOW",
-            $or: [
-              { eventName: "ADDLISTING_VERIFY_NOW" },
-              { eventName: "LISTINGINFO_VERIFY_SELECTED" },
-              { eventName: "MYLISTINGS_VERIFYNOW_SELECTED" },
-              { eventName: "MYLISTINGS_VERIFYNOW_HELP_SELECTED" },
-            ],
-          },
-        },
-      });
-
-    const total_number_of_listing_activated = await eventModal.countDocuments({
-      events: {
-        $elemMatch: {
-          // eventName: "MYLISTINGS_VERIFYNOW_HELP_SELECTED",
-          $or: [
-            { eventName: "MYLISTINGS_VERIFYNOW_HELP_SELECTED" },
-            { eventName: "LISTINGINFO_ACTIVATENOW_SELECTED" },
-            { eventName: "LISTINGINFO_ACTIVATENOW_SUCCESS" },
-          ],
-        },
-      },
-    });
-
-    const total_number_of_listing_deleted = await eventModal.countDocuments({
-      events: {
-        $elemMatch: {
-          // eventName: "MYLISTINGS_DELETE_SELECTED",
-          $or: [
-            { eventName: "MYLISTINGS_DELETE_SELECTED" },
-            { eventName: "LISTINGINFO_DELETE_SELECTED" },
-            { eventName: "LISTINGINFO_DELETE_SUCCESS" },
-          ],
-        },
-      },
-    });
-
-    const total_number_of_contact_seller_attempted =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "LISTINGINFO_CONTACT_SELLER",
-          },
-        },
-      });
-
-    const total_number_of_request_verification_attempted =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "LISTINGINFO_REQUEST_VERIFICATION",
-          },
-        },
-      });
-
-    const total_listings_verified_from_web = await eventModal.countDocuments({
-      srcFrom: "Web",
-      events: {
-        $elemMatch: {
-          // eventName: "ADDLISTING_VERIFY_NOW",
-          $or: [
-            { eventName: "ADDLISTING_VERIFY_NOW" },
-            { eventName: "LISTINGINFO_VERIFY_SELECTED" },
-            { eventName: "MYLISTINGS_VERIFYNOW_SELECTED" },
-            { eventName: "MYLISTINGS_VERIFYNOW_HELP_SELECTED" },
-          ],
-        },
-      },
-    });
-
-    const total_number_of_visits_at_service_tab =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "HOME_SERVICES_SELECTED",
-          },
-        },
-      });
-
-    const total_number_of_visits_at_buyers_verification =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "BUYER_VERIFICATION_LINK_CLICKED",
-          },
-        },
-      });
-
-    const total_number_of_buyers_verification_completed =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "BUYER_VERIFICATION_COMPLETED",
-          },
-        },
-      });
-
-    const total_listings_verification_completed =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "TEST_RESULT_SELL_PRICE_CHANGED",
-          },
-        },
-      });
-
-    const total_diagnostics_session_invocked = await eventModal.countDocuments({
-      events: {
-        $elemMatch: {
-          eventName: "DIAGNOSTICS_SESSION_INVOKED",
-        },
-      },
-    });
-
-    const total_diagnostics_session_completed = await eventModal.countDocuments(
-      {
-        events: {
-          $elemMatch: {
-            eventName: "DIAGNOSTICS_SESSION_COMPLETED",
-          },
-        },
+    let total_new_listing_attempted = await eventModal.find({});
+    let home_sell_now_count = 0;
+    total_new_listing_attempted = total_new_listing_attempted.forEach(
+      (item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "HOME_SELLNOW_SELECTED") {
+            home_sell_now_count++;
+          }
+        });
       }
     );
 
-    const total_data_transfer_session_invocked =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "DATA_TRANSFER_SESSION_INVOKED",
-          },
-        },
+    total_new_listing_attempted = home_sell_now_count;
+
+    let total_new_listing_completed = await eventModal.find({});
+    let new_listing_completed_count = 0;
+    total_new_listing_completed = total_new_listing_completed.forEach(
+      (item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "ADDLISTING_ADD_SUCCESS") {
+            new_listing_completed_count++;
+          }
+        });
+      }
+    );
+
+    total_new_listing_completed = new_listing_completed_count;
+
+    let total_new_listing_completed_without_photos = await eventModal.find({});
+    let new_listing_completed_without_photos_count = 0;
+    let photos_uploaded = 0;
+    let listings_added = 0;
+    total_new_listing_completed_without_photos =
+      total_new_listing_completed_without_photos.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "ADDLISTING_ADD_SUCCESS") {
+            console.log("event", event);
+            listings_added = listings_added + 1;
+            new_listing_completed_without_photos_count++;
+          } else if (event.eventName === "ADDLISTING_UPLOAD_PHOTOS_SUCCESS") {
+            photos_uploaded = photos_uploaded + 1;
+          }
+        });
       });
 
-    const total_data_transfer_session_completed =
-      await eventModal.countDocuments({
-        events: {
-          $elemMatch: {
-            eventName: "DATA_TRANSFER_SESSION_COMPLETED",
-          },
-        },
+    new_listing_completed_without_photos_count =
+      listings_added - photos_uploaded;
+
+    total_new_listing_completed_without_photos =
+      new_listing_completed_without_photos_count;
+
+    let total_listings_verification_attempted = await eventModal.find({});
+    let total_listings_verification_attempted_count = 0;
+
+    total_listings_verification_attempted =
+      total_listings_verification_attempted.forEach((item) => {
+        item.events.filter((event) => {
+          if (
+            event.eventName === "ADDLISTING_VERIFY_NOW" ||
+            event.eventName === "LISTINGINFO_VERIFY_SELECTED" ||
+            event.eventName === "MYLISTINGS_VERIFYNOW_SELECTED" ||
+            event.eventName === "MYLISTINGS_VERIFYNOW_HELP_SELECTED"
+          ) {
+            total_listings_verification_attempted_count++;
+          }
+        });
       });
+
+    total_listings_verification_attempted =
+      total_listings_verification_attempted_count;
+
+    let total_number_of_listing_activated = await eventModal.find({});
+    let total_number_of_listing_activated_count = 0;
+    total_number_of_listing_activated =
+      total_number_of_listing_activated.forEach((item) => {
+        item.events.filter((event) => {
+          if (
+            event.eventName === "MYLISTINGS_VERIFYNOW_HELP_SELECTED" ||
+            event.eventName === "LISTINGINFO_ACTIVATENOW_SELECTED" ||
+            event.eventName === "LISTINGINFO_ACTIVATENOW_SUCCESS"
+          ) {
+            total_number_of_listing_activated_count++;
+          }
+        });
+      });
+    total_number_of_listing_activated = total_number_of_listing_activated_count;
+
+    let total_number_of_listing_deleted = await eventModal.find({});
+    let total_number_of_listing_deleted_count = 0;
+    total_number_of_listing_deleted = total_number_of_listing_deleted.forEach(
+      (item) => {
+        item.events.filter((event) => {
+          if (
+            event.eventName === "MYLISTINGS_DELETE_SELECTED" ||
+            event.eventName === "LISTINGINFO_DELETE_SELECTED" ||
+            event.eventName === "LISTINGINFO_DELETE_SUCCESS"
+          ) {
+            total_number_of_listing_deleted_count++;
+          }
+        });
+      }
+    );
+
+    total_number_of_listing_deleted = total_number_of_listing_deleted_count;
+
+    let total_number_of_contact_seller_attempted = await eventModal.find({});
+    let total_number_of_contact_seller_attempted_count = 0;
+    total_number_of_contact_seller_attempted =
+      total_number_of_contact_seller_attempted.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "LISTINGINFO_CONTACT_SELLER") {
+            total_number_of_contact_seller_attempted_count++;
+          }
+        });
+      });
+
+    total_number_of_contact_seller_attempted =
+      total_number_of_contact_seller_attempted_count;
+
+    let total_number_of_request_verification_attempted = await eventModal.find(
+      {}
+    );
+
+    let total_number_of_request_verification_attempted_count = 0;
+    total_number_of_request_verification_attempted =
+      total_number_of_request_verification_attempted.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "LISTINGINFO_REQUEST_VERIFICATION") {
+            total_number_of_request_verification_attempted_count++;
+          }
+        });
+      });
+
+    total_number_of_request_verification_attempted =
+      total_number_of_request_verification_attempted_count;
+
+    let total_listings_verified_from_web = await eventModal.find({
+      srcFrom: "Web",
+    });
+    let total_listings_verified_from_web_count = 0;
+    total_listings_verified_from_web = total_listings_verified_from_web.forEach(
+      (item) => {
+        item.events.filter((event) => {
+          if (
+            event.eventName === "ADDLISTING_VERIFY_NOW" ||
+            event.eventName === "LISTINGINFO_VERIFY_SELECTED" ||
+            event.eventName === "MYLISTINGS_VERIFYNOW_SELECTED" ||
+            event.eventName === "MYLISTINGS_VERIFYNOW_HELP_SELECTED"
+          ) {
+            total_listings_verified_from_web_count++;
+          }
+        });
+      }
+    );
+
+    total_listings_verified_from_web = total_listings_verified_from_web_count;
+
+    let total_number_of_visits_at_service_tab = await eventModal.find({});
+    let total_number_of_visits_at_service_tab_count = 0;
+    total_number_of_visits_at_service_tab =
+      total_number_of_visits_at_service_tab.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "HOME_SERVICES_SELECTED") {
+            total_number_of_visits_at_service_tab_count++;
+          }
+        });
+      });
+    total_number_of_visits_at_service_tab =
+      total_number_of_visits_at_service_tab_count;
+
+    let total_number_of_visits_at_buyers_verification = await eventModal.find(
+      {}
+    );
+    let total_number_of_visits_at_buyers_verification_count = 0;
+    total_number_of_visits_at_buyers_verification =
+      total_number_of_visits_at_buyers_verification.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "BUYER_VERIFICATION_LINK_CLICKED") {
+            total_number_of_visits_at_buyers_verification_count++;
+          }
+        });
+      });
+
+    total_number_of_visits_at_buyers_verification =
+      total_number_of_visits_at_buyers_verification_count;
+
+    let total_number_of_buyers_verification_completed = await eventModal.find(
+      {}
+    );
+    let total_number_of_buyers_verification_completed_count = 0;
+    total_number_of_buyers_verification_completed =
+      total_number_of_buyers_verification_completed.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "BUYER_VERIFICATION_COMPLETED") {
+            total_number_of_buyers_verification_completed_count++;
+          }
+        });
+      });
+
+    total_number_of_buyers_verification_completed =
+      total_number_of_buyers_verification_completed_count;
+
+    let total_listings_verification_completed = await eventModal.find({});
+    let total_listings_verification_completed_count = 0;
+    total_listings_verification_completed =
+      total_listings_verification_completed.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "TEST_RESULT_SELL_PRICE_CHANGED") {
+            total_listings_verification_completed_count++;
+          }
+        });
+      });
+
+    total_listings_verification_completed =
+      total_listings_verification_completed_count;
+
+    let total_diagnostics_session_invocked = await eventModal.find({});
+
+    let total_diagnostics_session_invocked_count = 0;
+    total_diagnostics_session_invocked =
+      total_diagnostics_session_invocked.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "DIAGNOSTICS_SESSION_INVOKED") {
+            total_diagnostics_session_invocked_count++;
+          }
+        });
+      });
+
+    total_diagnostics_session_invocked =
+      total_diagnostics_session_invocked_count;
+
+    let total_diagnostics_session_completed = await eventModal.find({});
+
+    let total_diagnostics_session_completed_count = 0;
+
+    total_diagnostics_session_completed =
+      total_diagnostics_session_completed.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "DIAGNOSTICS_SESSION_COMPLETED") {
+            total_diagnostics_session_completed_count++;
+          }
+        });
+      });
+
+    total_diagnostics_session_completed =
+      total_diagnostics_session_completed_count;
+
+    let total_data_transfer_session_invocked = await eventModal.find({});
+
+    let total_data_transfer_session_invocked_count = 0;
+    total_data_transfer_session_invocked =
+      total_data_transfer_session_invocked.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "DATA_TRANSFER_SESSION_INVOKED") {
+            total_data_transfer_session_invocked_count++;
+          }
+        });
+      });
+
+    total_data_transfer_session_invocked =
+      total_data_transfer_session_invocked_count;
+
+    let total_data_transfer_session_completed = await eventModal.find({});
+
+    let total_data_transfer_session_completed_count = 0;
+
+    total_data_transfer_session_completed =
+      total_data_transfer_session_completed.forEach((item) => {
+        item.events.filter((event) => {
+          if (event.eventName === "DATA_TRANSFER_SESSION_COMPLETED") {
+            total_data_transfer_session_completed_count++;
+          }
+        });
+      });
+
+    total_data_transfer_session_completed =
+      total_data_transfer_session_completed_count;
 
     const total_listings = await saveListingModal.find({});
     let listing_with_recommended_price = [];
@@ -265,7 +382,6 @@ router.get("/logs/geteventinfo", async (req, res) => {
         });
         if (listing_data) {
           fav_listing_details.push(listing_data.marketingName);
-          // in the fav_listing_details there are multiple model name, get the most repeated one
           const fav_most_repeated_model_name = fav_listing_details.reduce(
             (acc, curr) => {
               acc[curr] = (acc[curr] || 0) + 1;
@@ -277,10 +393,6 @@ router.get("/logs/geteventinfo", async (req, res) => {
           )[0];
           const _fav_most_repeated_model_name_value =
             fav_most_repeated_model_name[fav_most_repeated_model_name_key];
-          // console.log(
-          //   "most_repeated_model_name_value",
-          //   _fav_most_repeated_model_name_value
-          // );
         }
       });
     });
@@ -357,6 +469,8 @@ router.get("/logs/geteventinfo", async (req, res) => {
 
     res.json({
       total_logs_captured,
+      total_logs_captured_geographically,
+      total_unique_users,
       total_app_opens,
       total_unique_users_with_app_opens,
       total_new_listing_attempted,
@@ -381,6 +495,8 @@ router.get("/logs/geteventinfo", async (req, res) => {
       fav_listing_details,
       listing_with_real_name,
       total_users_registered_today,
+      listing_with_real_name_unique,
+      complete_marketing_name_unique,
     });
   } catch (error) {
     console.log(error);

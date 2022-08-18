@@ -4,14 +4,16 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const scrappedModal = require("../../src/database/modals/others/scrapped_models");
+const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 const logEvent = require("../../src/middleware/event_logging");
 const allMatrix = require("../../utils/matrix_figures");
+const fs = require("fs");
 
 router.post("/price/externalsellsource", logEvent, async (req, res) => {
-  const deviceStorage = req.body.deviceStorage;
-  const deviceRam = req.body.deviceRam;
-  const make = req.body.make;
-  const marketingName = req.body.marketingName;
+  const deviceStorage = req.body.deviceStorage.split("GB")[0];
+  const deviceRam = req.body.deviceRam.split("GB")[0];
+  let make = req.body.make;
+  let marketingName = req.body.marketingName;
   const deviceCondition = req.body.deviceCondition;
   const hasCharger = req.body.hasCharger;
   const hasEarphone = req.body.hasEarphone;
@@ -89,13 +91,36 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
     //   model_name: marketingName,
     //   mobiru_condition: deviceCondition,
     // });
-    const listings = await lspModal.find({
+
+    // const listings = await lspModal.find({
+    //   type: "sell",
+    //   storage: [deviceStorage, "--", "-- GB"],
+    //   ram: [deviceRam, "--", "-- GB"],
+    //   make: make,
+    //   model: marketingName,
+    //   condition: deviceCondition,
+    // });
+
+    let exact_model_name = "";
+    const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
+    allgsmData.forEach((element) => {
+      if (element.marketingName.includes(marketingName)) {
+        exact_model_name = element.marketingName;
+      }
+    });
+    let tempModelName = marketingName.toLowerCase();
+
+    if (tempModelName.includes("iphone")) {
+      tempModelName = marketingName.replace("iPhone", "Iphone");
+    }
+
+    const listings = await testScrappedModal.find({
       type: "sell",
-      storage: [deviceStorage, "--", "-- GB"],
-      ram: [deviceRam, "--", "-- GB"],
+      storage: [parseInt(deviceStorage), "--", "-- GB"],
+      ram: [parseInt(deviceRam), "--", "-- GB"],
       make: make,
-      model: marketingName,
-      condition: deviceCondition,
+      model_name: [marketingName, exact_model_name, tempModelName],
+      mobiru_condition: deviceCondition,
     });
 
     if (!listings.length) {
@@ -109,12 +134,21 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
       let finalDataArray = [];
       let vendorListings = [];
 
-      listings.forEach((listing) => {
-        listing.vendor.forEach((vendor) => {
-          if (vendor.type == "sell") {
-            vendorListings.push(vendor);
-          }
-        });
+      // listings.forEach((listing) => {
+      //   listing.vendor.forEach((vendor) => {
+      //     if (vendor.type == "sell") {
+      //       vendorListings.push(vendor);
+      //     }
+      //   });
+      // });
+
+      listings.forEach((element) => {
+        if (element.type === "sell") {
+          vendorListings.push({
+            vendor_id: element.vendor_id,
+            price: element.price,
+          });
+        }
       });
 
       vendorListings.forEach(async (element) => {
@@ -168,6 +202,17 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
 
       finalDataArray.forEach((element, index) => {
         if (
+          dataToBeSend.length <= 1 &&
+          !extrData.includes(element.externalSourceImage) &&
+          element.externalSourceImage.includes("flipkart_logo")
+        ) {
+          dataToBeSend.push(element);
+          extrData.push(element.externalSourceImage);
+        }
+      });
+
+      finalDataArray.forEach((element, index) => {
+        if (
           dataToBeSend.length <= 2 &&
           !extrData.includes(element.externalSourceImage) &&
           element.externalSourceImage.includes("ashify_logo")
@@ -187,7 +232,7 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
         }
       });
       res.status(200).json({
-        reason: "Listing found",
+        reason: "External Sell Source found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: dataToBeSend,
