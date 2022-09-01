@@ -41,7 +41,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, data.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -71,7 +71,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
         .limit(30);
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, data.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -133,7 +133,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -163,7 +163,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
         .limit(30);
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -225,7 +225,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -257,7 +257,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
         .limit(30);
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -325,7 +325,7 @@ const bestDealsByMarketingName = async (
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -357,7 +357,7 @@ const bestDealsByMarketingName = async (
         .limit(30);
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, deals.length);
+        otherListings = completeDeals.slice(5, -1);
       } else {
         otherListings = completeDeals;
       }
@@ -417,12 +417,10 @@ const bestDealsForSearchListing = async (
       }
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, deals.length);
+        otherListings = deals.slice(5, -1);
       } else {
         otherListings = deals;
       }
-      console.log("otherListings", otherListings.length);
-      console.log("updatedBestDeals", updatedBestDeals.length);
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
@@ -445,7 +443,7 @@ const bestDealsForSearchListing = async (
       }
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, deals.length);
+        otherListings = deals.slice(5, -1);
       } else {
         otherListings = deals;
       }
@@ -503,7 +501,7 @@ const bestDealsForShopByCategory = async (
     }
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, deals.length);
+      otherListings = deals.slice(5, -1);
     } else {
       otherListings = deals;
     }
@@ -560,7 +558,7 @@ const bestDealsForShopByPrice = async (
     }
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, deals.length);
+      otherListings = deals.slice(5, -1);
     } else {
       otherListings = deals;
     }
