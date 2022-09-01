@@ -1,6 +1,7 @@
 const getBestDeals = require("./get_best_deals");
 const bestDealsModal = require("../src/database/modals/others/best_deals_models");
 const favoriteModal = require("../src/database/modals/favorite/favorite_add");
+const saveListingModal = require("../src/database/modals/device/save_listing_device");
 
 const bestDealsNearMe = async (location, page, userUniqueId, res) => {
   try {
@@ -209,10 +210,18 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       totalProducts = await bestDealsModal
         .find({ status: "Active", make: make })
         .countDocuments();
+
       let completeDeals = await bestDealsModal
         .find({ status: "Active", make: make })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+        make: make,
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
         completeDeals.forEach((item, index) => {
@@ -255,6 +264,15 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
         })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        status: "Active",
+        make: make,
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
         otherListings = completeDeals.slice(5, -1);
