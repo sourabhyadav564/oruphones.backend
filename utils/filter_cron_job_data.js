@@ -65,6 +65,12 @@ const allCronJobs = async () => {
             mdl = tempName2.trim();
           }
           mdl = mdl.toLowerCase().replace(/5g/g, "").trim();
+          marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
+          // handliing poco in model name //
+
+          mdl = mdl.toLowerCase().replace(/poco/g, "xiaomi poco").trim();
+
+          // handliing poco in model name //
           if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             el.includes(elm.storage) &&

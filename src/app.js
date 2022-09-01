@@ -13,6 +13,7 @@ const startSavingBestDeals = require("../utils/best_deals_cron_job");
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
   origin: [
+    "https://oru-phones.web.app",
     "https://www.oruphones.com",
     "https://dev.oruphones.com",
     "https://betav1.oruphones.com",
@@ -54,10 +55,10 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-// schedule.scheduleJob("0/20 * * * *", function () {
-//   console.log("The answer to life, the universe, and everything!");
-//   startSavingBestDeals();
-// });
+schedule.scheduleJob("14 13 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+  startSavingBestDeals();
+});
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
