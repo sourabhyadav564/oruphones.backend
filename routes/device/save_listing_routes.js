@@ -82,14 +82,23 @@ router.post("/listing/save", logEvent, async (req, res) => {
   });
 
   if (userDetails) {
-    console.log("userDetails", userDetails, userDetails?.userName);
-    if (userDetails?.userName.length === 0) {
-      console.log("userDetailsssssss", userDetails);
+    if (userDetails?.userName?.length === 0) {
       const userName = listedBy;
       const dataToBeUpdate = {
         userName: userName,
       };
-      console.log("userUniqueId", userUniqueId);
+      let data = await createUserModal.findByIdAndUpdate(
+        userDetails._id,
+        dataToBeUpdate,
+        {
+          new: true,
+        }
+      );
+    } else if (userDetails?.userName == null) {
+      const userName = listedBy;
+      const dataToBeUpdate = {
+        userName: userName,
+      };
       let data = await createUserModal.findByIdAndUpdate(
         userDetails._id,
         dataToBeUpdate,
@@ -946,7 +955,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
       notionalPrice = notionalPrice - (basePrice / 100) * deduction;
 
       let testScrappedModalData = await testScrappedModal.find({
-        type: 'sell',
+        type: "sell",
         vendor_id: 8,
         make: getMake,
         model_name: getMarketingName,

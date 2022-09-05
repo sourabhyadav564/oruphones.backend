@@ -30,6 +30,13 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
         .find({ status: "Active" })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
         completeDeals.forEach((item, index) => {
@@ -70,6 +77,14 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
         })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        status: "Active",
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
         otherListings = completeDeals.slice(5, -1);
@@ -122,6 +137,13 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
         .find({ status: "Active" })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
         completeDeals.forEach((item, index) => {
@@ -162,6 +184,14 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
         })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        status: "Active",
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
         otherListings = completeDeals.slice(5, -1);
@@ -331,6 +361,13 @@ const bestDealsByMarketingName = async (
         .find({ status: "Active", marketingName: marketingName })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+        marketingName: marketingName,
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
         completeDeals.forEach((item, index) => {
@@ -373,6 +410,15 @@ const bestDealsByMarketingName = async (
         })
         .skip(parseInt(page) * 30)
         .limit(30);
+
+      let getSavedDeals = await saveListingModal.find({
+        $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        status: "Active",
+        marketingName: marketingName,
+      });
+
+      completeDeals = completeDeals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
         otherListings = completeDeals.slice(5, -1);
@@ -433,6 +479,13 @@ const bestDealsForSearchListing = async (
           }
         });
       }
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+      });
+
+      deals = deals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
         otherListings = deals.slice(5, -1);
@@ -459,6 +512,14 @@ const bestDealsForSearchListing = async (
           }
         });
       }
+
+      let getSavedDeals = await saveListingModal.find({
+        status: "Active",
+        $or: [{ listingLocation: location }, { listingLocation: "India" }],
+      });
+
+      deals = deals.concat(getSavedDeals);
+
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
         otherListings = deals.slice(5, -1);
@@ -517,6 +578,13 @@ const bestDealsForShopByCategory = async (
         }
       });
     }
+
+    let getSavedDeals = await saveListingModal.find({
+      status: "Active",
+    });
+
+    deals = deals.concat(getSavedDeals);
+
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
       otherListings = deals.slice(5, -1);
@@ -574,6 +642,12 @@ const bestDealsForShopByPrice = async (
         }
       });
     }
+
+    let getSavedDeals = await saveListingModal.find({
+      status: "Active",
+    });
+
+    deals = deals.concat(getSavedDeals);
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
       otherListings = deals.slice(5, -1);
