@@ -28,6 +28,7 @@ const lspModal = require("../../src/database/modals/others/new_scrapped_models")
 const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 
 const allMatrix = require("../../utils/matrix_figures");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 
 // router.get("/listing", async (req, res) => {
 //   try {
