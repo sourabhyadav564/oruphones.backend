@@ -31,7 +31,7 @@ let dateFormat = moment(currentDate).add(10, "days").calendar();
 // try {
 //   MongoClient.connect(url, function (err, db) {
 //     if (err) throw err;
-//     var dbo = db.db("testing_application_data");
+//     var dbo = db.db(process.env.Collection);
 //     // var myobj = { name: "Company Inc", address: "Highway 37" };
 //     dbo.collection("complete_scrapped_models").deleteMany({});
 //       // .delete(lspArray, function (err, res) {
@@ -121,7 +121,7 @@ const calculate_LSP_BUY = async () => {
         // try {
         //   MongoClient.connect(url, function (err, db) {
         //     if (err) throw err;
-        //     var dbo = db.db("testing_application_data");
+        // var dbo = db.db(process.env.Collection);
         //     // var myobj = { name: "Company Inc", address: "Highway 37" };
         //     dbo
         //       .collection("buy_scrapped_models")
@@ -450,7 +450,7 @@ const calculate_LSP_SELL = async () => {
         // try {
         //   MongoClient.connect(url, function (err, db) {
         //     if (err) throw err;
-        //     var dbo = db.db("testing_application_data");
+        // var dbo = db.db(process.env.Collection);
         //     dbo
         //       .collection("complete_scrapped_models")
         //       .deleteMany({})
@@ -504,58 +504,58 @@ const calculate_LSP_For_Amazon_Exchange = async () => {
       // price: item.model_name.includes("Samsung")
       //   ? item.actualPrice * 1.4
       //   : item.actualPrice * 1.2,
-      price: item.actualPrice
+      price: item.actualPrice,
     };
     finalScrappedModelObject.push(item);
   });
 
   try {
-          MongoClient.connect(url, function (err, db) {
-            if (err) throw err;
-            var dbo = db.db("testing_application_data");
-            dbo
-              .collection("complete_scrapped_models")
-              .deleteMany({})
-              .then(() => {
-                dbo
-                  .collection("complete_scrapped_models")
-                  .insertMany(finalScrappedModelObject, function (err, res) {
-                    if (err) throw err;
-                    console.log(
-                      `${finalScrappedModelObject.length} documents inserted successfully on ${dateFormat})}`
-                    );
-                    db.close();
-                  });
-              });
-          });
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db(process.env.Collection);
+      dbo
+        .collection("complete_scrapped_models")
+        .deleteMany({})
+        .then(() => {
+          dbo
+            .collection("complete_scrapped_models")
+            .insertMany(finalScrappedModelObject, function (err, res) {
+              if (err) throw err;
+              console.log(
+                `${finalScrappedModelObject.length} documents inserted successfully on ${dateFormat})}`
+              );
+              db.close();
+            });
+        });
+    });
 
-          let mailOptions = {
-            from: "mobiruindia22@gmail.com",
-            // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
-            to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-            subject: "Data has successfully been migrated to MongoDB",
-            text:
-              "Scrapped data has been successfully migrated to MongoDB, number of scrapped models: " +
-              lspArray.length,
-          };
+    let mailOptions = {
+      from: "mobiruindia22@gmail.com",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      subject: "Data has successfully been migrated to MongoDB",
+      text:
+        "Scrapped data has been successfully migrated to MongoDB, number of scrapped models: " +
+        lspArray.length,
+    };
 
-          config.sendMail(mailOptions, function (err, result) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log("Email sent: " + result.response);
-            }
-          });
-        } catch (error) {
-          console.log(error);
-        }
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + result.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
   // fs.writeFileSync("lsp.json", JSON.stringify(finalScrappedModelObject));
-}
+};
 
 const start_migration = async () => {
   calculate_LSP_BUY().then(() => {
     console.log("entered into then");
-    calculate_LSP_SELL()
+    calculate_LSP_SELL();
     console.log("exited from then");
   });
 };

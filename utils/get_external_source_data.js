@@ -100,7 +100,7 @@ const get_external_source_buy = async () => {
         try {
           MongoClient.connect(url, function (err, db) {
             if (err) throw err;
-            var dbo = db.db("testing_application_data");
+            var dbo = db.db(process.env.Collection);
             dbo
               .collection("external_source_for_buys")
               .deleteMany({})

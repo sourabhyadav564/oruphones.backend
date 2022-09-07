@@ -115,7 +115,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
 });
 
 router.get("/listbymarketingname", logEvent, async (req, res) => {
-  const marketingname = req.query.marketingName;
+  const marketingname = req.query.marketingName;  
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;
   let page = req.query.pageNumber;

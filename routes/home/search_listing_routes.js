@@ -27,7 +27,7 @@ router.post("/listings/search", logEvent, async (req, res) => {
   const warenty = req.body.warenty;
   const marketingName = req.body.marketingName;
   let page = req.query.pageNumber;
-  page = parseInt(page.toString());
+  page = parseInt(page.toString());   
 
   try {
     let allListings = [];

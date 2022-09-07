@@ -34,7 +34,7 @@ const collectData = async (data) => {
   try {
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
-      var dbo = db.db("testing_application_data");
+      var dbo = db.db(process.env.Collection);
       dbo
         .collection("complete_best_deals")
         .deleteMany({})
@@ -53,7 +53,7 @@ const collectData = async (data) => {
 
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp, sourabh@zenro.co.jp",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
       subject: "Best Deals data has successfully been migrated to MongoDB",
       text:
@@ -208,12 +208,6 @@ const getBestDeals = async (
           }
 
           notionalPrice = notionalPrice - (basePrice / 100) * deduction;
-          console.log(
-            "notionalData1 D N B",
-            deduction,
-            notionalPrice,
-            basePrice
-          );
 
           // let testScrappedModal = JSON.parse(
           //   fs.readFileSync("testing_scrapped_datas.json")
@@ -245,15 +239,12 @@ const getBestDeals = async (
           if ("warranty" in item == true && item.isOtherVendor === "N") {
             let cashify_upto_price = 0;
 
-            console.log("data --->", marketingname, storage, make);
 
-            console.log("getCashifyListing", getCashifyListing);
             if (getCashifyListing) {
               cashify_upto_price = getCashifyListing.price;
 
               let warrantyWeight = 0;
               const warranty = item.warranty;
-              console.log("warrantyData", warranty, cashify_upto_price);
 
               if (warranty == "More than 9 months") {
                 warrantyWeight = warranty_percentage1;
@@ -277,18 +268,10 @@ const getBestDeals = async (
           let newBasePrice =
             basePrice - (basePrice / 100) * thirdPartyDeduction;
 
-          console.log(
-            "notionalData2 D N B",
-            thirdPartyDeduction,
-            notionalPrice,
-            newBasePrice
-          );
-
           let currentPercentage;
           currentPercentage =
             ((newBasePrice - notionalPrice) / newBasePrice) * 100;
 
-          console.log("currentPercentage", currentPercentage);
 
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {

@@ -27,6 +27,7 @@ const corsOptions = {
     "http://localhost:3001",
     "http://localhost:3002",
     "https://localhost:3003",
+    "http://localhost:5500",
     "https://oru-phones-web.vercel.app",
     "https://oru-phones-mobile-web.vercel.app",
     "https://oru-phones-mip-portal.vercel.app",
@@ -55,10 +56,10 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-schedule.scheduleJob("14 13 * * *", function () {
-  console.log("The answer to life, the universe, and everything!");
-  startSavingBestDeals();
-});
+// schedule.scheduleJob("04 13 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   startSavingBestDeals();
+// });
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");

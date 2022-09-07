@@ -384,7 +384,7 @@ const collectData = async (data) => {
   try {
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
-      var dbo = db.db("testing_application_data");
+      var dbo = db.db(process.env.Collection);
       dbo
         .collection("complete_lsp_datas")
         .deleteMany({})
@@ -403,8 +403,8 @@ const collectData = async (data) => {
 
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp, sourabh@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +

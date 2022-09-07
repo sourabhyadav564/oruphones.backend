@@ -195,14 +195,21 @@ router.post("/listing/save", logEvent, async (req, res) => {
     warranty: deviceWarranty,
   };
 
-  const modalInfo = new saveListingModal(data);
   try {
+    const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
+
+    const tempModelInfo = new bestDealsModal({
+      data,
+      notionalPercentage: -999999.0,
+    });
+    const tempDataObject = await tempModelInfo.save();
+
     res.status(201).json({
       reason: "Listing saved successfully",
       statusCode: 201,
       status: "SUCCESS",
-      dataObject,
+      dataObject: dataObject,
     });
     return;
   } catch (error) {
