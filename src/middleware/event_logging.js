@@ -1,6 +1,7 @@
 const eventModal = require("../database/modals/others/event_logs");
 const moment = require("moment");
 const dotenv = require("dotenv");
+const createUserModal = require("../database/modals/login/login_create_user");
 dotenv.config();
 
 const logEvent = async (req, res, next) => {
@@ -12,6 +13,9 @@ const logEvent = async (req, res, next) => {
   const devicePlatform = req.headers.devicePlatform;
 
   const getEvent = await eventModal.findOne({ sessionId: sessionId });
+  const getUser = await createUserModal.findOne({
+    userUniqueId: userUniqueId,
+  });
   const currentTime = moment(Date.now()).format("LTS");
   const expirationTime = moment(
     getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)
@@ -19,10 +23,15 @@ const logEvent = async (req, res, next) => {
 
   try {
     if (process.env.EVENT === "Active") {
-      if (getEvent) {
+      if (!getUser) {
+        res.status(200).send({
+          status: "INVALID_USER",
+          statusCode: 200,
+          reason: "User not found",
+        });
+        return;
+      } else if (getEvent) {
         const eventData = getEvent.events;
-
-        // if (userUniqueId === getEvent.userUniqueId || userUniqueId === "Guest") {
         const updateEvent = await eventModal.findByIdAndUpdate(
           getEvent._id,
           {
@@ -38,9 +47,6 @@ const logEvent = async (req, res, next) => {
           },
           { new: true }
         );
-        // } else {
-        //   console.log("Event can't be updated");
-        // }
         next();
       } else {
         res.status(200).send({

@@ -588,7 +588,7 @@ const bestDealsForShopByCategory = async (
 
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, -1);
+      otherListings = deals.slice(5, deals.length);
     } else {
       otherListings = deals;
     }
