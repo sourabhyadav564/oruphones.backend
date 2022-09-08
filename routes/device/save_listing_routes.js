@@ -201,10 +201,14 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
 
-    const tempModelInfo = new bestDealsModal({
-      data,
+    let newData = {
+      ...data,
       notionalPercentage: -999999,
-    });
+    }
+
+    console.log("newData", newData);
+
+    const tempModelInfo = new bestDealsModal(newData);
     const tempDataObject = await tempModelInfo.save();
 
     res.status(201).json({
