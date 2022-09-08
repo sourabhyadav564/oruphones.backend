@@ -186,6 +186,9 @@ const bestDealsSchema = new mongoose.Schema({
     notionalPercentage: {
         type: Number,
         default: -999999,
+    },
+    imagePath: {
+        type: String,
     }
 },{ timestamps: true })
 

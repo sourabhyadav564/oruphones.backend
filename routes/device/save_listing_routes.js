@@ -204,7 +204,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     let newData = {
       ...data,
       notionalPercentage: -999999,
-    }
+      imagePath: defaultImage.fullImage || images[0].fullImage,
+    };
 
     console.log("newData", newData);
 
@@ -435,68 +436,75 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
   }
 });
 
-router.get("/listing/user/mobilenumber", validUser, logEvent, async (req, res) => {
-  try {
-    const userUniqueId = req.query.userUniqueId;
-    const listingId = req.query.listingId;
+router.get(
+  "/listing/user/mobilenumber",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    try {
+      const userUniqueId = req.query.userUniqueId;
+      const listingId = req.query.listingId;
 
-    const isValidUser = await createUserModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-
-    if (isValidUser) {
-      const listing = await saveListingModal.findOne({ listingId: listingId });
-      const mobileNumber = listing.mobileNumber;
-
-      const getListingObject = await saveRequestModal.findOne({
-        mobileNumber: mobileNumber,
-        listingId: listingId,
+      const isValidUser = await createUserModal.findOne({
+        userUniqueId: userUniqueId,
       });
 
-      if (!getListingObject) {
-        const data = {
+      if (isValidUser) {
+        const listing = await saveListingModal.findOne({
           listingId: listingId,
-          userUniqueId: userUniqueId,
-          mobileNumber: isValidUser.mobileNumber,
-        };
-
-        const saveRequest = new saveRequestModal(data);
-        let savedData = await saveRequest.save();
-
-        const dataObject = {
-          mobileNumber,
-        };
-
-        res.status(200).json({
-          reason: "Mobile number retrieved successfully",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject,
         });
-      } else {
-        const dataObject = {
-          mobileNumber,
-        };
+        const mobileNumber = listing.mobileNumber;
 
+        const getListingObject = await saveRequestModal.findOne({
+          mobileNumber: mobileNumber,
+          listingId: listingId,
+        });
+
+        if (!getListingObject) {
+          const data = {
+            listingId: listingId,
+            userUniqueId: userUniqueId,
+            mobileNumber: isValidUser.mobileNumber,
+          };
+
+          const saveRequest = new saveRequestModal(data);
+          let savedData = await saveRequest.save();
+
+          const dataObject = {
+            mobileNumber,
+          };
+
+          res.status(200).json({
+            reason: "Mobile number retrieved successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        } else {
+          const dataObject = {
+            mobileNumber,
+          };
+
+          res.status(200).json({
+            reason: "Mobile number retrieved again",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        }
+      } else {
         res.status(200).json({
-          reason: "Mobile number retrieved again",
+          reason: "Invalid user id provided",
           statusCode: 200,
           status: "SUCCESS",
-          dataObject,
         });
       }
-    } else {
-      res.status(200).json({
-        reason: "Invalid user id provided",
-        statusCode: 200,
-        status: "SUCCESS",
-      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
   }
-});
+);
 
 router.get("/listing/detail", validUser, logEvent, async (req, res) => {
   try {
@@ -690,420 +698,426 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/detailwithuserinfo", validUser, logEvent, async (req, res) => {
-  const listingid = req.query.listingid;
-  const isOtherVendor = req.query.isOtherVendor;
-  const userUniqueId = req.query.userUniqueId;
+router.post(
+  "/listing/detailwithuserinfo",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    const listingid = req.query.listingid;
+    const isOtherVendor = req.query.isOtherVendor;
+    const userUniqueId = req.query.userUniqueId;
 
-  // let testScrappedModalData = await testScrappedModal.find({
-  //   type: 'sell',
-  //   vendor_id: 8
-  // });
-
-  const VENDORS = {
-    6: "Amazon",
-    7: "Quikr",
-    8: "Cashify",
-    9: "2Gud",
-    10: "Budli",
-    11: "Paytm",
-    12: "Yaantra",
-    13: "Sahivalue",
-    14: "Shopcluse",
-    15: "Xtracover",
-    16: "Mobigarage",
-    17: "Instacash",
-    18: "Cashforphone",
-    19: "Recycledevice",
-    20: "Quickmobile",
-    21: "mbr_Buyblynk",
-    22: "mbr_Electronicbazaar",
-    23: "Flipkart",
-  };
-
-  try {
-    // const isValidUser = await createUserModal.find({
-    //   userUniqueId: userUniqueId,
-    // })
-
-    let favList = [];
-    if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
-      const getFavObject = await favoriteModal.findOne({
-        userUniqueId: userUniqueId,
-      });
-
-      if (getFavObject) {
-        favList = getFavObject.fav_listings;
-      } else {
-        favList = [];
-      }
-    }
-
-    // const getListing = await saveListingModal.findOne({
-    //   listingId: listingid,
+    // let testScrappedModalData = await testScrappedModal.find({
+    //   type: 'sell',
+    //   vendor_id: 8
     // });
 
-    let getListing = {};
+    const VENDORS = {
+      6: "Amazon",
+      7: "Quikr",
+      8: "Cashify",
+      9: "2Gud",
+      10: "Budli",
+      11: "Paytm",
+      12: "Yaantra",
+      13: "Sahivalue",
+      14: "Shopcluse",
+      15: "Xtracover",
+      16: "Mobigarage",
+      17: "Instacash",
+      18: "Cashforphone",
+      19: "Recycledevice",
+      20: "Quickmobile",
+      21: "mbr_Buyblynk",
+      22: "mbr_Electronicbazaar",
+      23: "Flipkart",
+    };
 
-    if (isOtherVendor === "N") {
-      getListing = await saveListingModal.findOne({
-        listingId: listingid,
-      });
-    } else {
-      getThirdsListing = await testScrappedModal.findOne({
-        _id: ObjectId(listingid),
-        type: "buy",
-      });
+    try {
+      // const isValidUser = await createUserModal.find({
+      //   userUniqueId: userUniqueId,
+      // })
 
-      let vendorName = VENDORS[getThirdsListing.vendor_id];
-      let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
-        .toString()
-        .toLowerCase()}_logo.png`;
+      let favList = [];
+      if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
+        const getFavObject = await favoriteModal.findOne({
+          userUniqueId: userUniqueId,
+        });
 
-      // let imagePath = await getDefaultImage(element.model_name);
-      // let imagePath = getImage(element.model_name);
-      let imagePath = "";
-      let condition = getThirdsListing.mobiru_condition;
-
-      getListing = {
-        //   marketingName: element.marketing_name,
-        marketingName:
-          getThirdsListing.model_name == null
-            ? "--"
-            : getThirdsListing.model_name,
-        make:
-          getThirdsListing.model_name == null
-            ? "--"
-            : getThirdsListing.model_name.split(" ")[0],
-        listingPrice:
-          getThirdsListing.price == null
-            ? "--"
-            : getThirdsListing.price.toString(),
-        deviceStorage:
-          getThirdsListing.storage === "0 GB" ||
-          getThirdsListing.storage === "--" ||
-          getThirdsListing.storage == null
-            ? "--"
-            : `${getThirdsListing.storage} GB`,
-        deviceRam:
-          getThirdsListing.ram === "0 GB" ||
-          getThirdsListing.ram === "--" ||
-          getThirdsListing.ram == null
-            ? "--"
-            : `${getThirdsListing.ram} GB`,
-        warranty: getThirdsListing.warranty,
-        vendorLogo: vendorImage,
-        vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
-        vendorId: getThirdsListing.vendor_id,
-        isOtherVendor: "Y",
-        imagePath: imagePath,
-        verified: false,
-        favourite: false,
-        listingLocation: "India",
-        deviceFinalGrade: " ",
-        deviceCosmeticGrade: " ",
-        deviceFunctionalGrade: " ",
-        imei: " ",
-        model:
-          getThirdsListing.model_name == null
-            ? "--"
-            : getThirdsListing.model_name,
-        deviceCondition: condition,
-        listingId: getThirdsListing._id,
-        listingDate: "",
-        modifiedDate: "",
-        verifiedDate: "",
-        charger: "Y",
-        earphone: "Y",
-        originalbox: "Y",
-        defaultImage: {
-          fullImage: "",
-          // fullImage: imagePath,
-        },
-        // images: [{
-        //   fullImage: imagePath,
-        //   thumbnailImage: imagePath,
-        // }]
-        images: [],
-        status: "Active",
-      };
-    }
-
-    if (!getListing) {
-      res.status(200).json({
-        reason: "Invalid listing id provided",
-        statusCode: 200,
-        status: "SUCCESS",
-      });
-      return;
-    } else {
-      let getMake = getListing?.make;
-      let getMarketingName = getListing?.marketingName;
-      let getCondition = getListing?.deviceCondition;
-      let getStorage = getListing?.deviceStorage;
-      let getRam = getListing?.deviceRam;
-      let getCharger = getListing?.charger === "Y" ? true : false;
-      let isAppleChargerIncluded =
-        getCharger?.make === "Apple" ? getCharger : false;
-      let getEarphone = getListing?.earphone === "Y" ? true : false;
-      let isAppleEarphoneIncluded =
-        getEarphone?.make === "Apple" ? getEarphone : false;
-      let gethasOrignalBox = getListing?.originalbox === "Y" ? true : false;
-      let getisVarified = getListing?.verified;
-
-      const price = await getRecommendedPrice(
-        getMake,
-        getMarketingName,
-        getCondition,
-        getStorage,
-        getRam,
-        getCharger,
-        isAppleChargerIncluded,
-        getEarphone,
-        isAppleEarphoneIncluded,
-        gethasOrignalBox,
-        getisVarified,
-        false
-      );
-
-      let basePrice;
-      let notionalPrice;
-      // const verified_percentage = 10;
-      // const warranty_percentage1 = 10;
-      // const warranty_percentage2 = 8;
-      // const warranty_percentage3 = 5;
-      // const warranty_percentage4 = 0;
-      // let has_charger_percentage = 0;
-      // let has_earphone_percentage = 0;
-      // const has_original_box_percentage = 3;
-
-      const warranty_percentage1 =
-        allMatrix.bestDealFigures.warranty_percentage1;
-      const warranty_percentage2 =
-        allMatrix.bestDealFigures.warranty_percentage2;
-      const warranty_percentage3 =
-        allMatrix.bestDealFigures.warranty_percentage3;
-      // const warranty_percentage2 = 8;
-      // const warranty_percentage3 = 5;
-      // const warranty_percentage4 = 0;
-      let has_charger_percentage =
-        allMatrix.bestDealFigures.has_non_apple_charger_percentage;
-      let has_earphone_percentage =
-        allMatrix.bestDealFigures.has_non_apple_earphone_percentage;
-      const has_original_box_percentage =
-        allMatrix.bestDealFigures.has_original_box_percentage;
-      const third_party_warranty_percentage =
-        allMatrix.bestDealFigures.third_party_warranty_percentage;
-
-      // let deduction = 0;
-      // basePrice = price.actualLSP;
-      // notionalPrice = parseInt(
-      //   getListing.listingPrice.toString().replace(",", "")
-      // );
-
-      // // if ("verified" in getListing === true) {
-      // //   if (getListing.verified === true) {
-      // //     notionalPrice =
-      // //       notionalPrice - (basePrice / 100) * verified_percentage;
-      // //   }
-      // // }
-
-      // if ("charger" in getListing === true) {
-      //   if (getListing.charger === "Y") {
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_charger_percentage;
-      //     deduction = deduction + has_charger_percentage;
-      //   }
-      // }
-
-      // if ("earphone" in getListing === true) {
-      //   if (getListing.earphone === "Y") {
-      //     deduction = deduction + has_earphone_percentage;
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_earphone_percentage;
-      //   }
-      // }
-
-      // if ("originalbox" in getListing === true) {
-      //   if (getListing.originalbox === "Y") {
-      //     // notionalPrice =
-      //     //   notionalPrice - (basePrice / 100) * has_original_box_percentage;
-      //     deduction = deduction + has_original_box_percentage;
-      //   }
-      // }
-
-      // let currentPercentage;
-      // currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
-
-      let deduction = 0;
-      basePrice = price.actualLSP;
-      notionalPrice = parseInt(
-        getListing.listingPrice.toString().replace(",", "")
-      );
-
-      if ("charger" in getListing === true) {
-        if (getListing.charger === "N") {
-          deduction = deduction + has_charger_percentage;
-          // notionalPrice =
-          // notionalPrice + (basePrice / 100) * has_charger_percentage;
+        if (getFavObject) {
+          favList = getFavObject.fav_listings;
+        } else {
+          favList = [];
         }
       }
 
-      if ("earphone" in getListing === true) {
-        if (getListing.earphone === "N") {
-          deduction = deduction + has_earphone_percentage;
-          // notionalPrice =
-          //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
-        }
-      }
+      // const getListing = await saveListingModal.findOne({
+      //   listingId: listingid,
+      // });
 
-      if ("originalbox" in getListing === true) {
-        if (getListing.originalbox === "N") {
-          deduction = deduction + has_original_box_percentage;
-          // notionalPrice =
-          //   notionalPrice + (basePrice / 100) * has_original_box_percentage;
-        }
-      }
+      let getListing = {};
 
-      notionalPrice = notionalPrice - (basePrice / 100) * deduction;
-
-      let testScrappedModalData = await testScrappedModal.find({
-        type: "sell",
-        vendor_id: 8,
-        make: getMake,
-        model_name: getMarketingName,
-        storage: parseInt(getStorage.toString().split(" ")[0].toString()),
-      });
-
-      let getCashifyListingList = testScrappedModalData.filter((item) => {
-        if (
-          item.model_name === getMarketingName &&
-          item.make === getMake &&
-          item.storage ===
-            parseInt(getStorage.toString().split(" ")[0].toString()) &&
-          item.type === "sell" &&
-          item.vendor_id === 8
-        ) {
-          return item;
-        }
-      });
-
-      let getCashifyListing = getCashifyListingList[0];
-
-      if (
-        "warranty" in getListing == true &&
-        getListing.isOtherVendor === "N"
-      ) {
-        let cashify_upto_price = 0;
-
-        if (getCashifyListing) {
-          cashify_upto_price = getCashifyListing.price;
-
-          let warrantyWeight = 0;
-          const warranty = item.warranty;
-
-          if (warranty == "0 - 3 Months") {
-            warrantyWeight = warranty_percentage1;
-          } else if (warranty == "4 - 6 Months") {
-            warrantyWeight = warranty_percentage2;
-          } else if (warranty == "7 - 11 Months") {
-            warrantyWeight = warranty_percentage3;
-          }
-
-          notionalPrice =
-            notionalPrice - (cashify_upto_price / 100) * warrantyWeight;
-        }
-      }
-
-      let thirdPartyDeduction =
-        has_charger_percentage +
-        has_earphone_percentage +
-        has_original_box_percentage +
-        third_party_warranty_percentage;
-
-      let newBasePrice = basePrice - (basePrice / 100) * thirdPartyDeduction;
-
-      let currentPercentage;
-      currentPercentage = ((newBasePrice - notionalPrice) / newBasePrice) * 100;
-
-      const externalSource = [];
-
-      let dataObject = { externalSource, ...(getListing._doc || getListing) };
-      if (currentPercentage > -3) {
-        let scrappedModels = await lspModal.find({
-          model: getListing?.marketingName,
-          storage: [getListing?.deviceStorage, "-- GB"],
+      if (isOtherVendor === "N") {
+        getListing = await saveListingModal.findOne({
+          listingId: listingid,
+        });
+      } else {
+        getThirdsListing = await testScrappedModal.findOne({
+          _id: ObjectId(listingid),
           type: "buy",
         });
 
-        let selectdModels = [];
-        let itemId = "";
-        const marketingname = getListing.marketingName;
-        const condition = getListing.deviceCondition;
-        const storage = getListing.deviceStorage;
-        let leastSellingPrice;
+        let vendorName = VENDORS[getThirdsListing.vendor_id];
+        let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+          .toString()
+          .toLowerCase()}_logo.png`;
 
-        let pushedVendors = [];
+        // let imagePath = await getDefaultImage(element.model_name);
+        // let imagePath = getImage(element.model_name);
+        let imagePath = "";
+        let condition = getThirdsListing.mobiru_condition;
 
-        scrappedModels.forEach((item, index) => {
+        getListing = {
+          //   marketingName: element.marketing_name,
+          marketingName:
+            getThirdsListing.model_name == null
+              ? "--"
+              : getThirdsListing.model_name,
+          make:
+            getThirdsListing.model_name == null
+              ? "--"
+              : getThirdsListing.model_name.split(" ")[0],
+          listingPrice:
+            getThirdsListing.price == null
+              ? "--"
+              : getThirdsListing.price.toString(),
+          deviceStorage:
+            getThirdsListing.storage === "0 GB" ||
+            getThirdsListing.storage === "--" ||
+            getThirdsListing.storage == null
+              ? "--"
+              : `${getThirdsListing.storage} GB`,
+          deviceRam:
+            getThirdsListing.ram === "0 GB" ||
+            getThirdsListing.ram === "--" ||
+            getThirdsListing.ram == null
+              ? "--"
+              : `${getThirdsListing.ram} GB`,
+          warranty: getThirdsListing.warranty,
+          vendorLogo: vendorImage,
+          vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
+          vendorId: getThirdsListing.vendor_id,
+          isOtherVendor: "Y",
+          imagePath: imagePath,
+          verified: false,
+          favourite: false,
+          listingLocation: "India",
+          deviceFinalGrade: " ",
+          deviceCosmeticGrade: " ",
+          deviceFunctionalGrade: " ",
+          imei: " ",
+          model:
+            getThirdsListing.model_name == null
+              ? "--"
+              : getThirdsListing.model_name,
+          deviceCondition: condition,
+          listingId: getThirdsListing._id,
+          listingDate: "",
+          modifiedDate: "",
+          verifiedDate: "",
+          charger: "Y",
+          earphone: "Y",
+          originalbox: "Y",
+          defaultImage: {
+            fullImage: "",
+            // fullImage: imagePath,
+          },
+          // images: [{
+          //   fullImage: imagePath,
+          //   thumbnailImage: imagePath,
+          // }]
+          images: [],
+          status: "Active",
+        };
+      }
+
+      if (!getListing) {
+        res.status(200).json({
+          reason: "Invalid listing id provided",
+          statusCode: 200,
+          status: "SUCCESS",
+        });
+        return;
+      } else {
+        let getMake = getListing?.make;
+        let getMarketingName = getListing?.marketingName;
+        let getCondition = getListing?.deviceCondition;
+        let getStorage = getListing?.deviceStorage;
+        let getRam = getListing?.deviceRam;
+        let getCharger = getListing?.charger === "Y" ? true : false;
+        let isAppleChargerIncluded =
+          getCharger?.make === "Apple" ? getCharger : false;
+        let getEarphone = getListing?.earphone === "Y" ? true : false;
+        let isAppleEarphoneIncluded =
+          getEarphone?.make === "Apple" ? getEarphone : false;
+        let gethasOrignalBox = getListing?.originalbox === "Y" ? true : false;
+        let getisVarified = getListing?.verified;
+
+        const price = await getRecommendedPrice(
+          getMake,
+          getMarketingName,
+          getCondition,
+          getStorage,
+          getRam,
+          getCharger,
+          isAppleChargerIncluded,
+          getEarphone,
+          isAppleEarphoneIncluded,
+          gethasOrignalBox,
+          getisVarified,
+          false
+        );
+
+        let basePrice;
+        let notionalPrice;
+        // const verified_percentage = 10;
+        // const warranty_percentage1 = 10;
+        // const warranty_percentage2 = 8;
+        // const warranty_percentage3 = 5;
+        // const warranty_percentage4 = 0;
+        // let has_charger_percentage = 0;
+        // let has_earphone_percentage = 0;
+        // const has_original_box_percentage = 3;
+
+        const warranty_percentage1 =
+          allMatrix.bestDealFigures.warranty_percentage1;
+        const warranty_percentage2 =
+          allMatrix.bestDealFigures.warranty_percentage2;
+        const warranty_percentage3 =
+          allMatrix.bestDealFigures.warranty_percentage3;
+        // const warranty_percentage2 = 8;
+        // const warranty_percentage3 = 5;
+        // const warranty_percentage4 = 0;
+        let has_charger_percentage =
+          allMatrix.bestDealFigures.has_non_apple_charger_percentage;
+        let has_earphone_percentage =
+          allMatrix.bestDealFigures.has_non_apple_earphone_percentage;
+        const has_original_box_percentage =
+          allMatrix.bestDealFigures.has_original_box_percentage;
+        const third_party_warranty_percentage =
+          allMatrix.bestDealFigures.third_party_warranty_percentage;
+
+        // let deduction = 0;
+        // basePrice = price.actualLSP;
+        // notionalPrice = parseInt(
+        //   getListing.listingPrice.toString().replace(",", "")
+        // );
+
+        // // if ("verified" in getListing === true) {
+        // //   if (getListing.verified === true) {
+        // //     notionalPrice =
+        // //       notionalPrice - (basePrice / 100) * verified_percentage;
+        // //   }
+        // // }
+
+        // if ("charger" in getListing === true) {
+        //   if (getListing.charger === "Y") {
+        //     // notionalPrice =
+        //     //   notionalPrice - (basePrice / 100) * has_charger_percentage;
+        //     deduction = deduction + has_charger_percentage;
+        //   }
+        // }
+
+        // if ("earphone" in getListing === true) {
+        //   if (getListing.earphone === "Y") {
+        //     deduction = deduction + has_earphone_percentage;
+        //     // notionalPrice =
+        //     //   notionalPrice - (basePrice / 100) * has_earphone_percentage;
+        //   }
+        // }
+
+        // if ("originalbox" in getListing === true) {
+        //   if (getListing.originalbox === "Y") {
+        //     // notionalPrice =
+        //     //   notionalPrice - (basePrice / 100) * has_original_box_percentage;
+        //     deduction = deduction + has_original_box_percentage;
+        //   }
+        // }
+
+        // let currentPercentage;
+        // currentPercentage = ((basePrice - notionalPrice) / basePrice) * 100;
+
+        let deduction = 0;
+        basePrice = price.actualLSP;
+        notionalPrice = parseInt(
+          getListing.listingPrice.toString().replace(",", "")
+        );
+
+        if ("charger" in getListing === true) {
+          if (getListing.charger === "N") {
+            deduction = deduction + has_charger_percentage;
+            // notionalPrice =
+            // notionalPrice + (basePrice / 100) * has_charger_percentage;
+          }
+        }
+
+        if ("earphone" in getListing === true) {
+          if (getListing.earphone === "N") {
+            deduction = deduction + has_earphone_percentage;
+            // notionalPrice =
+            //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
+          }
+        }
+
+        if ("originalbox" in getListing === true) {
+          if (getListing.originalbox === "N") {
+            deduction = deduction + has_original_box_percentage;
+            // notionalPrice =
+            //   notionalPrice + (basePrice / 100) * has_original_box_percentage;
+          }
+        }
+
+        notionalPrice = notionalPrice - (basePrice / 100) * deduction;
+
+        let testScrappedModalData = await testScrappedModal.find({
+          type: "sell",
+          vendor_id: 8,
+          make: getMake,
+          model_name: getMarketingName,
+          storage: parseInt(getStorage.toString().split(" ")[0].toString()),
+        });
+
+        let getCashifyListingList = testScrappedModalData.filter((item) => {
           if (
-            item.model === marketingname &&
-            item.condition === condition &&
-            item.storage === storage
+            item.model_name === getMarketingName &&
+            item.make === getMake &&
+            item.storage ===
+              parseInt(getStorage.toString().split(" ")[0].toString()) &&
+            item.type === "sell" &&
+            item.vendor_id === 8
           ) {
-            item.vendor.forEach((vendor) => {
-              console.log("vendor", vendor);
-              vendorName = VENDORS[vendor.vendor_id];
-              vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
-                .toString()
-                .toLowerCase()}_logo.png`;
-              let vendorObject = {
-                externalSourcePrice: vendor.price,
-                externalSourceImage: vendorImage,
-              };
-              if (!pushedVendors.includes(vendorName)) {
-                if (
-                  getListing?.vendorLogo != vendorObject.externalSourceImage
-                ) {
-                  selectdModels.push(vendorObject);
-                  pushedVendors.push(vendorName);
-                }
-              }
-            });
+            return item;
           }
         });
 
-        if (selectdModels.length > 0) {
-          externalSource.push(...selectdModels);
-          //TODO: Need to remove the duplicate objects. Objects from the rarest.
-        }
-        dataObject = { externalSource, ...(getListing._doc || getListing) };
-        let tempArray = [];
-        tempArray.push(dataObject);
+        let getCashifyListing = getCashifyListingList[0];
 
-        // add favorite listings to the final list
-        if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
-          tempArray.forEach((item, index) => {
-            if (favList.includes(item.listingId)) {
-              dataObject = { ...dataObject, favourite: true };
-            } else {
-              dataObject = { ...dataObject, favourite: false };
+        if (
+          "warranty" in getListing == true &&
+          getListing.isOtherVendor === "N"
+        ) {
+          let cashify_upto_price = 0;
+
+          if (getCashifyListing) {
+            cashify_upto_price = getCashifyListing.price;
+
+            let warrantyWeight = 0;
+            const warranty = item.warranty;
+
+            if (warranty == "0 - 3 Months") {
+              warrantyWeight = warranty_percentage1;
+            } else if (warranty == "4 - 6 Months") {
+              warrantyWeight = warranty_percentage2;
+            } else if (warranty == "7 - 11 Months") {
+              warrantyWeight = warranty_percentage3;
+            }
+
+            notionalPrice =
+              notionalPrice - (cashify_upto_price / 100) * warrantyWeight;
+          }
+        }
+
+        let thirdPartyDeduction =
+          has_charger_percentage +
+          has_earphone_percentage +
+          has_original_box_percentage +
+          third_party_warranty_percentage;
+
+        let newBasePrice = basePrice - (basePrice / 100) * thirdPartyDeduction;
+
+        let currentPercentage;
+        currentPercentage =
+          ((newBasePrice - notionalPrice) / newBasePrice) * 100;
+
+        const externalSource = [];
+
+        let dataObject = { externalSource, ...(getListing._doc || getListing) };
+        if (currentPercentage > -3) {
+          let scrappedModels = await lspModal.find({
+            model: getListing?.marketingName,
+            storage: [getListing?.deviceStorage, "-- GB"],
+            type: "buy",
+          });
+
+          let selectdModels = [];
+          let itemId = "";
+          const marketingname = getListing.marketingName;
+          const condition = getListing.deviceCondition;
+          const storage = getListing.deviceStorage;
+          let leastSellingPrice;
+
+          let pushedVendors = [];
+
+          scrappedModels.forEach((item, index) => {
+            if (
+              item.model === marketingname &&
+              item.condition === condition &&
+              item.storage === storage
+            ) {
+              item.vendor.forEach((vendor) => {
+                console.log("vendor", vendor);
+                vendorName = VENDORS[vendor.vendor_id];
+                vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+                  .toString()
+                  .toLowerCase()}_logo.png`;
+                let vendorObject = {
+                  externalSourcePrice: vendor.price,
+                  externalSourceImage: vendorImage,
+                };
+                if (!pushedVendors.includes(vendorName)) {
+                  if (
+                    getListing?.vendorLogo != vendorObject.externalSourceImage
+                  ) {
+                    selectdModels.push(vendorObject);
+                    pushedVendors.push(vendorName);
+                  }
+                }
+              });
             }
           });
+
+          if (selectdModels.length > 0) {
+            externalSource.push(...selectdModels);
+            //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          }
+          dataObject = { externalSource, ...(getListing._doc || getListing) };
+          let tempArray = [];
+          tempArray.push(dataObject);
+
+          // add favorite listings to the final list
+          if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
+            tempArray.forEach((item, index) => {
+              if (favList.includes(item.listingId)) {
+                dataObject = { ...dataObject, favourite: true };
+              } else {
+                dataObject = { ...dataObject, favourite: false };
+              }
+            });
+          }
         }
+        res.status(200).json({
+          reason: "Listing found successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject,
+        });
       }
-      res.status(200).json({
-        reason: "Listing found successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
-      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
   }
-});
+);
 
 router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
   const deviceId = req.query.deviceId;
