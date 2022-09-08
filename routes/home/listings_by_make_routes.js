@@ -6,6 +6,7 @@ require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 const {
   bestDealsByMake,
   bestDealsByMarketingName,
@@ -15,7 +16,7 @@ const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listingsbymake", logEvent, async (req, res) => {
+router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
   // const initialMake = req.query.make;
   let make = req.query.make;
   const userUniqueId = req.query.userUniqueId;
@@ -114,7 +115,7 @@ router.get("/listingsbymake", logEvent, async (req, res) => {
   bestDealsByMake(location, make, page, userUniqueId, res);
 });
 
-router.get("/listbymarketingname", logEvent, async (req, res) => {
+router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
   const marketingname = req.query.marketingName;  
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;

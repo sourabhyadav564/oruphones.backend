@@ -29,6 +29,7 @@ const testScrappedModal = require("../../src/database/modals/others/test_scrappe
 
 const allMatrix = require("../../utils/matrix_figures");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
+const validUser = require("../../src/middleware/valid_user");
 
 // router.get("/listing", async (req, res) => {
 //   try {
@@ -52,7 +53,7 @@ const bestDealsModal = require("../../src/database/modals/others/best_deals_mode
 //   }
 // });
 
-router.get("/listings", logEvent, async (req, res) => {
+router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     let dataObject = await saveListingModal.find({ userUniqueId });
@@ -75,7 +76,7 @@ router.get("/listings", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/save", logEvent, async (req, res) => {
+router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listedBy = req.body.listedBy;
   const userDetails = await createUserModal.findOne({
@@ -219,7 +220,7 @@ router.post("/listing/save", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/delete", logEvent, async (req, res) => {
+router.post("/listing/delete", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -258,7 +259,7 @@ router.post("/listing/delete", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/update", logEvent, async (req, res) => {
+router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
   const charger = req.body.charger;
@@ -335,7 +336,7 @@ router.post("/listing/update", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/pause", logEvent, async (req, res) => {
+router.post("/listing/pause", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -382,7 +383,7 @@ router.post("/listing/pause", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/activate", logEvent, async (req, res) => {
+router.post("/listing/activate", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -430,7 +431,7 @@ router.post("/listing/activate", logEvent, async (req, res) => {
   }
 });
 
-router.get("/listing/user/mobilenumber", logEvent, async (req, res) => {
+router.get("/listing/user/mobilenumber", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     const listingId = req.query.listingId;
@@ -493,7 +494,7 @@ router.get("/listing/user/mobilenumber", logEvent, async (req, res) => {
   }
 });
 
-router.get("/listing/detail", logEvent, async (req, res) => {
+router.get("/listing/detail", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     const listingId = req.query.listingid;
@@ -527,7 +528,7 @@ router.get("/listing/detail", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/updatefordiag", logEvent, async (req, res) => {
+router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const listingId = req.body.listingId;
 
@@ -685,7 +686,7 @@ router.post("/listing/updatefordiag", logEvent, async (req, res) => {
   }
 });
 
-router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
+router.post("/listing/detailwithuserinfo", validUser, logEvent, async (req, res) => {
   const listingid = req.query.listingid;
   const isOtherVendor = req.query.isOtherVendor;
   const userUniqueId = req.query.userUniqueId;
@@ -1100,7 +1101,7 @@ router.post("/listing/detailwithuserinfo", logEvent, async (req, res) => {
   }
 });
 
-router.get("/listing/bydeviceid", logEvent, async (req, res) => {
+router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
   const deviceId = req.query.deviceId;
   const userUniqueId = req.query.userUniqueId;
 

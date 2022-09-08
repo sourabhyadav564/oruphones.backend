@@ -364,7 +364,6 @@ const getBestDeals = async (
         //   style: "currency",
         //   currency: "INR",
         // });
-        // console.log("formattedPrice", formattedPrice);
         // finalBestDeals[index].listingPrice = formattedPrice.toString();
       });
 

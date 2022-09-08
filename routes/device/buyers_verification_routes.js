@@ -14,8 +14,9 @@ const saveRequestModal = require("../../src/database/modals/device/request_verif
 const sendNotification = require("../../utils/push_notification");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
+const validUser = require("../../src/middleware/valid_user");
 
-router.get("/listing/buyer/verification", logEvent, async (req, res) => {
+router.get("/listing/buyer/verification", validUser, logEvent, async (req, res) => {
   try {
     const listingId = req.query.listingId;
     const mobileNumber = req.query.mobileNumber;
@@ -59,7 +60,7 @@ router.get("/listing/buyer/verification", logEvent, async (req, res) => {
   }
 });
 
-router.get("/listing/sendverification", logEvent, async (req, res) => {
+router.get("/listing/sendverification", validUser, logEvent, async (req, res) => {
   const listingId = req.query.listingId;
   const userUniqueId = req.query.userUniqueId;
 

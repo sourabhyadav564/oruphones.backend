@@ -8,6 +8,7 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 // const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 const {
   bestDealsForShopByCategory,
 } = require("../../utils/best_deals_helper_routes");
@@ -15,7 +16,7 @@ const getBestDeals = require("../../utils/get_best_deals");
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const getThirdPartyVendors = require("../../utils/third_party_listings");
 
-router.get("/listings/category", logEvent, async (req, res) => {
+router.get("/listings/category", validUser, logEvent, async (req, res) => {
   const location = req.query.location;
   const category = req.query.category;
   const userUniqueId = req.query.userUniqueId;

@@ -10,8 +10,9 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const saveRequestModal = require("../../src/database/modals/device/request_verification_save");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const validUser = require("../../src/middleware/valid_user");
 
-router.get("/user/details", logEvent, async (req, res) => {
+router.get("/user/details", validUser, logEvent, async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
   const countryCode = req.query.countryCode;
 
@@ -41,7 +42,7 @@ router.get("/user/details", logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/create", logEvent, async (req, res) => {
+router.post("/user/create", validUser, logEvent, async (req, res) => {
   const now = new Date();
   const currentDate = moment(now).format("L");
 
@@ -99,7 +100,7 @@ router.post("/user/create", logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/update", logEvent, async (req, res) => {
+router.post("/user/update", validUser, logEvent, async (req, res) => {
   const city = req.body.city;
   const email = req.body.email;
   const mobileNumber = req.body.mobileNumber;
@@ -150,7 +151,7 @@ router.post("/user/update", logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/delete", logEvent, async (req, res) => {
+router.post("/user/delete", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
 
   let deleteUserAccount;
@@ -237,7 +238,7 @@ router.post("/user/delete", logEvent, async (req, res) => {
   }
 });
 
-router.post("/address/addSearchLocation", logEvent, async (req, res) => {
+router.post("/address/addSearchLocation", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const city = req.body.city;
   const locationId = req.body.locationId;
@@ -306,7 +307,7 @@ router.post("/address/addSearchLocation", logEvent, async (req, res) => {
   }
 });
 
-router.post("/address/addProfileLocation", logEvent, async (req, res) => {
+router.post("/address/addProfileLocation", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   const city = req.body.city;
 

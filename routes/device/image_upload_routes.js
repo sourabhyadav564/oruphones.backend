@@ -11,6 +11,7 @@ const unlinkFile = util.promisify(fs.unlink);
 
 const multer = require("multer");
 const { uploadFile, getFileStream } = require("../../src/s3");
+const validUser = require("../../src/middleware/valid_user");
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
@@ -45,7 +46,7 @@ router.get("/uploadimage/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", upload.single("image"), logEvent, async (req, res) => {
+router.post("/uploadimage", upload.single("image"), validUser, logEvent, async (req, res) => {
 
   try {
     const file = req.file;

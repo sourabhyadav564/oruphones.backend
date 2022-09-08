@@ -6,8 +6,9 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const eventModal = require("../../src/database/modals/others/event_logs");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
+const validUser = require("../../src/middleware/valid_user");
 
-router.get("/logeventinfo", logEvent, async (req, res) => {
+router.get("/logeventinfo", validUser, logEvent, async (req, res) => {
   try {
     res.status(200).send({
       status: "SUCCESS",

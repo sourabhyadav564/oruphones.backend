@@ -4,8 +4,9 @@ const router = express.Router();
 require("../../src/database/connection");
 const filterModal = require("../../src/database/modals/master/show_search_filters");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 
-router.get("/showserchFilters", logEvent, async (req, res) => {
+router.get("/showserchFilters", validUser, logEvent, async (req, res) => {
   try {
     // Data object for the search filters
     const data = await filterModal.find({}, { _id: 0 });

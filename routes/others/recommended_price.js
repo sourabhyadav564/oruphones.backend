@@ -3,10 +3,11 @@ const router = express.Router();
 // const connection = require("../../src/database/mysql_connection");
 const fs = require("fs");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 
-router.post("/recomanded/price", logEvent, async (req, res) => {
+router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
   // let query1 = "select * from `web_scraper_modelwisescraping` where created_at > now() - interval 24 hour;"
 
   // let query2 = "select * from `web_scraper_model`"

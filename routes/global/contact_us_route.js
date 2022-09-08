@@ -6,6 +6,7 @@ const contactUsModal = require("../../src/database/modals/global/user_contact_us
 const logEvent = require("../../src/middleware/event_logging");
 
 const nodemailer = require("nodemailer");
+const validUser = require("../../src/middleware/valid_user");
 const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -14,7 +15,7 @@ const config = nodemailer.createTransport({
   },
 });
 
-router.post("/contactUs", logEvent, async (req, res) => {
+router.post("/contactUs", validUser, logEvent, async (req, res) => {
   const name = req.body.name;
   const email = req.body.email;
   const mobile = req.body.mobile;

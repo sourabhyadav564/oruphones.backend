@@ -6,8 +6,9 @@ dotenv.config();
 require("../../src/database/connection");
 const logEvent = require("../../src/middleware/event_logging");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+const validUser = require("../../src/middleware/valid_user");
 
-router.get("/getinfotemplates", logEvent, async (req, res) => {
+router.get("/getinfotemplates", validUser, logEvent, async (req, res) => {
   try {
     let dataObject = {};
     dataObject["serverUrl"] = process.env.SERVER_URL;

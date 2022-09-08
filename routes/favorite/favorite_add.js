@@ -5,8 +5,9 @@ require("../../src/database/connection");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 
-router.post("/add", logEvent, async (req, res) => {
+router.post("/add", validUser, logEvent, async (req, res) => {
   const listingId = req.body.listingId;
   const userUniqueId = req.body.userUniqueId;
 
@@ -74,7 +75,7 @@ router.post("/add", logEvent, async (req, res) => {
   }
 });
 
-router.post("/deactivate", logEvent, async (req, res) => {
+router.post("/deactivate", validUser, logEvent, async (req, res) => {
   const listingId = req.query.listingId;
   const userUniqueId = req.query.userUniqueId;
 
@@ -133,7 +134,7 @@ router.post("/deactivate", logEvent, async (req, res) => {
   }
 });
 
-router.post("/fetch", logEvent, async (req, res) => {
+router.post("/fetch", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
 
   try {

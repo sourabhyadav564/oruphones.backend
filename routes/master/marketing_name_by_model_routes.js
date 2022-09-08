@@ -10,10 +10,11 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const newMakeAndModal = require("../../src/database/modals/others/new_make_and_model");
 
 const NodeCache = require("node-cache");
+const validUser = require("../../src/middleware/valid_user");
 
 const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
-router.post("/marketingNameByModel", logEvent, async (req, res) => {
+router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   let make = req.body.make;

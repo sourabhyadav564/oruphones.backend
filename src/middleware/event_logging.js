@@ -13,9 +13,9 @@ const logEvent = async (req, res, next) => {
   const devicePlatform = req.headers.devicePlatform;
 
   const getEvent = await eventModal.findOne({ sessionId: sessionId });
-  const getUser = await createUserModal.findOne({
-    userUniqueId: userUniqueId,
-  });
+  // const getUser = await createUserModal.findOne({
+  //   userUniqueId: userUniqueId,
+  // });
   const currentTime = moment(Date.now()).format("LTS");
   const expirationTime = moment(
     getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)
@@ -23,14 +23,15 @@ const logEvent = async (req, res, next) => {
 
   try {
     if (process.env.EVENT === "Active") {
-      if (!getUser) {
-        res.status(200).send({
-          status: "INVALID_USER",
-          statusCode: 200,
-          reason: "User not found",
-        });
-        return;
-      } else if (getEvent) {
+      // if (!getUser) {
+      //   res.status(200).send({
+      //     status: "INVALID_USER",
+      //     statusCode: 200,
+      //     reason: "User not found",
+      //   });
+      //   return;
+      // } else 
+      if (getEvent) {
         const eventData = getEvent.events;
         const updateEvent = await eventModal.findByIdAndUpdate(
           getEvent._id,

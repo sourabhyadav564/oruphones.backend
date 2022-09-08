@@ -1,9 +1,10 @@
 const express = require("express");
 const searchFilterModal = require("../../src/database/modals/global/search_filter_modal");
 const logEvent = require("../../src/middleware/event_logging");
+const validUser = require("../../src/middleware/valid_user");
 const router = express.Router();
 
-router.post("/search", logEvent, async (req, res) => {
+router.post("/search", validUser, logEvent, async (req, res) => {
   const userInputText = req.body.userInputText;
   try {
     const resultData = await searchFilterModal.find({});

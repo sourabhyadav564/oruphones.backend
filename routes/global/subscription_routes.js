@@ -6,6 +6,7 @@ const logEvent = require("../../src/middleware/event_logging");
 require("../../src/database/connection");
 
 const nodemailer = require("nodemailer");
+const validUser = require("../../src/middleware/valid_user");
 const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -15,7 +16,7 @@ const config = nodemailer.createTransport({
 });
 
 
-router.post("/addsubscription", logEvent, async (req, res) => {
+router.post("/addsubscription", validUser, logEvent, async (req, res) => {
   let email = req.query.email;
 
   let dataToBeSave = {

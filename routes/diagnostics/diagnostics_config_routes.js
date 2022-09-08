@@ -13,6 +13,7 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 const getRecommendedPrice = require("../../utils/get_recommended_price");
 const questionModal = require("../../src/database/modals/master/get_question");
 const dignosticsLogsModal = require("../../src/database/modals/diagnostics/diagnostics_log_transection");
+const validUser = require("../../src/middleware/valid_user");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -251,7 +252,7 @@ router.post("/diagConfig", async (req, res) => {
   }
 });
 
-router.post("/grade/price", logEvent, async (req, res) => {
+router.post("/grade/price", validUser, logEvent, async (req, res) => {
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;

@@ -12,8 +12,9 @@ const bestDealsModal = require("../../src/database/modals/others/best_deals_mode
 const {
   bestDealsForSearchListing,
 } = require("../../utils/best_deals_helper_routes");
+const validUser = require("../../src/middleware/valid_user");
 
-router.post("/listings/search", logEvent, async (req, res) => {
+router.post("/listings/search", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;

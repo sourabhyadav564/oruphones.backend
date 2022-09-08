@@ -5,8 +5,9 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const { authenticateAccessToken } = require("../../src/middleware/auth_token");
+const validUser = require("../../src/middleware/valid_user");
 
-router.post("/batteryTest/mah", logEvent, async (req, res) => {
+router.post("/batteryTest/mah", validUser, logEvent, async (req, res) => {
   let make = req.body.make;
   let marketingName = req.body.marketingName;
 
