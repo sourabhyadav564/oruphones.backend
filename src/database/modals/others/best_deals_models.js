@@ -182,6 +182,10 @@ const bestDealsSchema = new mongoose.Schema({
                 type: String,
             }
         }],
+    },
+    notionalPercentage: {
+        type: Number,
+        default: -999999,
     }
 },{ timestamps: true })
 
