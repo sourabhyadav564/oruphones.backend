@@ -12,7 +12,7 @@ const saveNotificationModel = require("../../src/database/modals/notification/no
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const validUser = require("../../src/middleware/valid_user");
 
-router.get("/user/details", validUser, logEvent, async (req, res) => {
+router.get("/user/details", logEvent, async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
   const countryCode = req.query.countryCode;
 
