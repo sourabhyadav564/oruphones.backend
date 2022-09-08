@@ -42,7 +42,7 @@ router.get("/user/details", validUser, logEvent, async (req, res) => {
   }
 });
 
-router.post("/user/create", validUser, logEvent, async (req, res) => {
+router.post("/user/create", logEvent, async (req, res) => {
   const now = new Date();
   const currentDate = moment(now).format("L");
 
