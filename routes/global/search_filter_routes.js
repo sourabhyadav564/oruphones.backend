@@ -27,6 +27,7 @@ router.post("/search", validUser, logEvent, async (req, res) => {
           }
         }
       });
+      
       resultData[0].models.filter((element, index) => {
         if (
           element.toLowerCase().includes(userInputText.toString().toLowerCase())

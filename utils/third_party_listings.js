@@ -154,6 +154,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       }],
       // images: [],
       status: "Active",
+      createdAt: element.created_at,
     };
 
     dataArray.push(dataObject);
