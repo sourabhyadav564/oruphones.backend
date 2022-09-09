@@ -19,6 +19,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
   const deviceStorage = req.body.deviceStorage;
+  const deviceRam = req.body.deviceRam;
   let make = req.body.make;
   const listingLocation = req.body.listingLocation;
   const maxsellingPrice = req.body.maxsellingPrice;
@@ -115,6 +116,14 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
         return deviceStorage.includes(item.deviceStorage);
+      });
+      allListings = tempListings;
+    }
+
+    if (deviceRam.length > 0) {
+      let tempListings = [];
+      tempListings = allListings.filter((item, index) => {
+        return deviceRam.includes(item.deviceRam);
       });
       allListings = tempListings;
     }

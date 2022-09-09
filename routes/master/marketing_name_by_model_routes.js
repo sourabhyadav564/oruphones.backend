@@ -109,6 +109,15 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
+    case "tenco":
+      make = "Tenco";
+      break;
+    case "intex":
+      make = "Intex";
+      break;
+    case "meizu":
+      make = "Meizu";
+      break;
   }
 
   try {
@@ -336,6 +345,12 @@ router.get("/makemodellist", async (req, res) => {
         case "tecno":
           make = "Tecno";
           break;
+          case "intex":
+            make = "Intex";
+            break;
+          case "meizu":
+            make = "Meizu";
+            break;
       }
     }
 

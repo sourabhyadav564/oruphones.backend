@@ -110,13 +110,22 @@ router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
+    case "tenco":
+      make = "Tenco";
+      break;
+    case "intex":
+      make = "Intex";
+      break;
+    case "meizu":
+      make = "Meizu";
+      break;
   }
 
   bestDealsByMake(location, make, page, userUniqueId, res);
 });
 
 router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
-  const marketingname = req.query.marketingName;  
+  const marketingname = req.query.marketingName;
   const userUniqueId = req.query.userUniqueId;
   const location = req.query.location;
   let page = req.query.pageNumber;
