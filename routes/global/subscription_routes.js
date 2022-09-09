@@ -30,7 +30,7 @@ router.post("/addsubscription", validUser, logEvent, async (req, res) => {
 
       let mailOptions = {
         from: "mobiruindia22@gmail.com",
-        // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+        // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
         to: "contact@oruphones.com",
         subject: "A new subscription request has been received",
         text:

@@ -404,7 +404,7 @@ const collectData = async (data) => {
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp, sourabh@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +

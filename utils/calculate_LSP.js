@@ -469,7 +469,7 @@ const calculate_LSP_SELL = async () => {
 
         //   let mailOptions = {
         //     from: "mobiruindia22@gmail.com",
-        //     // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+        //     // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
         //     to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
         //     subject: "Data has successfully been migrated to MongoDB",
         //     text:
@@ -531,7 +531,7 @@ const calculate_LSP_For_Amazon_Exchange = async () => {
 
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
-      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
       to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:

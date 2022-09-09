@@ -53,8 +53,8 @@ const collectData = async (data) => {
 
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp, sourabh@zenro.co.jp",
-      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, anish@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
       subject: "Best Deals data has successfully been migrated to MongoDB",
       text:
         "Best Deals data has been successfully migrated to MongoDB in the master best deals collection and the number of deals are: " +
