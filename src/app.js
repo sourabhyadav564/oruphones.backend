@@ -56,7 +56,7 @@ schedule.scheduleJob("00 02 * * *", function () {
   startCalculatingLSP();
 });
 
-schedule.scheduleJob("00 03 * * * *", function () {
+schedule.scheduleJob("00 03 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
 });
