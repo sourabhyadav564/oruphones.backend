@@ -13,7 +13,7 @@ const validUser = async (req, res, next) => {
   const devicePlatform = req.headers.devicePlatform;
 
   try {
-    if (process.env.EVENT === "Active") {
+    if (process.env.EVENT === "Active" && userUniqueId != "Guest") {
       const getUser = await createUserModal.findOne({
         userUniqueId: userUniqueId,
       });
