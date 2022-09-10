@@ -189,6 +189,9 @@ const bestDealsSchema = new mongoose.Schema({
     },
     imagePath: {
         type: String,
+    },
+    createdAt: {
+        type: Date,
     }
 },{ timestamps: true })
 
