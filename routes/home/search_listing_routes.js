@@ -163,31 +163,38 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       allListings = tempListings;
     }
 
-    if (warenty != "") {
-      let tempListings = [];
-      tempListings = allListings.filter((item, index) => {
-        return item.warenty === warenty;
-      });
-      allListings = tempListings;
-    }
+    // if (warenty != "") {
+    //   let tempListings = [];
+    //   tempListings = allListings.filter((item, index) => {
+    //     return item.warenty === warenty;
+    //   });
+    //   allListings = tempListings;
+    // }
 
     if (warenty.length > 0 && reqPage !== "TSM") {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        warenty.forEach((element) => {
-          if (element === "Brand Warranty") {
-            return (
-              item.warenty === "More than 3 months" ||
-              item.warenty === "More than 6 months" ||
-              item.warenty === "More than 9 months"
-            );
-          } else if (element === "Seller Warranty") {
-            return item.isOtherVendor === "Y";
-          }
-        });
+        // warenty.forEach((element) => {
+        //   if (element === "Brand Warranty") {
+        //     return (
+        //       item.warenty === "More than 3 months" ||
+        //       item.warenty === "More than 6 months" ||
+        //       item.warenty === "More than 9 months"
+        //     );
+        //     return item.isOtherVendor === "N";
+        //   } else if (element === "Seller Warranty") {
+        //     return item.isOtherVendor === "Y";
+        //   }
+        // });
+        if (warenty.includes("Brand Warranty")) {
+          return item.isOtherVendor === "N";
+        } else if (warenty.includes("Seller Warranty")) {
+          return item.isOtherVendor === "Y";
+        }
       });
       allListings = tempListings;
     }
+
 
     if (verified === true) {
       let tempListings = [];
