@@ -201,16 +201,14 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
 
-    // let newData = {
-    //   ...data,
-    //   notionalPercentage: -999999,
-    //   imagePath: defaultImage.fullImage || images[0].fullImage,
-    // };
+    let newData = {
+      ...data,
+      notionalPercentage: -999999,
+      imagePath: defaultImage.fullImage || images[0].fullImage,
+    };
 
-    // console.log("newData", newData);
-
-    // const tempModelInfo = new bestDealsModal(newData);
-    // const tempDataObject = await tempModelInfo.save();
+    const tempModelInfo = new bestDealsModal(newData);
+    const tempDataObject = await tempModelInfo.save();
 
     res.status(201).json({
       reason: "Listing saved successfully",
@@ -244,6 +242,15 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
         await saveListingModal.findOneAndDelete({ listingId: listingId });
+        await bestDealsModal.findByIdAndUpdate(
+          listingId,
+          {
+            status: "Sold_Out",
+          },
+          {
+            new: true,
+          }
+        );
         res.status(200).json({
           reason: "Listing deleted successfully",
           statusCode: 200,

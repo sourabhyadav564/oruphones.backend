@@ -193,7 +193,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
         if (item.verified === true) {
-          return true;
+          return item;
         }
       });
       allListings = tempListings;
