@@ -106,11 +106,11 @@ router.post("/otp/validate", logEvent, async (req, res) => {
     // savedOtp = getOtp[0]?.otp?.toString();
     savedOtp = getOtp?.otp?.toString();
     if (savedOtp === otp) {
-      const delete_user = await userModal.findOneAndRemove({
+      const delete_user_otp = await userModal.findByIdAndDelete({
         mobileNumber: req.query.mobileNumber,
         otp: otp,
       });
-      if (delete_user) {
+      if (delete_user_otp) {
         res.status(200).json({
           reason: "OTP validated",
           statusCode: 200,
