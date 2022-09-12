@@ -198,6 +198,19 @@ const saveListingSchema = new mongoose.Schema(
         },
       ],
     },
+    cosmetic: {
+      type: {
+        0: {
+          type: String,
+        },
+        1: {
+          type: String,
+        },
+        2: {
+          type: String,
+        }
+      },
+    },
   },
   { timestamps: true }
 );

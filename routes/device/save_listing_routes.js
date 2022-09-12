@@ -135,6 +135,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
 
+  const cosmetic = req.body.cosmetic;
+
   switch (deviceWarranty) {
     case "zero":
       deviceWarranty = "More than 9 months";
@@ -195,6 +197,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     deviceRam,
     listingDate: dateFormat,
     warranty: deviceWarranty,
+    cosmetic
   };
 
   try {
