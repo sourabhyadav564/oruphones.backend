@@ -32,13 +32,13 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             verified: true,
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
           .find({
             verified: true,
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -51,7 +51,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
               "More than 6 months",
               "More than 3 months",
             ],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject = await bestDealsModal
@@ -61,7 +61,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
               "More than 6 months",
               "More than 3 months",
             ],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -70,13 +70,13 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
           .find({
             deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -85,13 +85,13 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             deviceCondition: "Like New",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
           .find({
             deviceCondition: "Like New",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -100,13 +100,13 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             deviceCondition: "Excellent",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
           .find({
             deviceCondition: "Excellent",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -122,7 +122,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 30000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
@@ -135,7 +135,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 30000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -151,7 +151,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 15000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .countDocuments();
         defaultDataObject2 = await bestDealsModal
@@ -164,7 +164,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 15000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
           })
           .skip(parseInt(page) * 20)
           .limit(20);
@@ -185,14 +185,14 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             verified: true,
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
         defaultDataObject = await bestDealsModal
           .find({
             verified: true,
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -206,7 +206,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
               "More than 6 months",
               "More than 3 months",
             ],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
@@ -217,7 +217,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
               "More than 6 months",
               "More than 3 months",
             ],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -227,14 +227,14 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
         defaultDataObject = await bestDealsModal
           .find({
             deviceStorage: ["64 GB", "128 GB", "256 GB", "512 GB"],
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -244,14 +244,14 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             verified: true,
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
         defaultDataObject = await bestDealsModal
           .find({
             deviceCondition: "Like New",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -261,14 +261,14 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
         let saveListingLength = await bestDealsModal
           .find({
             deviceCondition: "Excellent",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
         defaultDataObject = await bestDealsModal
           .find({
             deviceCondition: "Excellent",
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -285,7 +285,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 30000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
@@ -299,7 +299,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 30000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)
@@ -316,7 +316,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 15000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
@@ -330,7 +330,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
                 15000,
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)

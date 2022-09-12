@@ -47,7 +47,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
               },
             ],
           },
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .countDocuments();
       defaultDataObject2 = await bestDealsModal
@@ -65,7 +65,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
               },
             ],
           },
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .skip(parseInt(page) * 20)
         .limit(20);
@@ -89,13 +89,13 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
       let saveListingLength = await bestDealsModal
         .find({
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .countDocuments();
       defaultDataObject = await bestDealsModal
         .find({
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .skip(parseInt(page) * 20)
         .limit(20);
@@ -128,7 +128,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
                 },
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
@@ -147,7 +147,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
                 },
               ],
             },
-            status: "Active",
+            status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .skip(parseInt(page) * 20)

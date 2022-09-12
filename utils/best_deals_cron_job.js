@@ -13,11 +13,11 @@ const startSavingBestDeals = async () => {
     if (location === "India") {
       let saveListingLength = await saveListingModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .countDocuments();
       let defaultDataObject2 = await saveListingModal.find({
-        status: "Active",
+        status: ["Active", "Sold_Out"],
       });
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
@@ -31,12 +31,12 @@ const startSavingBestDeals = async () => {
       let saveListingLength = await saveListingModal
         .find({
           listingLocation: location,
-          status: "Active",
+          status: ["Active", "Sold_Out"],
         })
         .countDocuments();
       let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
-        status: "Active",
+        status: ["Active", "Sold_Out"],
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "");
       thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {

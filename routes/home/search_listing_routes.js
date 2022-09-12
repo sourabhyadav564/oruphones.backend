@@ -37,10 +37,10 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     let totalProducts;
     if (marketingName && marketingName.length > 0) {
       // let saveListingLength = await bestDealsModal
-      //   .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
+      //   .find({ marketingName: marketingName[0], status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
-        .find({ marketingName: marketingName[0], status: "Active" }, { _id: 0 })
+        .find({ marketingName: marketingName[0], status: ["Active", "Sold_Out"] }, { _id: 0 })
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);
@@ -60,10 +60,10 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       // totalProducts = saveListingLength;
     } else if (make.length > 0) {
       // let saveListingLength = await bestDealsModal
-      //   .find({ make: make, status: "Active" }, { _id: 0 })
+      //   .find({ make: make, status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
-        .find({ make: make, status: "Active" }, { _id: 0 })
+        .find({ make: make, status: ["Active", "Sold_Out"] }, { _id: 0 })
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);
@@ -79,10 +79,10 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       // totalProducts = saveListingLength;
     } else {
       // let saveListingLength = await bestDealsModal
-      //   .find({ status: "Active" }, { _id: 0 })
+      //   .find({ status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
-        .find({ status: "Active" }, { _id: 0 })
+        .find({ status: ["Active", "Sold_Out"] }, { _id: 0 })
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);

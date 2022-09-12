@@ -24,15 +24,15 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
 
     if (location === "India") {
       totalProducts = await bestDealsModal
-        .find({ status: "Active" })
+        .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();
       let completeDeals = await bestDealsModal
-        .find({ status: "Active" })
+        .find({ status: ["Active", "Sold_Out"] })
         .skip(parseInt(page) * 30)
         .limit(30);
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       // });
 
       // completeDeals = completeDeals.concat(getSavedDeals);
@@ -67,13 +67,13 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
     } else {
       totalProducts = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
         })
         .countDocuments();
       let completeDeals = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
         })
         .skip(parseInt(page) * 30)
@@ -81,7 +81,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       // });
 
       // completeDeals = completeDeals.concat(getSavedDeals);
@@ -132,15 +132,15 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
 
     if (location === "India") {
       totalProducts = await bestDealsModal
-        .find({ status: "Active" })
+        .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();
       let completeDeals = await bestDealsModal
-        .find({ status: "Active" })
+        .find({ status: ["Active", "Sold_Out"] })
         .skip(parseInt(page) * 30)
         .limit(30);
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       // });
 
       // completeDeals = completeDeals.concat(getSavedDeals);
@@ -174,13 +174,13 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
     } else {
       totalProducts = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
         })
         .countDocuments();
       let completeDeals = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
         })
         .skip(parseInt(page) * 30)
@@ -188,7 +188,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       // });
 
       // completeDeals = completeDeals.concat(getSavedDeals);
@@ -239,16 +239,16 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
 
     if (location === "India") {
       totalProducts = await bestDealsModal
-        .find({ status: "Active", make: make })
+        .find({ status: ["Active", "Sold_Out"], make: make })
         .countDocuments();
 
       let completeDeals = await bestDealsModal
-        .find({ status: "Active", make: make })
+        .find({ status: ["Active", "Sold_Out"], make: make })
         .skip(parseInt(page) * 30)
         .limit(30);
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       //   make: make,
       // });
 
@@ -282,14 +282,14 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
     } else {
       totalProducts = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
           make: make,
         })
         .countDocuments();
       let completeDeals = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
           make: make,
         })
@@ -298,7 +298,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       //   make: make,
       // });
 
@@ -356,15 +356,15 @@ const bestDealsByMarketingName = async (
 
     if (location === "India") {
       totalProducts = await bestDealsModal
-        .find({ status: "Active", marketingName: marketingName })
+        .find({ status: ["Active", "Sold_Out"], marketingName: marketingName })
         .countDocuments();
       let completeDeals = await bestDealsModal
-        .find({ status: "Active", marketingName: marketingName })
+        .find({ status: ["Active", "Sold_Out"], marketingName: marketingName })
         .skip(parseInt(page) * 30)
         .limit(30);
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       //   marketingName: marketingName,
       // });
 
@@ -398,14 +398,14 @@ const bestDealsByMarketingName = async (
     } else {
       totalProducts = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
           marketingName: marketingName,
         })
         .countDocuments();
       let completeDeals = await bestDealsModal
         .find({
-          status: "Active",
+          status: ["Active", "Sold_Out"],
           $or: [{ listingLocation: location }, { listingLocation: "India" }],
           marketingName: marketingName,
         })
@@ -414,7 +414,7 @@ const bestDealsByMarketingName = async (
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       //   marketingName: marketingName,
       // });
 
@@ -482,7 +482,7 @@ const bestDealsForSearchListing = async (
       }
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       // });
 
       // deals = deals.concat(getSavedDeals);
@@ -515,7 +515,7 @@ const bestDealsForSearchListing = async (
       }
 
       // let getSavedDeals = await saveListingModal.find({
-      //   status: "Active",
+      //   status: ["Active", "Sold_Out"],
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
       // });
 
@@ -581,7 +581,7 @@ const bestDealsForShopByCategory = async (
     }
 
     // let getSavedDeals = await saveListingModal.find({
-    //   status: "Active",
+    //   status: ["Active", "Sold_Out"],
     // });
 
     // deals = deals.concat(getSavedDeals);
@@ -645,7 +645,7 @@ const bestDealsForShopByPrice = async (
     }
 
     // let getSavedDeals = await saveListingModal.find({
-    //   status: "Active",
+    //   status: ["Active", "Sold_Out"],
     // });
 
     // deals = deals.concat(getSavedDeals);

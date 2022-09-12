@@ -152,7 +152,7 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
       for (item in arr) {
         let single_listing = await saveListingModal.findOne({
           listingId: arr[item],
-          status: "Active"
+          status: ["Active", "Sold_Out"]
         });
         if (single_listing) {
           single_listing = {
