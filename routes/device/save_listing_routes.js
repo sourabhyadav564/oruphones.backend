@@ -201,6 +201,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
 
+    console.log("dataObject", dataObject);
+
     let newData = {
       ...data,
       notionalPercentage: -999999,

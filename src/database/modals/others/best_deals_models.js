@@ -196,7 +196,9 @@ const bestDealsSchema = new mongoose.Schema({
 },{ timestamps: true })
 
 bestDealsSchema.pre('save', async function (next) {
-    this.listingId = this._id;
+    if (this.isOtherVendor === 'Y') {
+        this.listingId = this._id;
+    }
     next();
 });
 
