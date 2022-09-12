@@ -244,17 +244,27 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
       return;
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
-        await saveListingModal.findOneAndDelete({ listingId: listingId });
+        const deleletedListing = await saveListingModal.findOneAndDelete({ listingId: listingId });
+        console.log("deleletedListing", deleletedListing);
         console.log({ listingId: listingId });
-        await bestDealsModal.findByIdAndUpdate(
-          listingId,
-          {
-            status: "Sold_Out",
-          },
-          {
-            new: true,
-          }
+        // const updatedListings = await bestDealsModal.findByIdAndUpdate(
+        //   updatedListings.listingId,
+        //   {
+        //     status: "Sold_Out",
+        //   },
+        //   {
+        //     new: true,
+        //   }
+        // );
+        // console.log("updatedListings", updatedListings);
+        const updatedListings = await bestDealsModal.findOne(
+          updatedListings.listingId,
         );
+        if (updatedListings) {
+          updatedListings.status = "Sold_Out";
+          updatedListings.save();
+        }
+        console.log("updatedListings", updatedListings);
         res.status(200).json({
           reason: "Listing deleted successfully",
           statusCode: 200,
