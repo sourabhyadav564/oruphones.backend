@@ -23,16 +23,17 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
   //   10: "Budli",
   //   11: "Paytm",
   //   12: "Yaantra",
-  //   13: "Shopcluse",
-  //   14: "Sahivalue",
+  //   13: "Sahivalue",
+  //   14: "Shopcluse",
   //   15: "Xtracover",
   //   16: "Mobigarage",
   //   17: "Instacash",
   //   18: "Cashforphone",
   //   19: "Recycledevice",
   //   20: "Quickmobile",
-  //   21: "Buyblynk",
-  //   22: "Electronicbazaar",
+  //   21: "mbr_Buyblynk",
+  //   22: "mbr_Electronicbazaar",
+  //   23: "Flipkart",
   // };
 
   try {

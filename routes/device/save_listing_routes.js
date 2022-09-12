@@ -205,6 +205,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       ...data,
       notionalPercentage: -999999,
       imagePath: defaultImage.fullImage || images[0].fullImage,
+      listingId: dataObject.listingId,
     };
 
     const tempModelInfo = new bestDealsModal(newData);
@@ -242,6 +243,7 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
         await saveListingModal.findOneAndDelete({ listingId: listingId });
+        console.log({ listingId: listingId });
         await bestDealsModal.findByIdAndUpdate(
           listingId,
           {

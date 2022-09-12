@@ -265,7 +265,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }

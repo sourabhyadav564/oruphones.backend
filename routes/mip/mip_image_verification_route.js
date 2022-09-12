@@ -60,7 +60,7 @@ router.post("/verifyImage", async (req, res) => {
 
     if (!images) {
       res.status(202).json({
-        reason: "Notification image found",
+        reason: "No image found",
         statusCode: 202,
         status: "ACCEPTED",
       });
