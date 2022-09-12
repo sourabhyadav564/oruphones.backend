@@ -244,7 +244,9 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
       return;
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
-        const deleletedListing = await saveListingModal.findOneAndDelete({ listingId: listingId });
+        const deleletedListing = await saveListingModal.findOneAndDelete({
+          listingId: listingId,
+        });
         console.log("deleletedListing", deleletedListing);
         console.log({ listingId: listingId });
         // const updatedListings = await bestDealsModal.findByIdAndUpdate(
@@ -257,9 +259,9 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
         //   }
         // );
         // console.log("updatedListings", updatedListings);
-        const updatedListings = await bestDealsModal.findOne(
-          updatedListings.listingId,
-        );
+        const updatedListings = await bestDealsModal.findOne({
+          listingId: deleletedListing.listingId,
+        });
         if (updatedListings) {
           updatedListings.status = "Sold_Out";
           updatedListings.save();
