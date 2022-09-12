@@ -135,7 +135,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
 
-  const cosmetic = req.body.cosmetic;
+  let cosmetic = req.body.cosmetic;
+  cosmetic = JSON.parse(cosmetic);
 
   switch (deviceWarranty) {
     case "zero":
