@@ -9,7 +9,7 @@ const validUser = require("../../src/middleware/valid_user");
 router.get("/showserchFilters", validUser, logEvent, async (req, res) => {
   try {
     // Data object for the search filters
-    const data = await filterModal.find({}, { _id: 0 });
+    const data = await filterModal.find({}, { _id: 0, Color: 0 });
     const dataObject = data[0]
     res
       .status(200)
