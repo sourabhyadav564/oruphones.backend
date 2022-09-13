@@ -135,8 +135,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
 
-  let cosmetic = req.body.cosmetic;
-  cosmetic = JSON.parse(cosmetic);
+  const cosmetic = req.body.cosmetic;
+  
 
   switch (deviceWarranty) {
     case "zero":
@@ -251,8 +251,6 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
         const deleletedListing = await saveListingModal.findOneAndDelete({
           listingId: listingId,
         });
-        console.log("deleletedListing", deleletedListing);
-        console.log({ listingId: listingId });
         // const updatedListings = await bestDealsModal.findByIdAndUpdate(
         //   updatedListings.listingId,
         //   {
@@ -270,7 +268,6 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
           updatedListings.status = "Sold_Out";
           updatedListings.save();
         }
-        console.log("updatedListings", updatedListings);
         res.status(200).json({
           reason: "Listing deleted successfully",
           statusCode: 200,
@@ -298,6 +295,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const color = req.body.color;
   const deviceCondition = req.body.deviceCondition;
   const deviceStorage = req.body.deviceStorage;
+  const deviceRam = req.body.deviceRam;
   const earphone = req.body.earphone;
   const images = req.body.images;
   const listingLocation = req.body.listingLocation;
@@ -330,6 +328,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           originalbox,
           recommendedPriceRange,
           deviceStorage,
+          deviceRam
         };
         if (updateListing?.deviceCondition === deviceCondition) {
           dataToBeUpdate = { ...dataToBeUpdate };
@@ -348,6 +347,23 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
             new: true,
           }
         );
+        const updatedListings = await bestDealsModal.findOne({
+          listingId: dataObject.listingId,
+        });
+        if (updatedListings) {
+          updatedListings.charger = charger;
+          updatedListings.color = color;
+          updatedListings.deviceCondition = deviceCondition;
+          updatedListings.earphone = earphone;
+          updatedListings.images = images;
+          updatedListings.listingLocation = listingLocation;
+          updatedListings.listingPrice = listingPrice;
+          updatedListings.originalbox = originalbox;
+          updatedListings.recommendedPriceRange = recommendedPriceRange;
+          updatedListings.deviceStorage = deviceStorage;
+          updatedListings.deviceRam = deviceRam;
+          updatedListings.save();
+        }
         res.status(200).json({
           reason: "Listing updated successfully",
           statusCode: 200,
