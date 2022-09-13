@@ -50,7 +50,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
       console.log({ completeDealslength: completeDeals.length });
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -88,7 +88,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
 
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -157,7 +157,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -195,7 +195,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
 
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -306,7 +306,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
 
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -381,7 +381,7 @@ const bestDealsByMarketingName = async (
       }
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -422,7 +422,7 @@ const bestDealsByMarketingName = async (
 
       if (page == 0) {
         updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, -1);
+        otherListings = completeDeals.slice(5, completeDeals.length);
       } else {
         otherListings = completeDeals;
       }
@@ -489,7 +489,7 @@ const bestDealsForSearchListing = async (
 
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, -1);
+        otherListings = deals.slice(5, deals.length);
       } else {
         otherListings = deals;
       }
@@ -523,7 +523,7 @@ const bestDealsForSearchListing = async (
 
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, -1);
+        otherListings = deals.slice(5, deals.length);
       } else {
         otherListings = deals;
       }
@@ -651,7 +651,7 @@ const bestDealsForShopByPrice = async (
     // deals = deals.concat(getSavedDeals);
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, -1);
+      otherListings = deals.slice(5, deals.length);
     } else {
       otherListings = deals;
     }
