@@ -362,6 +362,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           updatedListings.recommendedPriceRange = recommendedPriceRange;
           updatedListings.deviceStorage = deviceStorage;
           updatedListings.deviceRam = deviceRam;
+          updatedListings.verify = updateListing?.deviceCondition === deviceCondition ? updatedListings.verify : false;
+          updatedListings.verifyDate = updateListing?.deviceCondition === deviceCondition ? updatedListings.verifyDate : "";
           updatedListings.save();
         }
         res.status(200).json({
