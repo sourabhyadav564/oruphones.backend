@@ -17,7 +17,7 @@ router.get("/share/link", validUser, logEvent, async (req, res) => {
     const model = listing.marketingName.replaceAll(" ", "");
     const productId = listing.listingId;
 
-    const static_link = `${process.env.SERVER_URL}/product/listings/${make}/${model}/${productId}?isOtherVendor=N`;
+    const static_link = `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${make}/${model}/${productId}?isOtherVendor=N`;
 
     const dataObject = {
       url: static_link,
