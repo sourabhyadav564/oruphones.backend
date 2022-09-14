@@ -2,6 +2,14 @@ const getBestDeals = require("./get_best_deals");
 const bestDealsModal = require("../src/database/modals/others/best_deals_models");
 const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const saveListingModal = require("../src/database/modals/device/save_listing_device");
+const applySortFilter = require("./sort_filter");
+
+// SORY BY KEYS
+
+// LTH
+// HTL
+// NF
+// OF
 
 const bestDealsNearMe = async (location, page, userUniqueId, res) => {
   try {
@@ -23,6 +31,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, res) => {
     }
 
     if (location === "India") {
+
       totalProducts = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();
@@ -218,7 +227,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, res) => {
 
 exports.bestDealsNearAll = bestDealsNearAll;
 
-const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
+const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) => {
   try {
     let updatedBestDeals = [];
     let otherListings = [];
@@ -237,15 +246,8 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       }
     }
 
-    if (location === "India") {
-      totalProducts = await bestDealsModal
-        .find({ status: ["Active", "Sold_Out"], make: make })
-        .countDocuments();
-
-      let completeDeals = await bestDealsModal
-        .find({ status: ["Active", "Sold_Out"], make: make })
-        .skip(parseInt(page) * 30)
-        .limit(30);
+    if (location === "India") {      
+      const fitlerResults = await applySortFilter(sortBy, make, page);
 
       // let getSavedDeals = await saveListingModal.find({
       //   status: ["Active", "Sold_Out"],
@@ -255,19 +257,19 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       // completeDeals = completeDeals.concat(getSavedDeals);
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
-        completeDeals.forEach((item, index) => {
+        fitlerResults.completeDeals.forEach((item, index) => {
           if (favList.includes(item.listingId)) {
-            completeDeals[index].favourite = true;
+            fitlerResults.completeDeals[index].favourite = true;
           } else {
-            completeDeals[index].favourite = false;
+            fitlerResults.completeDeals[index].favourite = false;
           }
         });
       }
       if (page == 0) {
-        updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, completeDeals.length);
+        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
       } else {
-        otherListings = completeDeals;
+        otherListings = fitlerResults.completeDeals;
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -276,25 +278,11 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: totalProducts,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     } else {
-      totalProducts = await bestDealsModal
-        .find({
-          status: ["Active", "Sold_Out"],
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          make: make,
-        })
-        .countDocuments();
-      let completeDeals = await bestDealsModal
-        .find({
-          status: ["Active", "Sold_Out"],
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          make: make,
-        })
-        .skip(parseInt(page) * 30)
-        .limit(30);
+      const fitlerResults = await applySortFilter(sortBy, make, page);
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
@@ -305,10 +293,10 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
       // completeDeals = completeDeals.concat(getSavedDeals);
 
       if (page == 0) {
-        updatedBestDeals = completeDeals.slice(0, 5);
-        otherListings = completeDeals.slice(5, completeDeals.length);
+        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
       } else {
-        otherListings = completeDeals;
+        otherListings = fitlerResults.completeDeals;
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -317,7 +305,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: totalProducts,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     }
@@ -334,6 +322,7 @@ const bestDealsByMarketingName = async (
   marketingName,
   page,
   userUniqueId,
+  sortBy,
   res
 ) => {
   try {

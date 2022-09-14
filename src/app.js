@@ -9,6 +9,7 @@ const start_migrating_external_source_buy = require("../utils/get_external_sourc
 const startCalculatingLSP = require("../utils/filter_cron_job_data");
 const backupMongoDB = require("../utils/backup_mongodb");
 const startSavingBestDeals = require("../utils/best_deals_cron_job");
+const startCalculatingLSPTest = require("../utils/new_lsp");
 
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
@@ -59,6 +60,11 @@ schedule.scheduleJob("00 02 * * *", function () {
 schedule.scheduleJob("00 03 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
+});
+
+schedule.scheduleJob("23 17 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+  startCalculatingLSPTest();
 });
 
 const testRoute = require("../routes/others/test_routes");

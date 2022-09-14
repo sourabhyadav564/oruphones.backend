@@ -24,6 +24,8 @@ router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
+  const sortBy = req.query.sortBy;
+
   // let make;
   // initialMake.split(" ").map((currentValue) => {
   //   make = currentValue[0].toUpperCase() + currentValue.slice(1);
@@ -121,7 +123,7 @@ router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
       break;
   }
 
-  bestDealsByMake(location, make, page, userUniqueId, res);
+  bestDealsByMake(location, make, page, userUniqueId, sortBy, res);
 });
 
 router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
@@ -131,7 +133,9 @@ router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
-  bestDealsByMarketingName(location, marketingname, page, userUniqueId, res);
+  const sortBy = req.query.sortBy;
+
+  bestDealsByMarketingName(location, marketingname, page, userUniqueId, sortBy, res);
 });
 
 module.exports = router;
