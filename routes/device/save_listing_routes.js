@@ -136,7 +136,6 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   let deviceWarranty = req.body.warranty;
 
   const cosmetic = req.body.cosmetic;
-  
 
   switch (deviceWarranty) {
     case "zero":
@@ -198,14 +197,12 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     deviceRam,
     listingDate: dateFormat,
     warranty: deviceWarranty,
-    cosmetic
+    cosmetic,
   };
 
   try {
     const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
-
-    console.log("dataObject", dataObject);
 
     let newData = {
       ...data,
@@ -328,7 +325,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           originalbox,
           recommendedPriceRange,
           deviceStorage,
-          deviceRam
+          deviceRam,
         };
         if (updateListing?.deviceCondition === deviceCondition) {
           dataToBeUpdate = { ...dataToBeUpdate };
@@ -362,8 +359,14 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           updatedListings.recommendedPriceRange = recommendedPriceRange;
           updatedListings.deviceStorage = deviceStorage;
           updatedListings.deviceRam = deviceRam;
-          updatedListings.verified = updateListing?.deviceCondition === deviceCondition ? updatedListings.verified : false;
-          updatedListings.verifyDate = updateListing?.deviceCondition === deviceCondition ? updatedListings.verifyDate : "";
+          updatedListings.verified =
+            updateListing?.deviceCondition === deviceCondition
+              ? updatedListings.verified
+              : false;
+          updatedListings.verifyDate =
+            updateListing?.deviceCondition === deviceCondition
+              ? updatedListings.verifyDate
+              : "";
           updatedListings.save();
         }
         res.status(200).json({
@@ -626,6 +629,14 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
       if (updateListing.userUniqueId === userUniqueId) {
         let dataObject = await saveListingModal.findByIdAndUpdate(
           updateListing._id,
+          dataToBeUpdate,
+          {
+            new: true,
+          }
+        );
+
+        await bestDealsModal.findByIdAndUpdate(
+          { listingId: dataObject.listingId },
           dataToBeUpdate,
           {
             new: true,
