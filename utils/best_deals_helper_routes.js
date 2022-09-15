@@ -161,7 +161,6 @@ exports.bestDealsNearAll = bestDealsNearAll;
 
 const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) => {
   try {
-    console.log({ location, make, page, userUniqueId, sortBy });
     let updatedBestDeals = [];
     let otherListings = [];
 
