@@ -784,7 +784,8 @@ router.post(
       // })
 
       let favList = [];
-      if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
+      if (userUniqueId != "Guest" && isOtherVendor != "Y") {
+        console.log("userUniqueId", userUniqueId);
         const getFavObject = await favoriteModal.findOne({
           userUniqueId: userUniqueId,
         });
@@ -1140,7 +1141,7 @@ router.post(
           tempArray.push(dataObject);
 
           // add favorite listings to the final list
-          if (userUniqueId !== "Guest" && isOtherVendor !== "N") {
+          if (userUniqueId != "Guest" && isOtherVendor != "Y") {
             tempArray.forEach((item, index) => {
               if (favList.includes(item.listingId)) {
                 dataObject = { ...dataObject, favourite: true };
