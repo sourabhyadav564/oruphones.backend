@@ -4,7 +4,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
   let totalProducts;
   let completeDeals = [];
   if (location === "India") {
-    if (sortBy === "") {
+    if (sortBy === "" && type === "all") {
       totalProducts = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"], type })
         .countDocuments();

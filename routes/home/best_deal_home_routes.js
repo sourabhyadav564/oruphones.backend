@@ -9,7 +9,10 @@ router.get("/listings/best/nearme", async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
   const userUniqueId = req.headers.useruniqueid;
-  bestDealsNearMe(location, page, userUniqueId, res);
+
+  const sortBy = req.query.sortBy;
+
+  bestDealsNearMe(location, page, userUniqueId, sortBy, res);
 });
 
 module.exports = router;

@@ -19,7 +19,9 @@ router.get("/listings/best/nearall", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
   const userUniqueId = req.headers.useruniqueid;
-  bestDealsNearAll(location, page, userUniqueId, res);
+
+  const sortBy = req.query.sortBy;
+  bestDealsNearAll(location, page, userUniqueId, sortBy, res);
 });
 
 module.exports = router;
