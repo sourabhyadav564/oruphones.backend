@@ -785,7 +785,6 @@ router.post(
 
       let favList = [];
       if (userUniqueId != "Guest" && isOtherVendor != "Y") {
-        console.log("userUniqueId", userUniqueId);
         const getFavObject = await favoriteModal.findOne({
           userUniqueId: userUniqueId,
         });

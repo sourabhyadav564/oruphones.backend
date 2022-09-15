@@ -4,13 +4,6 @@ const favoriteModal = require("../src/database/modals/favorite/favorite_add");
 const saveListingModal = require("../src/database/modals/device/save_listing_device");
 const applySortFilter = require("./sort_filter");
 
-// SORY BY KEYS
-
-// LTH
-// HTL
-// NF
-// OF
-
 const bestDealsNearMe = async (location, page, userUniqueId, res) => {
   try {
     let updatedBestDeals = [];
@@ -229,6 +222,7 @@ exports.bestDealsNearAll = bestDealsNearAll;
 
 const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) => {
   try {
+    console.log({ location, make, page, userUniqueId, sortBy });
     let updatedBestDeals = [];
     let otherListings = [];
     let totalProducts;
@@ -247,7 +241,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) 
     }
 
     if (location === "India") {      
-      const fitlerResults = await applySortFilter(sortBy, make, page);
+      const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
       // let getSavedDeals = await saveListingModal.find({
       //   status: ["Active", "Sold_Out"],
@@ -282,7 +276,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) 
         },
       });
     } else {
-      const fitlerResults = await applySortFilter(sortBy, make, page);
+      const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
       // let getSavedDeals = await saveListingModal.find({
       //   $or: [{ listingLocation: location }, { listingLocation: "India" }],

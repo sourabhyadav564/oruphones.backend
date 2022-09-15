@@ -62,11 +62,6 @@ schedule.scheduleJob("00 03 * * *", function () {
   startSavingBestDeals();
 });
 
-schedule.scheduleJob("23 17 * * *", function () {
-  console.log("The answer to life, the universe, and everything!");
-  startCalculatingLSPTest();
-});
-
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
 const makeModalRoute = require("../routes/master/make_modal_routes");

@@ -108,7 +108,7 @@ const bestDealsSchema = new mongoose.Schema(
     },
     verified: {
       type: Boolean,
-      // default: false,
+      default: false,
     },
     deviceUniqueId: {
       type: String,

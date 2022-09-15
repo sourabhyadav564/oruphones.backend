@@ -123,7 +123,7 @@ const getBestDeals = async (
 
   try {
     let favList = [];
-    if (userUniqueId !== "Guest") {
+    if (userUniqueId != "Guest") {
       const getFavObject = await favoriteModal.findOne({
         userUniqueId: userUniqueId,
       });
@@ -385,7 +385,7 @@ const getBestDeals = async (
         // otherListings[index].listingPrice = formattedPrice.toString();
       });
 
-      if (userUniqueId !== "Guest") {
+      if (userUniqueId != "Guest") {
         // add favorite listings to the final list
         finalBestDeals.forEach((item, index) => {
           if (favList.includes(item.listingId)) {
