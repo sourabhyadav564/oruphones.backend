@@ -100,7 +100,6 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
       }
     }
 
-    console.log("sort", sortBy);
 
     if (location === "India") {
       const fitlerResults = await applySortFilter(sortBy, "all", page, location);
