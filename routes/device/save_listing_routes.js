@@ -817,6 +817,11 @@ router.post(
         getListing = await saveListingModal.findOne({
           listingId: listingid,
         });
+        if (!getListing) {
+          getListing = await bestDealsModal.findOne({
+            listingId: listingid,
+          });
+        }
       } else {
         getThirdsListing = await testScrappedModal.findOne({
           _id: ObjectId(listingid),
