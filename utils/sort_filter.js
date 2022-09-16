@@ -28,7 +28,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
         .skip(parseInt(page) * 30)
         .limit(30);
     } else {
-      if (sortBy === "HighToLow") {
+      if (sortBy === "Price - High to Low") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -63,7 +63,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "LowToHigh") {
+      } else if (sortBy === "Price - Low to High") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -99,7 +99,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "NewestFirst") {
+      } else if (sortBy === "Newest First") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -131,7 +131,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "OldestFirst") {
+      } else if (sortBy === "Oldest First") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -212,7 +212,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
         .skip(parseInt(page) * 30)
         .limit(30);
     } else {
-      if (sortBy === "HighToLow") {
+      if (sortBy === "Price - High to Low") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({
@@ -287,7 +287,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "LowToHigh") {
+      } else if (sortBy === "Price - Low to High") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({
@@ -362,7 +362,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "NewestFirst") {
+      } else if (sortBy === "Newest First") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({
@@ -434,7 +434,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         }
-      } else if (sortBy === "OldestFirst") {
+      } else if (sortBy === "Oldest First") {
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({
