@@ -21,6 +21,9 @@ router.get("/listings/best/nearall", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.headers.useruniqueid;
 
   let sortBy = req.query.sortBy;
+  if (!sortBy) {
+    sortBy = "NA";
+  }
   if (sortBy == undefined) {
     sortBy = "NA";
   } else {

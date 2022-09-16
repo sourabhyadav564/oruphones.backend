@@ -16,9 +16,13 @@ const applySortFilter = async (sortBy, type, page, location) => {
 
   console.log("key", key);
   console.log("type", type);
+  console.log("sortBy", sortBy);
+  console.log("location", location);
+  console.log("page", page);
 
   if (location === "India") {
-    if (sortBy === "" && type === "all") {
+    if (sortBy === "NA" && type === "all") {
+      console.log("NANANANAN")
       totalProducts = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();
@@ -76,7 +80,6 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         } else if (key === "marketingName") {
-          console.log("inside else if");
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
@@ -164,7 +167,6 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .limit(30);
         }
       } else {
-        console.log("inside else");
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -175,7 +177,6 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .skip(parseInt(page) * 30)
             .limit(30);
         } else if (key === "marketingName") {
-          console.log("inside else if");
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
@@ -198,7 +199,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
       }
     }
   } else {
-    if (sortBy === "" && type === "all") {
+    if (sortBy === "NA" && type === "all") {
       totalProducts = await bestDealsModal
         .find({
           status: ["Active", "Sold_Out"],
