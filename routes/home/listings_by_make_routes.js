@@ -24,7 +24,12 @@ router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
-  const sortBy = req.query.sortBy;
+  let sortBy = req.query.sortBy;
+  if (sortBy == undefined) {
+    sortBy = "NA";
+  } else {
+    sortBy = sortBy;
+  }
 
   // let make;
   // initialMake.split(" ").map((currentValue) => {
@@ -133,9 +138,21 @@ router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
-  const sortBy = req.query.sortBy;
+  let sortBy = req.query.sortBy;
+  if (sortBy == undefined) {
+    sortBy = "NA";
+  } else {
+    sortBy = sortBy;
+  }
 
-  bestDealsByMarketingName(location, marketingname, page, userUniqueId, sortBy, res);
+  bestDealsByMarketingName(
+    location,
+    marketingname,
+    page,
+    userUniqueId,
+    sortBy,
+    res
+  );
 });
 
 module.exports = router;
