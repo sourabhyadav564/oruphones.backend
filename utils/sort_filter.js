@@ -142,7 +142,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .sort({ createdAt: 1 })
             .skip(parseInt(page) * 30)
             .limit(30);
-        } else if (type === "marketingName") {
+        } else if (key === "marketingName") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
@@ -164,6 +164,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .limit(30);
         }
       } else {
+        console.log("inside else");
         if (key === "make") {
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -173,7 +174,8 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .skip(parseInt(page) * 30)
             .limit(30);
-        } else if (type === "marketingName") {
+        } else if (key === "marketingName") {
+          console.log("inside else if");
           totalProducts = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
@@ -459,7 +461,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .sort({ createdAt: 1 })
             .skip(parseInt(page) * 30)
             .limit(30);
-        } else if (type === "marketingName") {
+        } else if (key === "marketingName") {
           totalProducts = await bestDealsModal
             .find({
               status: ["Active", "Sold_Out"],
@@ -530,7 +532,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .skip(parseInt(page) * 30)
             .limit(30);
-        } else if (type === "marketingName") {
+        } else if (key === "marketingName") {
           totalProducts = await bestDealsModal
             .find({
               status: ["Active", "Sold_Out"],
