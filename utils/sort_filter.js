@@ -14,15 +14,8 @@ const applySortFilter = async (sortBy, type, page, location) => {
     key = "all";
   }
 
-  console.log("key", key);
-  console.log("type", type);
-  console.log("sortBy", sortBy);
-  console.log("location", location);
-  console.log("page", page);
-
   if (location === "India") {
     if (sortBy === "NA" && type === "all") {
-      console.log("NANANANAN")
       totalProducts = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();

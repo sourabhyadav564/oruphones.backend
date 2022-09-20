@@ -23,8 +23,12 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
     }
 
     if (location === "India") {
-
-      const fitlerResults = await applySortFilter(sortBy, "all", page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        "all",
+        page,
+        location
+      );
 
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
@@ -39,7 +43,10 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
 
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -54,12 +61,19 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         },
       });
     } else {
-
-      const fitlerResults = await applySortFilter(sortBy, "all", page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        "all",
+        page,
+        location
+      );
 
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -100,9 +114,13 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
       }
     }
 
-
     if (location === "India") {
-      const fitlerResults = await applySortFilter(sortBy, "all", page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        "all",
+        page,
+        location
+      );
 
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
@@ -116,7 +134,10 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
       }
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -131,11 +152,19 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         },
       });
     } else {
-      const fitlerResults = await applySortFilter(sortBy, "all", page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        "all",
+        page,
+        location
+      );
 
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -158,7 +187,14 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
 
 exports.bestDealsNearAll = bestDealsNearAll;
 
-const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) => {
+const bestDealsByMake = async (
+  location,
+  make,
+  page,
+  userUniqueId,
+  sortBy,
+  res
+) => {
   try {
     let updatedBestDeals = [];
     let otherListings = [];
@@ -176,7 +212,7 @@ const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) 
       }
     }
 
-    if (location === "India") {      
+    if (location === "India") {
       const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
       if (userUniqueId !== "Guest") {
@@ -190,8 +226,15 @@ const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) 
         });
       }
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        completeDeals = await bestDealsModal
+          .find({ status: ["Active", "Sold_Out"], make: make })
+          .limit(5);
+
+        updatedBestDeals = completeDeals;
+        otherListings = fitlerResults.completeDeals.slice(
+          0,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -209,8 +252,19 @@ const bestDealsByMake = async (location, make, page, userUniqueId, sortBy, res) 
       const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        completeDeals = await bestDealsModal
+          .find({
+            status: ["Active", "Sold_Out"],
+            make: make,
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
+          .limit(5);
+
+        updatedBestDeals = completeDeals;
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -259,7 +313,12 @@ const bestDealsByMarketingName = async (
     }
 
     if (location === "India") {
-      const fitlerResults = await applySortFilter(sortBy, marketingName, page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        marketingName,
+        page,
+        location
+      );
 
       if (userUniqueId !== "Guest") {
         // add favorite listings to the final list
@@ -273,7 +332,10 @@ const bestDealsByMarketingName = async (
       }
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
@@ -288,12 +350,19 @@ const bestDealsByMarketingName = async (
         },
       });
     } else {
-
-      const fitlerResults = await applySortFilter(sortBy, marketingName, page, location);
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        marketingName,
+        page,
+        location
+      );
 
       if (page == 0) {
         updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(5, fitlerResults.completeDeals.length);
+        otherListings = fitlerResults.completeDeals.slice(
+          5,
+          fitlerResults.completeDeals.length
+        );
       } else {
         otherListings = fitlerResults.completeDeals;
       }
