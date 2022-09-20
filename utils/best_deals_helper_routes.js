@@ -226,13 +226,14 @@ const bestDealsByMake = async (
         });
       }
       if (page == 0) {
+        let isFromZero = sortBy === "NA" ? false : true;
         completeDeals = await bestDealsModal
           .find({ status: ["Active", "Sold_Out"], make: make })
           .limit(5);
 
         updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          0,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
       } else {
@@ -252,6 +253,7 @@ const bestDealsByMake = async (
       const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
       if (page == 0) {
+        let isFromZero = sortBy === "NA" ? false : true;
         completeDeals = await bestDealsModal
           .find({
             status: ["Active", "Sold_Out"],
@@ -262,7 +264,7 @@ const bestDealsByMake = async (
 
         updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
       } else {

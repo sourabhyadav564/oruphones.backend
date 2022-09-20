@@ -28,7 +28,7 @@ router.get("/listingsbymake", validUser, logEvent, async (req, res) => {
   if (!sortBy) {
     sortBy = "NA";
   }
-  if (sortBy == undefined) {
+  if (sortBy == undefined || sortBy == "Featured") {
     sortBy = "NA";
   } else {
     sortBy = sortBy;
@@ -145,7 +145,7 @@ router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
   if (!sortBy) {
     sortBy = "NA";
   }
-  if (sortBy == undefined) {
+  if (sortBy == undefined || sortBy == "Featured") {
     sortBy = "NA";
   } else {
     sortBy = sortBy;
