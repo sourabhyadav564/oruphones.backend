@@ -225,19 +225,32 @@ const bestDealsByMake = async (
           }
         });
       }
-      if (page == 0) {
-        let isFromZero = sortBy === "NA" ? false : true;
-        completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"], make: make })
-          .limit(5);
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({ status: ["Active", "Sold_Out"], make: make })
+        .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
+      if (page == 0) {
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -252,23 +265,36 @@ const bestDealsByMake = async (
     } else {
       const fitlerResults = await applySortFilter(sortBy, make, page, location);
 
-      if (page == 0) {
-        let isFromZero = sortBy === "NA" ? false : true;
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            make: make,
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .limit(5);
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          make: make,
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
+      if (page == 0) {
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -332,22 +358,36 @@ const bestDealsByMarketingName = async (
           }
         });
       }
-      if (page == 0) {
-        let isFromZero = sortBy === "NA" ? false : true;
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            marketingName: marketingName,
-          })
-          .limit(5);
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          marketingName: marketingName,
+        })
+        .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
+      if (page == 0) {
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -367,23 +407,36 @@ const bestDealsByMarketingName = async (
         location
       );
 
-      if (page == 0) {
-        let isFromZero = sortBy === "NA" ? false : true;
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            marketingName: marketingName,
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .limit(5);
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          marketingName: marketingName,
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
+      if (page == 0) {
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
