@@ -47,7 +47,7 @@ const sendverificationSMS = (number, message) => {
     MessageAttributes: {
       "AWS.SNS.SMS.SenderID": {
         DataType: "String",
-        StringValue: `${clientSecret}`,
+        StringValue: `${1234}`,
       },
     },
   };
