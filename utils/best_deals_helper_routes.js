@@ -331,9 +331,16 @@ const bestDealsByMarketingName = async (
         });
       }
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        completeDeals = await bestDealsModal
+          .find({
+            status: ["Active", "Sold_Out"],
+            marketingName: marketingName,
+          })
+          .limit(5);
+
+        updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          0,
           fitlerResults.completeDeals.length
         );
       } else {
@@ -358,9 +365,17 @@ const bestDealsByMarketingName = async (
       );
 
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        completeDeals = await bestDealsModal
+          .find({
+            status: ["Active", "Sold_Out"],
+            marketingName: marketingName,
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
+          .limit(5);
+
+        updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          0,
           fitlerResults.completeDeals.length
         );
       } else {
