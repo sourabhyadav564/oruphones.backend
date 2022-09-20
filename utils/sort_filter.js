@@ -14,6 +14,11 @@ const applySortFilter = async (sortBy, type, page, location) => {
     key = "all";
   }
 
+  console.log("key", key);
+  console.log("type", type);
+  console.log("sortBy", sortBy);
+  console.log("location", location);
+
   if (location === "India") {
     if (sortBy === "NA" && type === "all") {
       totalProducts = await bestDealsModal
@@ -234,7 +239,7 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .collation({ locale: "en_US", numericOrdering: true })
             .skip(parseInt(page) * 30)
             .limit(30);
-        } else if (page === "marketingName") {
+        } else if (key === "marketingName") {
           totalProducts = await bestDealsModal
             .find({
               status: ["Active", "Sold_Out"],
