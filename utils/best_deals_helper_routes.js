@@ -331,6 +331,7 @@ const bestDealsByMarketingName = async (
         });
       }
       if (page == 0) {
+        let isFromZero = sortBy === "NA" ? false : true;
         completeDeals = await bestDealsModal
           .find({
             status: ["Active", "Sold_Out"],
@@ -340,7 +341,7 @@ const bestDealsByMarketingName = async (
 
         updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          0,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
       } else {
@@ -365,6 +366,7 @@ const bestDealsByMarketingName = async (
       );
 
       if (page == 0) {
+        let isFromZero = sortBy === "NA" ? false : true;
         completeDeals = await bestDealsModal
           .find({
             status: ["Active", "Sold_Out"],
@@ -375,7 +377,7 @@ const bestDealsByMarketingName = async (
 
         updatedBestDeals = completeDeals;
         otherListings = fitlerResults.completeDeals.slice(
-          0,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
       } else {
