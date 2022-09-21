@@ -97,7 +97,7 @@ router.get("/listing/sendverification", validUser, logEvent, async (req, res) =>
             listingId: listingId,
           });
 
-          if (listingObject && listingObject.userUniqueId) {
+          if (listingObject.userUniqueId == userUniqueId) {
             let sellerUniqueId = listingObject.userUniqueId;
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
