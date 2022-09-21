@@ -209,6 +209,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       notionalPercentage: -999999,
       imagePath: defaultImage.fullImage || images[0].fullImage,
       listingId: dataObject.listingId,
+      listingDate: moment(dataObject.listingDate).format("MMM Do"),
     };
 
     const tempModelInfo = new bestDealsModal(newData);
