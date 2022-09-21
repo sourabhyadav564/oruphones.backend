@@ -16,157 +16,177 @@ const saveNotificationModel = require("../../src/database/modals/notification/no
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const validUser = require("../../src/middleware/valid_user");
 
-router.get("/listing/buyer/verification", validUser, logEvent, async (req, res) => {
-  try {
-    const listingId = req.query.listingId;
-    const mobileNumber = req.query.mobileNumber;
+router.get(
+  "/listing/buyer/verification",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    try {
+      const listingId = req.query.listingId;
+      const mobileNumber = req.query.mobileNumber;
 
-    const getListingObject = await saveRequestModal.findOne({
-      mobileNumber: mobileNumber,
-      listingId: listingId,
-    });
-
-    if (getListingObject) {
-      const userUniqueId = getListingObject.userUniqueId;
-      const userDetails = await createUserModal.findOne({
-        userUniqueId: userUniqueId,
+      const getListingObject = await saveRequestModal.findOne({
+        mobileNumber: mobileNumber,
+        listingId: listingId,
       });
 
-      const isMatchFound = userDetails.mobileNumber === mobileNumber;
-      if (!isMatchFound) {
+      if (getListingObject) {
+        const userUniqueId = getListingObject.userUniqueId;
+        const userDetails = await createUserModal.findOne({
+          userUniqueId: userUniqueId,
+        });
+
+        const isMatchFound = userDetails.mobileNumber === mobileNumber;
+        if (!isMatchFound) {
+          res.status(200).json({
+            reason: "Mobile number not found",
+            statusCode: 401,
+            status: "UNAUTHORIZED",
+          });
+          return;
+        } else {
+          res.status(200).json({
+            reason: "Listing found successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+          });
+        }
+      } else {
         res.status(200).json({
           reason: "Mobile number not found",
           statusCode: 401,
           status: "UNAUTHORIZED",
         });
-        return;
-      } else {
-        res.status(200).json({
-          reason: "Listing found successfully",
-          statusCode: 200,
-          status: "SUCCESS",
-        });
       }
-    } else {
-      res.status(200).json({
-        reason: "Mobile number not found",
-        statusCode: 401,
-        status: "UNAUTHORIZED",
-      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
   }
-});
+);
 
-router.get("/listing/sendverification", validUser, logEvent, async (req, res) => {
-  const listingId = req.query.listingId;
-  const userUniqueId = req.query.userUniqueId;
+router.get(
+  "/listing/sendverification",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    const listingId = req.query.listingId;
+    const userUniqueId = req.query.userUniqueId;
 
-  try {
-    const isValidUser = await createUserModal.findOne({
-      userUniqueId: userUniqueId,
-    });
-
-    const getRequestObject = await saveRequestModal.findOne({
-      mobileNumber: isValidUser.mobileNumber,
-      listingId: listingId,
-    });
-
-    if (isValidUser) {
-      const data = {
-        listingId: listingId,
+    try {
+      const isValidUser = await createUserModal.findOne({
         userUniqueId: userUniqueId,
+      });
+
+      const getRequestObject = await saveRequestModal.findOne({
         mobileNumber: isValidUser.mobileNumber,
-      };
+        listingId: listingId,
+      });
 
-      if (!getRequestObject) {
-        const saveRequest = new saveRequestModal(data);
-        let dataObject = await saveRequest.save();
+      if (isValidUser) {
+        const data = {
+          listingId: listingId,
+          userUniqueId: userUniqueId,
+          mobileNumber: isValidUser.mobileNumber,
+        };
 
-        if (!dataObject) {
-          res.status(500).json({
-            reason: "Some error occured",
-            statusCode: 500,
-            status: "SUCCESS",
-          });
-          return;
-        } else {
-          let listingObject = await saveListingModal.findOne({
-            listingId: listingId,
-          });
+        if (listingObject.userUniqueId != userUniqueId) {
+          if (!getRequestObject) {
+            const saveRequest = new saveRequestModal(data);
+            let dataObject = await saveRequest.save();
 
-          if (listingObject.userUniqueId == userUniqueId) {
-            let sellerUniqueId = listingObject.userUniqueId;
-            let marketingName = listingObject.marketingName;
-            let sellerName = listingObject.listedBy;
-            let sellerContactNumber = listingObject.mobileNumber;
-            // let buyerDetails = isValidUser.userName === "" ? isValidUser.mobileNumber : isValidUser.userName;
-            const response = await sendNotification(
-              sellerUniqueId,
-              true,
-              marketingName,
-              sellerName,
-              sellerContactNumber,
-              // buyerDetails
-            );
-            const findFavorite = await favoriteModal.findOne({
-              userUniqueId: userUniqueId,
-            });
-
-            let addToFavorite = {};
-            if (findFavorite && findFavorite.userUniqueId) {
-              addToFavorite = await favoriteModal.findByIdAndUpdate(
-                findFavorite._id,
-                {
-                  $push: {
-                    fav_listings: listingId,
-                  },
-                },
-                { new: true }
-              );
-            } else {
-              addToFavorite = await favoriteModal.create({
-                userUniqueId: userUniqueId,
-                fav_listings: [listingId],
-              });
-            }
-            if (addToFavorite) {
-              res.status(201).json({
-                reason: "Request sent successfully",
-                statusCode: 200,
+            if (!dataObject) {
+              res.status(500).json({
+                reason: "Some error occured",
+                statusCode: 500,
                 status: "SUCCESS",
-                dataObject,
               });
+              return;
+            } else {
+              let listingObject = await saveListingModal.findOne({
+                listingId: listingId,
+              });
+
+              if (listingObject.userUniqueId != userUniqueId) {
+                let sellerUniqueId = listingObject.userUniqueId;
+                let marketingName = listingObject.marketingName;
+                let sellerName = listingObject.listedBy;
+                let sellerContactNumber = listingObject.mobileNumber;
+                // let buyerDetails = isValidUser.userName === "" ? isValidUser.mobileNumber : isValidUser.userName;
+                const response = await sendNotification(
+                  sellerUniqueId,
+                  true,
+                  marketingName,
+                  sellerName,
+                  sellerContactNumber
+                  // buyerDetails
+                );
+                const findFavorite = await favoriteModal.findOne({
+                  userUniqueId: userUniqueId,
+                });
+
+                let addToFavorite = {};
+                if (findFavorite && findFavorite.userUniqueId) {
+                  addToFavorite = await favoriteModal.findByIdAndUpdate(
+                    findFavorite._id,
+                    {
+                      $push: {
+                        fav_listings: listingId,
+                      },
+                    },
+                    { new: true }
+                  );
+                } else {
+                  addToFavorite = await favoriteModal.create({
+                    userUniqueId: userUniqueId,
+                    fav_listings: [listingId],
+                  });
+                }
+                if (addToFavorite) {
+                  res.status(201).json({
+                    reason: "Request sent successfully",
+                    statusCode: 200,
+                    status: "SUCCESS",
+                    dataObject,
+                  });
+                }
+              } else {
+                res.status(200).json({
+                  reason: "You can't send verification request to yourself",
+                  statusCode: 202,
+                  status: "SUCCESS",
+                  dataObject,
+                });
+              }
             }
           } else {
             res.status(200).json({
-              reason: "You can't send verification request to yourself",
-              statusCode: 202,
+              reason:
+                "You have already sent verification request for this listing",
+              statusCode: 204,
               status: "SUCCESS",
-              dataObject,
             });
           }
+        } else {
+          res.status(200).json({
+            reason: "You can't send verification request to yourself",
+            statusCode: 202,
+            status: "SUCCESS",
+            dataObject,
+          });
         }
       } else {
         res.status(200).json({
-          reason: "You have already sent verification request for this listing",
-          statusCode: 204,
+          reason: "Invalid user id provided",
+          statusCode: 401,
           status: "SUCCESS",
         });
       }
-    } else {
-      res.status(200).json({
-        reason: "Invalid user id provided",
-        statusCode: 401,
-        status: "SUCCESS",
-      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
   }
-});
+);
 
 module.exports = router;
