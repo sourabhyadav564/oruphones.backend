@@ -18,9 +18,11 @@ const sendNotification = async (
   marketingName,
   sellerName,
   sellerContactNumber,
-  buyerDetails
+  // buyerDetails
 ) => {
-  let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName} by ${buyerDetails}.`;
+  // let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName} by ${buyerDetails}.`;
+
+  let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName}.`;
 
   const sendMessage = sendverificationSMS(sellerContactNumber, message);
 

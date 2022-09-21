@@ -102,14 +102,14 @@ router.get("/listing/sendverification", validUser, logEvent, async (req, res) =>
             let marketingName = listingObject.marketingName;
             let sellerName = listingObject.listedBy;
             let sellerContactNumber = listingObject.mobileNumber;
-            let buyerDetails = isValidUser.userName === "" ? isValidUser.mobileNumber : isValidUser.userName;
+            // let buyerDetails = isValidUser.userName === "" ? isValidUser.mobileNumber : isValidUser.userName;
             const response = await sendNotification(
               sellerUniqueId,
               true,
               marketingName,
               sellerName,
               sellerContactNumber,
-              buyerDetails
+              // buyerDetails
             );
             const findFavorite = await favoriteModal.findOne({
               userUniqueId: userUniqueId,
