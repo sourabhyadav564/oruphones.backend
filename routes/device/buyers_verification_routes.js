@@ -15,6 +15,7 @@ const sendNotification = require("../../utils/push_notification");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
 const validUser = require("../../src/middleware/valid_user");
+const generateOTP = require("../../utils/generate_otp");
 
 router.get(
   "/listing/buyer/verification",
@@ -73,6 +74,8 @@ router.get(
     const listingId = req.query.listingId;
     const userUniqueId = req.query.userUniqueId;
 
+    const clientOTP = generateOTP();
+    
     try {
       const isValidUser = await createUserModal.findOne({
         userUniqueId: userUniqueId,
@@ -113,14 +116,14 @@ router.get(
               let marketingName = listingObject.marketingName;
               let sellerName = listingObject.listedBy;
               let sellerContactNumber = listingObject.mobileNumber;
-              // let buyerDetails = isValidUser.userName === "" ? isValidUser.mobileNumber : isValidUser.userName;
+
               const response = await sendNotification(
                 sellerUniqueId,
                 true,
                 marketingName,
                 sellerName,
-                sellerContactNumber
-                // buyerDetails
+                sellerContactNumber,
+                clientOTP
               );
               const findFavorite = await favoriteModal.findOne({
                 userUniqueId: userUniqueId,

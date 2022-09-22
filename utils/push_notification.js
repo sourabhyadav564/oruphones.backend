@@ -11,6 +11,7 @@ const fetch = require("node-fetch");
 const saveNotificationModel = require("../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../src/database/modals/notification/complete_notifications");
 const sendverificationSMS = require("./send_verification_sms");
+const sendLoginOtp = require("./send_login_otp");
 
 const sendNotification = async (
   sellerUniqueId,
@@ -18,13 +19,10 @@ const sendNotification = async (
   marketingName,
   sellerName,
   sellerContactNumber,
-  // buyerDetails
-) => {
-  // let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName} by ${buyerDetails}.`;
+  clientOTP
+  ) => {
 
-  let message = `Hey ${sellerName}, You've got a verfication request. Click here to visit your listings and complete verification for your ${marketingName}.`;
-
-  const sendMessage = sendverificationSMS(sellerContactNumber, message);
+  const sendMessage = sendverificationSMS(sellerContactNumber, clientOTP, sellerName, marketingName);
 
   const now = new Date();
   const currentDate = moment(now).format("L");

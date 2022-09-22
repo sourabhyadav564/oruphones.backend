@@ -18,7 +18,14 @@ AWS.config.update({
   secretAccessKey: process.env.AWS_SNS_SECRET_KEY,
 });
 
-const clientSecret = generateOTP();
+const BitlyClient = require('bitly').BitlyClient;
+const bitly = new BitlyClient('b798af6695d4e81885f3fd925aa2e152c16123ea');
+
+async function urlShortner(url) {
+  const response = await bitly.shorten(url);
+  // console.log(`Your shortened bitlink is ${response.link}`);
+  return response.link;
+}
 
 // const sendLoginOtp = (mobileNumber, clientOTP) => {
 //     var req = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
@@ -39,15 +46,20 @@ const clientSecret = generateOTP();
 //     });
 // }
 
-const sendverificationSMS = (number, message) => {
+const sendverificationSMS = async (number, message, sellerName, marketingName) => {
+  let link_text = "ORUphones";
+  let result = link_text.link("https://store.oruphones.com/");
+
+  let shortLink = await urlShortner("https://store.oruphones.com/");
+  
   var params = {
-    Message: `${message}`,
+    Message: `Hey ${sellerName}, You've got a verification request for your ${marketingName}. Visit ORUphones to complete verification. Please use OTP: ${message} to login. Here's the link: ${shortLink} for verification.`,
     Subject: "ORU Phones",
     PhoneNumber: "+91" + number,
     MessageAttributes: {
       "AWS.SNS.SMS.SenderID": {
         DataType: "String",
-        StringValue: `${1234}`,
+        StringValue: `${message}`,
       },
     },
   };
