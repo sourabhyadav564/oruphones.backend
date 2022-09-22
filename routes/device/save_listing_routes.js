@@ -108,7 +108,6 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
           new: true,
         }
       );
-      console.log("data", data);
     }
   }
   const mobileNumber = userDetails?.mobileNumber;
@@ -155,7 +154,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   }
 
   const now = new Date();
-  const dateFormat = moment(now).format("L");
+  // const dateFormat = moment(now).format("L");
+  const dateFormat = moment(now).format("MMM Do");
 
   //TODO - Add the exact default image as the model image
   //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
@@ -169,7 +169,6 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const defaultImage = {
     fullImage: image,
   };
-  2;
 
   const data = {
     charger,
@@ -212,7 +211,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
         (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
         (images.length > 0 ? images[0].fullImage : ""),
       listingId: dataObject.listingId,
-      listingDate: moment(dataObject.listingDate).format("MMM Do"),
+      listingDate: moment(now).format("MMM Do"),
     };
 
     const tempModelInfo = new bestDealsModal(newData);
@@ -603,7 +602,7 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
   const images = req.body.images;
 
   const now = new Date();
-  const dateFormat = moment(now).format("L");
+  const dateFormat = moment(now).format("MMM Do");
 
   const dataToBeUpdate = {
     // ...req.body,
@@ -657,7 +656,7 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
         });
 
         const now = new Date();
-        const currentDate = moment(now).format("L");
+        const currentDate = moment(now).format("MMM Do");
 
         const string = await makeRandomString(25);
 
