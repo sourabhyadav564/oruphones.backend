@@ -11,7 +11,10 @@ const getDefaultImage = async (name) => {
     const defaultImage = await testDefaultImageModal.findOne({
       name: name,
     });
-    const image = defaultImage.img;
+    let image = ""
+    if (defaultImage) {
+      image = defaultImage.img;
+    }
     return image;
   } catch (error) {
     console.log(error);

@@ -169,6 +169,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const defaultImage = {
     fullImage: image,
   };
+  2;
 
   const data = {
     charger,
@@ -207,7 +208,9 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     let newData = {
       ...data,
       notionalPercentage: -999999,
-      imagePath: defaultImage.fullImage || images[0].fullImage,
+      imagePath:
+        (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
+        (images.length > 0 ? images[0].fullImage : ""),
       listingId: dataObject.listingId,
       listingDate: moment(dataObject.listingDate).format("MMM Do"),
     };
