@@ -44,20 +44,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);
-      // i = 0;
-      // while (i < marketingName.length) {
-      //   let newListings = await getThirdPartyVendors(
-      //     marketingName[i],
-      //     "",
-      //     page
-      //   );
-      //   newListings?.dataArray?.forEach((thirdPartyVendor) => {
-      //     listing.push(thirdPartyVendor);
-      //   });
-      //   i++;
-      //   totalProducts = saveListingLength + newListings?.dataLength;
-      // }
-      // totalProducts = saveListingLength;
+
     } else if (make.length > 0) {
       // let saveListingLength = await bestDealsModal
       //   .find({ make: make, status: ["Active", "Sold_Out"] }, { _id: 0 })
@@ -67,16 +54,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);
-      // i = 0;
-      // while (i < make.length) {
-      //   let newListings = await getThirdPartyVendors("", make[i], page);
-      //   newListings?.dataArray?.forEach((thirdPartyVendor) => {
-      //     listing.push(thirdPartyVendor);
-      //   });
-      //   i++;
-      //   totalProducts = saveListingLength + newListings?.dataLength;
-      // }
-      // totalProducts = saveListingLength;
+
     } else {
       // let saveListingLength = await bestDealsModal
       //   .find({ status: ["Active", "Sold_Out"] }, { _id: 0 })
@@ -86,12 +64,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
         // .skip(parseInt(page) * 20)
         // .limit(20);
       listing.push(...ourListing);
-      // const thirdPartyVendors = await getThirdPartyVendors("", "", page);
-      // newListings?.dataArray?.forEach((thirdPartyVendor) => {
-      //   listing.push(thirdPartyVendor);
-      // });
-      // totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-      // totalProducts = saveListingLength;
+
     }
 
     allListings = listing;
@@ -174,18 +147,7 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     if (warenty.length > 0 && reqPage !== "TSM") {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-        // warenty.forEach((element) => {
-        //   if (element === "Brand Warranty") {
-        //     return (
-        //       item.warenty === "More than 3 months" ||
-        //       item.warenty === "More than 6 months" ||
-        //       item.warenty === "More than 9 months"
-        //     );
-        //     return item.isOtherVendor === "N";
-        //   } else if (element === "Seller Warranty") {
-        //     return item.isOtherVendor === "Y";
-        //   }
-        // });
+
         if (warenty.includes("Brand Warranty")) {
           return item.isOtherVendor === "N";
         } else if (warenty.includes("Seller Warranty")) {
@@ -210,24 +172,6 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
 
     let location = listingLocation;
 
-    // let defaultDataObject = [];
-    // if (location === "India") {
-    //   let defaultDataObject2 = allListings;
-    //   defaultDataObject2.forEach((element) => {
-    //     defaultDataObject.push(element);
-    //   });
-    //   // const thirdPartyVendors = await getThirdPartyVendors("", "");
-    //   // thirdPartyVendors.forEach((thirdPartyVendor) => {
-    //   //   defaultDataObject.push(thirdPartyVendor);
-    //   // });
-    // } else {
-    //   // defaultDataObject = await bestDealHomeModel.find({
-    //   // defaultDataObject = await saveListingModal.find({
-    //   //   listingLocation: location,
-    //   // });
-    //   defaultDataObject = allListings;
-    // }
-    // getBestDeals(defaultDataObject, userUniqueId, res, false, totalProducts);
     bestDealsForSearchListing(
       location,
       page,
