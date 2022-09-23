@@ -130,7 +130,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const originalbox = req.body.originalbox;
   const platform = req.body.platform;
   const recommendedPriceRange = req.body.recommendedPriceRange;
-  const deviceImagesAvailable = images.length ? true : false;
+  const deviceImagesAvailable = images.length > 0 ? true : false;
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
 
