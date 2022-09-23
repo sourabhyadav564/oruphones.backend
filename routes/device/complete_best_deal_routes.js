@@ -24,11 +24,12 @@ router.get("/listings/best/nearall", validUser, logEvent, async (req, res) => {
   if (!sortBy) {
     sortBy = "NA";
   }
-  if (sortBy == undefined) {
+  if (sortBy == undefined || sortBy == "Featured") {
     sortBy = "NA";
   } else {
     sortBy = sortBy;
   }
+  
   // bestDealsNearAll(location, page, userUniqueId, sortBy, res);
   bestDealsNearMe(location, page, userUniqueId, sortBy, res);
 });
