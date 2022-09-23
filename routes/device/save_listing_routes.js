@@ -614,7 +614,7 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
     listingPrice: listingPrice,
     deviceCondition: deviceCondition,
     images: images,
-  };a
+  };
 
   try {
     const updateListing = await saveListingModal.findOne({

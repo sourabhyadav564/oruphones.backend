@@ -41,14 +41,32 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         });
       }
 
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+      .find({ status: ["Active", "Sold_Out"] })
+      .limit(5);
+      updatedBestDeals = completeDeals;
+
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -68,14 +86,37 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         location
       );
 
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
+
+        updatedBestDeals = completeDeals;
+
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        // updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -132,14 +173,35 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
           }
         });
       }
+
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({ status: ["Active", "Sold_Out"] })
+        .limit(5);
+
+        updatedBestDeals = completeDeals;
+
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+   
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -159,14 +221,37 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         location
       );
 
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
+
+        updatedBestDeals = completeDeals;
+
       if (page == 0) {
-        updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+
         otherListings = fitlerResults.completeDeals.slice(
-          5,
+          isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
         );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
       } else {
         otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
       }
       res.status(200).json({
         reason: "Best deals found",
@@ -493,12 +578,6 @@ const bestDealsForSearchListing = async (
         });
       }
 
-      // let getSavedDeals = await saveListingModal.find({
-      //   status: ["Active", "Sold_Out"],
-      // });
-
-      // deals = deals.concat(getSavedDeals);
-
       if (page == 0) {
         updatedBestDeals = deals.slice(0, 5);
         otherListings = deals.slice(5, deals.length);
@@ -591,12 +670,6 @@ const bestDealsForShopByCategory = async (
         }
       });
     }
-
-    // let getSavedDeals = await saveListingModal.find({
-    //   status: ["Active", "Sold_Out"],
-    // });
-
-    // deals = deals.concat(getSavedDeals);
 
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
