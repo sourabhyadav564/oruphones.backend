@@ -44,6 +44,7 @@ router.get("/user/details", logEvent, async (req, res) => {
 
 router.post("/user/create", logEvent, async (req, res) => {
   console.log("user body", req.body);
+  console.log("user query", req.query);
   const now = new Date();
   const currentDate = moment(now).format("L");
 
