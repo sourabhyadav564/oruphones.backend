@@ -607,14 +607,14 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
   const dataToBeUpdate = {
     // ...req.body,
     verified: true,
-    listingDate: dateFormat,
+    // listingDate: dateFormat,
     verifiedDate: dateFormat,
     recommendedPriceRange: recommendedPriceRange,
     deviceRam: deviceRam,
     listingPrice: listingPrice,
     deviceCondition: deviceCondition,
     images: images,
-  };
+  };a
 
   try {
     const updateListing = await saveListingModal.findOne({

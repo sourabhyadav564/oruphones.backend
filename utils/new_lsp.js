@@ -18,16 +18,64 @@ const config = nodemailer.createTransport({
 var MongoClient = require("mongodb").MongoClient;
 var url = process.env.MONGO;
 
+let currentDate = new Date();
+let dateFormat = moment(currentDate).add(10, "days").calendar();
+
 const newMakeAndModal = require("../src/database/modals/others/new_make_and_model");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
+// const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
+let fileData = [];
 
+const collectData = async (data, collection) => {
+  try {
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db(process.env.Collection);
+      dbo
+        .collection(collection)
+        .deleteMany({})
+        .then(() => {
+          dbo.collection(collection).insertMany(data, function (err, res) {
+            if (err) throw err;
+            console.log(
+              `${data.length} documents inserted successfully in ${collection} on ${dateFormat})}`
+            );
+            db.close();
+          });
+        });
+    });
+
+    let mailOptions = {
+      from: "mobiruindia22@gmail.com",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+      subject: "Data has successfully been migrated to MongoDB",
+      text:
+        "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
+        data.length +
+        ". The data is not ready to use for other business logics",
+    };
+
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + result.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+let allModelNotFound = [];
 const firstFunction = async () => {
+  fileData = await testScrappedModal.find({}, { _id: 0 });
+  // Map all data with GSM arena data sets
   let foundObjects = [];
   let allModelFound = [];
-  let allModelNotFound = [];
   const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
-  // const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
-  const fileData = await testScrappedModal.find({}, { _id: 0 });
+  // const fileData = await testScrappedModal.find({}, { _id: 0 });
 
   let gsmData = allgsmData.filter((item) => item.models.length >= 0);
   gsmData.forEach((element, index) => {
@@ -81,7 +129,7 @@ const firstFunction = async () => {
           //   return elm;
           // }
         });
-        if (variable) {
+        if (variable.length > 0) {
           variable = variable.filter(
             (value, index, self) =>
               index ===
@@ -130,6 +178,7 @@ const firstFunction = async () => {
             foundObjects.push(dataObj);
           });
         } else {
+          // console.log("marketingName: " +marketingName);
           if (!allModelNotFound.includes("GSM: " + marketingName)) {
             allModelNotFound.push("GSM: " + marketingName);
           }
@@ -138,29 +187,37 @@ const firstFunction = async () => {
     });
     console.log({ index });
     if (index == gsmData.length - 1) {
+      // fs.writeFileSync(
+      //   "allModelNotFound.json",
+      //   JSON.stringify(allModelNotFound, null, 2)
+      // );
       secondFunction(foundObjects);
     }
   });
 };
 
 const secondFunction = (foundObjects) => {
+  // Merge all common objects into one
   let commonModels = [];
   foundObjects.forEach((element, index) => {
-    let foundIndex = commonModels.findIndex((item) => {
-      element.make == item.make &&
-        element.model == item.model &&
-        element.storage == item.storage &&
-        element.ram == item.ram &&
-        element.condition == item.condition;
-    });
+    let foundIndex = commonModels.findIndex(
+      (item) =>
+        item.make == element.make &&
+        item.model == element.model &&
+        item.storage == element.storage &&
+        item.ram == element.ram &&
+        item.condition == element.condition
+    );
+    console.log("foundIndex", foundIndex);
     if (!commonModels[foundIndex]) {
-    // if (foundIndex < 0 || !commonModels[foundIndex] || commonModels[foundIndex].length == 0) {
+      // if (foundIndex < 0 || !commonModels[foundIndex] || commonModels[foundIndex].length == 0) {
       let tempOject = {
         make: element.make,
         model: element.model,
         storage: element.storage,
         ram: element.ram,
         condition: element.condition,
+        priceArray: [],
         vendor: [
           {
             vendor_id: element.vendor_id,
@@ -176,24 +233,478 @@ const secondFunction = (foundObjects) => {
       //   });
       commonModels.push(tempOject);
     } else {
-        commonModels[foundIndex].vendor.push({
+      let itm = {
         vendor_id: element.vendor_id,
         price: element.price,
         type: element.type,
-      });
+      };
+
+      if (commonModels[foundIndex].vendor.indexOf(itm) == -1) {
+        commonModels[foundIndex].vendor.push(itm);
+      }
+      // commonModels[foundIndex].vendor.push({
+      //   vendor_id: element.vendor_id,
+      //   price: element.price,
+      //   type: element.type,
+      // });
     }
     if (index == foundObjects.length - 1) {
-      fs.writeFileSync(
-        "foundObjects2.json",
-        JSON.stringify(commonModels, null, 2)
-      );
+      thirdFunction(commonModels);
+      // fs.writeFileSync(
+      //   "foundObjects2.json",
+      //   JSON.stringify(commonModels, null, 2)
+      // );
     }
   });
 };
 
-const thirdFunction = async (commonModels) => {};
+const thirdFunction = async (commonModels) => {
+  // find all possiblw LSPs and put into an array
+  commonModels.forEach((elem, index) => {
+    let foundCommonIndex = commonModels.findIndex(
+      (item) =>
+        item.make == elem.make &&
+        item.model == elem.model &&
+        item.storage == elem.storage &&
+        item.ram == elem.ram &&
+        item.condition == elem.condition
+    );
+    let leastPrice = [];
+    commonModels[foundCommonIndex].vendor.forEach((vendorObj) => {
+      if (vendorObj.type.toLowerCase() == "buy") {
+        leastPrice.push(vendorObj.price);
+      }
+    });
+    if (leastPrice.length > 0) {
+      commonModels[foundCommonIndex].priceArray.push(
+        Math.min.apply(Math, leastPrice)
+      );
+    }
+
+    let conditions = ["Like New", "Excellent", "Good"];
+    conditions.forEach((forCondition) => {
+      let foundConditionIndex = commonModels.findIndex(
+        (item) =>
+          item.make == elem.make &&
+          item.model == elem.model &&
+          item.storage == elem.storage &&
+          item.ram == elem.ram &&
+          item.condition == forCondition
+      );
+      if (foundConditionIndex != -1) {
+        let leastVendorPrice = [];
+        commonModels[foundConditionIndex].vendor.forEach((vendorObj) => {
+          if (vendorObj.type.toLowerCase() == "buy") {
+            leastVendorPrice.push(vendorObj.price);
+          }
+        });
+        if (leastVendorPrice.length > 0) {
+          let leaseDerivedPrice = lspFunction(
+            elem.condition,
+            forCondition,
+            Math.min.apply(Math, leastVendorPrice)
+          );
+          commonModels[foundCommonIndex].priceArray.push(leaseDerivedPrice);
+        }
+      }
+    });
+    if (index == commonModels.length - 1) {
+      forthFunction(commonModels, false);
+    }
+  });
+};
+
+const forthFunction = (commonModels, goToSix) => {
+  // Get one least price from the LSP array and from derived for buy
+  commonModels.forEach((element, index) => {
+    if (element.priceArray.length > 0) {
+      let foundIndex = commonModels.findIndex(
+        (item) =>
+          item.make == element.make &&
+          item.model == element.model &&
+          item.storage == element.storage &&
+          item.ram == element.ram &&
+          item.condition == element.condition
+      );
+      commonModels[foundIndex].lsp = Math.min.apply(
+        Math,
+        commonModels[foundIndex].priceArray
+      );
+      commonModels[foundIndex].type = "buy";
+    } else {
+      commonModels[index].lsp = 0;
+      commonModels[index].type = "";
+    }
+    if (index == commonModels.length - 1) {
+      if (goToSix) {
+        sixthFunction(commonModels);
+      } else {
+        // sixthFunction(commonModels);
+        fifthFunction(commonModels);
+      }
+    }
+  });
+};
+
+const fifthFunction = (commonModels) => {
+  // Handler function for skipped objects for find lsp
+  commonModels.forEach((element, index) => {
+    let foundIndex = commonModels.findIndex(
+      (item) =>
+        item.make == element.make &&
+        item.model == element.model &&
+        item.storage == element.storage &&
+        item.ram == element.ram &&
+        item.condition == element.condition &&
+        (item.lsp == null || (item.lsp == 0 && item.type == ""))
+    );
+
+    if (foundIndex != -1) {
+      let conditions = ["Like New", "Excellent", "Good"];
+      conditions.forEach((condition) => {
+        let foundConditionIndex = commonModels.findIndex(
+          (item) =>
+            item.make == element.make &&
+            item.model == element.model &&
+            item.storage == element.storage &&
+            item.ram == element.ram &&
+            item.condition == condition &&
+            item.lsp != null &&
+            item.lsp != 0
+        );
+        if (foundConditionIndex != -1) {
+          let leaseDerivedPrice = lspFunction(
+            element.condition,
+            condition,
+            commonModels[foundConditionIndex].lsp
+          );
+          commonModels[foundIndex].priceArray.push(leaseDerivedPrice);
+        }
+      });
+    }
+    if (index == commonModels.length - 1) {
+      forthFunction(commonModels, true);
+      // fs.writeFileSync(
+      //   "foundObjects2.json",
+      //   JSON.stringify(commonModels, null, 2)
+      // );
+    }
+  });
+};
+
+const sixthFunction = (commonModels) => {
+  // For find derivedPrice array by sell just for empty lsp objects
+  commonModels.forEach((elem, index) => {
+    let foundCommonIndex = commonModels.findIndex(
+      (item) =>
+        item.make == elem.make &&
+        item.model == elem.model &&
+        item.storage == elem.storage &&
+        item.ram == elem.ram &&
+        item.condition == elem.condition &&
+        item.lsp == 0
+    );
+    if (foundCommonIndex != -1) {
+      let maxPrice = [];
+      commonModels[foundCommonIndex].vendor.forEach((vendorObj) => {
+        if (vendorObj.type.toLowerCase() == "sell") {
+          maxPrice.push(vendorObj.price);
+        }
+      });
+      if (maxPrice.length > 0) {
+        commonModels[foundCommonIndex].priceArray.push(
+          Math.max.apply(Math, maxPrice)
+        );
+      }
+
+      // let conditions = ["Like New", "Excellent", "Good"];
+      // conditions.forEach((forCondition) => {
+      let foundConditionIndex = commonModels.findIndex(
+        (item) =>
+          item.make == elem.make &&
+          item.model == elem.model &&
+          item.storage == elem.storage &&
+          item.ram == elem.ram &&
+          item.condition == "Like New" &&
+          item.lsp == 0
+      );
+      if (foundConditionIndex != -1) {
+        let leastVendorPrice = [];
+        commonModels[foundConditionIndex].vendor.forEach((vendorObj) => {
+          if (vendorObj.type.toLowerCase() == "sell") {
+            leastVendorPrice.push(vendorObj.price);
+          }
+        });
+        if (leastVendorPrice.length > 0) {
+          let leaseDerivedPrice = lspFunction(
+            elem.condition,
+            "Like New",
+            Math.max.apply(Math, leastVendorPrice)
+          );
+          commonModels[foundCommonIndex].priceArray.push(leaseDerivedPrice);
+        }
+      }
+    }
+    // });
+    if (index == commonModels.length - 1) {
+      seventhFunction(commonModels, false);
+    }
+  });
+};
+
+const seventhFunction = (commonModels, goToNine) => {
+  // find maxPrice from that array for lsp
+  commonModels.forEach((element, index) => {
+    if (element.priceArray.length > 0) {
+      let foundIndex = commonModels.findIndex(
+        (item) =>
+          item.make == element.make &&
+          item.model == element.model &&
+          item.storage == element.storage &&
+          item.ram == element.ram &&
+          item.condition == element.condition &&
+          item.type != "buy"
+      );
+      if (foundIndex != -1) {
+        commonModels[foundIndex].lsp = Math.max.apply(
+          Math,
+          commonModels[foundIndex].priceArray
+        );
+        commonModels[foundIndex].type = "sell";
+      }
+    } else {
+      commonModels[index].lsp = 0;
+      commonModels[index].type = "";
+    }
+    if (index == commonModels.length - 1) {
+      if (goToNine) {
+        ninthFunction(commonModels);
+      } else {
+        // ninthFunction(commonModels);
+        eighthFunction(commonModels);
+      }
+    }
+  });
+};
+
+const eighthFunction = (commonModels) => {
+  // handler function for finding max price for skipped objects
+  commonModels.forEach((element, index) => {
+    let foundIndex = commonModels.findIndex(
+      (item) =>
+        item.make == element.make &&
+        item.model == element.model &&
+        item.storage == element.storage &&
+        item.ram == element.ram &&
+        item.condition == element.condition &&
+        item.lsp == 0 &&
+        item.type == ""
+    );
+    if (foundIndex != -1) {
+      // let conditions = ["Like New", "Excellent", "Good"];
+      // conditions.forEach((condition) => {
+      let foundConditionIndex = commonModels.findIndex(
+        (item) =>
+          item.make == element.make &&
+          item.model == element.model &&
+          item.storage == element.storage &&
+          item.ram == element.ram &&
+          item.condition == "Like New" &&
+          item.lsp != 0
+      );
+      if (foundConditionIndex != -1) {
+        let leaseDerivedPrice = lspFunction(
+          element.condition,
+          "Like New",
+          commonModels[foundConditionIndex].lsp
+        );
+        commonModels[foundIndex].priceArray.push(leaseDerivedPrice);
+      }
+    }
+    // });
+    if (index == commonModels.length - 1) {
+      seventhFunction(commonModels, true);
+      // fs.writeFileSync(
+      //   "foundObjects2.json",
+      //   JSON.stringify(commonModels, null, 2)
+      // );
+    }
+  });
+};
+
+const ninthFunction = (commonModels) => {
+  // Handler for null values in priceArray.
+  commonModels.forEach((element, index) => {
+    let newPriceArray = commonModels[index].priceArray.filter((element) => {
+      return element != null;
+    });
+    commonModels[index].priceArray = newPriceArray;
+    commonModels[index].lsp =
+      commonModels[index].type == "buy"
+        ? Math.min.apply(Math, newPriceArray)
+        : Math.max.apply(Math, newPriceArray);
+    if (index == commonModels.length - 1) {
+      tenthFunction(commonModels);
+      // fs.writeFileSync(
+      //   "foundObjects3.json",
+      //   JSON.stringify(commonModels, null, 2)
+      // );
+    }
+  });
+};
+
+const tenthFunction = (commonModels) => {
+  // Final function for finding derived lsp for skipped objects for both Buy and Sell
+  let finalObjects = [];
+  let conditions = ["Like New", "Excellent", "Good", "Fair"];
+  commonModels.forEach((element, index) => {
+    finalObjects.push(element);
+    conditions.forEach((condition) => {
+      let foundConditionIndex = commonModels.findIndex(
+        (item) =>
+          item.make == element.make &&
+          item.model == element.model &&
+          item.storage == element.storage &&
+          item.ram == element.ram &&
+          item.condition == condition
+      );
+      if (foundConditionIndex == -1) {
+        let leastDerivedPrice = lspFunction(
+          condition,
+          element.condition,
+          element.lsp
+        );
+        let newObj = {
+          make: element.make,
+          model: element.model,
+          storage: element.storage,
+          ram: element.ram,
+          condition: condition,
+          priceArray: [],
+          vendor: [],
+          lsp: leastDerivedPrice,
+          type: element.type,
+        };
+        finalObjects.push(newObj);
+      }
+    });
+    if (index == commonModels.length - 1) {
+      // fs.writeFileSync(
+      //   "finalObjects.json",
+      //   JSON.stringify(finalObjects, null, 2)
+      // );
+      eleventh(finalObjects);
+    }
+  });
+};
+
+const eleventh = (finalObjects) => {
+  // sell multiplied by 1.2 & 1.4
+
+  finalObjects.forEach((finalObject, index) => {
+    if(finalObjects[index].priceArray == []){
+      delete (finalObjects[index])[priceArray]
+    }
+    if (finalObject.type == "sell") {
+      // let ind = finalObjects.findIndex(finalObject);
+      // if (ind != -1) {
+      finalObjects[index].lsp =
+        finalObjects[index].lsp *
+        (finalObjects[index].make.toLowerCase() == "samsung" ? 1.4 : 1.2);
+      // }
+    }
+    if (index == finalObjects.length - 1) {
+      twelth(finalObjects);
+    }
+  });
+};
+
+const twelth = (finalObjects) => {
+  // find lsp greater smaller
+  let objectsArr = [];
+
+  // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
+  if (allModelNotFound.length > 0) {
+    collectData(finalObjects, "complete_lsp_datas");
+  }
+
+  finalObjects.forEach((object, index) => {
+    let conditions = ["Like New", "Excellent", "Good", "Fair"];
+    let priceObj = [];
+    conditions.forEach((condition, ind) => {
+      let foundConditionIndex = finalObjects.findIndex(
+        (item) =>
+          item.model == object.model &&
+          item.storage == object.storage &&
+          item.ram == object.ram &&
+          item.condition == condition
+      );
+      if (foundConditionIndex != -1) {
+        priceObj.push({ condition: finalObjects[foundConditionIndex].lsp });
+      }
+      if (ind == 3) {
+        if (
+          priceObj[conditions[0]] < priceObj[conditions[1]] ||
+          priceObj[conditions[1]] < priceObj[conditions[2]] ||
+          priceObj[conditions[2]] < priceObj[conditions[3]]
+        ) {
+          objectsArr.push(priceObj);
+        }
+      }
+    });
+    if (index === finalObjects.length - 1) {
+      // fs.writeFileSync("lspMismatch.json", JSON.stringify(objectsArr, null, 2));
+      // if (finalObjects.length > 0) {
+      //   collectData(objectsArr, "lsp_mismatch_datas");
+      // }
+
+      lastFunction(finalObjects);
+    }
+  });
+};
+
+const lastFunction = (finalObjects) => {
+  fileData.forEach((elm, index) => {
+    let mdl = elm.model_name != null ? elm.model_name.toString() : "";
+    if (mdl.includes("(")) {
+      let tempName2 = mdl.split("(")[0];
+      mdl = tempName2.trim();
+    }
+    if (mdl.includes("|")) {
+      let tempName2 = mdl.split("|")[0];
+      mdl = tempName2.trim();
+    }
+    mdl = mdl.toLowerCase().replace(/5g/g, "").trim();
+    // marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
+    // handliing poco in model name //
+
+    mdl = mdl.toLowerCase().replace(/poco/g, "xiaomi poco").trim();
+
+    let objArray = finalObjects.filter((element) => {
+      element.model.toLowerCase() == mdl;
+    });
+
+    if (!objArray || objArray.length == 0) {
+      if (!allModelNotFound.includes("Data: " + mdl)) {
+        allModelNotFound.push("Data: " + mdl);
+      }
+    }
+
+    if (index === fileData.length - 1) {
+      // fs.writeFileSync(
+      //   "modelsNotFound.json",
+      //   JSON.stringify(allModelNotFound, null, 2)
+      // );
+      // if (allModelNotFound.length > 0) {
+      //   collectData(allModelNotFound, "unmatched_models_datas");
+      // }
+
+    }
+  });
+};
 
 function lspFunction(condition, gotDataFrom, leastSellingPrice) {
+  // LSP function returns lsp using another condition
   if (condition === "Good") {
     if (gotDataFrom === "Good") {
       return leastSellingPrice;

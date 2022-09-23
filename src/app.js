@@ -52,9 +52,14 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
+// schedule.scheduleJob("00 02 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   startCalculatingLSP();
+// });
+
 schedule.scheduleJob("00 02 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
-  startCalculatingLSP();
+  startCalculatingLSPTest();
 });
 
 schedule.scheduleJob("00 03 * * *", function () {
