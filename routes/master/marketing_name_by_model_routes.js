@@ -15,6 +15,7 @@ const validUser = require("../../src/middleware/valid_user");
 const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
 router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
+  console.log("body", req.body);
   const deviceStorage = req.body.deviceStorage;
   const model = req.body.model;
   let make = req.body.make;
