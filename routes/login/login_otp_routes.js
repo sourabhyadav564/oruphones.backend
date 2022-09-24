@@ -87,7 +87,7 @@ router.post("/otp/validate", logEvent, async (req, res) => {
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
-  if (otp === "1234") {
+  if (otp === "9261") {
     res.status(200).json({
       reason: "OTP validated",
       statusCode: 200,
