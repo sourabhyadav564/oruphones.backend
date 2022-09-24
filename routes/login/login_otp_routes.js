@@ -117,26 +117,13 @@ router.post("/otp/validate", logEvent, async (req, res) => {
         const now = new Date();
         const currentDate = moment(now).format("L");
 
-        const email = req.body.email;
-        const mobileNumber = req.body.mobileNumber
-          ? parseInt(req.body.mobileNumber)
-          : req.body.mobileNumber;
-        const profilePicPath = req.body.profilePicPath;
-        const countryCode = req.body.countryCode;
-        const userName = req.body.userName;
-        const userType = req.body.userType;
-        const userUniqueId = req.body.userUniqueId;
-
         const createUserData = {
-          email: email,
           mobileNumber: mobileNumber,
-          profilePicPath: profilePicPath,
           countryCode: countryCode,
-          userName: userName,
-          userType: userType,
-          userUniqueId,
           createdDate: currentDate,
         };
+
+        console.log({createUserData});
 
         try {
           const getUser = await createUserModal.findOne({ mobileNumber });
