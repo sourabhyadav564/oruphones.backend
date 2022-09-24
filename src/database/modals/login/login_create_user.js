@@ -48,6 +48,7 @@ const createUserSchema = new mongoose.Schema({
             },
             city: {
                 type: String,
+                default: "",
             },
             locationId: {
                 type: String,

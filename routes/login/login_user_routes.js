@@ -43,9 +43,7 @@ router.get("/user/details", logEvent, async (req, res) => {
 });
 
 router.post("/user/create", logEvent, async (req, res) => {
-  console.log("user body", req.body);
-  console.log("user query", req.query);
-  console.log("user params", req);
+
   const now = new Date();
   const currentDate = moment(now).format("L");
 
@@ -76,7 +74,7 @@ router.post("/user/create", logEvent, async (req, res) => {
     if (getUser) {
       res.status(200).json({
         reason: "User Already Available",
-        statusCode: 1,
+        statusCode: 200,
         status: "FAIL",
         dataObject: {
           userUniqueId: getUser.userUniqueId,
@@ -323,7 +321,7 @@ router.post("/address/addProfileLocation", validUser, logEvent, async (req, res)
 
       userAddress.forEach(async (element, i) => {
         if (element.addressType == "ProfileLocation") {
-          userAddress[i].city = city;
+          userAddress[i].city != "" && city;
           bool = true;
           dataToBeSend = userAddress[i];
         }
@@ -348,40 +346,6 @@ router.post("/address/addProfileLocation", validUser, logEvent, async (req, res)
         dataObject: dataToBeSend,
       });
 
-      // const dataObject = {
-      //   address: userAddress,
-      // }
-      // const dataObject = {
-      //   address: [
-      //     {
-      //       addressType: "ProfileLocation",
-      //       city: city,
-      //       // locationId: getUser._id,
-      //     },
-      //   ],
-      // };
-
-      // if (locationId == -1) {
-      // await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
-      //   new: true,
-      // });
-      // res.status(200).json({
-      //   reason: "Profile location added successfully",
-      //   statusCode: 200,
-      //   status: "SUCCESS",
-      //   dataObject,
-      // });
-      // } else {
-      //   await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
-      //     new: true,
-      //   });
-      //   res.status(200).json({
-      //     reason: "location found and updated successfully",
-      //     statusCode: 200,
-      //     status: "SUCCESS",
-      //     dataObject,
-      //   });
-      // }
     } else {
       res.status(200).json({
         reason: "User not found",

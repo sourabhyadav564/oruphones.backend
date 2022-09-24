@@ -9,6 +9,9 @@ require("../../src/database/connection");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
 const logEvent = require("../../src/middleware/event_logging");
 
+const moment = require("moment");
+const createUserModal = require("../../src/database/modals/login/login_create_user");
+
 // const accountSid = process.env.TWILIO_ACCOUNT_SID;
 // const authToken = process.env.TWILIO_AUTH_TOKEN;
 // const twilio = require("twilio")(accountSid, authToken);
@@ -80,7 +83,7 @@ router.post("/otp/generate", logEvent, async (req, res) => {
 });
 
 router.post("/otp/validate", logEvent, async (req, res) => {
-  const mobileNumber = req.query.mobileNumber?.toString(); 
+  const mobileNumber = req.query.mobileNumber?.toString();
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
@@ -111,16 +114,74 @@ router.post("/otp/validate", logEvent, async (req, res) => {
         otp: otp,
       });
       if (delete_user) {
-        res.status(200).json({
-          reason: "OTP validated",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject: {
-            submitCountIncrement: 0,
-            maxRetryCount: "3",
-            mobileNumber: mobileNumber,
-          },
-        });
+        const now = new Date();
+        const currentDate = moment(now).format("L");
+
+        const email = req.body.email;
+        const mobileNumber = req.body.mobileNumber
+          ? parseInt(req.body.mobileNumber)
+          : req.body.mobileNumber;
+        const profilePicPath = req.body.profilePicPath;
+        const countryCode = req.body.countryCode;
+        const userName = req.body.userName;
+        const userType = req.body.userType;
+        const userUniqueId = req.body.userUniqueId;
+
+        const createUserData = {
+          email: email,
+          mobileNumber: mobileNumber,
+          profilePicPath: profilePicPath,
+          countryCode: countryCode,
+          userName: userName,
+          userType: userType,
+          userUniqueId,
+          createdDate: currentDate,
+        };
+
+        try {
+          const getUser = await createUserModal.findOne({ mobileNumber });
+
+          if (getUser) {
+            res.status(200).json({
+              reason: "OTP validated",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject: {
+                submitCountIncrement: 0,
+                maxRetryCount: "3",
+                mobileNumber: mobileNumber,
+              },
+            });
+            return;
+          } else {
+            const data = new createUserModal(createUserData);
+            const saveData = await data.save();
+            res.status(200).json({
+              reason: "OTP validated",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject: {
+                submitCountIncrement: 0,
+                maxRetryCount: "3",
+                mobileNumber: mobileNumber,
+              },
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          res.status(400).json(error);
+        }
+
+        // res.status(200).json({
+        //   reason: "OTP validated",
+        //   statusCode: 200,
+        //   status: "SUCCESS",
+        //   dataObject: {
+        //     submitCountIncrement: 0,
+        //     maxRetryCount: "3",
+        //     mobileNumber: mobileNumber,
+        //   },
+        // });
       }
     } else {
       res.status(200).json({
