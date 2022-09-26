@@ -123,8 +123,6 @@ router.post("/otp/validate", logEvent, async (req, res) => {
           createdDate: currentDate,
         };
 
-        console.log({createUserData});
-
         try {
           const getUser = await createUserModal.findOne({ mobileNumber });
 
@@ -137,6 +135,7 @@ router.post("/otp/validate", logEvent, async (req, res) => {
                 submitCountIncrement: 0,
                 maxRetryCount: "3",
                 mobileNumber: mobileNumber,
+                userUniqueId: getUser.userUniqueId,
               },
             });
             return;
@@ -151,6 +150,7 @@ router.post("/otp/validate", logEvent, async (req, res) => {
                 submitCountIncrement: 0,
                 maxRetryCount: "3",
                 mobileNumber: mobileNumber,
+                userUniqueId: saveData.userUniqueId,
               },
             });
           }
