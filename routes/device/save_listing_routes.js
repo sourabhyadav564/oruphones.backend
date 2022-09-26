@@ -27,7 +27,7 @@ const makeRandomString = require("../../utils/generate_random_string");
 const lspModal = require("../../src/database/modals/others/new_scrapped_models");
 const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 
-const cityModal = require("../../src/database/modals/global/city_modal");
+const cityModal = require("../../src/database/modals/global/cities_modal");
 
 const allMatrix = require("../../utils/matrix_figures");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
