@@ -339,6 +339,7 @@ router.post("/address/addProfileLocation", validUser, logEvent, async (req, res)
       await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
         new: true,
       });
+
       res.status(200).json({
         reason: "Profile location added successfully",
         statusCode: 200,

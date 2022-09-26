@@ -54,6 +54,43 @@ const collectData = async (data, collection) => {
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
         data.length +
         ". The data is not ready to use for other business logics",
+      attachments: [
+        {
+          filename: file,
+          path: file,
+        },
+      ],
+    };
+
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + result.response);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const sendMailWithAttachment = async (file, message) => {
+  try {
+    let mailOptions = {
+      from: "mobiruindia22@gmail.com",
+      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp",
+      subject: "Data has successfully been migrated to MongoDB",
+      text:
+        message === "lspMismatch"
+          ? "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of miss matched models are attatched below."
+          : "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of models not founds are attatched below.",
+      attachments: [
+        {
+          filename: file,
+          path: `./${message}.json`,
+        },
+      ],
     };
 
     config.sendMail(mailOptions, function (err, result) {
@@ -602,8 +639,8 @@ const eleventh = (finalObjects) => {
   // sell multiplied by 1.2 & 1.4
 
   finalObjects.forEach((finalObject, index) => {
-    if(finalObjects[index].priceArray == []){
-      delete (finalObjects[index])[priceArray]
+    if (finalObjects[index].priceArray == []) {
+      delete finalObjects[index][priceArray];
     }
     if (finalObject.type == "sell") {
       // let ind = finalObjects.findIndex(finalObject);
@@ -655,7 +692,7 @@ const twelth = (finalObjects) => {
     if (index === finalObjects.length - 1) {
       // fs.writeFileSync("lspMismatch.json", JSON.stringify(objectsArr, null, 2));
       // if (finalObjects.length > 0) {
-      //   collectData(objectsArr, "lsp_mismatch_datas");
+      //   sendMailWithAttachment(objectsArr, "lspMismatch");
       // }
 
       lastFunction(finalObjects);
@@ -690,16 +727,15 @@ const lastFunction = (finalObjects) => {
       }
     }
 
-    if (index === fileData.length - 1) {
-      // fs.writeFileSync(
-      //   "modelsNotFound.json",
-      //   JSON.stringify(allModelNotFound, null, 2)
-      // );
-      // if (allModelNotFound.length > 0) {
-      //   collectData(allModelNotFound, "unmatched_models_datas");
-      // }
-
-    }
+    // if (index === fileData.length - 1) {
+    //   fs.writeFileSync(
+    //     "modelsNotFound.json",
+    //     JSON.stringify(allModelNotFound, null, 2)
+    //   );
+    //   if (allModelNotFound.length > 0) {
+    //     sendMailWithAttachment(allModelNotFound, "modelsNotFound");
+    //   }
+    // }
   });
 };
 

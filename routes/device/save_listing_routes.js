@@ -136,6 +136,13 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
 
   const cosmetic = req.body.cosmetic;
 
+  let getLocation = await cityModal.findOne({ city: listingLocation });
+  if (getLocation) {
+    listingLocation = getLocation.city;
+  } else {
+    await cityModal.create({ city: listingLocation, displayWithImage: "0" });
+  }
+
   switch (deviceWarranty) {
     case "zero":
       deviceWarranty = "More than 9 months";
