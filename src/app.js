@@ -14,10 +14,8 @@ const startCalculatingLSPTest = require("../utils/new_lsp");
 const corsOptions = {
   // origin: "https://userregisrationfrontend.herokuapp.com",
   origin: [
-    "https://oru-phones.web.app",
     "https://www.oruphones.com",
     "https://dev.oruphones.com",
-    "https://betav1.oruphones.com",
     "https://store.oruphones.com",
     "https://image.oruphones.com",
     "https://mip.oruphones.com",
@@ -33,8 +31,6 @@ const corsOptions = {
     "https://oru-phones-mobile-web.vercel.app",
     "https://oru-phones-mip-portal.vercel.app",
   ],
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
 };
 
 const app = express();
@@ -58,7 +54,7 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-schedule.scheduleJob("34 11 * * *", function () {
+schedule.scheduleJob("32 13 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startCalculatingLSPTest();
 });
