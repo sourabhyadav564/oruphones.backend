@@ -1205,6 +1205,7 @@ router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
     const getListing = await saveListingModal.findOne({
       deviceUniqueId: deviceId,
       userUniqueId: userUniqueId,
+      verified: true,
     });
 
     if (!getListing) {
