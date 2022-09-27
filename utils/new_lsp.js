@@ -54,12 +54,6 @@ const collectData = async (data, collection) => {
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
         data.length +
         ". The data is not ready to use for other business logics",
-      attachments: [
-        {
-          filename: file,
-          path: file,
-        },
-      ],
     };
 
     config.sendMail(mailOptions, function (err, result) {

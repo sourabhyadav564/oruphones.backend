@@ -113,7 +113,6 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     }
   }
 
-  console.log("images", req.body);
   const mobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
@@ -1205,7 +1204,7 @@ router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
 
     const getListing = await saveListingModal.findOne({
       deviceUniqueId: deviceId,
-      // userUniqueId: userUniqueId,
+      userUniqueId: userUniqueId,
     });
 
     if (!getListing) {
