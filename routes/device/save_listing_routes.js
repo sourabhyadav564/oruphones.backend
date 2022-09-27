@@ -113,7 +113,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     }
   }
 
-  console.log("images", images);
+  console.log("images", req.body.images);
   const mobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
