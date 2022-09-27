@@ -8,8 +8,9 @@ const testScrappedModal = require("../../src/database/modals/others/test_scrappe
 const logEvent = require("../../src/middleware/event_logging");
 const allMatrix = require("../../utils/matrix_figures");
 const fs = require("fs");
+const validUser = require("../../src/middleware/valid_user");
 
-router.post("/price/externalsellsource", logEvent, async (req, res) => {
+router.post("/price/externalsellsource", validUser, logEvent, async (req, res) => {
   const deviceStorage = req.body.deviceStorage.split("GB")[0];
   const deviceRam = req.body.deviceRam.split("GB")[0];
   let make = req.body.make;
@@ -71,8 +72,8 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
     10: "Budli",
     11: "Paytm",
     12: "Yaantra",
-    13: "Shopcluse",
-    14: "Sahivalue",
+    13: "Sahivalue",
+    14: "Shopcluse",
     15: "Xtracover",
     16: "Mobigarage",
     17: "Instacash",
@@ -101,25 +102,32 @@ router.post("/price/externalsellsource", logEvent, async (req, res) => {
     //   condition: deviceCondition,
     // });
 
-    let exact_model_name = "";
-    const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
-    allgsmData.forEach((element) => {
-      if (element.marketingName.includes(marketingName)) {
-        exact_model_name = element.marketingName;
-      }
-    });
-    let tempModelName = marketingName.toLowerCase();
+    // let exact_model_name = "";
+    // const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
+    // allgsmData.forEach((element) => {
+    //   if (element.marketingName.includes(marketingName)) {
+    //     exact_model_name = element.marketingName;
+    //   }
+    // });
+    // let tempModelName = marketingName.toLowerCase();
 
-    if (tempModelName.includes("iphone")) {
-      tempModelName = marketingName.replace("iPhone", "Iphone");
-    }
+    // if (tempModelName.includes("iphone")) {
+    //   tempModelName = marketingName.replace("iPhone", "Iphone");
+    // }
+
+    console.log("deviceStorage", deviceStorage);
+    console.log("deviceRam", deviceRam);
+    console.log("make", make);
+    console.log("marketingName", marketingName);
+    console.log("deviceCondition", deviceCondition);
 
     const listings = await testScrappedModal.find({
       type: "sell",
       storage: [parseInt(deviceStorage), "--", "-- GB"],
       ram: [parseInt(deviceRam), "--", "-- GB"],
       make: make,
-      model_name: [marketingName, exact_model_name, tempModelName],
+      // model_name: [marketingName, exact_model_name, tempModelName],
+      model_name: [marketingName],
       mobiru_condition: deviceCondition,
     });
 
