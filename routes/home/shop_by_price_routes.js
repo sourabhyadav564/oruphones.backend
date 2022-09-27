@@ -25,12 +25,21 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
 
+  let sortBy = req.query.sortBy;
+  if (!sortBy) {
+    sortBy = "NA";
+  }
+  if (sortBy == undefined || sortBy == "Featured") {
+    sortBy = "NA";
+  } else {
+    sortBy = sortBy;
+  }
+
   try {
     let defaultDataObject = [];
     let totalProducts;
     if (location === "India") {
       let defaultDataObject2 = [];
-      //  if (category === "Fifteen") {
 
       let saveListingLength = await bestDealsModal
         .find({
@@ -50,25 +59,94 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
           status: ["Active", "Sold_Out"],
         })
         .countDocuments();
-      defaultDataObject2 = await bestDealsModal
-        .find({
-          $expr: {
-            $and: [
-              { $ne: ["$listingPrice", "--"] },
-              {
-                $lte: [
-                  {
-                    $toInt: "$listingPrice",
-                  },
-                  parseInt(endPrice.toString()),
-                ],
-              },
-            ],
-          },
-          status: ["Active", "Sold_Out"],
-        })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+
+      if (sortBy === "Price - High to Low") {
+        defaultDataObject2 = await bestDealsModal
+          .find({
+            $expr: {
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
+                },
+              ],
+            },
+            status: ["Active", "Sold_Out"],
+          })
+          .sort({ listingPrice: -1 })
+          .collation({ locale: "en_US", numericOrdering: true })
+          .skip(parseInt(page) * 30)
+          .limit(30);
+      } else if (sortBy === "Price - Low to High") {
+        defaultDataObject2 = await bestDealsModal
+          .find({
+            $expr: {
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
+                },
+              ],
+            },
+            status: ["Active", "Sold_Out"],
+          })
+          .sort({ listingPrice: 1 })
+          .collation({ locale: "en_US", numericOrdering: true })
+          .skip(parseInt(page) * 30)
+          .limit(30);
+      } else if (sortBy === "Newest First") {
+        defaultDataObject2 = await bestDealsModal
+          .find({
+            $expr: {
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
+                },
+              ],
+            },
+            status: ["Active", "Sold_Out"],
+          })
+          .sort({ createdAt: -1 })
+          .skip(parseInt(page) * 30)
+          .limit(30);
+      } else if (sortBy === "Oldest First") {
+        defaultDataObject2 = await bestDealsModal
+          .find({
+            $expr: {
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
+                },
+              ],
+            },
+            status: ["Active", "Sold_Out"],
+          })
+          .sort({ createdAt: 1 })
+          .skip(parseInt(page) * 30)
+          .limit(30);
+      }
       totalProducts = saveListingLength;
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
         return (
@@ -77,14 +155,9 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
         );
       });
       defaultDataObject2 = defaultDataObject3;
-      //   }
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element);
       });
-      //   const thirdPartyVendors = await getThirdPartyVendors("", "");
-      //   thirdPartyVendors.forEach((thirdPartyVendor) => {
-      //     defaultDataObject.push(thirdPartyVendor);
-      //   });
     } else {
       let saveListingLength = await bestDealsModal
         .find({
@@ -92,13 +165,45 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
           status: ["Active", "Sold_Out"],
         })
         .countDocuments();
-      defaultDataObject = await bestDealsModal
-        .find({
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          status: ["Active", "Sold_Out"],
-        })
-        .skip(parseInt(page) * 20)
-        .limit(20);
+        if (sortBy === "Price - High to Low") {
+          defaultDataObject = await bestDealsModal
+            .find({
+              $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              status: ["Active", "Sold_Out"],
+            })
+            .sort({ listingPrice: -1 })
+            .collation({ locale: "en_US", numericOrdering: true })
+            .skip(parseInt(page) * 30)
+            .limit(30);
+        } else if (sortBy === "Price - Low to High") {
+          defaultDataObject = await bestDealsModal
+            .find({
+              $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              status: ["Active", "Sold_Out"],
+            })
+            .sort({ listingPrice: 1 })
+            .collation({ locale: "en_US", numericOrdering: true })
+            .skip(parseInt(page) * 30)
+            .limit(30);
+        } else if (sortBy === "Newest First") {
+          defaultDataObject = await bestDealsModal
+            .find({
+              $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              status: ["Active", "Sold_Out"],
+            })
+            .sort({ createdAt: -1 })
+            .skip(parseInt(page) * 30)
+            .limit(30);
+        } else if (sortBy === "Oldest First") {
+          defaultDataObject = await bestDealsModal
+            .find({
+              $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              status: ["Active", "Sold_Out"],
+            })
+            .sort({ createdAt: 1 })
+            .skip(parseInt(page) * 30)
+            .limit(30);
+        }
       totalProducts = saveListingLength;
 
       if (!defaultDataObject.length) {
@@ -132,27 +237,98 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
           })
           .countDocuments();
-        defaultDataObject = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
+          if (sortBy === "Price - High to Low") {
+            defaultDataObject = await bestDealsModal
+              .find({
+                $expr: {
+                  $and: [
+                    { $ne: ["$listingPrice", "--"] },
                     {
-                      $toInt: "$listingPrice",
+                      $lte: [
+                        {
+                          $toInt: "$listingPrice",
+                        },
+                        parseInt(endPrice.toString()),
+                      ],
                     },
-                    parseInt(endPrice.toString()),
                   ],
                 },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .skip(parseInt(page) * 20)
-          .limit(20);
-        let defaultDataObject3 = defaultDataObject.filter((item, index) => {
+                status: ["Active", "Sold_Out"],
+                $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              })
+              .sort({ listingPrice: -1 })
+              .collation({ locale: "en_US", numericOrdering: true })
+              .skip(parseInt(page) * 30)
+              .limit(30);
+          } else if (sortBy === "Price - Low to High") {
+            defaultDataObject = await bestDealsModal
+              .find({
+                $expr: {
+                  $and: [
+                    { $ne: ["$listingPrice", "--"] },
+                    {
+                      $lte: [
+                        {
+                          $toInt: "$listingPrice",
+                        },
+                        parseInt(endPrice.toString()),
+                      ],
+                    },
+                  ],
+                },
+                status: ["Active", "Sold_Out"],
+                $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              })
+              .sort({ listingPrice: 1 })
+              .collation({ locale: "en_US", numericOrdering: true })
+              .skip(parseInt(page) * 30)
+              .limit(30);
+          } else if (sortBy === "Newest First") {
+            defaultDataObject = await bestDealsModal
+              .find({
+                $expr: {
+                  $and: [
+                    { $ne: ["$listingPrice", "--"] },
+                    {
+                      $lte: [
+                        {
+                          $toInt: "$listingPrice",
+                        },
+                        parseInt(endPrice.toString()),
+                      ],
+                    },
+                  ],
+                },
+                status: ["Active", "Sold_Out"],
+                $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              })
+              .sort({ createdAt: -1 })
+              .skip(parseInt(page) * 30)
+              .limit(30);
+          } else if (sortBy === "Oldest First") {
+            defaultDataObject = await bestDealsModal
+              .find({
+                $expr: {
+                  $and: [
+                    { $ne: ["$listingPrice", "--"] },
+                    {
+                      $lte: [
+                        {
+                          $toInt: "$listingPrice",
+                        },
+                        parseInt(endPrice.toString()),
+                      ],
+                    },
+                  ],
+                },
+                status: ["Active", "Sold_Out"],
+                $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              })
+              .sort({ createdAt: 1 })
+              .skip(parseInt(page) * 30)
+              .limit(30);
+          }
+          let defaultDataObject3 = defaultDataObject.filter((item, index) => {
           return (
             parseInt(item.listingPrice.toString()) >=
             parseInt(startPrice.toString())
@@ -163,7 +339,6 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
       }
     }
 
-    // getBestDeals(defaultDataObject, userUniqueId, res, true, totalProducts);
     bestDealsForShopByPrice(
       page,
       userUniqueId,

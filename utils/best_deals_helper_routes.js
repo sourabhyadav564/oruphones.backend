@@ -729,11 +729,6 @@ const bestDealsForShopByPrice = async (
       });
     }
 
-    // let getSavedDeals = await saveListingModal.find({
-    //   status: ["Active", "Sold_Out"],
-    // });
-
-    // deals = deals.concat(getSavedDeals);
     if (page == 0) {
       updatedBestDeals = deals.slice(0, 5);
       otherListings = deals.slice(5, deals.length);
