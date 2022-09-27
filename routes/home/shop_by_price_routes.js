@@ -146,6 +146,26 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
           .sort({ createdAt: 1 })
           .skip(parseInt(page) * 30)
           .limit(30);
+      } else {
+        defaultDataObject2 = await bestDealsModal
+          .find({
+            $expr: {
+              $and: [
+                { $ne: ["$listingPrice", "--"] },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(endPrice.toString()),
+                  ],
+                },
+              ],
+            },
+            status: ["Active", "Sold_Out"],
+          })
+          .skip(parseInt(page) * 30)
+          .limit(30);
       }
       totalProducts = saveListingLength;
       let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
@@ -325,6 +345,27 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
                 $or: [{ listingLocation: location }, { listingLocation: "India" }],
               })
               .sort({ createdAt: 1 })
+              .skip(parseInt(page) * 30)
+              .limit(30);
+          } else {
+            defaultDataObject = await bestDealsModal
+              .find({
+                $expr: {
+                  $and: [
+                    { $ne: ["$listingPrice", "--"] },
+                    {
+                      $lte: [
+                        {
+                          $toInt: "$listingPrice",
+                        },
+                        parseInt(endPrice.toString()),
+                      ],
+                    },
+                  ],
+                },
+                status: ["Active", "Sold_Out"],
+                $or: [{ listingLocation: location }, { listingLocation: "India" }],
+              })
               .skip(parseInt(page) * 30)
               .limit(30);
           }
