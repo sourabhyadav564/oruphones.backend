@@ -33,7 +33,8 @@ const corsOptions = {
     "https://oru-phones-mobile-web.vercel.app",
     "https://oru-phones-mip-portal.vercel.app",
   ],
-  // credentials: true,
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
 };
 
 const app = express();
@@ -57,7 +58,7 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-schedule.scheduleJob("35 17 * * *", function () {
+schedule.scheduleJob("34 11 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startCalculatingLSPTest();
 });
