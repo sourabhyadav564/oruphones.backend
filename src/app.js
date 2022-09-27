@@ -54,7 +54,7 @@ let schedule = require("node-schedule");
 //   startCalculatingLSP();
 // });
 
-schedule.scheduleJob("32 13 * * *", function () {
+schedule.scheduleJob("00 02 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startCalculatingLSPTest();
 });
