@@ -75,7 +75,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     } else {
@@ -125,7 +125,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     }
@@ -210,7 +210,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     } else {
@@ -260,7 +260,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     }
@@ -344,7 +344,7 @@ const bestDealsByMake = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     } else {
@@ -388,7 +388,7 @@ const bestDealsByMake = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     }
@@ -481,7 +481,7 @@ const bestDealsByMarketingName = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     } else {
@@ -530,7 +530,7 @@ const bestDealsByMarketingName = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: otherListings.length,
         },
       });
     }
