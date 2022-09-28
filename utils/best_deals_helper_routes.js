@@ -355,6 +355,7 @@ const bestDealsByMake = async (
         });
         updatedBestDeals = [];
       }
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
@@ -362,7 +363,11 @@ const bestDealsByMake = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts:
+            fitlerResults.totalProducts -
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     } else {
