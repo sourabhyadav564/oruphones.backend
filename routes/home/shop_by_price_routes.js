@@ -223,6 +223,14 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
             .sort({ createdAt: 1 })
             .skip(parseInt(page) * 30)
             .limit(30);
+        } else {
+          defaultDataObject = await bestDealsModal
+          .find({
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            status: ["Active", "Sold_Out"],
+          })
+          .skip(parseInt(page) * 30)
+          .limit(30);
         }
       totalProducts = saveListingLength;
 
