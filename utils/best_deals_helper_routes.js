@@ -43,8 +43,8 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
 
       let isFromZero = sortBy === "NA" ? false : true;
       completeDeals = await bestDealsModal
-      .find({ status: ["Active", "Sold_Out"] })
-      .limit(5);
+        .find({ status: ["Active", "Sold_Out"] })
+        .limit(5);
       updatedBestDeals = completeDeals;
 
       if (page == 0) {
@@ -75,7 +75,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     } else {
@@ -94,7 +94,7 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         })
         .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
 
       if (page == 0) {
         // updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
@@ -118,14 +118,24 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         });
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        }
+      });
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     }
@@ -179,10 +189,9 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         .find({ status: ["Active", "Sold_Out"] })
         .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
 
       if (page == 0) {
-   
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
@@ -203,14 +212,24 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         });
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        }
+      });
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     } else {
@@ -229,10 +248,9 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         })
         .limit(5);
 
-        updatedBestDeals = completeDeals;
+      updatedBestDeals = completeDeals;
 
       if (page == 0) {
-
         otherListings = fitlerResults.completeDeals.slice(
           isFromZero ? 0 : 5,
           fitlerResults.completeDeals.length
@@ -260,7 +278,7 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     }
@@ -344,7 +362,7 @@ const bestDealsByMake = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     } else {
@@ -381,14 +399,24 @@ const bestDealsByMake = async (
         });
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        }
+      });
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     }
@@ -474,14 +502,24 @@ const bestDealsByMarketingName = async (
         });
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        }
+      });
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     } else {
@@ -530,7 +568,7 @@ const bestDealsByMarketingName = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: otherListings.length,
+          totalProducts: fitlerResults.totalProducts,
         },
       });
     }
@@ -677,12 +715,22 @@ const bestDealsForShopByCategory = async (
     } else {
       otherListings = deals;
     }
+
+    let refineBestDeals = [];
+
+    updatedBestDeals.forEach((item, index) => {
+      console.log("item", item.notionalPercentage);
+      if (item.notionalPercentage > 0) {
+        refineBestDeals.push(item);
+      }
+    });
+
     res.status(200).json({
       reason: "Best deals found",
       statusCode: 200,
       status: "SUCCESS",
       dataObject: {
-        bestDeals: updatedBestDeals,
+        bestDeals: refineBestDeals,
         otherListings: otherListings,
         totalProducts: totalProducts,
       },
@@ -735,12 +783,22 @@ const bestDealsForShopByPrice = async (
     } else {
       otherListings = deals;
     }
+
+    let refineBestDeals = [];
+
+    updatedBestDeals.forEach((item, index) => {
+      console.log("item", item.notionalPercentage);
+      if (item.notionalPercentage > 0) {
+        refineBestDeals.push(item);
+      }
+    });
+
     res.status(200).json({
       reason: "Best deals found",
       statusCode: 200,
       status: "SUCCESS",
       dataObject: {
-        bestDeals: updatedBestDeals,
+        bestDeals: refineBestDeals,
         otherListings: otherListings,
         totalProducts: totalProducts,
       },
