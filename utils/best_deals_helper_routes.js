@@ -75,7 +75,10 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     } else {
@@ -135,7 +138,10 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -229,7 +235,10 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     } else {
@@ -278,7 +287,10 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -421,7 +433,10 @@ const bestDealsByMake = async (
         dataObject: {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -524,7 +539,10 @@ const bestDealsByMarketingName = async (
         dataObject: {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     } else {
@@ -573,7 +591,10 @@ const bestDealsByMarketingName = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts,
+          totalProducts: fitlerResults.totalProducts -
+          (fitlerResults.bestDealsCount > 5
+            ? 5
+            : fitlerResults.bestDealsCount),
         },
       });
     }

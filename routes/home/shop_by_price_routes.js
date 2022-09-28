@@ -27,7 +27,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
 
   let sortBy = req.query.sortBy;
   if (!sortBy) {
-    sortBy = "NA";
+    sortBy = "undefined";
   }
   if (sortBy == undefined || sortBy == "Featured") {
     sortBy = "NA";
@@ -38,6 +38,10 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
   try {
     let defaultDataObject = [];
     let totalProducts;
+
+    let bestDeals = [];
+    let bestDealsCount = [];
+
     if (location === "India") {
       let defaultDataObject2 = [];
 
