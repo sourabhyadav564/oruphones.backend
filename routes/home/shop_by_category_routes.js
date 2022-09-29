@@ -1184,6 +1184,7 @@ router.get("/listings/category", validUser, logEvent, async (req, res) => {
       userUniqueId,
       defaultDataObject,
       totalProducts,
+      sortBy,
       res
     );
   } catch (error) {

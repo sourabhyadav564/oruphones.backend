@@ -5,8 +5,15 @@ const saveListingModal = require("../src/database/modals/device/save_listing_dev
 const applySortFilter = require("./sort_filter");
 const { async } = require("@firebase/util");
 
-
-const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type) => {
+const commonFunc = async (
+  location,
+  term,
+  page,
+  userUniqueId,
+  sortBy,
+  res,
+  type
+) => {
   let updatedBestDeals = [];
   let otherListings = [];
 
@@ -26,6 +33,7 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
   // if (location === "India") {
   const fitlerResults = await applySortFilter(sortBy, term, page, location);
 
+
   if (userUniqueId !== "Guest") {
     // add favorite listings to the final list
     fitlerResults.completeDeals.forEach((item, index) => {
@@ -36,17 +44,26 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
       }
     });
   }
+  let completeDeals = [];
   // let isFromZero = sortBy === "NA" ? false : true;
   if (location !== "India") {
     switch (type) {
       case "make":
         completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"], make: term, $or: [{ listingLocation: location }, { listingLocation: "India" }], })
+          .find({
+            status: ["Active", "Sold_Out"],
+            make: term,
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
           .limit(5);
         break;
       case "marketingName":
         completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"], marketingName: term, $or: [{ listingLocation: location }, { listingLocation: "India" }], })
+          .find({
+            status: ["Active", "Sold_Out"],
+            marketingName: term,
+            $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          })
           .limit(5);
         break;
       case "nearme":
@@ -57,7 +74,6 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
           })
           .limit(5);
         break;
-
     }
   } else {
     switch (type) {
@@ -94,12 +110,12 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
     });
   } else {
     otherListings = fitlerResults.completeDeals;
-    updatedBestDeals.forEach((item, index) => {
-      otherListings.splice(
-        otherListings.findIndex((x) => x.listingId === item.listingId),
-        1
-      );
-    });
+    // updatedBestDeals.forEach((item, index) => {
+    //   otherListings.splice(
+    //     otherListings.findIndex((x) => x.listingId === item.listingId),
+    //     1
+    //   );
+    // });
     updatedBestDeals = [];
   }
 
@@ -122,7 +138,9 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
   //   });
   // }
 
+  
   otherListings = await sortOtherListings(otherListings, sortBy);
+
 
   res.status(200).json({
     reason: "Best deals found",
@@ -133,9 +151,7 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
       otherListings: otherListings,
       totalProducts:
         fitlerResults.totalProducts -
-        (fitlerResults.bestDealsCount > 5
-          ? 5
-          : fitlerResults.bestDealsCount),
+        (fitlerResults.bestDealsCount > 5 ? 5 : fitlerResults.bestDealsCount),
     },
   });
   // } else {
@@ -236,61 +252,48 @@ const commonFunc = async (location, term, page, userUniqueId, sortBy, res, type)
   //   },
   // });
   // }
-}
+};
 
 const sortOtherListings = async (otherListings, sortBy) => {
   switch (sortBy) {
     case "NA":
       otherListings.sort((a, b) => {
-        return (
-          b.notionalPercentage - a.notionalPercentage
-        );
+        return b.notionalPercentage - a.notionalPercentage;
       });
       break;
     case "Price - High to Low":
       otherListings.sort((a, b) => {
-        return (
-          b.listingPrice - a.listingPrice
-        );
+        return b.listingPrice - a.listingPrice;
       });
       // otherListings.sort({ listingPrice: -1 });
       break;
     case "Price - Low to High":
       otherListings.sort((a, b) => {
-        return (
-          a.listingPrice - b.listingPrice
-        );
+        return a.listingPrice - b.listingPrice;
       });
       // otherListings.sort({ listingPrice: 1 });
       break;
     case "Newest First":
       otherListings.sort((a, b) => {
-        return (
-          b.createdAt - a.createdAt
-        );
+        return b.createdAt - a.createdAt;
       });
       // otherListings.sort({ createdAt: -1 });
       break;
     case "Oldest First":
       otherListings.sort((a, b) => {
-        return (
-          a.createdAt - b.createdAt
-        );
+        return a.createdAt - b.createdAt;
       });
       // otherListings.sort({ createdAt: 1 });
       break;
     default:
       otherListings.sort((a, b) => {
-        return (
-          b.notionalPercentage - a.notionalPercentage
-        );
+        return b.notionalPercentage - a.notionalPercentage;
       });
       break;
-  };
+  }
 
   return otherListings;
-}
-
+};
 
 const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
   try {
@@ -636,7 +639,6 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
     //     });
     //   }
 
-
     //   res.status(200).json({
     //     reason: "Best deals found",
     //     statusCode: 200,
@@ -803,6 +805,7 @@ const bestDealsForShopByCategory = async (
   userUniqueId,
   deals,
   totalProducts,
+  sortBy,
   res
 ) => {
   try {
@@ -845,8 +848,7 @@ const bestDealsForShopByCategory = async (
       console.log("item", item.notionalPercentage);
       if (item.notionalPercentage > 0) {
         refineBestDeals.push(item);
-      }
-      else {
+      } else {
         otherListings.push(item);
       }
     });
@@ -881,6 +883,7 @@ const bestDealsForShopByPrice = async (
   userUniqueId,
   deals,
   totalProducts,
+  sortBy,
   res
 ) => {
   try {
