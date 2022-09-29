@@ -48,63 +48,11 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
       updatedBestDeals = completeDeals;
 
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
-        updatedBestDeals.forEach((item, index) => {
-          otherListings.splice(
-            otherListings.findIndex((x) => x.listingId === item.listingId),
-            1
-          );
-        });
-      } else {
         otherListings = fitlerResults.completeDeals;
-        updatedBestDeals.forEach((item, index) => {
-          otherListings.splice(
-            otherListings.findIndex((x) => x.listingId === item.listingId),
-            1
-          );
-        });
-        updatedBestDeals = [];
-      }
-      res.status(200).json({
-        reason: "Best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          bestDeals: updatedBestDeals,
-          otherListings: otherListings,
-          totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
-        },
-      });
-    } else {
-      const fitlerResults = await applySortFilter(
-        sortBy,
-        "all",
-        page,
-        location
-      );
-
-      let isFromZero = sortBy === "NA" ? false : true;
-      completeDeals = await bestDealsModal
-        .find({
-          status: ["Active", "Sold_Out"],
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-        })
-        .limit(5);
-
-      updatedBestDeals = completeDeals;
-
-      if (page == 0) {
-        // updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
             otherListings.findIndex((x) => x.listingId === item.listingId),
@@ -128,7 +76,15 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
         console.log("item", item.notionalPercentage);
         if (item.notionalPercentage > 0) {
           refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
         }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
       });
 
       res.status(200).json({
@@ -139,9 +95,80 @@ const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
+        },
+      });
+    } else {
+      const fitlerResults = await applySortFilter(
+        sortBy,
+        "all",
+        page,
+        location
+      );
+
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
+
+      updatedBestDeals = completeDeals;
+
+      if (page == 0) {
+        // updatedBestDeals = fitlerResults.completeDeals.slice(0, 5);
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+      } else {
+        otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
+      }
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
+        }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
+      });
+
+      res.status(200).json({
+        reason: "Best deals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          bestDeals: refineBestDeals,
+          otherListings: otherListings,
+          totalProducts: fitlerResults.totalProducts -
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -198,10 +225,11 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
       updatedBestDeals = completeDeals;
 
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
             otherListings.findIndex((x) => x.listingId === item.listingId),
@@ -225,7 +253,15 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         console.log("item", item.notionalPercentage);
         if (item.notionalPercentage > 0) {
           refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
         }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
       });
 
       res.status(200).json({
@@ -236,9 +272,9 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
           bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     } else {
@@ -260,10 +296,11 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
       updatedBestDeals = completeDeals;
 
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
             otherListings.findIndex((x) => x.listingId === item.listingId),
@@ -280,17 +317,36 @@ const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
         });
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
+        }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
+      });
+
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -347,59 +403,11 @@ const bestDealsByMake = async (
 
       updatedBestDeals = completeDeals;
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
-        updatedBestDeals.forEach((item, index) => {
-          otherListings.splice(
-            otherListings.findIndex((x) => x.listingId === item.listingId),
-            1
-          );
-        });
-      } else {
         otherListings = fitlerResults.completeDeals;
-        updatedBestDeals.forEach((item, index) => {
-          otherListings.splice(
-            otherListings.findIndex((x) => x.listingId === item.listingId),
-            1
-          );
-        });
-        updatedBestDeals = [];
-      }
-
-      res.status(200).json({
-        reason: "Best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          bestDeals: updatedBestDeals,
-          otherListings: otherListings,
-          totalProducts:
-            fitlerResults.totalProducts -
-            (fitlerResults.bestDealsCount > 5
-              ? 5
-              : fitlerResults.bestDealsCount),
-        },
-      });
-    } else {
-      const fitlerResults = await applySortFilter(sortBy, make, page, location);
-
-      let isFromZero = sortBy === "NA" ? false : true;
-      completeDeals = await bestDealsModal
-        .find({
-          status: ["Active", "Sold_Out"],
-          make: make,
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-        })
-        .limit(5);
-
-      updatedBestDeals = completeDeals;
-      if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
             otherListings.findIndex((x) => x.listingId === item.listingId),
@@ -423,7 +431,82 @@ const bestDealsByMake = async (
         console.log("item", item.notionalPercentage);
         if (item.notionalPercentage > 0) {
           refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
         }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
+      });
+
+      res.status(200).json({
+        reason: "Best deals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          bestDeals: refineBestDeals,
+          otherListings: otherListings,
+          totalProducts:
+            fitlerResults.totalProducts -
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
+        },
+      });
+    } else {
+      const fitlerResults = await applySortFilter(sortBy, make, page, location);
+
+      let isFromZero = sortBy === "NA" ? false : true;
+      completeDeals = await bestDealsModal
+        .find({
+          status: ["Active", "Sold_Out"],
+          make: make,
+          $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        })
+        .limit(5);
+
+      updatedBestDeals = completeDeals;
+      if (page == 0) {
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+      } else {
+        otherListings = fitlerResults.completeDeals;
+        updatedBestDeals.forEach((item, index) => {
+          otherListings.splice(
+            otherListings.findIndex((x) => x.listingId === item.listingId),
+            1
+          );
+        });
+        updatedBestDeals = [];
+      }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
+        }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
       });
 
       res.status(200).json({
@@ -434,9 +517,9 @@ const bestDealsByMake = async (
           bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     }
@@ -501,10 +584,11 @@ const bestDealsByMarketingName = async (
 
       updatedBestDeals = completeDeals;
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
 
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
@@ -522,6 +606,7 @@ const bestDealsByMarketingName = async (
         });
         updatedBestDeals = [];
       }
+      // console.log("completeDeals", completeDeals);
 
       let refineBestDeals = [];
 
@@ -529,7 +614,15 @@ const bestDealsByMarketingName = async (
         console.log("item", item.notionalPercentage);
         if (item.notionalPercentage > 0) {
           refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
         }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
       });
 
       res.status(200).json({
@@ -540,9 +633,9 @@ const bestDealsByMarketingName = async (
           bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     } else {
@@ -564,10 +657,11 @@ const bestDealsByMarketingName = async (
 
       updatedBestDeals = completeDeals;
       if (page == 0) {
-        otherListings = fitlerResults.completeDeals.slice(
-          isFromZero ? 0 : 5,
-          fitlerResults.completeDeals.length
-        );
+        otherListings = fitlerResults.completeDeals;
+        // .slice(
+        //   isFromZero ? 0 : 5,
+        //   fitlerResults.completeDeals.length
+        // );
         updatedBestDeals.forEach((item, index) => {
           otherListings.splice(
             otherListings.findIndex((x) => x.listingId === item.listingId),
@@ -584,17 +678,35 @@ const bestDealsByMarketingName = async (
         otherListings = fitlerResults.completeDeals;
         updatedBestDeals = [];
       }
+
+      let refineBestDeals = [];
+
+      updatedBestDeals.forEach((item, index) => {
+        console.log("item", item.notionalPercentage);
+        if (item.notionalPercentage > 0) {
+          refineBestDeals.push(item);
+        } else {
+          otherListings.push(item);
+        }
+      });
+
+      otherListings.sort((a, b) => {
+        return (
+          parseInt(a.notionalPercentage) - parseInt(b.notionalPercentage)
+        );
+      });
+
       res.status(200).json({
         reason: "Best deals found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          bestDeals: updatedBestDeals,
+          bestDeals: refineBestDeals,
           otherListings: otherListings,
           totalProducts: fitlerResults.totalProducts -
-          (fitlerResults.bestDealsCount > 5
-            ? 5
-            : fitlerResults.bestDealsCount),
+            (fitlerResults.bestDealsCount > 5
+              ? 5
+              : fitlerResults.bestDealsCount),
         },
       });
     }
