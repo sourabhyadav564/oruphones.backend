@@ -140,7 +140,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       listingId: element._id,
       listingDate: element.created_at,
       modifiedDate: "",
-      verifiedDate: "",
+      verifiedDate: " ",
       charger: "Y",
       earphone: "Y",
       originalbox: "Y",
