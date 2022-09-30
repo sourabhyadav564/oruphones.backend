@@ -59,6 +59,11 @@ schedule.scheduleJob("00 02 * * *", function () {
   startCalculatingLSPTest();
 });
 
+// schedule.scheduleJob("09 17 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   generateCollectionDump();
+// });
+
 schedule.scheduleJob("00 03 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
@@ -100,6 +105,8 @@ const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
 const getNewTokenRoute = require("../routes/login/get_new_token");
 const wordpressRoute = require("../routes/others/wordpress_route");
+const collectData = require("../utils/generate_mongo_dump");
+const generateCollectionDump = require("../utils/generate_mongo_dump");
 
 app.get("/", (req, res) => {
   res.status(200).json({

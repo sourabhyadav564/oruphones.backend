@@ -10,6 +10,9 @@ dotenv.config();
 const fetch = require("node-fetch");
 const ObjectId = require("mongodb").ObjectId;
 
+const fs = require("fs");
+const path = require("path");
+
 // require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
@@ -32,6 +35,7 @@ const cityModal = require("../../src/database/modals/global/cities_modal");
 const allMatrix = require("../../utils/matrix_figures");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 const validUser = require("../../src/middleware/valid_user");
+const downloadImage = require("../../utils/download_image_from_url");
 
 // router.get("/listing", async (req, res) => {
 //   try {
@@ -136,6 +140,16 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const deviceImagesAvailable = images.length > 0 ? true : false;
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
+
+  // images.forEach(async (image) => {
+  //   downloadImage(image.fullImage, 'image.png', function(){
+  //     console.log('done');
+  //   });
+  // });
+
+  // let downloadedImage = fs.readFileSync(path.join(__dirname, '../../image.png'), {encoding: 'base64'});
+
+  // console.log(downloadedImage);
 
   const cosmetic = req.body.cosmetic;
 
