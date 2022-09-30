@@ -48,9 +48,9 @@ async function urlShortner(url) {
 
 const sendverificationSMS = async (number, message, sellerName, marketingName) => {
   let link_text = "ORUphones";
-  let result = link_text.link("https://store.oruphones.com/");
+  let result = link_text.link(process.env.SERVER_URL);
 
-  let shortLink = await urlShortner("https://store.oruphones.com/");
+  let shortLink = await urlShortner(process.env.SERVER_URL);
   
   var params = {
     Message: `Hey ${sellerName}, You've got a verification request for your ${marketingName}. Visit ORUphones to complete verification. Please use OTP: ${message} to login. Here's the link: ${shortLink} for verification.`,

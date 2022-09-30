@@ -239,7 +239,6 @@ const getBestDeals = async (
           if ("warranty" in item == true && item.isOtherVendor === "N") {
             let cashify_upto_price = 0;
 
-
             if (getCashifyListing) {
               cashify_upto_price = getCashifyListing.price;
 
@@ -271,7 +270,6 @@ const getBestDeals = async (
           let currentPercentage;
           currentPercentage =
             ((newBasePrice - notionalPrice) / newBasePrice) * 100;
-
 
           let newDataObject = {};
           if (item.isOtherVendor == "Y") {
@@ -444,8 +442,44 @@ const getBestDeals = async (
         //     totalProducts: totalProducts
         //   },
         // });
-        collectData(updatedBestDeals);
-        // fs.writeFileSync(`updatedBestDeals.json`, JSON.stringify(updatedBestDeals));
+        let fakeData = [];
+        let fineData = [];
+
+        updatedBestDeals.forEach((item, index6) => {
+          // console.log("item", index);
+
+          if (
+            item.notionalPercentage.toString() === "NaN" ||
+            item.notionalPercentage > 40
+          ) {
+            console.log("item", item.notionalPercentage);
+            fakeData.push(item);
+          } else {
+            fineData.push(item);
+          }
+
+          if (index6 === updatedBestDeals.length - 1) {
+            fineData.sort((a, b) => {
+              return b.notionalPercentage - a.notionalPercentage;
+            });
+
+            fakeData.sort((a, b) => {
+              return a.notionalPercentage - b.notionalPercentage;
+            });
+
+            fineData.push(...fakeData);
+
+            collectData(updatedBestDeals);
+            // fs.writeFileSync(
+            //   `updatedBestDeals.json`,
+            //   JSON.stringify(fineData, null, 2)
+            // );
+          }
+        });
+        // fs.writeFileSync(
+        //   `updatedBestDeals.json`,
+        //   JSON.stringify(updatedBestDeals)
+        // );
       } else {
         // res.status(200).json({
         //   reason: "Best deals found",
