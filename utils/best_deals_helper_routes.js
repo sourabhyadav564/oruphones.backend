@@ -44,6 +44,7 @@ const commonFunc = async (
       }
     });
   }
+
   let completeDeals = [];
   // let isFromZero = sortBy === "NA" ? false : true;
   if (location !== "India") {
@@ -67,6 +68,16 @@ const commonFunc = async (
           .limit(5);
         break;
       case "nearme":
+        completeDeals = [];
+
+        // completeDeals = await bestDealsModal
+        //   .find({
+        //     status: ["Active", "Sold_Out"],
+        //     $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        //   })
+        //   .limit(5);
+        break;
+      case "nearall":
         completeDeals = await bestDealsModal
           .find({
             status: ["Active", "Sold_Out"],
@@ -88,6 +99,12 @@ const commonFunc = async (
           .limit(5);
         break;
       case "nearme":
+        completeDeals = [];
+        // completeDeals = await bestDealsModal
+        //   .find({ status: ["Active", "Sold_Out"] })
+        //   .limit(5);
+        break;
+      case "nearall":
         completeDeals = await bestDealsModal
           .find({ status: ["Active", "Sold_Out"] })
           .limit(5);
@@ -481,7 +498,7 @@ exports.bestDealsNearMe = bestDealsNearMe;
 
 const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
   try {
-    commonFunc(location, "all", page, userUniqueId, sortBy, res, "nearme");
+    commonFunc(location, "all", page, userUniqueId, sortBy, res, "nearall");
     // let updatedBestDeals = [];
     // let otherListings = [];
 

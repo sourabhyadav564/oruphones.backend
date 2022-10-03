@@ -82,7 +82,7 @@ const sendMailWithAttachment = async (file, message) => {
       attachments: [
         {
           filename: file,
-          path: `./${message}.json`,
+          path: `../${message}.json`,
         },
       ],
     };
@@ -290,14 +290,16 @@ const secondFunction = (foundObjects) => {
 };
 
 const thirdFunction = async (commonModels) => {
-  // find all possiblw LSPs and put into an array
+  // find all possible LSPs and put into an array
   commonModels.forEach((elem, index) => {
     let foundCommonIndex = commonModels.findIndex(
       (item) =>
         item.make == elem.make &&
         item.model == elem.model &&
         item.storage == elem.storage &&
-        item.ram == elem.ram &&
+        // item.ram == elem.ram &&
+        (item.ram == elem.ram ||
+          item.ram == (elem.make == "Apple" ? "--" : "")) &&
         item.condition == elem.condition
     );
     let leastPrice = [];
@@ -319,7 +321,9 @@ const thirdFunction = async (commonModels) => {
           item.make == elem.make &&
           item.model == elem.model &&
           item.storage == elem.storage &&
-          item.ram == elem.ram &&
+          // item.ram == elem.ram &&
+          (item.ram == elem.ram ||
+            item.ram == (elem.make == "Apple" ? "--" : "")) &&
           item.condition == forCondition
       );
       if (foundConditionIndex != -1) {
@@ -431,7 +435,9 @@ const sixthFunction = (commonModels) => {
         item.make == elem.make &&
         item.model == elem.model &&
         item.storage == elem.storage &&
-        item.ram == elem.ram &&
+        // item.ram == elem.ram &&
+        (item.ram == elem.ram ||
+          item.ram == (elem.make == "Apple" ? "--" : "")) &&
         item.condition == elem.condition &&
         item.lsp == 0
     );
@@ -455,7 +461,9 @@ const sixthFunction = (commonModels) => {
           item.make == elem.make &&
           item.model == elem.model &&
           item.storage == elem.storage &&
-          item.ram == elem.ram &&
+          // item.ram == elem.ram &&
+          (item.ram == elem.ram ||
+            item.ram == (elem.make == "Apple" ? "--" : "")) &&
           item.condition == "Like New" &&
           item.lsp == 0
       );
@@ -654,8 +662,8 @@ const twelth = (finalObjects) => {
   // find lsp greater smaller
   let objectsArr = [];
 
-  // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
   if (allModelNotFound.length > 0) {
+    // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
     collectData(finalObjects, "complete_lsp_datas");
   }
 
@@ -721,15 +729,21 @@ const lastFunction = (finalObjects) => {
       }
     }
 
-    // if (index === fileData.length - 1) {
-    //   fs.writeFileSync(
-    //     "modelsNotFound.json",
-    //     JSON.stringify(allModelNotFound, null, 2)
-    //   );
-    //   if (allModelNotFound.length > 0) {
-    //     sendMailWithAttachment(allModelNotFound, "modelsNotFound");
-    //   }
-    // }
+    if (index === fileData.length - 1) {
+      // fs.writeFileSync(
+      //   "modelsNotFound.json",
+      //   JSON.stringify(allModelNotFound, null, 2)
+      // );
+      // setTimeout(() => {
+      //   if (allModelNotFound.length > 0) {
+      //     sendMailWithAttachment(allModelNotFound, "modelsNotFound").catch(
+      //       (err) => {
+      //         console.log("mail error",err);
+      //       }
+      //     );
+      //   }
+      // }, 5000);
+    }
   });
 };
 

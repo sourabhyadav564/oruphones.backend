@@ -3,8 +3,9 @@ const bestDealsModal = require("../src/database/modals/others/best_deals_models"
 const applySortFilter = async (sortBy, type, page, location) => {
   let totalProducts;
   let completeDeals = [];
-  let bestDeals = [];
-  let bestDealsCount = [];
+  // let bestDeals = [];
+  // let bestDealsCount = [];
+  let bestDealsCountNumber = 0;
 
   let tempVar = type.split(" ");
   let key;
@@ -22,15 +23,24 @@ const applySortFilter = async (sortBy, type, page, location) => {
         .find({ status: ["Active", "Sold_Out"] })
         .countDocuments();
 
-      bestDeals = await bestDealsModal.find({
+      // bestDeals = await bestDealsModal.find({
+      //   status: ["Active", "Sold_Out"],
+
+      // });
+
+      bestDealsCountNumber = await bestDealsModal.countDocuments({
         status: ["Active", "Sold_Out"],
+        notionalPercentage: {
+          $gt: 0,
+          $lte: 40,
+        },
       });
 
-      bestDeals.forEach((item, index) => {
-        if (item.notionalPercentage > 0) {
-          bestDealsCount.push(item);
-        }
-      });
+      // bestDeals.forEach((item, index) => {
+      //   if (item.notionalPercentage > 0) {
+      //     bestDealsCount.push("a");
+      //   }
+      // });
 
       completeDeals = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"] })
@@ -43,16 +53,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -65,16 +84,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
@@ -87,15 +115,23 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"] })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"] })
@@ -110,16 +146,24 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          // });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -132,16 +176,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
@@ -154,15 +207,23 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"] })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"] })
@@ -177,16 +238,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -198,16 +268,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
@@ -219,15 +298,23 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"] })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"] })
@@ -241,16 +328,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -262,16 +358,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
@@ -283,15 +388,23 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"] })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"] })
@@ -305,16 +418,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], make: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], make: type })
@@ -325,16 +447,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"], marketingName: type })
@@ -345,15 +476,23 @@ const applySortFilter = async (sortBy, type, page, location) => {
             .find({ status: ["Active", "Sold_Out"] })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({ status: ["Active", "Sold_Out"] })
@@ -372,16 +511,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
         })
         .countDocuments();
 
-      bestDeals = await bestDealsModal.find({
+      bestDealsCountNumber = await bestDealsModal.countDocuments({
         status: ["Active", "Sold_Out"],
         $or: [{ listingLocation: location }, { listingLocation: "India" }],
+        notionalPercentage: {
+          $gt: 0,
+          $lte: 40,
+        },
       });
 
-      bestDeals.forEach((item, index) => {
-        if (item.notionalPercentage > 0) {
-          bestDealsCount.push(item);
-        }
-      });
+      // bestDeals = await bestDealsModal.find({
+      //   status: ["Active", "Sold_Out"],
+      //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+      // });
+
+      // bestDeals.forEach((item, index) => {
+      //   if (item.notionalPercentage > 0) {
+      //     bestDealsCount.push(item);
+      //   }
+      // });
 
       completeDeals = await bestDealsModal
         .find({
@@ -404,17 +552,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -441,17 +599,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -477,16 +645,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -514,17 +691,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -551,17 +738,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -587,16 +784,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -624,17 +830,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -660,17 +876,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -695,16 +921,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -731,17 +966,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -767,17 +1012,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -802,16 +1057,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -838,17 +1102,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             make: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   make: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -873,17 +1147,27 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             marketingName: type,
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   marketingName: type,
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -907,16 +1191,25 @@ const applySortFilter = async (sortBy, type, page, location) => {
             })
             .countDocuments();
 
-          bestDeals = await bestDealsModal.find({
+          bestDealsCountNumber = await bestDealsModal.countDocuments({
             status: ["Active", "Sold_Out"],
             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+            notionalPercentage: {
+              $gt: 0,
+              $lte: 40,
+            },
           });
 
-          bestDeals.forEach((item, index) => {
-            if (item.notionalPercentage > 0) {
-              bestDealsCount.push(item);
-            }
-          });
+          // bestDeals = await bestDealsModal.find({
+          //   status: ["Active", "Sold_Out"],
+          //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+          // });
+
+          // bestDeals.forEach((item, index) => {
+          //   if (item.notionalPercentage > 0) {
+          //     bestDealsCount.push(item);
+          //   }
+          // });
 
           completeDeals = await bestDealsModal
             .find({
@@ -932,7 +1225,11 @@ const applySortFilter = async (sortBy, type, page, location) => {
       }
     }
   }
-  return { totalProducts, completeDeals, bestDealsCount: bestDealsCount.length };
+  return {
+    totalProducts,
+    completeDeals,
+    bestDealsCount: bestDealsCountNumber,
+  };
 };
 
 module.exports = applySortFilter;

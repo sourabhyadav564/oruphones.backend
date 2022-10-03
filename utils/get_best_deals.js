@@ -447,7 +447,9 @@ const getBestDeals = async (
 
         updatedBestDeals.forEach((item, index6) => {
           // console.log("item", index);
-
+            if (item.isOtherVendor == "N") {
+              delete item.mobileNumber;
+            }
           if (
             item.notionalPercentage.toString() === "NaN" ||
             item.notionalPercentage > 40
@@ -459,21 +461,70 @@ const getBestDeals = async (
           }
 
           if (index6 === updatedBestDeals.length - 1) {
-            fineData.sort((a, b) => {
-              return b.notionalPercentage - a.notionalPercentage;
-            });
+            // find duplicates from fineData
+            // let duplicateFineData = [];
+            // let uniqueFineData = [];
 
             fakeData.sort((a, b) => {
               return a.notionalPercentage - b.notionalPercentage;
             });
 
+            fineData.sort((a, b) => {
+              return b.notionalPercentage - a.notionalPercentage;
+            });
+
             fineData.push(...fakeData);
 
-            collectData(updatedBestDeals);
+            collectData(fineData);
             // fs.writeFileSync(
             //   `updatedBestDeals.json`,
             //   JSON.stringify(fineData, null, 2)
             // );
+
+            // let fineLen = fineData.length;
+            // // fineData.forEach((item9, indexf) => {
+            // for (let indexf = 0; indexf < fineLen; indexf++) {
+            //   let item9 = fineData[indexf];
+            //   let temp = fineData.filter((item2) => {
+            //     return (
+            //       item2.make === item9.make &&
+            //       item2.marketingName === item9.marketingName &&
+            //       item2.storage === item9.storage &&
+            //       item2.mobileNumber === item9.mobileNumber &&
+            //       item2.isOtherVendor === "N" &&
+            //       !item2.verified
+            //     );
+            //   });
+            //   // if (item9.isOtherVendor == "N") {
+            //   //   delete item9.mobileNumber;
+            //   // }
+            //   if (temp.length > 1) {
+            //     // add heighest notionalPercentage object to uniqueFineData
+            //     let temp2 = temp.sort((a, b) => {
+            //       if (a.notionalPercentage > b.notionalPercentage) return -1;
+            //     });
+            //     uniqueFineData.push(temp2[0]);
+            //     duplicateFineData.push(item9);
+            //   } else {
+            //     uniqueFineData.push(item9);
+            //   }
+
+            //   if (indexf == fineData.length - 1) {
+            //     uniqueFineData.sort((a, b) => {
+            //       return b.notionalPercentage - a.notionalPercentage;
+            //     });
+
+            //     // fineData.push(...fakeData);
+            //     uniqueFineData.push(...fakeData);
+            //     uniqueFineData.push(...duplicateFineData);
+
+            //     // collectData(uniqueFineData);
+            //     fs.writeFileSync(
+            //       `updatedBestDeals.json`,
+            //       JSON.stringify(uniqueFineData, null, 2)
+            //     );
+            //   }
+            // }
           }
         });
         // fs.writeFileSync(
