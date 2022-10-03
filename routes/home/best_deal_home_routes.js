@@ -14,7 +14,7 @@ router.get("/listings/best/nearme", async (req, res) => {
   if (!sortBy) {
     sortBy = "NA";
   }
-  if (sortBy == undefined || sortBy == "Featured") {
+  if (sortBy == undefined || sortBy == "Featured" || sortBy == "undefined") {
     sortBy = "NA";
   } else {
     sortBy = sortBy;

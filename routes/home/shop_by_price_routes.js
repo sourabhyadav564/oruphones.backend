@@ -29,7 +29,7 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
   if (!sortBy) {
     sortBy = "NA";
   }
-  if (sortBy == undefined || sortBy == "Featured") {
+  if (sortBy == undefined || sortBy == "Featured" || sortBy == "undefined") {
     sortBy = "NA";
   } else {
     sortBy = sortBy;
