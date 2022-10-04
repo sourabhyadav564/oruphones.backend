@@ -1193,6 +1193,11 @@ router.post(
             });
           }
         }
+        // Remove mobileNumber from the response
+        if (dataObject.mobileNumber) {
+          delete dataObject.mobileNumber;
+        }
+
         res.status(200).json({
           reason: "Listing found successfully",
           statusCode: 200,

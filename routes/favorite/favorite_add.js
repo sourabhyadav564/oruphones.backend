@@ -159,6 +159,10 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
             ...single_listing?._doc,
             imagePath: single_listing?.defaultImage?.fullImage,
           };
+          // remove mobileNumber from the response if exists
+          if (single_listing?.mobileNumber) {
+            delete single_listing.mobileNumber;
+          }
           allFavListings.push(single_listing);
         }
         if (item == arr.length - 1) {

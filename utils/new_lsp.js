@@ -210,8 +210,8 @@ const firstFunction = async () => {
           });
         } else {
           // console.log("marketingName: " +marketingName);
-          if (!allModelNotFound.includes("GSM: " + marketingName)) {
-            allModelNotFound.push("GSM: " + marketingName);
+          if (!allModelNotFound.includes("GSM: " + element.marketingName)) {
+            allModelNotFound.push("GSM: " + element.marketingName);
           }
         }
       });
@@ -663,7 +663,10 @@ const twelth = (finalObjects) => {
   let objectsArr = [];
 
   if (allModelNotFound.length > 0) {
-    // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
+    // fs.writeFileSync(
+    //   "finalObjects.json",
+    //   JSON.stringify(finalObjects, null, 2)
+    // );
     collectData(finalObjects, "complete_lsp_datas");
   }
 
@@ -714,18 +717,23 @@ const lastFunction = (finalObjects) => {
       mdl = tempName2.trim();
     }
     mdl = mdl.toLowerCase().replace(/5g/g, "").trim();
-    // marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
+    marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
     // handliing poco in model name //
 
     mdl = mdl.toLowerCase().replace(/poco/g, "xiaomi poco").trim();
 
     let objArray = finalObjects.filter((element) => {
-      element.model.toLowerCase() == mdl;
+      element.model.toLowerCase() == mdl || element.model == elm.model_name;
     });
 
     if (!objArray || objArray.length == 0) {
-      if (!allModelNotFound.includes("Data: " + mdl)) {
-        allModelNotFound.push("Data: " + mdl);
+      if (
+        !allModelNotFound.includes("Data: " + mdl) &&
+        !allModelNotFound.includes("Data: " + elm.model_name) &&
+        !allModelNotFound.includes("GSM: " + mdl) &&
+        !allModelNotFound.includes("GSM: " + elm.model_name)
+      ) {
+        allModelNotFound.push("Data: " + elm.model_name);
       }
     }
 
