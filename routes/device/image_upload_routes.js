@@ -12,6 +12,7 @@ const unlinkFile = util.promisify(fs.unlink);
 const multer = require("multer");
 const { uploadFile, getFileStream } = require("../../src/s3");
 const validUser = require("../../src/middleware/valid_user");
+const sharp = require('sharp');
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
@@ -46,43 +47,58 @@ router.get("/uploadimage/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-router.post("/uploadimage", upload.single("image"), validUser, logEvent, async (req, res) => {
+router.post(
+  "/uploadimage",
+  upload.single("image"),
+  validUser,
+  logEvent,
+  async (req, res) => {
+    try {
+      const file = req.file;
+      const result = await uploadFile(file);
+      await unlinkFile(file?.path);
 
-  try {
-    const file = req.file;
-    const result = await uploadFile(file);
-    await unlinkFile(file?.path);
+      // make & uploading thumbnail image
+      const { buffer, originalname } = req.file;
+      const timestamp = new Date().toISOString();
+      const ref = `${timestamp}-${originalname}.webp`;
+      const thumbnail = await sharp(buffer)
+        .webp({ quality: 10 })
+        .toFile("./uploads/" + ref);
+      const thumbnailResult = await uploadFile(thumbnail);
 
-    const imageInfo ={
-      deviceFace: req.query.deviceFace,
-      deviceStorage: req.query.deviceStorage,
-      make: req.query.make,
-      model: req.query.model,
-      userUniqueId: req.query.userUniqueId,
-      imagePath: result.Location
+      // const imageInfo ={
+      //   deviceFace: req.query.deviceFace,
+      //   deviceStorage: req.query.deviceStorage,
+      //   make: req.query.make,
+      //   model: req.query.model,
+      //   userUniqueId: req.query.userUniqueId,
+      //   imagePath: result.Location
+      // }
+
+      // const saveData = new imageUploadModal(imageInfo);
+
+      // //TODO: for future use
+      // const createdObject = await saveData.save();
+
+      const dataObject = {
+        imagePath: `${result.Location}`,
+        // thumbnailImagePath: `${result.Location}`,
+        thumbnailImagePath: `${thumbnailResult.Location}`,
+        imageKey: `${result.Key}`,
+      };
+
+      res.status(200).json({
+        reason: "Image uploaded successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
     }
-
-    const saveData = new imageUploadModal(imageInfo);
-
-    //TODO: for future use
-    const createdObject = await saveData.save();
-
-    const dataObject = {
-      imagePath: `${result.Location}`,
-      thumbnailImagePath: `${result.Location}`,
-      imageKey: `${result.Key}`,
-    };
-
-    res.status(200).json({
-      reason: "Image uploaded successfully",
-      statusCode: 201,
-      status: "SUCCESS",
-      dataObject,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
   }
-});
+);
 
 module.exports = router;
