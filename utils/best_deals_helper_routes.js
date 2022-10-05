@@ -30,9 +30,63 @@ const commonFunc = async (
     }
   }
 
-  // if (location === "India") {
-  const fitlerResults = await applySortFilter(sortBy, term, page, location);
+  let findingData = {};
+  if (type == "category") {
+    switch (term) {
+      case "verified":
+        findingData = {
+          verified: true,
+          status: ["Active", "Sold_Out"],
+        };
+        break;
+      case "warranty":
+        findingData = {
+          warranty: [
+            "More than 9 months",
+            "More than 6 months",
+            "More than 3 months",
+          ],
+          status: ["Active", "Sold_Out"],
+        };
+        break;
+      case "like new":
+        findingData = {
+          deviceCondition: "Like New",
+          status: ["Active", "Sold_Out"],
+        };
+        break;
+    }
+  } else if (type == "make") {
+    findingData = {
+      make: term,
+      status: ["Active", "Sold_Out"],
+    };
+  } else if (type == "marketingName") {
+    findingData = {
+      marketingName: term,
+      status: ["Active", "Sold_Out"],
+    };
+  } else if (type == "nearme" || type == "nearall") {
+    findingData = {
+      status: ["Active", "Sold_Out"],
+    };
+  }
 
+  // update findingData with location if location is not India
+  if (location !== "India") {
+    findingData = {
+      ...findingData,
+      $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    };
+  }
+
+  const fitlerResults = await applySortFilter(
+    sortBy,
+    // term,
+    page,
+    // location,
+    findingData
+  );
 
   if (userUniqueId !== "Guest") {
     // add favorite listings to the final list
@@ -47,70 +101,89 @@ const commonFunc = async (
 
   let completeDeals = [];
   // let isFromZero = sortBy === "NA" ? false : true;
-  if (location !== "India") {
-    switch (type) {
-      case "make":
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            make: term,
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .limit(5);
-        break;
-      case "marketingName":
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            marketingName: term,
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .limit(5);
-        break;
-      case "nearme":
-        completeDeals = [];
 
-        // completeDeals = await bestDealsModal
-        //   .find({
-        //     status: ["Active", "Sold_Out"],
-        //     $or: [{ listingLocation: location }, { listingLocation: "India" }],
-        //   })
-        //   .limit(5);
-        break;
-      case "nearall":
-        completeDeals = await bestDealsModal
-          .find({
-            status: ["Active", "Sold_Out"],
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .limit(5);
-        break;
-    }
-  } else {
-    switch (type) {
-      case "make":
-        completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"], make: term })
-          .limit(5);
-        break;
-      case "marketingName":
-        completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"], marketingName: term })
-          .limit(5);
-        break;
-      case "nearme":
-        completeDeals = [];
-        // completeDeals = await bestDealsModal
-        //   .find({ status: ["Active", "Sold_Out"] })
-        //   .limit(5);
-        break;
-      case "nearall":
-        completeDeals = await bestDealsModal
-          .find({ status: ["Active", "Sold_Out"] })
-          .limit(5);
-        break;
-    }
+  if (type != "nearme") {
+    completeDeals = await bestDealsModal
+      .find({
+        ...findingData,
+        notionalPercentage: {
+          $gt: 0,
+          $lte: 40,
+        },
+      })
+      .limit(5);
   }
+
+  // if (location !== "India") {
+  //   switch (type) {
+  //     case "make":
+  //       completeDeals = await bestDealsModal
+  //         .find({
+  //           status: ["Active", "Sold_Out"],
+  //           make: term,
+  //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+  //         })
+  //         .limit(5);
+  //       break;
+  //     case "marketingName":
+  //       completeDeals = await bestDealsModal
+  //         .find({
+  //           status: ["Active", "Sold_Out"],
+  //           marketingName: term,
+  //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+  //         })
+  //         .limit(5);
+  //       break;
+  //     case "nearme":
+  //       completeDeals = [];
+
+  //       // completeDeals = await bestDealsModal
+  //       //   .find({
+  //       //     status: ["Active", "Sold_Out"],
+  //       //     $or: [{ listingLocation: location }, { listingLocation: "India" }],
+  //       //   })
+  //       //   .limit(5);
+  //       break;
+  //     case "nearall":
+  //       completeDeals = await bestDealsModal
+  //         .find({
+  //           status: ["Active", "Sold_Out"],
+  //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+  //         })
+  //         .limit(5);
+  //       break;
+  //     case "category":
+  //       completeDeals = await bestDealsModal.find(findingData).limit(5);
+  //       break;
+  //   }
+  // } else {
+  //   switch (type) {
+  //     case "make":
+  //       completeDeals = await bestDealsModal
+  //         .find({ status: ["Active", "Sold_Out"], make: term })
+  //         .limit(5);
+  //       break;
+  //     case "marketingName":
+  //       completeDeals = await bestDealsModal
+  //         .find({ status: ["Active", "Sold_Out"], marketingName: term })
+  //         .limit(5);
+  //       break;
+  //     case "nearme":
+  //       completeDeals = [];
+  //       // completeDeals = await bestDealsModal
+  //       //   .find({ status: ["Active", "Sold_Out"] })
+  //       //   .limit(5);
+  //       break;
+  //     case "nearall":
+  //       completeDeals = await bestDealsModal
+  //         .find({ status: ["Active", "Sold_Out"] })
+  //         .limit(5);
+  //       break;
+  //     case "category":
+  //       completeDeals = await bestDealsModal.find(findingData).limit(5);
+  //       break;
+  //   }
+  // }
 
   updatedBestDeals = completeDeals;
   if (page == 0) {
@@ -136,16 +209,16 @@ const commonFunc = async (
     updatedBestDeals = [];
   }
 
-  let refineBestDeals = [];
+  // let refineBestDeals = [];
 
-  updatedBestDeals.forEach((item, index) => {
-    console.log("item", item.notionalPercentage);
-    if (item.notionalPercentage > 0) {
-      refineBestDeals.push(item);
-    } else {
-      otherListings.push(item);
-    }
-  });
+  // updatedBestDeals.forEach((item, index) => {
+  //   console.log("item", item.notionalPercentage);
+  //   if (item.notionalPercentage > 0) {
+  //     refineBestDeals.push(item);
+  //   } else {
+  //     otherListings.push(item);
+  //   }
+  // });
 
   // if (sortBy === "NA") {
   //   otherListings.sort((a, b) => {
@@ -155,16 +228,14 @@ const commonFunc = async (
   //   });
   // }
 
-  
-  otherListings = await sortOtherListings(otherListings, sortBy);
-
+  // otherListings = await sortOtherListings(otherListings, sortBy);
 
   res.status(200).json({
     reason: "Best deals found",
     statusCode: 200,
     status: "SUCCESS",
     dataObject: {
-      bestDeals: refineBestDeals,
+      bestDeals: updatedBestDeals,
       otherListings: otherListings,
       totalProducts:
         fitlerResults.totalProducts -
@@ -820,73 +891,77 @@ exports.bestDealsForSearchListing = bestDealsForSearchListing;
 const bestDealsForShopByCategory = async (
   page,
   userUniqueId,
-  deals,
-  totalProducts,
+  // deals,
+  // totalProducts,
   sortBy,
-  res
+  res,
+  location,
+  category
 ) => {
   try {
-    let updatedBestDeals = [];
-    let otherListings = [];
+    commonFunc(location, category, page, userUniqueId, sortBy, res, "category");
+    // let updatedBestDeals = [];
+    // let otherListings = [];
 
-    let favList = [];
-    if (userUniqueId !== "Guest") {
-      const getFavObject = await favoriteModal.findOne({
-        userUniqueId: userUniqueId,
-      });
+    // let favList = [];
+    // if (userUniqueId !== "Guest") {
+    //   const getFavObject = await favoriteModal.findOne({
+    //     userUniqueId: userUniqueId,
+    //   });
 
-      if (getFavObject) {
-        favList = getFavObject.fav_listings;
-      } else {
-        favList = [];
-      }
-    }
+    //   if (getFavObject) {
+    //     favList = getFavObject.fav_listings;
+    //   } else {
+    //     favList = [];
+    //   }
+    // }
 
-    if (userUniqueId !== "Guest") {
-      deals.forEach((item, index) => {
-        if (favList.includes(item.listingId)) {
-          deals[index].favourite = true;
-        } else {
-          deals[index].favourite = false;
-        }
-      });
-    }
+    // if (userUniqueId !== "Guest") {
+    //   deals.forEach((item, index) => {
+    //     if (favList.includes(item.listingId)) {
+    //       deals[index].favourite = true;
+    //     } else {
+    //       deals[index].favourite = false;
+    //     }
+    //   });
+    // }
 
-    if (page == 0) {
-      updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, deals.length);
-    } else {
-      otherListings = deals;
-    }
+    // if (page == 0) {
+    //   updatedBestDeals = deals.slice(0, 5);
+    //   otherListings = deals.slice(5, deals.length);
+    // } else {
+    //   otherListings = deals;
+    // }
 
-    let refineBestDeals = [];
+    // let refineBestDeals = [];
 
-    updatedBestDeals.forEach((item, index) => {
-      console.log("item", item.notionalPercentage);
-      if (item.notionalPercentage > 0) {
-        refineBestDeals.push(item);
-      } else {
-        otherListings.push(item);
-      }
-    });
-
-    // otherListings.sort((a, b) => {
-    //   return (
-    //     b.notionalPercentage - a.notionalPercentage
-    //   );
+    // updatedBestDeals.forEach((item, index) => {
+    //   console.log("item", item.notionalPercentage);
+    //   if (item.notionalPercentage > 0) {
+    //     refineBestDeals.push(item);
+    //   } else {
+    //     otherListings.push(item);
+    //   }
     // });
-    otherListings = await sortOtherListings(otherListings, sortBy);
 
-    res.status(200).json({
-      reason: "Best deals found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        bestDeals: refineBestDeals,
-        otherListings: otherListings,
-        totalProducts: totalProducts,
-      },
-    });
+    // // otherListings.sort((a, b) => {
+    // //   return (
+    // //     b.notionalPercentage - a.notionalPercentage
+    // //   );
+    // // });
+    // console.log("sortBy", sortBy);
+    // otherListings = await sortOtherListings(otherListings, sortBy);
+
+    // res.status(200).json({
+    //   reason: "Best deals found",
+    //   statusCode: 200,
+    //   status: "SUCCESS",
+    //   dataObject: {
+    //     bestDeals: refineBestDeals,
+    //     otherListings: otherListings,
+    //     totalProducts: totalProducts,
+    //   },
+    // });
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);
