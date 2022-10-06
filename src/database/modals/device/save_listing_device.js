@@ -50,7 +50,7 @@ const saveListingSchema = new mongoose.Schema(
           },
           isVarified: {
             type: String,
-            default: "default",
+            default: "accepted",
           },
         },
       ],

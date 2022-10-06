@@ -56,6 +56,15 @@ const commonFunc = async (
         };
         break;
     }
+  } else if(type == "price"){
+    findingData = {
+      listingPrice: {
+        $gte: term[0],
+        $lte: term[1],
+      },
+      status: ["Active", "Sold_Out"],
+    };
+
   } else if (type == "make") {
     findingData = {
       make: term,
@@ -973,78 +982,91 @@ exports.bestDealsForShopByCategory = bestDealsForShopByCategory;
 const bestDealsForShopByPrice = async (
   page,
   userUniqueId,
-  deals,
-  totalProducts,
+  // deals,
+  // totalProducts,
   sortBy,
-  res
+  res,
+  location,
+  startPrice,
+  endPrice
 ) => {
   try {
-    let updatedBestDeals = [];
-    let otherListings = [];
+    // todo: add location
+    commonFunc(
+      location,
+      [startPrice, endPrice],
+      page,
+      userUniqueId,
+      sortBy,
+      res,
+      "price"
+    );
+    // let updatedBestDeals = [];
+    // let otherListings = [];
 
-    let favList = [];
-    if (userUniqueId !== "Guest") {
-      const getFavObject = await favoriteModal.findOne({
-        userUniqueId: userUniqueId,
-      });
+    // let favList = [];
+    // if (userUniqueId !== "Guest") {
+    //   const getFavObject = await favoriteModal.findOne({
+    //     userUniqueId: userUniqueId,
+    //   });
 
-      if (getFavObject) {
-        favList = getFavObject.fav_listings;
-      } else {
-        favList = [];
-      }
-    }
-
-    if (userUniqueId !== "Guest") {
-      deals.forEach((item, index) => {
-        if (favList.includes(item.listingId)) {
-          deals[index].favourite = true;
-        } else {
-          deals[index].favourite = false;
-        }
-      });
-    }
-
-    if (page == 0) {
-      updatedBestDeals = deals.slice(0, 5);
-      otherListings = deals.slice(5, deals.length);
-    } else {
-      otherListings = deals;
-    }
-
-    let refineBestDeals = [];
-
-    updatedBestDeals.forEach((item, index) => {
-      console.log("item", item.notionalPercentage);
-      if (item.notionalPercentage > 0) {
-        refineBestDeals.push(item);
-      } else {
-        otherListings.push(item);
-      }
-    });
-
-    // if (sortBy === "NA") {
-    //   if (sortBy === "NA") {
-    //     otherListings.sort((a, b) => {
-    //       return (
-    //         b.notionalPercentage - a.notionalPercentage
-    //       );
-    //     });
+    //   if (getFavObject) {
+    //     favList = getFavObject.fav_listings;
+    //   } else {
+    //     favList = [];
     //   }
     // }
 
-    otherListings = await sortOtherListings(otherListings, sortBy);
+    // if (userUniqueId !== "Guest") {
+    //   deals.forEach((item, index) => {
+    //     if (favList.includes(item.listingId)) {
+    //       deals[index].favourite = true;
+    //     } else {
+    //       deals[index].favourite = false;
+    //     }
+    //   });
+    // }
 
-    res.status(200).json({
-      reason: "Best deals found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        bestDeals: refineBestDeals,
-        otherListings: otherListings,
-        totalProducts: totalProducts,
-      },
-    });
+    // if (page == 0) {
+    //   updatedBestDeals = deals.slice(0, 5);
+    //   otherListings = deals.slice(5, deals.length);
+    // } else {
+    //   otherListings = deals;
+    // }
+
+    // let refineBestDeals = [];
+
+    // updatedBestDeals.forEach((item, index) => {
+    //   console.log("item", item.notionalPercentage);
+    //   if (item.notionalPercentage > 0) {
+    //     refineBestDeals.push(item);
+    //   } else {
+    //     otherListings.push(item);
+    //   }
+    // });
+
+    // // if (sortBy === "NA") {
+    // //   if (sortBy === "NA") {
+    // //     otherListings.sort((a, b) => {
+    // //       return (
+    // //         b.notionalPercentage - a.notionalPercentage
+    // //       );
+    // //     });
+    // //   }
+    // // }
+
+    // otherListings = await sortOtherListings(otherListings, sortBy);
+
+    // res.status(200).json({
+    //   reason: "Best deals found",
+    //   statusCode: 200,
+    //   status: "SUCCESS",
+    //   dataObject: {
+    //     bestDeals: refineBestDeals,
+    //     otherListings: otherListings,
+    //     totalProducts: totalProducts,
+    //   },
+    // });
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

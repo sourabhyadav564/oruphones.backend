@@ -36,370 +36,372 @@ router.get("/shopbyprice/listmodel", validUser, logEvent, async (req, res) => {
   }
 
   try {
-    let defaultDataObject = [];
-    let totalProducts;
-
-    let bestDeals = [];
-    let bestDealsCount = [];
-
-    if (location === "India") {
-      let defaultDataObject2 = [];
-
-      let saveListingLength = await bestDealsModal
-        .find({
-          $expr: {
-            $and: [
-              { $ne: ["$listingPrice", "--"] },
-              {
-                $lte: [
-                  {
-                    $toInt: "$listingPrice",
-                  },
-                  parseInt(endPrice.toString()),
-                ],
-              },
-            ],
-          },
-          status: ["Active", "Sold_Out"],
-        })
-        .countDocuments();
-
-      if (sortBy === "Price - High to Low") {
-        defaultDataObject2 = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-          })
-          .sort({ listingPrice: -1 })
-          .collation({ locale: "en_US", numericOrdering: true })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-      } else if (sortBy === "Price - Low to High") {
-        defaultDataObject2 = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-          })
-          .sort({ listingPrice: 1 })
-          .collation({ locale: "en_US", numericOrdering: true })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-      } else if (sortBy === "Newest First") {
-        defaultDataObject2 = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-          })
-          .sort({ createdAt: -1 })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-      } else if (sortBy === "Oldest First") {
-        defaultDataObject2 = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-          })
-          .sort({ createdAt: 1 })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-      } else {
-        defaultDataObject2 = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-          })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-      }
-      totalProducts = saveListingLength;
-      let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
-        return (
-          parseInt(item.listingPrice.toString()) >=
-          parseInt(startPrice.toString())
-        );
-      });
-      defaultDataObject2 = defaultDataObject3;
-      defaultDataObject2.forEach((element) => {
-        defaultDataObject.push(element);
-      });
-    } else {
-      let saveListingLength = await bestDealsModal
-        .find({
-          $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          status: ["Active", "Sold_Out"],
-        })
-        .countDocuments();
-        if (sortBy === "Price - High to Low") {
-          defaultDataObject = await bestDealsModal
-            .find({
-              $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              status: ["Active", "Sold_Out"],
-            })
-            .sort({ listingPrice: -1 })
-            .collation({ locale: "en_US", numericOrdering: true })
-            .skip(parseInt(page) * 30)
-            .limit(30);
-        } else if (sortBy === "Price - Low to High") {
-          defaultDataObject = await bestDealsModal
-            .find({
-              $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              status: ["Active", "Sold_Out"],
-            })
-            .sort({ listingPrice: 1 })
-            .collation({ locale: "en_US", numericOrdering: true })
-            .skip(parseInt(page) * 30)
-            .limit(30);
-        } else if (sortBy === "Newest First") {
-          defaultDataObject = await bestDealsModal
-            .find({
-              $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              status: ["Active", "Sold_Out"],
-            })
-            .sort({ createdAt: -1 })
-            .skip(parseInt(page) * 30)
-            .limit(30);
-        } else if (sortBy === "Oldest First") {
-          defaultDataObject = await bestDealsModal
-            .find({
-              $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              status: ["Active", "Sold_Out"],
-            })
-            .sort({ createdAt: 1 })
-            .skip(parseInt(page) * 30)
-            .limit(30);
-        } else {
-          defaultDataObject = await bestDealsModal
-          .find({
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-            status: ["Active", "Sold_Out"],
-          })
-          .skip(parseInt(page) * 30)
-          .limit(30);
-        }
-      totalProducts = saveListingLength;
-
-      if (!defaultDataObject.length) {
-        res.status(200).json({
-          reason: "No best deals found",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject: {
-            otherListings: [],
-            bestDeals: [],
-          },
-        });
-        return;
-      } else {
-        let saveListingLength = await bestDealsModal
-          .find({
-            $expr: {
-              $and: [
-                { $ne: ["$listingPrice", "--"] },
-                {
-                  $lte: [
-                    {
-                      $toInt: "$listingPrice",
-                    },
-                    parseInt(endPrice.toString()),
-                  ],
-                },
-              ],
-            },
-            status: ["Active", "Sold_Out"],
-            $or: [{ listingLocation: location }, { listingLocation: "India" }],
-          })
-          .countDocuments();
-          if (sortBy === "Price - High to Low") {
-            defaultDataObject = await bestDealsModal
-              .find({
-                $expr: {
-                  $and: [
-                    { $ne: ["$listingPrice", "--"] },
-                    {
-                      $lte: [
-                        {
-                          $toInt: "$listingPrice",
-                        },
-                        parseInt(endPrice.toString()),
-                      ],
-                    },
-                  ],
-                },
-                status: ["Active", "Sold_Out"],
-                $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              })
-              .sort({ listingPrice: -1 })
-              .collation({ locale: "en_US", numericOrdering: true })
-              .skip(parseInt(page) * 30)
-              .limit(30);
-          } else if (sortBy === "Price - Low to High") {
-            defaultDataObject = await bestDealsModal
-              .find({
-                $expr: {
-                  $and: [
-                    { $ne: ["$listingPrice", "--"] },
-                    {
-                      $lte: [
-                        {
-                          $toInt: "$listingPrice",
-                        },
-                        parseInt(endPrice.toString()),
-                      ],
-                    },
-                  ],
-                },
-                status: ["Active", "Sold_Out"],
-                $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              })
-              .sort({ listingPrice: 1 })
-              .collation({ locale: "en_US", numericOrdering: true })
-              .skip(parseInt(page) * 30)
-              .limit(30);
-          } else if (sortBy === "Newest First") {
-            defaultDataObject = await bestDealsModal
-              .find({
-                $expr: {
-                  $and: [
-                    { $ne: ["$listingPrice", "--"] },
-                    {
-                      $lte: [
-                        {
-                          $toInt: "$listingPrice",
-                        },
-                        parseInt(endPrice.toString()),
-                      ],
-                    },
-                  ],
-                },
-                status: ["Active", "Sold_Out"],
-                $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              })
-              .sort({ createdAt: -1 })
-              .skip(parseInt(page) * 30)
-              .limit(30);
-          } else if (sortBy === "Oldest First") {
-            defaultDataObject = await bestDealsModal
-              .find({
-                $expr: {
-                  $and: [
-                    { $ne: ["$listingPrice", "--"] },
-                    {
-                      $lte: [
-                        {
-                          $toInt: "$listingPrice",
-                        },
-                        parseInt(endPrice.toString()),
-                      ],
-                    },
-                  ],
-                },
-                status: ["Active", "Sold_Out"],
-                $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              })
-              .sort({ createdAt: 1 })
-              .skip(parseInt(page) * 30)
-              .limit(30);
-          } else {
-            defaultDataObject = await bestDealsModal
-              .find({
-                $expr: {
-                  $and: [
-                    { $ne: ["$listingPrice", "--"] },
-                    {
-                      $lte: [
-                        {
-                          $toInt: "$listingPrice",
-                        },
-                        parseInt(endPrice.toString()),
-                      ],
-                    },
-                  ],
-                },
-                status: ["Active", "Sold_Out"],
-                $or: [{ listingLocation: location }, { listingLocation: "India" }],
-              })
-              .skip(parseInt(page) * 30)
-              .limit(30);
-          }
-          let defaultDataObject3 = defaultDataObject.filter((item, index) => {
-          return (
-            parseInt(item.listingPrice.toString()) >=
-            parseInt(startPrice.toString())
-          );
-        });
-        totalProducts = saveListingLength;
-        defaultDataObject = defaultDataObject3;
-      }
-    }
-
     bestDealsForShopByPrice(
       page,
       userUniqueId,
-      defaultDataObject,
-      totalProducts,
+      // defaultDataObject,
+      // totalProducts,
       sortBy,
-      res
+      res,
+      location,
+      startPrice, 
+      endPrice
     );
+    // let defaultDataObject = [];
+    // let totalProducts;
+
+    // let bestDeals = [];
+    // let bestDealsCount = [];
+
+    // if (location === "India") {
+    //   let defaultDataObject2 = [];
+
+    //   let saveListingLength = await bestDealsModal
+    //     .find({
+    //       $expr: {
+    //         $and: [
+    //           { $ne: ["$listingPrice", "--"] },
+    //           {
+    //             $lte: [
+    //               {
+    //                 $toInt: "$listingPrice",
+    //               },
+    //               parseInt(endPrice.toString()),
+    //             ],
+    //           },
+    //         ],
+    //       },
+    //       status: ["Active", "Sold_Out"],
+    //     })
+    //     .countDocuments();
+
+    //   if (sortBy === "Price - High to Low") {
+    //     defaultDataObject2 = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .sort({ listingPrice: -1 })
+    //       .collation({ locale: "en_US", numericOrdering: true })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //   } else if (sortBy === "Price - Low to High") {
+    //     defaultDataObject2 = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .sort({ listingPrice: 1 })
+    //       .collation({ locale: "en_US", numericOrdering: true })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //   } else if (sortBy === "Newest First") {
+    //     defaultDataObject2 = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .sort({ createdAt: -1 })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //   } else if (sortBy === "Oldest First") {
+    //     defaultDataObject2 = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .sort({ createdAt: 1 })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //   } else {
+    //     defaultDataObject2 = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //   }
+    //   totalProducts = saveListingLength;
+    //   let defaultDataObject3 = defaultDataObject2.filter((item, index) => {
+    //     return (
+    //       parseInt(item.listingPrice.toString()) >=
+    //       parseInt(startPrice.toString())
+    //     );
+    //   });
+    //   defaultDataObject2 = defaultDataObject3;
+    //   defaultDataObject2.forEach((element) => {
+    //     defaultDataObject.push(element);
+    //   });
+    // } else {
+    //   let saveListingLength = await bestDealsModal
+    //     .find({
+    //       $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //       status: ["Active", "Sold_Out"],
+    //     })
+    //     .countDocuments();
+    //     if (sortBy === "Price - High to Low") {
+    //       defaultDataObject = await bestDealsModal
+    //         .find({
+    //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           status: ["Active", "Sold_Out"],
+    //         })
+    //         .sort({ listingPrice: -1 })
+    //         .collation({ locale: "en_US", numericOrdering: true })
+    //         .skip(parseInt(page) * 30)
+    //         .limit(30);
+    //     } else if (sortBy === "Price - Low to High") {
+    //       defaultDataObject = await bestDealsModal
+    //         .find({
+    //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           status: ["Active", "Sold_Out"],
+    //         })
+    //         .sort({ listingPrice: 1 })
+    //         .collation({ locale: "en_US", numericOrdering: true })
+    //         .skip(parseInt(page) * 30)
+    //         .limit(30);
+    //     } else if (sortBy === "Newest First") {
+    //       defaultDataObject = await bestDealsModal
+    //         .find({
+    //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           status: ["Active", "Sold_Out"],
+    //         })
+    //         .sort({ createdAt: -1 })
+    //         .skip(parseInt(page) * 30)
+    //         .limit(30);
+    //     } else if (sortBy === "Oldest First") {
+    //       defaultDataObject = await bestDealsModal
+    //         .find({
+    //           $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           status: ["Active", "Sold_Out"],
+    //         })
+    //         .sort({ createdAt: 1 })
+    //         .skip(parseInt(page) * 30)
+    //         .limit(30);
+    //     } else {
+    //       defaultDataObject = await bestDealsModal
+    //       .find({
+    //         $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //         status: ["Active", "Sold_Out"],
+    //       })
+    //       .skip(parseInt(page) * 30)
+    //       .limit(30);
+    //     }
+    //   totalProducts = saveListingLength;
+
+    //   if (!defaultDataObject.length) {
+    //     res.status(200).json({
+    //       reason: "No best deals found",
+    //       statusCode: 200,
+    //       status: "SUCCESS",
+    //       dataObject: {
+    //         otherListings: [],
+    //         bestDeals: [],
+    //       },
+    //     });
+    //     return;
+    //   } else {
+    //     let saveListingLength = await bestDealsModal
+    //       .find({
+    //         $expr: {
+    //           $and: [
+    //             { $ne: ["$listingPrice", "--"] },
+    //             {
+    //               $lte: [
+    //                 {
+    //                   $toInt: "$listingPrice",
+    //                 },
+    //                 parseInt(endPrice.toString()),
+    //               ],
+    //             },
+    //           ],
+    //         },
+    //         status: ["Active", "Sold_Out"],
+    //         $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //       })
+    //       .countDocuments();
+    //       if (sortBy === "Price - High to Low") {
+    //         defaultDataObject = await bestDealsModal
+    //           .find({
+    //             $expr: {
+    //               $and: [
+    //                 { $ne: ["$listingPrice", "--"] },
+    //                 {
+    //                   $lte: [
+    //                     {
+    //                       $toInt: "$listingPrice",
+    //                     },
+    //                     parseInt(endPrice.toString()),
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //             status: ["Active", "Sold_Out"],
+    //             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           })
+    //           .sort({ listingPrice: -1 })
+    //           .collation({ locale: "en_US", numericOrdering: true })
+    //           .skip(parseInt(page) * 30)
+    //           .limit(30);
+    //       } else if (sortBy === "Price - Low to High") {
+    //         defaultDataObject = await bestDealsModal
+    //           .find({
+    //             $expr: {
+    //               $and: [
+    //                 { $ne: ["$listingPrice", "--"] },
+    //                 {
+    //                   $lte: [
+    //                     {
+    //                       $toInt: "$listingPrice",
+    //                     },
+    //                     parseInt(endPrice.toString()),
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //             status: ["Active", "Sold_Out"],
+    //             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           })
+    //           .sort({ listingPrice: 1 })
+    //           .collation({ locale: "en_US", numericOrdering: true })
+    //           .skip(parseInt(page) * 30)
+    //           .limit(30);
+    //       } else if (sortBy === "Newest First") {
+    //         defaultDataObject = await bestDealsModal
+    //           .find({
+    //             $expr: {
+    //               $and: [
+    //                 { $ne: ["$listingPrice", "--"] },
+    //                 {
+    //                   $lte: [
+    //                     {
+    //                       $toInt: "$listingPrice",
+    //                     },
+    //                     parseInt(endPrice.toString()),
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //             status: ["Active", "Sold_Out"],
+    //             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           })
+    //           .sort({ createdAt: -1 })
+    //           .skip(parseInt(page) * 30)
+    //           .limit(30);
+    //       } else if (sortBy === "Oldest First") {
+    //         defaultDataObject = await bestDealsModal
+    //           .find({
+    //             $expr: {
+    //               $and: [
+    //                 { $ne: ["$listingPrice", "--"] },
+    //                 {
+    //                   $lte: [
+    //                     {
+    //                       $toInt: "$listingPrice",
+    //                     },
+    //                     parseInt(endPrice.toString()),
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //             status: ["Active", "Sold_Out"],
+    //             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           })
+    //           .sort({ createdAt: 1 })
+    //           .skip(parseInt(page) * 30)
+    //           .limit(30);
+    //       } else {
+    //         defaultDataObject = await bestDealsModal
+    //           .find({
+    //             $expr: {
+    //               $and: [
+    //                 { $ne: ["$listingPrice", "--"] },
+    //                 {
+    //                   $lte: [
+    //                     {
+    //                       $toInt: "$listingPrice",
+    //                     },
+    //                     parseInt(endPrice.toString()),
+    //                   ],
+    //                 },
+    //               ],
+    //             },
+    //             status: ["Active", "Sold_Out"],
+    //             $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //           })
+    //           .skip(parseInt(page) * 30)
+    //           .limit(30);
+    //       }
+    //       let defaultDataObject3 = defaultDataObject.filter((item, index) => {
+    //       return (
+    //         parseInt(item.listingPrice.toString()) >=
+    //         parseInt(startPrice.toString())
+    //       );
+    //     });
+    //     totalProducts = saveListingLength;
+    //     defaultDataObject = defaultDataObject3;
+    //   }
+    // }
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);
