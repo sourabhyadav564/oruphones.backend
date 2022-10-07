@@ -169,21 +169,28 @@ router.post(
           let filterData = {};
           let vendorName = VENDORS[element.vendor_id];
           let finalPrice;
-          if (element.vendor_id != 6) {
+          if (element.vendor_id != 6 && element.vendor_id != 23) {
             finalPrice =
               element.price != null
                 ? element.price -
                   (element.price * totalPercentageToBeReduced) / 100
                 : 0;
+            finalPrice = Math.ceil(finalPrice);
+            finalPrice = await lspFunction(
+              deviceCondition,
+              element.condition,
+              finalPrice
+            );
           } else {
             finalPrice = element.price;
+            finalPrice = Math.ceil(finalPrice);
+            finalPrice = await lspFunction(
+              deviceCondition,
+              element.condition,
+              finalPrice
+            );
           }
-          finalPrice = Math.ceil(finalPrice);
-          finalPrice = await lspFunction(
-            deviceCondition,
-            element.condition,
-            finalPrice
-          );
+
           console.log("finalPrice2", finalPrice);
           let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
             .toString()

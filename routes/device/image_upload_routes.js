@@ -12,7 +12,7 @@ const unlinkFile = util.promisify(fs.unlink);
 const multer = require("multer");
 const { uploadFile, getFileStream } = require("../../src/s3");
 const validUser = require("../../src/middleware/valid_user");
-const sharp = require('sharp');
+const sharp = require("sharp");
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
@@ -54,18 +54,21 @@ router.post(
   logEvent,
   async (req, res) => {
     try {
-      const file = req.file;
-      const result = await uploadFile(file);
-      await unlinkFile(file?.path);
+      
 
       // make & uploading thumbnail image
       const { buffer, originalname } = req.file;
       const timestamp = new Date().toISOString();
       const ref = `${timestamp}-${originalname}.webp`;
-      const thumbnail = await sharp(buffer)
-        .webp({ quality: 10 })
-        .toFile("./uploads/" + ref);
+      // const thumbnail = await sharp(buffer)
+      //   .webp({ quality: 10 })
+      //   .toFile("thumb_" + ref);
+      const thumbnail = sharp(req.file).resize(1000).jpeg({ quality: 10 });
       const thumbnailResult = await uploadFile(thumbnail);
+
+      const file = req.file;
+      const result = await uploadFile(file);
+      await unlinkFile(file?.path);
 
       // const imageInfo ={
       //   deviceFace: req.query.deviceFace,

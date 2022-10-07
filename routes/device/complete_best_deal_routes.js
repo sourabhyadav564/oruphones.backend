@@ -30,8 +30,8 @@ router.get("/listings/best/nearall", validUser, logEvent, async (req, res) => {
     sortBy = sortBy;
   }
   
-  // bestDealsNearAll(location, page, userUniqueId, sortBy, res);
-  bestDealsNearMe(location, page, userUniqueId, sortBy, res);
+  bestDealsNearAll(location, page, userUniqueId, sortBy, res);
+  // bestDealsNearMe(location, page, userUniqueId, sortBy, res);
 });
 
 module.exports = router;
