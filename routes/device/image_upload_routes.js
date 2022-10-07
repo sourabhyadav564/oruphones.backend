@@ -64,7 +64,7 @@ router.post(
       const ref = `${timestamp}-${originalname}.webp`;
       const thumbnail = await sharp(buffer)
         .webp({ quality: 10 })
-        .toFile("./uploads/" + ref);
+        .toFile("thumb_" + ref);
       const thumbnailResult = await uploadFile(thumbnail);
 
       // const imageInfo ={
