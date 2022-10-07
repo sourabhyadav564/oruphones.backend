@@ -62,9 +62,18 @@ router.post(
       const { buffer, originalname } = req.file;
       const timestamp = new Date().toISOString();
       const ref = `${timestamp}-${originalname}.webp`;
-      const thumbnail = await sharp(buffer)
-        .webp({ quality: 10 })
-        .toFile("thumb_" + ref);
+      const thumbnail = await sharp(req.file.buffer)
+        .resize({ width: 5, height: 5 })
+        .toBuffer()
+        .then(data => {
+          console.log("data: ", data);
+          res.send("File uploaded");
+        }).catch(err => {
+          console.log("err: ", err);
+        });
+      // sharp(buffer)
+      //   .webp({ quality: 10 })
+      //   .toFile("thumb_" + ref);
       const thumbnailResult = await uploadFile(thumbnail);
 
       // const imageInfo ={
