@@ -58,14 +58,14 @@ router.post(
       const result = await uploadFile(file);
       await unlinkFile(file?.path);
 
-      // // make & uploading thumbnail image
-      // const { buffer, originalname } = req.file;
-      // const timestamp = new Date().toISOString();
-      // const ref = `${timestamp}-${originalname}.webp`;
-      // const thumbnail = await sharp(buffer)
-      //   .webp({ quality: 10 })
-      //   .toFile("./uploads/" + ref);
-      // const thumbnailResult = await uploadFile(thumbnail);
+      // make & uploading thumbnail image
+      const { buffer, originalname } = req.file;
+      const timestamp = new Date().toISOString();
+      const ref = `${timestamp}-${originalname}.webp`;
+      const thumbnail = await sharp(buffer)
+        .webp({ quality: 10 })
+        .toFile("./uploads/" + ref);
+      const thumbnailResult = await uploadFile(thumbnail);
 
       // const imageInfo ={
       //   deviceFace: req.query.deviceFace,
@@ -83,8 +83,8 @@ router.post(
 
       const dataObject = {
         imagePath: `${result.Location}`,
-        thumbnailImagePath: `${result.Location}`,
-        // thumbnailImagePath: `${thumbnailResult.Location}`,
+        // thumbnailImagePath: `${result.Location}`,
+        thumbnailImagePath: `${thumbnailResult.Location}`,
         imageKey: `${result.Key}`,
       };
 

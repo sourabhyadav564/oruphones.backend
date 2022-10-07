@@ -40,7 +40,7 @@ const sendLoginOtp = (number, message) => {
   var params = {
     Message: `${message} is your login OTP for your registration process. Please enter the OTP to Proceed. Team ORUphones`,
     Subject: "ORU Phones",
-    PhoneNumber: "+91" + number,
+    PhoneNumber: "91" + number,
     MessageAttributes: {
       "AWS.SNS.SMS.SenderID": {
         DataType: "String",

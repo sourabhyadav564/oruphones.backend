@@ -40,14 +40,14 @@ router.post("/add", validUser, logEvent, async (req, res) => {
             new: true,
           }
         );
-        res.status(200).json({
+        return res.status(200).json({
           reason: "Favorite listings updated successfully",
           statusCode: 200,
           status: "SUCCESS",
           updateList,
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           reason: "Listing already exists in your favorite list",
           statusCode: 200,
           status: "SUCCESS",
@@ -62,7 +62,7 @@ router.post("/add", validUser, logEvent, async (req, res) => {
       const listing_data = new favoriteModal(data);
       const dataObject = await listing_data.save();
 
-      res.status(201).json({
+      return res.status(201).json({
         reason: "Favorite listings created successfully",
         statusCode: 201,
         status: "SUCCESS",
@@ -71,7 +71,7 @@ router.post("/add", validUser, logEvent, async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 });
 
@@ -108,21 +108,21 @@ router.post("/deactivate", validUser, logEvent, async (req, res) => {
           }
         );
 
-        res.status(200).json({
+        return res.status(200).json({
           reason: "Favorite listing updated successfully",
           statusCode: 200,
           status: "SUCCESS",
           updateList,
         });
       } else {
-        res.status(200).json({
+        return res.status(200).json({
           reason: "Favorite listing already deactivated",
           statusCode: 200,
           status: "SUCCESS",
         });
       }
     } else {
-      res.status(200).json({
+      return res.status(200).json({
         reason: "Favorite listing does not exist",
         statusCode: 200,
         status: "SUCCESS",
@@ -130,7 +130,7 @@ router.post("/deactivate", validUser, logEvent, async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 });
 
@@ -169,14 +169,14 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
 
           if (allFavListings.length > 0) {
             dataObject = allFavListings;
-            res.status(200).json({
+            return res.status(200).json({
               reason: "Favorite listings fetched successfully",
               statusCode: 200,
               status: "SUCCESS",
               dataObject,
             });
           } else {
-            res.status(200).json({
+            return res.status(200).json({
               reason: "You do not have any favourite listing",
               statusCode: 200,
               status: "SUCCESS",
@@ -186,7 +186,7 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
         }
       }
     } else {
-      res.status(200).json({
+      return res.status(200).json({
         reason: "Favorite listing does not exist",
         statusCode: 200,
         status: "SUCCESS",
@@ -195,7 +195,7 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 });
 
