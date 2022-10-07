@@ -56,20 +56,17 @@ router.post(
     try {
       const file = req.file;
       const result = await uploadFile(file);
-      await unlinkFile(file?.path);
 
       // make & uploading thumbnail image
       const { buffer, originalname } = req.file;
       const timestamp = new Date().toISOString();
       const ref = `${timestamp}-${originalname}.webp`;
       const thumbnail = await sharp(buffer)
-        .resize({ width: 5, height: 5 })
-        .toBuffer();
-      // sharp(buffer)
-      //   .webp({ quality: 10 })
-      //   .toFile("thumb_" + ref);
+        .webp({ quality: 10 })
+        .toFile("thumb_" + ref);
       const thumbnailResult = await uploadFile(thumbnail);
 
+      await unlinkFile(file?.path);
       // const imageInfo ={
       //   deviceFace: req.query.deviceFace,
       //   deviceStorage: req.query.deviceStorage,
