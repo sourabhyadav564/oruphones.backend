@@ -61,7 +61,7 @@ router.post(
       const { buffer, originalname } = req.file;
       const timestamp = new Date().toISOString();
       const ref = `${timestamp}-${originalname}.webp`;
-      const thumbnail = await sharp(buffer).jpeg();
+      const thumbnail = await sharp(buffer).jpeg({ quality: 50 }).toBuffer();
       // await sharp(buffer)
       //   .webp({ quality: 10 })
       //   .toFile("thumb_" + ref);
