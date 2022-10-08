@@ -47,6 +47,14 @@ const getRecommendedPrice = async (
 
   try {
     let scrappedModels = [];
+    if (make != "Apple") {
+      scrappedModels = await lspModal.find({
+        model: marketingname,
+        storage: [storage],
+        condition: condition,
+      });
+    }
+
     scrappedModels = await lspModal.find({
       model: marketingname,
       storage: [storage],
@@ -54,11 +62,11 @@ const getRecommendedPrice = async (
       ram: [ram],
     });
 
-    if(scrappedModels.length == 0) {
+    if (scrappedModels.length == 0) {
       scrappedModels = await lspModal.find({
         model: marketingname,
         storage: [storage],
-        condition: condition
+        condition: condition,
       });
     }
 
@@ -134,11 +142,10 @@ const getRecommendedPrice = async (
       let gotDataFrom = "";
       let gotType = "";
       gotType = scrappedModels[0].type;
-      
+
       leastSellingPrice = scrappedModels[0].lsp;
 
       let bool = false;
-
 
       if (gotType === "sell") {
         let price_with_added_percentage = make === "Samsung" ? 1.4 : 1.2;
