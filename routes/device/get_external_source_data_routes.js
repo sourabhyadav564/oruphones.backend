@@ -127,7 +127,7 @@ router.post(
       // console.log("deviceCondition", deviceCondition);
 
       if (deviceCondition == "Needs Repair") {
-        res.status(200).json({
+        return res.status(200).json({
           reason: "Listing not found",
           statusCode: 200,
           status: "SUCCESS",
@@ -192,11 +192,11 @@ router.post(
             } else {
               finalPrice = element.price;
               finalPrice = Math.ceil(finalPrice);
-              finalPrice = await lspFunction(
-                deviceCondition,
-                element.condition,
-                finalPrice
-              );
+              // finalPrice = await lspFunction(
+              //   deviceCondition,
+              //   element.condition,
+              //   finalPrice
+              // );
             }
 
             console.log("finalPrice2", finalPrice);
@@ -420,7 +420,9 @@ function lspFunction(condition, gotDataFrom, leastSellingPrice) {
       }
     }
   } else if (condition === "Fair") {
-    if (gotDataFrom === "Like New") {
+    if (gotDataFrom === "Fair") {
+      return leastSellingPrice;
+    } else if (gotDataFrom === "Like New") {
       if (leastSellingPrice <= 10000) {
         leastSellingPrice = leastSellingPrice - 1500;
         return leastSellingPrice;
