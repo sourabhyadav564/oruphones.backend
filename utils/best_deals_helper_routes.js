@@ -56,15 +56,34 @@ const commonFunc = async (
         };
         break;
     }
-  } else if(type == "price"){
+  } else if (type == "price") {
     findingData = {
-      listingPrice: {
-        $gte: term[0],
-        $lte: term[1],
+      // listingPrice: {
+      //   $gte: term[0],
+      //   $lte: term[1],
+      // },
+      $expr: {
+        $and: [
+          {
+            $lte: [
+              {
+                $toInt: "$listingPrice",
+              },
+              parseInt(term[1].toString()),
+            ],
+          },
+          {
+            $gte: [
+              {
+                $toInt: "$listingPrice",
+              },
+              parseInt(term[0].toString()),
+            ],
+          },
+        ],
       },
       status: ["Active", "Sold_Out"],
     };
-
   } else if (type == "make") {
     findingData = {
       make: term,

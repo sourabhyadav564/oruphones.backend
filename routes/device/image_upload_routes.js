@@ -6,13 +6,14 @@ const imageUploadModal = require("../../src/database/modals/device/image_upload"
 const logEvent = require("../../src/middleware/event_logging");
 
 const fs = require("fs");
+// const resizeImg = require("resize-img");
 const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
 
 const multer = require("multer");
 const { uploadFile, getFileStream } = require("../../src/s3");
 const validUser = require("../../src/middleware/valid_user");
-const sharp = require("sharp");
+// const sharp = require("sharp");
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
@@ -54,21 +55,73 @@ router.post(
   logEvent,
   async (req, res) => {
     try {
-      
-
-      // make & uploading thumbnail image
-      const { buffer, originalname } = req.file;
-      const timestamp = new Date().toISOString();
-      const ref = `${timestamp}-${originalname}.webp`;
-      // const thumbnail = await sharp(buffer)
-      //   .webp({ quality: 10 })
-      //   .toFile("thumb_" + ref);
-      const thumbnail = sharp(req.file).resize(1000).jpeg({ quality: 10 });
-      const thumbnailResult = await uploadFile(thumbnail);
-
       const file = req.file;
       const result = await uploadFile(file);
       await unlinkFile(file?.path);
+
+      const dataObject = {
+        imagePath: `${result.Location}`,
+        thumbnailImagePath: `${result.Location}`,
+        imageKey: `${result.Key}`,
+      };
+
+      res.status(200).json({
+        reason: "Image uploaded successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject,
+      });
+
+      // make & uploading thumbnail image
+      // const { buffer, originalname } = req.file;
+      // const timestamp = new Date().toISOString();
+      // const ref = `${timestamp}-${originalname}.webp`;
+      // // const thumbnail = await sharp(buffer)
+      // //   .webp({ quality: 10 })
+      // //   .toFile("thumb_" + ref);
+      // const thumbnail = sharp(req.file).resize(1000).jpeg({ quality: 10 });
+      // const thumbnailResult = await uploadFile(thumbnail);
+
+      // const buf = await resizeImg(req.file, {
+      //   width: 250,
+      //   height: 250,
+      // });
+      // var file_path = req.file.path;
+      // fs.readFile(file_path, async function (err, data) {
+      //   const buf = await resizeImg(data, {
+      //     width: 50,
+      //     height: 70,
+      //   });
+      //   fs.writeFile(file_path, buf, function (err) {
+      //     res.end(
+      //       JSON.stringify({
+      //         message: "file uploaded successfully",
+      //         success: true,
+      //       })
+      //     );
+      //   });
+      //   const result2 = await uploadFile(buf);
+      //   await unlinkFile(file?.path);
+
+      //   const file = req.file;
+      //   const result = await uploadFile(file);
+      //   await unlinkFile(file?.path);
+
+      //   const dataObject = {
+      //     imagePath: `${result.Location}`,
+      //     // thumbnailImagePath: `${result.Location}`,
+      //     // thumbnailImagePath: `${thumbnailResult.Location}`,
+      //     result2: `${result2.Location}`,
+      //     imageKey: `${result.Key}`,
+      //   };
+
+      //   res.status(200).json({
+      //     reason: "Image uploaded successfully",
+      //     statusCode: 201,
+      //     status: "SUCCESS",
+      //     dataObject,
+      //   });
+      // });
 
       // const imageInfo ={
       //   deviceFace: req.query.deviceFace,
@@ -83,20 +136,6 @@ router.post(
 
       // //TODO: for future use
       // const createdObject = await saveData.save();
-
-      const dataObject = {
-        imagePath: `${result.Location}`,
-        // thumbnailImagePath: `${result.Location}`,
-        thumbnailImagePath: `${thumbnailResult.Location}`,
-        imageKey: `${result.Key}`,
-      };
-
-      res.status(200).json({
-        reason: "Image uploaded successfully",
-        statusCode: 201,
-        status: "SUCCESS",
-        dataObject,
-      });
     } catch (error) {
       console.log(error);
       res.status(400).json(error);

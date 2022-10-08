@@ -126,17 +126,7 @@ router.post(
       // console.log("marketingName", marketingName);
       // console.log("deviceCondition", deviceCondition);
 
-      const listings = await testScrappedModal.find({
-        type: "sell",
-        storage: [parseInt(deviceStorage), "--", "-- GB"],
-        ram: [parseInt(deviceRam), "--", "-- GB"],
-        make: make,
-        // model_name: [marketingName, exact_model_name, tempModelName],
-        model_name: [marketingName],
-        mobiru_condition: [deviceCondition, "Like New"],
-      });
-
-      if (!listings.length) {
+      if (deviceCondition == "Needs Repair") {
         res.status(200).json({
           reason: "Listing not found",
           statusCode: 200,
@@ -144,129 +134,148 @@ router.post(
           dataObject: [],
         });
       } else {
-        let finalDataArray = [];
-        let vendorListings = [];
-
-        // listings.forEach((listing) => {
-        //   listing.vendor.forEach((vendor) => {
-        //     if (vendor.type == "sell") {
-        //       vendorListings.push(vendor);
-        //     }
-        //   });
-        // });
-
-        listings.forEach((element) => {
-          if (element.type === "sell") {
-            vendorListings.push({
-              vendor_id: element.vendor_id,
-              price: element.price,
-              condition: element.mobiru_condition,
-            });
-          }
+        const listings = await testScrappedModal.find({
+          type: "sell",
+          storage: [parseInt(deviceStorage), "--", "-- GB"],
+          ram: [parseInt(deviceRam), "--", "-- GB"],
+          make: make,
+          // model_name: [marketingName, exact_model_name, tempModelName],
+          model_name: [marketingName],
+          mobiru_condition: [deviceCondition, "Like New"],
         });
 
-        vendorListings.forEach(async (element, index) => {
-          let filterData = {};
-          let vendorName = VENDORS[element.vendor_id];
-          let finalPrice;
-          if (element.vendor_id != 6 && element.vendor_id != 23) {
-            finalPrice =
-              element.price != null
-                ? element.price -
-                  (element.price * totalPercentageToBeReduced) / 100
-                : 0;
-            finalPrice = Math.ceil(finalPrice);
-            finalPrice = await lspFunction(
-              deviceCondition,
-              element.condition,
-              finalPrice
-            );
-          } else {
-            finalPrice = element.price;
-            finalPrice = Math.ceil(finalPrice);
-            finalPrice = await lspFunction(
-              deviceCondition,
-              element.condition,
-              finalPrice
-            );
-          }
+        if (!listings.length) {
+          res.status(200).json({
+            reason: "Listing not found",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: [],
+          });
+        } else {
+          let finalDataArray = [];
+          let vendorListings = [];
 
-          console.log("finalPrice2", finalPrice);
-          let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
-            .toString()
-            .toLowerCase()}_logo.png`;
-          filterData["externalSourcePrice"] =
-            element.price != null ? finalPrice.toString() : "";
-          filterData["externalSourceImage"] = vendorImage;
-          finalDataArray.push(filterData);
+          // listings.forEach((listing) => {
+          //   listing.vendor.forEach((vendor) => {
+          //     if (vendor.type == "sell") {
+          //       vendorListings.push(vendor);
+          //     }
+          //   });
+          // });
 
-          if (index === vendorListings.length - 1) {
-            finalDataArray.filter((element) => {
-              if (element.price === "") {
-                finalDataArray.splice(finalDataArray.indexOf(element), 1);
-              }
-            });
+          listings.forEach((element) => {
+            if (element.type === "sell") {
+              vendorListings.push({
+                vendor_id: element.vendor_id,
+                price: element.price,
+                condition: element.mobiru_condition,
+              });
+            }
+          });
 
-            finalDataArray.sort((a, b) => {
-              return (
-                parseInt(a.externalSourcePrice) -
-                parseInt(b.externalSourcePrice)
+          vendorListings.forEach(async (element, index) => {
+            let filterData = {};
+            let vendorName = VENDORS[element.vendor_id];
+            let finalPrice;
+            if (element.vendor_id != 6 && element.vendor_id != 23) {
+              finalPrice =
+                element.price != null
+                  ? element.price -
+                    (element.price * totalPercentageToBeReduced) / 100
+                  : 0;
+              finalPrice = Math.ceil(finalPrice);
+              finalPrice = await lspFunction(
+                deviceCondition,
+                element.condition,
+                finalPrice
               );
-            });
+            } else {
+              finalPrice = element.price;
+              finalPrice = Math.ceil(finalPrice);
+              finalPrice = await lspFunction(
+                deviceCondition,
+                element.condition,
+                finalPrice
+              );
+            }
 
-            let dataToBeSend = [];
-            let extrData = [];
+            console.log("finalPrice2", finalPrice);
+            let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+              .toString()
+              .toLowerCase()}_logo.png`;
+            filterData["externalSourcePrice"] =
+              element.price != null ? finalPrice.toString() : "";
+            filterData["externalSourceImage"] = vendorImage;
+            finalDataArray.push(filterData);
 
-            finalDataArray.forEach((element, index) => {
-              if (
-                dataToBeSend.length <= 1 &&
-                !extrData.includes(element.externalSourceImage) &&
-                element.externalSourceImage.includes("amazon_logo")
-              ) {
-                dataToBeSend.push(element);
-                extrData.push(element.externalSourceImage);
-              }
-            });
+            if (index === vendorListings.length - 1) {
+              finalDataArray.filter((element) => {
+                if (element.price === "") {
+                  finalDataArray.splice(finalDataArray.indexOf(element), 1);
+                }
+              });
 
-            finalDataArray.forEach((element, index) => {
-              if (
-                dataToBeSend.length <= 1 &&
-                !extrData.includes(element.externalSourceImage) &&
-                element.externalSourceImage.includes("flipkart_logo")
-              ) {
-                dataToBeSend.push(element);
-                extrData.push(element.externalSourceImage);
-              }
-            });
+              finalDataArray.sort((a, b) => {
+                return (
+                  parseInt(a.externalSourcePrice) -
+                  parseInt(b.externalSourcePrice)
+                );
+              });
 
-            finalDataArray.forEach((element, index) => {
-              if (
-                dataToBeSend.length <= 2 &&
-                !extrData.includes(element.externalSourceImage) &&
-                element.externalSourceImage.includes("ashify_logo")
-              ) {
-                dataToBeSend.push(element);
-                extrData.push(element.externalSourceImage);
-              }
-            });
+              let dataToBeSend = [];
+              let extrData = [];
 
-            finalDataArray.forEach((element, index) => {
-              if (
-                dataToBeSend.length <= 12 &&
-                !extrData.includes(element.externalSourceImage)
-              ) {
-                dataToBeSend.push(element);
-                extrData.push(element.externalSourceImage);
-              }
-            });
-            res.status(200).json({
-              reason: "External Sell Source found",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject: dataToBeSend,
-            });
-          }
-        });
+              finalDataArray.forEach((element, index) => {
+                if (
+                  dataToBeSend.length <= 1 &&
+                  !extrData.includes(element.externalSourceImage) &&
+                  element.externalSourceImage.includes("amazon_logo")
+                ) {
+                  dataToBeSend.push(element);
+                  extrData.push(element.externalSourceImage);
+                }
+              });
+
+              finalDataArray.forEach((element, index) => {
+                if (
+                  dataToBeSend.length <= 1 &&
+                  !extrData.includes(element.externalSourceImage) &&
+                  element.externalSourceImage.includes("flipkart_logo")
+                ) {
+                  dataToBeSend.push(element);
+                  extrData.push(element.externalSourceImage);
+                }
+              });
+
+              finalDataArray.forEach((element, index) => {
+                if (
+                  dataToBeSend.length <= 2 &&
+                  !extrData.includes(element.externalSourceImage) &&
+                  element.externalSourceImage.includes("ashify_logo")
+                ) {
+                  dataToBeSend.push(element);
+                  extrData.push(element.externalSourceImage);
+                }
+              });
+
+              finalDataArray.forEach((element, index) => {
+                if (
+                  dataToBeSend.length <= 12 &&
+                  !extrData.includes(element.externalSourceImage)
+                ) {
+                  dataToBeSend.push(element);
+                  extrData.push(element.externalSourceImage);
+                }
+              });
+              res.status(200).json({
+                reason: "External Sell Source found",
+                statusCode: 200,
+                status: "SUCCESS",
+                dataObject: dataToBeSend,
+              });
+            }
+          });
+        }
       }
     } catch (error) {
       console.log(error);
