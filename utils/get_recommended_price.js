@@ -53,14 +53,14 @@ const getRecommendedPrice = async (
         storage: [storage],
         condition: condition,
       });
+    } else {
+      scrappedModels = await lspModal.find({
+        model: marketingname,
+        storage: [storage],
+        condition: condition,
+        ram: [ram],
+      });
     }
-
-    scrappedModels = await lspModal.find({
-      model: marketingname,
-      storage: [storage],
-      condition: condition,
-      ram: [ram],
-    });
 
     if (scrappedModels.length == 0) {
       scrappedModels = await lspModal.find({
