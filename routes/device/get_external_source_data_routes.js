@@ -140,7 +140,15 @@ router.post(
           ram: [parseInt(deviceRam), "--", "-- GB"],
           make: make,
           // model_name: [marketingName, exact_model_name, tempModelName],
-          model_name: [marketingName],
+          // model_name: [marketingName],
+          model_name: { $regex: marketingName.toString(), $options: "i" },
+          // TODO: compare modelname with lowercase using expr
+          // $expr: {
+          //   $or: [
+          //     { $eq: ["$model_name", marketingName] },
+          //     { $eq: ["$model_name", marketingName.toLowerCase()] },
+          //   ],
+          // },
           mobiru_condition: [deviceCondition, "Like New"],
         });
 
