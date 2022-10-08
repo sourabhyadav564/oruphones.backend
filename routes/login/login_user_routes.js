@@ -11,6 +11,7 @@ const saveRequestModal = require("../../src/database/modals/device/request_verif
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const validUser = require("../../src/middleware/valid_user");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 
 router.get("/user/details", logEvent, async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
