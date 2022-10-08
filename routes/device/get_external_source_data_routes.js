@@ -192,11 +192,11 @@ router.post(
             } else {
               finalPrice = element.price;
               finalPrice = Math.ceil(finalPrice);
-              // finalPrice = await lspFunction(
-              //   deviceCondition,
-              //   element.condition,
-              //   finalPrice
-              // );
+              finalPrice = await lspFunction(
+                deviceCondition,
+                deviceCondition,
+                finalPrice
+              );
             }
 
             console.log("finalPrice2", finalPrice);
