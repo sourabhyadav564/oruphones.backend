@@ -43,7 +43,6 @@ router.get("/user/details", logEvent, async (req, res) => {
 });
 
 router.post("/user/create", logEvent, async (req, res) => {
-
   const now = new Date();
   const currentDate = moment(now).format("L");
 
@@ -194,26 +193,33 @@ router.post("/user/delete", validUser, logEvent, async (req, res) => {
         userUniqueId: userUniqueId,
       });
     }
-    const userListings = await saveListingModal.find({
-      userUniqueId: userUniqueId,
-    });
-    if (userListings) {
+
+    const updatedListings = await bestDealsModal.updateMany(
+      {
+        userUniqueId: userUniqueId,
+      },
+      {status: "Sold_Out"}
+    );
+    // const userListings = await saveListingModal.find({
+    //   userUniqueId: userUniqueId,
+    // });
+    // if (userListings) {
       deleteUserListings = await saveListingModal.deleteMany({
         userUniqueId: userUniqueId,
       });
-    }
+    // }
 
-    const userAccount = await createUserModal.find({
-      userUniqueId: userUniqueId,
-    });
-    if (userAccount) {
+    // const userAccount = await createUserModal.find({
+    //   userUniqueId: userUniqueId,
+    // });
+    // if (userAccount) {
       deleteUserAccount = await createUserModal.findOneAndDelete({
         userUniqueId: userUniqueId,
       });
-    }
+    // }
 
     if (
-      deleteUserAccount 
+      deleteUserAccount
       // &&
       // (deleteUserNotification ||
       //   deleteUserFavorite ||
@@ -239,55 +245,116 @@ router.post("/user/delete", validUser, logEvent, async (req, res) => {
   }
 });
 
-router.post("/address/addSearchLocation", validUser, logEvent, async (req, res) => {
-  const userUniqueId = req.body.userUniqueId;
-  const city = req.body.city;
-  const locationId = req.body.locationId;
+router.post(
+  "/address/addSearchLocation",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    const userUniqueId = req.body.userUniqueId;
+    const city = req.body.city;
+    const locationId = req.body.locationId;
 
-  try {
-    if (userUniqueId === "Guest") {
-      res.status(200).json({
-        reason: "Profile location added successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          addressType: "SearchLocation",
-          city: city,
-          locationId: locationId,
-        },
-      });
-      return;
-    } else {
+    try {
+      if (userUniqueId === "Guest") {
+        res.status(200).json({
+          reason: "Profile location added successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            addressType: "SearchLocation",
+            city: city,
+            locationId: locationId,
+          },
+        });
+        return;
+      } else {
+        const getUser = await createUserModal.findOne({ userUniqueId });
+
+        if (getUser) {
+          const userAddress = getUser.address;
+          let bool = false;
+          let dataToBeSend = {};
+
+          userAddress.forEach(async (element, i) => {
+            if (element.addressType == "SearchLocation") {
+              userAddress[i].city = city;
+              userAddress[i].locationId = locationId;
+              bool = true;
+              dataToBeSend = userAddress[i];
+            }
+          });
+          if (!bool && locationId == "-1") {
+            dataToBeSend = {
+              addressType: "SearchLocation",
+              city: city,
+              locationId: locationId,
+            };
+            userAddress.push(dataToBeSend);
+          }
+
+          const dataObject = {
+            address: userAddress,
+          };
+          await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
+            new: true,
+          });
+          res.status(200).json({
+            reason: "Profile location added successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: dataToBeSend,
+          });
+        } else {
+          res.status(200).json({
+            reason: "User not found",
+            statusCode: 200,
+            status: "SUCCESS",
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+router.post(
+  "/address/addProfileLocation",
+  validUser,
+  logEvent,
+  async (req, res) => {
+    const userUniqueId = req.body.userUniqueId;
+    const city = req.body.city;
+
+    try {
       const getUser = await createUserModal.findOne({ userUniqueId });
-
       if (getUser) {
         const userAddress = getUser.address;
         let bool = false;
         let dataToBeSend = {};
 
         userAddress.forEach(async (element, i) => {
-          if (element.addressType == "SearchLocation") {
-            userAddress[i].city = city;
-            userAddress[i].locationId = locationId;
+          if (element.addressType == "ProfileLocation") {
+            userAddress[i].city != "" && city;
             bool = true;
             dataToBeSend = userAddress[i];
           }
         });
-        if (!bool && locationId == "-1") {
+        if (!bool) {
           dataToBeSend = {
-            addressType: "SearchLocation",
+            addressType: "ProfileLocation",
             city: city,
-            locationId: locationId,
           };
           userAddress.push(dataToBeSend);
         }
-
         const dataObject = {
           address: userAddress,
         };
         await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
           new: true,
         });
+
         res.status(200).json({
           reason: "Profile location added successfully",
           statusCode: 200,
@@ -301,63 +368,11 @@ router.post("/address/addSearchLocation", validUser, logEvent, async (req, res) 
           status: "SUCCESS",
         });
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
   }
-});
-
-router.post("/address/addProfileLocation", validUser, logEvent, async (req, res) => {
-  const userUniqueId = req.body.userUniqueId;
-  const city = req.body.city;
-
-  try {
-    const getUser = await createUserModal.findOne({ userUniqueId });
-    if (getUser) {
-      const userAddress = getUser.address;
-      let bool = false;
-      let dataToBeSend = {};
-
-      userAddress.forEach(async (element, i) => {
-        if (element.addressType == "ProfileLocation") {
-          userAddress[i].city != "" && city;
-          bool = true;
-          dataToBeSend = userAddress[i];
-        }
-      });
-      if (!bool) {
-        dataToBeSend = {
-          addressType: "ProfileLocation",
-          city: city,
-        };
-        userAddress.push(dataToBeSend);
-      }
-      const dataObject = {
-        address: userAddress,
-      };
-      await createUserModal.findByIdAndUpdate(getUser._id, dataObject, {
-        new: true,
-      });
-
-      res.status(200).json({
-        reason: "Profile location added successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: dataToBeSend,
-      });
-
-    } else {
-      res.status(200).json({
-        reason: "User not found",
-        statusCode: 200,
-        status: "SUCCESS",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json(error);
-  }
-});
+);
 
 module.exports = router;

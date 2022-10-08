@@ -487,6 +487,8 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       condition = "Good";
     } else if (finalGrade === "C") {
       condition = "Fair";
+    } else if (finalGrade === "D") {
+      condition = "Needs Repair";
     }
 
     // let questionArray = req.body.questionnaireResults;

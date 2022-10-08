@@ -361,6 +361,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
             ...dataToBeUpdate,
             verified: false,
             verifiedDate: "",
+            functionalTestResults: [],
           };
         }
 
@@ -394,6 +395,10 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
             updateListing?.deviceCondition === deviceCondition
               ? updatedListings.verifyDate
               : "";
+          updatedListings.functionalTestResults =
+            updateListing?.deviceCondition === deviceCondition
+              ? updatedListings.functionalTestResults
+              : [];
           updatedListings.save();
         }
         res.status(200).json({

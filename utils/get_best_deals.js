@@ -447,9 +447,12 @@ const getBestDeals = async (
 
         updatedBestDeals.forEach((item, index6) => {
           // console.log("item", index);
-            if (item.isOtherVendor == "N") {
-              delete item.mobileNumber;
+          if (item.isOtherVendor == "N") {
+            delete item.mobileNumber;
+            if (item.verified == false) {
+              item.functionalTestResults = [];
             }
+          }
           if (
             item.notionalPercentage.toString() === "NaN" ||
             item.notionalPercentage > 40
