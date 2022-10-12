@@ -326,6 +326,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const listingPrice = req.body.listingPrice;
   const originalbox = req.body.originalbox;
   const recommendedPriceRange = req.body.recommendedPriceRange;
+  const cosmetic = req.body.cosmetic;
+  const warranty = req.body.warranty;
 
   try {
     const updateListing = await saveListingModal.findOne({
@@ -353,6 +355,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           recommendedPriceRange,
           deviceStorage,
           deviceRam,
+          cosmetic,
+          warranty,
         };
         if (updateListing?.deviceCondition === deviceCondition) {
           dataToBeUpdate = { ...dataToBeUpdate };
@@ -387,6 +391,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           updatedListings.recommendedPriceRange = recommendedPriceRange;
           updatedListings.deviceStorage = deviceStorage;
           updatedListings.deviceRam = deviceRam;
+          updatedListings.cosmetic = cosmetic;
+          updatedListings.warranty = warranty;
           updatedListings.verified =
             updateListing?.deviceCondition === deviceCondition
               ? updatedListings.verified

@@ -7,6 +7,7 @@ dotenv.config();
 
 require("../../src/database/connection");
 const eventModal = require("../../src/database/modals/others/event_logs");
+const appVersionsModal = require("../../src/database/modals/others/app_versions");
 const logEvent = require("../../src/middleware/event_logging");
 
 const {
@@ -28,11 +29,15 @@ router.get("/sessionid", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
-    const payload = {
-      srcFrom: srcFrom,
-    };
-    const accessToken = generateAccessToken(payload);
-    const refreshToken = generateRefreshToken(payload);
+    // get app versions by app_versions modal
+    const appVersions = await appVersionsModal.findOne();
+    console.log("appVersions", appVersions);
+
+    // const payload = {
+    //   srcFrom: srcFrom,
+    // };
+    // const accessToken = generateAccessToken(payload);
+    // const refreshToken = generateRefreshToken(payload);
 
     if (getEventDocs) {
       res.status(200).json({
@@ -48,13 +53,17 @@ router.get("/sessionid", async (req, res) => {
         },
         srcFrom: srcFrom,
         sessionId: sessionId,
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+        // accessToken: accessToken,
+        // refreshToken: refreshToken,
         devicePlatform: devicePlatform,
         location: location,
       };
       const eventModalObject = new eventModal(headerInfo);
-      const dataObject = await eventModalObject.save();
+      let dataObject = await eventModalObject.save();
+
+      // add appVersions in dataObject
+      dataObject = { ...dataObject._doc, appVersions };
+
       res.status(201).json({
         reason: "Session created successfully",
         statusCode: 201,
