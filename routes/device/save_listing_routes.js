@@ -460,6 +460,17 @@ router.post("/listing/pause", validUser, logEvent, async (req, res) => {
             new: true,
           }
         );
+        // update bestdealmodel status
+        const updatedListings = await bestDealsModal.findByIdAndUpdate(
+          pauseListing[0]?._id,
+          {
+            status: "Paused",
+          },
+          {
+            new: true,
+          }
+        );
+
         res.status(200).json({
           reason: "Listing paused successfully",
           statusCode: 200,
