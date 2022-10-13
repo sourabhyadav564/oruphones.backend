@@ -342,6 +342,23 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
       });
       return;
     } else {
+      switch (warranty) {
+        case "zero":
+          warranty = "More than 9 months";
+          break;
+        case "four":
+          warranty = "More than 6 months";
+          break;
+        case "seven":
+          warranty = "More than 3 months";
+          break;
+        case "more":
+          warranty = "None";
+          break;
+        default:
+          warranty = "None";
+      }
+
       if (updateListing.userUniqueId === userUniqueId) {
         let dataToBeUpdate = {
           charger,
