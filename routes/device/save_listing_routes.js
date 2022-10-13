@@ -461,15 +461,13 @@ router.post("/listing/pause", validUser, logEvent, async (req, res) => {
           }
         );
         // update bestdealmodel status
-        const updatedListings = await bestDealsModal.findByIdAndUpdate(
-          pauseListing[0]?._id,
-          {
-            status: "Sold_Out",
-          },
-          {
-            new: true,
-          }
-        );
+        const updatedListings = await bestDealsModal.findOne({
+          listingId: pausedListing.listingId,
+        });
+        if (updatedListings) {
+          updatedListings.status = "Sold_Out";
+          updatedListings.save();
+        }
 
         res.status(200).json({
           reason: "Listing paused successfully",
