@@ -517,6 +517,15 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
           }
         );
 
+        // update bestdealmodel status
+        const updatedListings = await bestDealsModal.findOne({
+          listingId: pausedListing.listingId,
+        });
+        if (updatedListings) {
+          updatedListings.status = "Active";
+          updatedListings.save();
+        }
+
         res.status(200).json({
           reason: "Listing activated successfully",
           statusCode: 200,
