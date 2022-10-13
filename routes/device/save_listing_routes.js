@@ -327,7 +327,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const originalbox = req.body.originalbox;
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const cosmetic = req.body.cosmetic;
-  const warranty = req.body.warranty;
+  let warranty = req.body.warranty;
 
   try {
     const updateListing = await saveListingModal.findOne({
