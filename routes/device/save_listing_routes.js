@@ -519,7 +519,7 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
 
         // update bestdealmodel status
         const updatedListings = await bestDealsModal.findOne({
-          listingId: pausedListing.listingId,
+          listingId: activatedListing.listingId,
         });
         if (updatedListings) {
           updatedListings.status = "Active";
