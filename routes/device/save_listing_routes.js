@@ -464,7 +464,7 @@ router.post("/listing/pause", validUser, logEvent, async (req, res) => {
         const updatedListings = await bestDealsModal.findByIdAndUpdate(
           pauseListing[0]?._id,
           {
-            status: "Paused",
+            status: "Sold_Out",
           },
           {
             new: true,
