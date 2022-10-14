@@ -62,13 +62,13 @@ const getRecommendedPrice = async (
       });
     }
 
-    if (scrappedModels.length == 0) {
-      scrappedModels = await lspModal.find({
-        model: marketingname,
-        storage: [storage],
-        condition: condition,
-      });
-    }
+    // if (scrappedModels.length == 0) {
+    //   scrappedModels = await lspModal.find({
+    //     model: marketingname,
+    //     storage: [storage],
+    //     condition: condition,
+    //   });
+    // }
 
     if (scrappedModels.length > 0) {
       let leastSellingPrice;

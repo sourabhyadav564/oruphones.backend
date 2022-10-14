@@ -37,28 +37,6 @@ const bestDealsModal = require("../../src/database/modals/others/best_deals_mode
 const validUser = require("../../src/middleware/valid_user");
 const downloadImage = require("../../utils/download_image_from_url");
 
-// router.get("/listing", async (req, res) => {
-//   try {
-//     const listingId = req.query.userUniqueId;
-//     const dataObject = await saveListingModal.findById(listingId);
-
-//     if (!dataObject) {
-//       res.status(404).json({ message: "Listing not found" });
-//       return;
-//     } else {
-//       res.status(200).json({
-//         reason: "Listing found successfully",
-//         statusCode: 200,
-//         status: "SUCCESS",
-//         dataObject,
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json(error);
-//   }
-// });
-
 router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
@@ -140,16 +118,6 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const deviceImagesAvailable = images.length > 0 ? true : false;
   const deviceRam = req.body.deviceRam;
   let deviceWarranty = req.body.warranty;
-
-  // images.forEach(async (image) => {
-  //   downloadImage(image.fullImage, 'image.png', function(){
-  //     console.log('done');
-  //   });
-  // });
-
-  // let downloadedImage = fs.readFileSync(path.join(__dirname, '../../image.png'), {encoding: 'base64'});
-
-  // console.log(downloadedImage);
 
   const cosmetic = req.body.cosmetic;
 
@@ -372,7 +340,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           recommendedPriceRange,
           deviceStorage,
           deviceRam,
-          cosmetic,
+          cosmetic : cosmetic == {} ? updateListing.cosmetic : cosmetic,
           warranty,
         };
         if (updateListing?.deviceCondition === deviceCondition) {
@@ -408,7 +376,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           updatedListings.recommendedPriceRange = recommendedPriceRange;
           updatedListings.deviceStorage = deviceStorage;
           updatedListings.deviceRam = deviceRam;
-          updatedListings.cosmetic = cosmetic;
+          updatedListings.cosmetic = cosmetic == {} ? updateListing.cosmetic : cosmetic;
           updatedListings.warranty = warranty;
           updatedListings.verified =
             updateListing?.deviceCondition === deviceCondition
@@ -769,7 +737,7 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
           body: JSON.stringify(notification_body),
         })
           .then(function (response) {
-            console.log(response);
+            // console.log(response);
           })
           .catch(function (error) {
             console.error(error);
@@ -1199,7 +1167,7 @@ router.post(
               item.storage === storage
             ) {
               item.vendor.forEach((vendor) => {
-                console.log("vendor", vendor);
+                // console.log("vendor", vendor);
                 vendorName = VENDORS[vendor.vendor_id];
                 vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
                   .toString()

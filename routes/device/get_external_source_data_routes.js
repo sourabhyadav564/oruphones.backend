@@ -91,40 +91,6 @@ router.post(
     };
 
     try {
-      // const listings = await scrappedModal.find({
-      //   type: "sell",
-      //   storage: [deviceStorage, '--'],
-      //   model_name: marketingName,
-      //   mobiru_condition: deviceCondition,
-      // });
-
-      // const listings = await lspModal.find({
-      //   type: "sell",
-      //   storage: [deviceStorage, "--", "-- GB"],
-      //   ram: [deviceRam, "--", "-- GB"],
-      //   make: make,
-      //   model: marketingName,
-      //   condition: deviceCondition,
-      // });
-
-      // let exact_model_name = "";
-      // const allgsmData = JSON.parse(fs.readFileSync("gsm_arena_filtered.json"));
-      // allgsmData.forEach((element) => {
-      //   if (element.marketingName.includes(marketingName)) {
-      //     exact_model_name = element.marketingName;
-      //   }
-      // });
-      // let tempModelName = marketingName.toLowerCase();
-
-      // if (tempModelName.includes("iphone")) {
-      //   tempModelName = marketingName.replace("iPhone", "Iphone");
-      // }
-
-      // console.log("deviceStorage", deviceStorage);
-      // console.log("deviceRam", deviceRam);
-      // console.log("make", make);
-      // console.log("marketingName", marketingName);
-      // console.log("deviceCondition", deviceCondition);
 
       if (deviceCondition == "Needs Repair") {
         return res.status(200).json({
@@ -207,7 +173,6 @@ router.post(
               );
             }
 
-            console.log("finalPrice2", finalPrice);
             let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
               .toString()
               .toLowerCase()}_logo.png`;
@@ -294,7 +259,6 @@ router.post(
 
 function lspFunction(condition, gotDataFrom, leastSellingPrice) {
   // LSP function returns lsp using another condition
-  console.log(condition, gotDataFrom, leastSellingPrice);
   if (condition === "Good") {
     if (gotDataFrom === "Good") {
       return leastSellingPrice;

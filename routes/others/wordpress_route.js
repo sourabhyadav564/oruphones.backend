@@ -9,7 +9,7 @@ const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
 router.get("/blogs/info", async (req, res) => {
   if (cache.has("blogs")) {
-    console.log("cache hit");
+    // console.log("cache hit");
     res.status(200).json({
       reason: "Scrapped Models Found Successfully",
       statusCode: 200,
@@ -17,7 +17,7 @@ router.get("/blogs/info", async (req, res) => {
       dataObject: cache.get("blogs"),
     });
   } else {
-    console.log("cache miss");
+    // console.log("cache miss");
   //   let query = "select * from wordpress.wp_posts";
   let query =
     "SELECT * FROM wp_posts WHERE post_type='post' AND post_status='publish' ORDER BY post_date DESC";

@@ -92,7 +92,7 @@ router.get("/logs/geteventinfo", async (req, res) => {
       total_new_listing_completed_without_photos.forEach((item) => {
         item.events.filter((event) => {
           if (event.eventName === "ADDLISTING_ADD_SUCCESS") {
-            console.log("event", event);
+            // console.log("event", event);
             listings_added = listings_added + 1;
             new_listing_completed_without_photos_count++;
           } else if (event.eventName === "ADDLISTING_UPLOAD_PHOTOS_SUCCESS") {

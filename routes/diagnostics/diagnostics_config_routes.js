@@ -252,6 +252,835 @@ router.post("/diagConfig", async (req, res) => {
   }
 });
 
+router.post("/diagConfigIOS", async (req, res) => {
+  const randomNumber = generateRandomNumber();
+  let diagnosticsDataObject = await diagnosticsAllTests.find();
+
+  let allTest = diagnosticsDataObject[0]["allTests"];
+  let allDescriptions = diagnosticsDataObject[0]["allDescriptions"];
+  let allTestCategory = diagnosticsDataObject[0]["allTestCategory"][0];
+
+  // let data = {};
+  // let category = [];
+  // TODO: Physical test will be added soon in the future
+  let physicalTests = [];
+  let unavailableFeatures = req.body.unavailableFeatures;
+  let make = req.body.make;
+  let model = req.body.model;
+  let latestFirmwareVersion = req.body.firmware; //TODO: Need to get the latest firmware version every time
+  let platform = req.body.platform;
+  let batteryDesignCapacityQuick = req.body.batteryDesignCapacityQuick;
+  let lastRestart = req.body.lastRestart;
+
+  let data = {};
+  data["category"] = [
+    {
+      issueName: "RunAllDiagnostics",
+      displayname: "Full Diagnostics",
+      description: "Run all checks on the device.",
+      autoTests: [
+        {
+          name: "GyroscopeSensorTest",
+          displayname: "Gyroscope",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT054",
+        },
+        {
+          name: "MagneticSensorTest",
+          displayname: "Magnetic Sensor",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT055",
+        },
+        {
+          name: "GameRotationSensorTest",
+          displayname: "Game Rotation Sensor",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT123",
+        },
+        {
+          name: "GeomagneticRotationSensorTest",
+          displayname: "Geomagnetic Rotation Sensor",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT124",
+        },
+        {
+          name: "RotationVectorSensorTest",
+          displayname: "Rotation Vector Sensor",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT125",
+        },
+        {
+          name: "LinearAccelerationSensorTest",
+          displayname: "Linear Acceleration Sensor",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT127",
+        },
+        {
+          name: "GenuineOSTest",
+          displayname: "Genuine OS",
+          category: "OS",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT010",
+        },
+        {
+          name: "LastRestart",
+          displayname: "Last Restart ",
+          category: "OS",
+          severity: "LOW",
+          status: "OPTIMIZABLE",
+          testCode: "PT034",
+        },
+        {
+          name: "UnusedApp",
+          displayname: "Unused Apps",
+          category: "Apps",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT064",
+        },
+        {
+          name: "InternalStorageCapacityTest",
+          displayname: "Int. Storage Capacity",
+          category: "Storage",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT071",
+        },
+        {
+          name: "RAMMemoryTest",
+          displayname: "RAM Memory Capacity",
+          category: "Storage",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT161",
+        },
+        {
+          name: "SDCardTest",
+          displayname: "SD Card Memory Capacity",
+          category: "Storage",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT162",
+        },
+        {
+          name: "SIMCardTest",
+          displayname: "SIM Card",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT016",
+        },
+        {
+          name: "ScreenBrightnesTest",
+          displayname: "Brightness",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT038",
+        },
+        {
+          name: "LiveWallpaperTest",
+          displayname: "Live Wallpaper",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT039",
+        },
+        {
+          name: "ScreenTimeoutTest",
+          displayname: "Screen Timeout",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT037",
+        },
+        {
+          name: "BarometerTest",
+          displayname: "Barometer",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT056",
+        },
+        {
+          name: "BluetoothOnTest",
+          displayname: "Bluetooth Ready",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT044",
+        },
+        {
+          name: "BluetoothOffTest",
+          displayname: "Bluetooth Status",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT045",
+        },
+        {
+          name: "GPSOffTest",
+          displayname: "GPS Status",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT049",
+        },
+        {
+          name: "NFCOffTest",
+          displayname: "NFC Status",
+          category: "Settings",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT047",
+        },
+        {
+          name: "BluetoothToggleTest",
+          displayname: "Bluetooth",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT025",
+        },
+        {
+          name: "QuickBatteryAutoTest",
+          displayname: "Battery",
+          category: "Hardware",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT093",
+        },
+        {
+          name: "VibrationTest",
+          displayname: "Vibration",
+          category: "Others",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT021",
+        },
+        {
+          name: "RearCameraPictureTest",
+          displayname: "Rear camera",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT026",
+        },
+        {
+          name: "FrontCameraPictureTest",
+          displayname: "Front camera",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT028",
+        },
+        {
+          name: "AccelerometerTest",
+          displayname: "Accelerometer",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT018",
+        },
+        {
+          name: "SpeakerTest",
+          displayname: "Speaker",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT019",
+        },
+        {
+          name: "EarpieceTest",
+          displayname: "Earpiece",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT020",
+        },
+        {
+          name: "MicTest",
+          displayname: "Microphone (Primary)",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT031",
+        },
+        {
+          name: "Mic2Test",
+          displayname: "Microphone (Secondary)",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT128",
+        },
+      ],
+      manualTests: [
+        {
+          name: "LCDTest",
+          displayname: "Display",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT082",
+        },
+        {
+          name: "DimmingTest",
+          displayname: "Dimming",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT012",
+        },
+        {
+          name: "ProximityTest",
+          displayname: "Proximity",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT017",
+        },
+        {
+          name: "LightSensorTest",
+          displayname: "Ambient light",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT084",
+        },
+        {
+          name: "TouchTest",
+          displayname: "Touch",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT011",
+        },
+        {
+          name: "HardKeysTest",
+          displayname: "Hard Keys Test",
+          category: "Keys",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT151",
+        },
+        {
+          name: "SoftKeysTest",
+          displayname: "Soft Keys Test",
+          category: "Keys",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT152",
+        },
+        {
+          name: "CallTest",
+          displayname: "Call Test",
+          category: "System",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT153",
+        },
+        {
+          name: "DeadPixelTest",
+          displayname: "Dead Pixel Test",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT154",
+        },
+        {
+          name: "DiscolorationTest",
+          displayname: "Discoloration Test",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT155",
+        },
+        {
+          name: "ScreenBurnTest",
+          displayname: "Screen Burn Test",
+          category: "Display",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT156",
+        },
+        {
+          name: "EarphoneJackTest",
+          displayname: "Earjack",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT077",
+        },
+        {
+          name: "EarphoneTest",
+          displayname: "Earphone",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT076",
+        },
+        {
+          name: "CameraFlashTest",
+          displayname: "Camera flash",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT030",
+        },
+        {
+          name: "FrontFlashTest",
+          displayname: "Front Flash Test",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT157",
+        },
+        {
+          name: "USBManualConnectionTest",
+          displayname: "USB connection",
+          category: "Others",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT060",
+        },
+        {
+          name: "WallChargingTest",
+          displayname: "Charging",
+          category: "Others",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT061",
+        },
+        {
+          name: "VibrationTest",
+          displayname: "Vibration",
+          category: "Others",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT021",
+        },
+        {
+          name: "RearCameraPictureTest",
+          displayname: "Rear camera",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT026",
+        },
+        {
+          name: "FrontCameraPictureTest",
+          displayname: "Front camera",
+          category: "Camera",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT028",
+        },
+        {
+          name: "SpeakerTest",
+          displayname: "Speaker",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT019",
+        },
+        {
+          name: "EarpieceTest",
+          displayname: "Earpiece",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT020",
+        },
+        {
+          name: "MicTest",
+          displayname: "Microphone (Primary)",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT031",
+        },
+        {
+          name: "Mic2Test",
+          displayname: "Microphone (Secondary)",
+          category: "Audio",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT128",
+        },
+        {
+          name: "FingerPrintSensorTest",
+          displayname: "Finger print sensor",
+          category: "Sensors",
+          severity: "LOW",
+          status: "NONE",
+          testCode: "PT085",
+        },
+      ],
+    },
+  ];
+
+  data["checkMyDevice"] = {
+    issueName: "CheckMyDevice",
+    displayname: "asd.flow.name.checkmydevice",
+    description: "asd.flow.desc.checkmydevice",
+    autoTests: [
+      {
+        name: "InternalStorageCapacityTest",
+        displayname: "Int. Storage Capacity",
+        category: "Storage",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT071",
+      },
+      {
+        name: "RAMMemoryTest",
+        displayname: "RAM Memory Capacity",
+        category: "Storage",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT161",
+      },
+      {
+        name: "SDCardTest",
+        displayname: "SD Card Memory Capacity",
+        category: "Storage",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT162",
+      },
+      {
+        name: "LastRestart",
+        displayname: "Last Restart ",
+        category: "OS",
+        severity: "LOW",
+        status: "PASS",
+        testCode: "PT034",
+      },
+      {
+        name: "SIMCardTest",
+        displayname: "SIM Card",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT016",
+      },
+      {
+        name: "GenuineOSTest",
+        displayname: "Genuine OS",
+        category: "OS",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT010",
+      },
+      {
+        name: "IMEITest",
+        displayname: "IMEI Test",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT032",
+      },
+      {
+        name: "BarometerTest",
+        displayname: "Barometer",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT056",
+      },
+      {
+        name: "MagneticSensorTest",
+        displayname: "Magnetic Sensor",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT055",
+      },
+      {
+        name: "BluetoothOffTest",
+        displayname: "Bluetooth Status",
+        category: "Settings",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT045",
+      },
+      {
+        name: "GPSOffTest",
+        displayname: "GPS Status",
+        category: "Settings",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT049",
+      },
+      {
+        name: "BluetoothToggleTest",
+        displayname: "Bluetooth",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT025",
+      },
+      {
+        name: "GyroscopeSensorTest",
+        displayname: "Gyroscope",
+        category: "Hardware",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT054",
+      },
+      {
+        name: "RearCameraPictureTest",
+        displayname: "Rear camera",
+        category: "Camera",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT026",
+      },
+    ],
+    manualTests: [
+      {
+        name: "LCDTest",
+        displayname: "Display",
+        category: "Display",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT082",
+      },
+      {
+        name: "DimmingTest",
+        displayname: "Dimming",
+        category: "Display",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT012",
+      },
+      {
+        name: "TouchTest",
+        displayname: "Touch",
+        category: "Display",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT011",
+      },
+      {
+        name: "AccelerometerTest",
+        displayname: "Accelerometer",
+        category: "Sensors",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT018",
+      },
+      {
+        name: "ProximityTest",
+        displayname: "Proximity",
+        category: "Sensors",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT017",
+      },
+      {
+        name: "SpeakerTest",
+        displayname: "Speaker",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT019",
+      },
+      {
+        name: "EarpieceTest",
+        displayname: "Earpiece",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT020",
+      },
+      {
+        name: "MicTest",
+        displayname: "Microphone (Primary)",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT031",
+      },
+      {
+        name: "Mic2Test",
+        displayname: "Microphone (Secondary)",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT128",
+      },
+      {
+        name: "EarphoneTest",
+        displayname: "Earphone",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT076",
+      },
+      {
+        name: "EarphoneJackTest",
+        displayname: "Earjack",
+        category: "Audio",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT077",
+      },
+      {
+        name: "VibrationTest",
+        displayname: "Vibration",
+        category: "Others",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT021",
+      },
+      {
+        name: "RearCameraVideoTest",
+        displayname: "Rear camera video",
+        category: "Camera",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT027",
+      },
+      {
+        name: "FrontCameraPictureTest",
+        displayname: "Front camera",
+        category: "Camera",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT028",
+      },
+      {
+        name: "FrontCameraVideoTest",
+        displayname: "Front camera video",
+        category: "Camera",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT029",
+      },
+      {
+        name: "CameraFlashTest",
+        displayname: "Camera flash",
+        category: "Camera",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT030",
+      },
+      {
+        name: "USBManualConnectionTest",
+        displayname: "USB connection",
+        category: "Others",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT060",
+      },
+      {
+        name: "FingerPrintSensorTest",
+        displayname: "Finger print sensor",
+        category: "Sensors",
+        severity: "LOW",
+        status: "NONE",
+        testCode: "PT085",
+      },
+    ],
+  };
+
+  let today = new Date();
+  let hours = today.getHours() * 3600000;
+  let minutes = today.getMinutes() * 60000;
+  let seconds = today.getSeconds() * 1000;
+
+  let miliseconds = hours + minutes + seconds;
+
+  data["physicalTests"] = [];
+  data["marketingName"] = "Apple Phone";
+  data["certified"] = false;
+  data["autobrightnessAvl"] = true;
+  data["ownershipCheckProceed"] = true;
+  data["deviceSupported"] = true;
+  data["latestFirmware"] = true;
+  data["runAllManualTests"] = false;
+  data["latestFirmwareVersion"] = latestFirmwareVersion;
+  data["callTestNumber"] = "121";
+  data["pkeys"] = "VOLUME_UP,VOLUME_DOWN,POWER"; // TODO: Need to update according to the device
+  data["vkeys"] = "BACK,HOME,MENU"; // TODO: Need to update according to the device
+  data["iosBatteryHealthPer"] = platform === "Android" ? -1 : 100;
+  data["sessionTimeoutInMins"] = 30;
+  data["iosBatteryHealthStatus"] = platform === "Android" ? "SKIPPED" : "PASS";
+  data["batteryDesignCapacity"] = batteryDesignCapacityQuick;
+  data["lastRestartThresholdDays"] = Math.ceil(lastRestart / 86400000);
+  data["unusedAppsThreshold"] = "5";
+  data["currentServerTime"] = miliseconds;
+  data["shortDateFormat"] = "dd/MM/yyyy";
+  data["longDateFormat"] = "dd/MM/yyyy HH:mm";
+  data["sohRange"] = [79, 90]; //TODO: Need to update according to the device and the battery design capacity
+  data["fivePointCheck"] = [];
+  data["generateRAN"] = false;
+  data["enableRAPFeature"] = false;
+  data["storeemail"] = "nishant.sharma@zenro.co.jp";
+  data["countryemail"] = "nishant.sharma@zenro.co.jp";
+  data["sendSummaryToStoreAndCentral"] = false;
+  data["batteryConfig"] = {
+    sohThreshold: 80,
+    avgSohThreshold: 60,
+    validSohThreshold: 5,
+    deepdiveConfig: {
+      percentDrop: 3,
+      minBatteryLevel: 30,
+    },
+    gldProfile: "aaa",
+  };
+  data["serverWARVersion"] = "SSD-3.2.20211014.3";
+  data["summaryDisplayElements"] = [
+    "SuggestedFixes",
+    "DeviceInfo",
+    "BatteryTest",
+    "TestResults",
+  ];
+  data["hybridTests"] = [];
+  data["checkIMEIStolenStatus"] = true;
+  data["enableEmailSummary"] = true;
+  data["enableCSAT"] = true;
+  data["enableIMEICapture"] = true;
+  data["enableCosmeticCheck"] = false;
+  data["enableCosmeticMirrorCheck"] = false;
+  data["enableTradeInFlow"] = false;
+  data["disableDiagIssuesSelection"] = false;
+  data["disableSkipManualTestsOption"] = false;
+  data["enableDiagTradeInFlow"] = false;
+
+  const diagnosticsData = { ...req.body, sessionId: randomNumber };
+  const saveDiagnosticsData = new dignosticsConfigModal(diagnosticsData);
+  try {
+    // const givedSavedData = await saveDiagnosticsData.save();
+    res.status(201).json({
+      data: data,
+      status: "SUCCESS",
+      message: "Valid store id",
+      sessionId: parseInt(randomNumber),
+      // statusCode: 201,
+    });
+    return;
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 router.post("/grade/price", validUser, logEvent, async (req, res) => {
   const companyId = req.body.companyId;
   const diagSessionId = req.body.diagSessionId;

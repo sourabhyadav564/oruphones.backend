@@ -152,7 +152,7 @@ router.get("/listbymarketingname", validUser, logEvent, async (req, res) => {
     sortBy = sortBy;
   }
 
-  console.log("sortBy", sortBy);
+  // console.log("sortBy", sortBy);
 
 
   bestDealsByMarketingName(

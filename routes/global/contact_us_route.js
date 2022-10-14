@@ -46,7 +46,7 @@ router.post("/contactUs", validUser, logEvent, async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          console.log("Email sent: " + result.response);
+          // console.log("Email sent: " + result.response);
         }
       });
 

@@ -31,7 +31,7 @@ router.get("/sessionid", async (req, res) => {
 
     // get app versions by app_versions modal
     const appVersions = await appVersionsModal.findOne();
-    console.log("appVersions", appVersions);
+    // console.log("appVersions", appVersions);
 
     // const payload = {
     //   srcFrom: srcFrom,
