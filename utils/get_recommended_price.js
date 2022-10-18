@@ -147,10 +147,10 @@ const getRecommendedPrice = async (
 
       let bool = false;
 
-      if (gotType === "sell") {
-        let price_with_added_percentage = make === "Samsung" ? 1.4 : 1.2;
-        leastSellingPrice = leastSellingPrice * price_with_added_percentage;
-      }
+      // if (gotType === "sell") {
+      //   let price_with_added_percentage = make === "Samsung" ? 1.4 : 1.2;
+      //   leastSellingPrice = leastSellingPrice * price_with_added_percentage;
+      // }
 
       let recommendedPriceRangeLowerLimit =
         lowerRangeMatrix * leastSellingPrice;

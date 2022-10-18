@@ -16,7 +16,10 @@ router.post(
   logEvent,
   async (req, res) => {
     const deviceStorage = req.body.deviceStorage.split("GB")[0];
-    const deviceRam = req.body.deviceRam.split("GB")[0];
+    let deviceRam =
+      req.body.deviceRam == "--"
+        ? req.body.deviceRam
+        : req.body.deviceRam.split("GB")[0];
     let make = req.body.make;
     let marketingName = req.body.marketingName;
     const deviceCondition = req.body.deviceCondition;
@@ -91,7 +94,6 @@ router.post(
     };
 
     try {
-
       if (deviceCondition == "Needs Repair") {
         return res.status(200).json({
           reason: "Listing not found",
