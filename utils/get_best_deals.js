@@ -20,7 +20,7 @@ const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "mobiruindia22@gmail.com",
-    pass: "eghguoshcuniexbf",
+    pass: "rtrmntzuzwzisajb",
   },
 });
 

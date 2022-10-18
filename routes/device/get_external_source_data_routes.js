@@ -118,8 +118,8 @@ router.post(
           mobiru_condition: [deviceCondition, "Like New"],
         });
 
-        if (!listings.length) {
-          res.status(200).json({
+        if (!listings || listings.length == 0) {
+          return res.status(200).json({
             reason: "Listing not found",
             statusCode: 200,
             status: "SUCCESS",
@@ -240,7 +240,7 @@ router.post(
                   extrData.push(element.externalSourceImage);
                 }
               });
-              res.status(200).json({
+              return res.status(200).json({
                 reason: "External Sell Source found",
                 statusCode: 200,
                 status: "SUCCESS",
