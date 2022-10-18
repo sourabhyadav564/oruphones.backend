@@ -91,6 +91,7 @@ router.post(
       21: "mbr_Buyblynk",
       22: "mbr_Electronicbazaar",
       23: "Flipkart",
+      26: "OLX"
     };
 
     try {

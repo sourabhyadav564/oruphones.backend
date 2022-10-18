@@ -340,7 +340,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           recommendedPriceRange,
           deviceStorage,
           deviceRam,
-          cosmetic : cosmetic == {} ? updateListing.cosmetic : cosmetic,
+          cosmetic: cosmetic == {} ? updateListing.cosmetic : cosmetic,
           warranty,
         };
         if (updateListing?.deviceCondition === deviceCondition) {
@@ -376,7 +376,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           updatedListings.recommendedPriceRange = recommendedPriceRange;
           updatedListings.deviceStorage = deviceStorage;
           updatedListings.deviceRam = deviceRam;
-          updatedListings.cosmetic = cosmetic == {} ? updateListing.cosmetic : cosmetic;
+          updatedListings.cosmetic =
+            cosmetic == {} ? updateListing.cosmetic : cosmetic;
           updatedListings.warranty = warranty;
           updatedListings.verified =
             updateListing?.deviceCondition === deviceCondition
@@ -828,6 +829,7 @@ router.post(
       21: "mbr_Buyblynk",
       22: "mbr_Electronicbazaar",
       23: "Flipkart",
+      26: "OLX",
     };
 
     try {

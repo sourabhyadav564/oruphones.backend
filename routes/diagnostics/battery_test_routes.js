@@ -92,14 +92,17 @@ router.post("/batteryTest/mah", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
-    case "tenco":
-      make = "Tenco";
+    case "tecno":
+      make = "Tecno";
       break;
     case "intex":
       make = "Intex";
       break;
     case "meizu":
       make = "Meizu";
+      break;
+    case "nothing":
+      make = "Nothing";
       break;
   }
 
@@ -124,9 +127,7 @@ router.post("/batteryTest/mah", validUser, logEvent, async (req, res) => {
             }
           }
           mKeys.forEach((newKey, j) => {
-            if (
-              newKey.includes("Type")
-            ) {
+            if (newKey.includes("Type")) {
               mAh = item[key]["Battery"]["Type"];
               mAh = parseInt(mAh.split("mAh")[0].replace(/\D/g, ""));
             }

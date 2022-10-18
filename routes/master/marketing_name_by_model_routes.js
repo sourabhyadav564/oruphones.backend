@@ -110,14 +110,17 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
-    case "tenco":
-      make = "Tenco";
+    case "tecno":
+      make = "Tecno";
       break;
     case "intex":
       make = "Intex";
       break;
     case "meizu":
       make = "Meizu";
+      break;
+    case "nothing":
+      make = "Nothing";
       break;
   }
 
@@ -346,12 +349,15 @@ router.get("/makemodellist", async (req, res) => {
         case "tecno":
           make = "Tecno";
           break;
-          case "intex":
-            make = "Intex";
-            break;
-          case "meizu":
-            make = "Meizu";
-            break;
+        case "intex":
+          make = "Intex";
+          break;
+        case "meizu":
+          make = "Meizu";
+          break;
+        case "nothing":
+          make = "Nothing";
+          break;
       }
     }
 
@@ -387,7 +393,10 @@ router.get("/makemodellist", async (req, res) => {
           "Karbonn",
           "Lava",
           "Gionee",
-          "Tenco",
+          "Tecno",
+          "Intex",
+          "Meizu",
+          "Nothing",
         ],
       });
     }
