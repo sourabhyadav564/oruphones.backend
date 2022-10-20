@@ -66,6 +66,44 @@ router.get(
   }
 );
 
+router.get("/listing/allUniqueList", validUser, logEvent, async (req, res) => {
+  try {
+    let listingObject = await saveListingModal.find({});
+
+    let uniqueList = [];
+    let uniqueIds = [];
+    listingObject.forEach((element) => {
+      //  find by make, marketingName & userUniqueId and then push
+      const isFound = uniqueList.find(
+        (item) =>
+          item.make === element.make &&
+          item.marketingName === element.marketingName &&
+          item.userUniqueId === element.userUniqueId
+      );
+      if (!isFound) {
+        uniqueList.push(element);
+      }
+    });
+    // get userUniqueId from uniqueList and then push to uniqueIds
+    uniqueList.forEach((element) => {
+      if (!uniqueIds.includes(element.userUniqueId)) {
+      }
+      uniqueIds.push(element.userUniqueId);
+    });
+
+    res.status(200).json({
+      reason: "Unique listing found successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      data: uniqueList,
+      uniqueIds: uniqueIds,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 router.get(
   "/listing/sendverification",
   validUser,
@@ -75,7 +113,7 @@ router.get(
     const userUniqueId = req.query.userUniqueId;
 
     const clientOTP = generateOTP();
-    
+
     try {
       const isValidUser = await createUserModal.findOne({
         userUniqueId: userUniqueId,

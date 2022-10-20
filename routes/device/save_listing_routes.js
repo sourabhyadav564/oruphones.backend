@@ -46,11 +46,21 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
       res.status(404).json({ message: "User unique ID not found" });
       return;
     } else {
+      let unVerifiedCount = await saveListingModal.countDocuments({
+        verified: false,
+      });
+
+      let msg =
+        unVerifiedCount > 0
+          ? `You have ${unVerifiedCount} unverified listings. Verify them!`
+          : "";
+
       dataObject.reverse();
       res.status(200).json({
         reason: "Listings found successfully",
         statusCode: 200,
         status: "SUCCESS",
+        message: msg,
         dataObject,
       });
     }
@@ -162,6 +172,23 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     fullImage: image,
   };
 
+  // stop user to save activated listing if he/she already has 5 unverified listings
+  let limitExceeded =
+    (await saveListingModal
+      .find()
+      .countDocuments({ userUniqueId, verified: false })) >= 5;
+
+  // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
+  let duplicated = limitExceeded
+    ? limitExceeded
+    : (await saveListingModal.find().countDocuments({
+        mobileNumber,
+        marketingName,
+        deviceStorage,
+        deviceRam,
+        verified: false,
+      })) >= 1;
+
   const data = {
     charger,
     color,
@@ -190,6 +217,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     listingDate: dateFormat,
     warranty: deviceWarranty,
     cosmetic,
+    status: limitExceeded || duplicated ? "Paused" : "Active",
   };
 
   try {
@@ -199,6 +227,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     let newData = {
       ...data,
       notionalPercentage: -999999,
+      status: limitExceeded || duplicated ? "Sold_Out" : "Active",
       imagePath:
         (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
         (images.length > 0 ? images[0].fullImage : ""),
@@ -209,10 +238,22 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const tempModelInfo = new bestDealsModal(newData);
     const tempDataObject = await tempModelInfo.save();
 
+    // create dynamic string for response message reason on basis of limitExceeded and duplicated value
+
+    let message = limitExceeded
+      // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
+      ? "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
+      : duplicated
+      ? // ? "Added Successfully but Paused because This exact listing already present!"
+        "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR]n\nYou can download the app and verify this device."
+      : "Listing saved successfully";
+
     res.status(201).json({
-      reason: "Listing saved successfully",
+      // reason: "Listing saved successfully",
+      reason: message,
       statusCode: 201,
       status: "SUCCESS",
+      type: limitExceeded ? "Unverified Listings Limit Exceeded" : duplicated ? "Duplicate Listing" : "",
       dataObject: dataObject,
     });
     return;
@@ -478,6 +519,24 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
       listingId: listingId,
     });
 
+    // stop user to save activated listing if he/she already has 5 unverified listings
+    let limitExceeded =
+      (await saveListingModal
+        .find()
+        .countDocuments({ userUniqueId, verified: false })) >= 5;
+
+    // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
+    let duplicated = limitExceeded
+      ? limitExceeded
+      : (await saveListingModal.find().countDocuments({
+          mobileNumber: activateListing[0]?.mobileNumber,
+          marketingName: activateListing[0]?.marketingName,
+          deviceStorage: activateListing[0]?.deviceStorage,
+          deviceRam: activateListing[0]?.deviceRam,
+          verified: false,
+          status: "Active",
+        })) >= 1;
+
     if (!activateListing) {
       res.status(200).json({
         reason: "Invalid listing id provided",
@@ -485,6 +544,19 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
         status: "SUCCESS",
       });
       return;
+    } else if (limitExceeded || duplicated) {
+      // reason message for limitExceeded & duplicated
+      const reasonMsg = limitExceeded
+        ? "You are not allowed to activate more then 5 unverified listings."
+        : duplicated
+        ? "Looks like your activated listing for this device is available on our platform. Please verify your listing."
+        : ``;
+
+      res.status(200).json({
+        reason: reasonMsg,
+        statusCode: 200,
+        status: "SUCCESS",
+      });
     } else {
       if (activateListing[0].userUniqueId !== userUniqueId) {
         res.status(200).json({
