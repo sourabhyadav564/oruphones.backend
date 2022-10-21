@@ -47,6 +47,7 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
       return;
     } else {
       let unVerifiedCount = await saveListingModal.countDocuments({
+        userUniqueId,
         verified: false,
       });
 
@@ -245,7 +246,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       ? "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
       : duplicated
       ? // ? "Added Successfully but Paused because This exact listing already present!"
-        "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR]n\nYou can download the app and verify this device."
+        "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device."
       : "Listing saved successfully";
 
     res.status(201).json({
