@@ -725,6 +725,7 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
   const dataToBeUpdate = {
     // ...req.body,
     verified: true,
+    status: "Active",
     // listingDate: dateFormat,
     verifiedDate: dateFormat,
     recommendedPriceRange: recommendedPriceRange,
