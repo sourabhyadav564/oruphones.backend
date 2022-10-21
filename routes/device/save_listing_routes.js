@@ -53,7 +53,7 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
 
       let msg =
         unVerifiedCount > 0
-          ? `You have ${unVerifiedCount} unverified listings. Verify them!`
+          ? `You have ${unVerifiedCount} unverified listings. Verify them >`
           : "";
 
       dataObject.reverse();
@@ -177,7 +177,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   let limitExceeded =
     (await saveListingModal
       .find()
-      .countDocuments({ userUniqueId, verified: false })) >= 5;
+      .countDocuments({ userUniqueId, verified: false, status: "Active" })) >=
+    5;
 
   // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
   let duplicated = limitExceeded
@@ -242,8 +243,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     // create dynamic string for response message reason on basis of limitExceeded and duplicated value
 
     let message = limitExceeded
-      // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
-      ? "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
+      ? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
+        "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
       : duplicated
       ? // ? "Added Successfully but Paused because This exact listing already present!"
         "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device."
@@ -254,7 +255,11 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       reason: message,
       statusCode: 201,
       status: "SUCCESS",
-      type: limitExceeded ? "Unverified Listings Limit Exceeded" : duplicated ? "Duplicate Listing" : "",
+      type: limitExceeded
+        ? "Unverified Listings Limit Exceeded"
+        : duplicated
+        ? "Duplicate Listing"
+        : "",
       dataObject: dataObject,
     });
     return;
@@ -524,7 +529,8 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
     let limitExceeded =
       (await saveListingModal
         .find()
-        .countDocuments({ userUniqueId, verified: false })) >= 5;
+        .countDocuments({ userUniqueId, verified: false, status: "Active" })) >=
+      5;
 
     // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
     let duplicated = limitExceeded
