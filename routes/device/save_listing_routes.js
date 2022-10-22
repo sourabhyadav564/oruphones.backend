@@ -344,6 +344,8 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const cosmetic = req.body.cosmetic;
   let warranty = req.body.warranty;
 
+  console.log("cosmetic", cosmetic);
+
   try {
     const updateListing = await saveListingModal.findOne({
       listingId: listingId,
@@ -388,7 +390,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           deviceStorage,
           deviceRam,
           cosmetic:
-            cosmetic == {} || cosmetic == null
+            cosmetic == {} || cosmetic == null || !cosmetic
               ? updateListing.cosmetic
               : cosmetic,
           warranty,
