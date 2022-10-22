@@ -387,7 +387,10 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           recommendedPriceRange,
           deviceStorage,
           deviceRam,
-          cosmetic: cosmetic == {} ? updateListing.cosmetic : cosmetic,
+          cosmetic:
+            cosmetic == {} || cosmetic == null
+              ? updateListing.cosmetic
+              : cosmetic,
           warranty,
         };
         if (updateListing?.deviceCondition === deviceCondition) {
