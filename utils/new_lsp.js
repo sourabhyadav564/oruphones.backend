@@ -11,7 +11,7 @@ const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: "mobiruindia22@gmail.com",
-    pass: "eghguoshcuniexbf",
+    pass: "rtrmntzuzwzisajb",
   },
 });
 
@@ -48,7 +48,7 @@ const collectData = async (data, collection) => {
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp",
+      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
@@ -73,7 +73,7 @@ const sendMailWithAttachment = async (file, message) => {
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp",
+      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp",
       subject: "Data has successfully been migrated to MongoDB",
       text:
         message === "lspMismatch"
@@ -109,6 +109,7 @@ const firstFunction = async () => {
   // const fileData = await testScrappedModal.find({}, { _id: 0 });
 
   let gsmData = allgsmData.filter((item) => item.models.length >= 0);
+  //  && item.marketingName.includes("Samsung Galaxy S9+")
   gsmData.forEach((element, index) => {
     let marketingName =
       element.marketingName.charAt(0).toUpperCase() +
@@ -136,7 +137,33 @@ const firstFunction = async () => {
 
           mdl = mdl.toLowerCase().replace(/poco/g, "xiaomi poco").trim();
 
-          // handliing poco in model name //
+          // handling spaces in model name
+          mdl = mdl.toLowerCase().replace(/ /g, "").trim();
+          marketingName = marketingName.toLowerCase().replace(/ /g, "").trim();
+
+          // handling moto & motorola in model name
+          mdl = mdl
+            .toLowerCase()
+            .replace(/motorola moto/g, "motorola")
+            .trim();
+          mdl = mdl.toLowerCase().replace(/moto /g, "motorola ").trim();
+
+          marketingName = marketingName
+            .toLowerCase()
+            .replace(/motorola moto/g, "motorola")
+            .trim();
+          marketingName = marketingName
+            .toLowerCase()
+            .replace(/moto /g, "motorola ")
+            .trim();
+
+          // handling + for plus in model name
+          mdl = mdl.toLowerCase().replace(/\+/g, "plus").trim();
+          marketingName = marketingName
+            .toLowerCase()
+            .replace(/\+/g, "plus")
+            .trim();
+
           if (
             mdl.toLowerCase() == marketingName.toLowerCase() &&
             el.includes(elm.storage) &&
@@ -661,12 +688,8 @@ const eleventh = (finalObjects) => {
 const twelth = (finalObjects) => {
   // find lsp greater smaller
   let objectsArr = [];
-
+  // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
   if (allModelNotFound.length > 0) {
-    // fs.writeFileSync(
-    //   "finalObjects.json",
-    //   JSON.stringify(finalObjects, null, 2)
-    // );
     collectData(finalObjects, "complete_lsp_datas");
   }
 
@@ -717,16 +740,52 @@ const lastFunction = (finalObjects) => {
       mdl = tempName2.trim();
     }
     mdl = mdl.toLowerCase().replace(/5g/g, "").trim();
-    marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
     // handliing poco in model name //
 
     mdl = mdl.toLowerCase().replace(/poco/g, "xiaomi poco").trim();
 
+    // handling spaces in model name
+    mdl = mdl.toLowerCase().replace(/ /g, "").trim();
+
+    // handling + for plus in model name
+    mdl = mdl.toLowerCase().replace(/\+/g, "plus").trim();
+
+    // handling moto & motorola in model name
+    mdl = mdl
+      .toLowerCase()
+      .replace(/motorola moto/g, "motorola")
+      .trim();
+    mdl = mdl.toLowerCase().replace(/moto /g, "motorola ").trim();
+
     let objArray = finalObjects.filter((element) => {
-      element.model.toLowerCase() == mdl || element.model == elm.model_name;
+      let marketingName = element.model;
+      // handle poco, 5g, spaces and + in marketingName
+      marketingName = marketingName.toLowerCase().replace(/5g/g, "").trim();
+      marketingName = marketingName
+        .toLowerCase()
+        .replace(/poco/g, "xiaomi poco")
+        .trim();
+      marketingName = marketingName.toLowerCase().replace(/ /g, "").trim();
+      marketingName = marketingName.toLowerCase().replace(/\+/g, "plus").trim();
+      marketingName = marketingName
+        .toLowerCase()
+        .replace(/motorola moto/g, "motorola")
+        .trim();
+      marketingName = marketingName
+        .toLowerCase()
+        .replace(/moto /g, "motorola ")
+        .trim();
+
+      if (
+        marketingName.toLowerCase() == mdl ||
+        marketingName == elm.model_name
+      ) {
+        return element;
+      }
     });
 
     if (!objArray || objArray.length == 0) {
+      console.log("objArray", objArray.length);
       if (
         !allModelNotFound.includes("Data: " + mdl) &&
         !allModelNotFound.includes("Data: " + elm.model_name) &&

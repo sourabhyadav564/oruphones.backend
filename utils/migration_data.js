@@ -4,20 +4,27 @@ const testScrappedModal = require("../src/database/modals/others/test_scrapped_m
 const startDataMigration = async () => {
   const d = new Date();
   let date = d.getDate() - 1;
+  // console.log("date", date);
+  // console.log("date ", new Date(`2022-10-${date}T20:00:00.837Z`));
   let allListings = await testing_scrapped_data_dump.find({
     $and: [
       {
-        $or: [
-          {
-            created_at: {
-              $gte: new Date(`2022-10-${date}T20:00:00.837Z`),
-            },
-          },
-          {
-            vendor_id: 26,
-          },
-        ],
+        created_at: {
+          $gte: new Date(`2022-10-${date}T20:00:00.837Z`),
+        },
       },
+      // {
+      //   $or: [
+      //     {
+      //       created_at: {
+      //         $gte: new Date(`2022-10-${date}T20:00:00.837Z`),
+      //       },
+      //     },
+      //     {
+      //       vendor_id: 26,
+      //     },
+      //   ],
+      // },
       {
         price: {
           $gte: 1000,
@@ -82,6 +89,9 @@ const startDataMigration = async () => {
 
       // create the listing
       await testScrappedModal.create(newListing);
+    }
+    if(i == allListings.length -1){
+        console.log("migration done")
     }
   }
 };
