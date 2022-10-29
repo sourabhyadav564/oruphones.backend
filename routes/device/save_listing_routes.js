@@ -51,6 +51,8 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
         verified: false,
       });
 
+      // console.log("unVerifiedCount", unVerifiedCount);
+
       let msg =
         unVerifiedCount > 0
           ? `You have ${unVerifiedCount} unverified listings. Verify them >`
@@ -184,7 +186,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   let duplicated = limitExceeded
     ? limitExceeded
     : (await saveListingModal.find().countDocuments({
-        mobileNumber,
+        userUniqueId,
         marketingName,
         deviceStorage,
         deviceRam,
@@ -226,19 +228,21 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const modalInfo = new saveListingModal(data);
     const dataObject = await modalInfo.save();
 
-    let newData = {
-      ...data,
-      notionalPercentage: -999999,
-      status: limitExceeded || duplicated ? "Sold_Out" : "Active",
-      imagePath:
-        (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
-        (images.length > 0 ? images[0].fullImage : ""),
-      listingId: dataObject.listingId,
-      listingDate: moment(now).format("MMM Do"),
-    };
+    if (!limitExceeded && !duplicated) {
+      let newData = {
+        ...data,
+        notionalPercentage: -999999,
+        status: limitExceeded || duplicated ? "Sold_Out" : "Active",
+        imagePath:
+          (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
+          (images.length > 0 ? images[0].fullImage : ""),
+        listingId: dataObject.listingId,
+        listingDate: moment(now).format("MMM Do"),
+      };
 
-    const tempModelInfo = new bestDealsModal(newData);
-    const tempDataObject = await tempModelInfo.save();
+      const tempModelInfo = new bestDealsModal(newData);
+      const tempDataObject = await tempModelInfo.save();
+    }
 
     // create dynamic string for response message reason on basis of limitExceeded and duplicated value
 
@@ -343,8 +347,6 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const cosmetic = req.body.cosmetic;
   let warranty = req.body.warranty;
-
-  console.log("cosmetic", cosmetic);
 
   try {
     const updateListing = await saveListingModal.findOne({
@@ -594,6 +596,13 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
         if (updatedListings) {
           updatedListings.status = "Active";
           updatedListings.save();
+        } else {
+          // create new bestdealmodel
+          const newBestDeal = new bestDealsModal({
+            ...activatedListing,
+            status: "Active",
+          });
+          newBestDeal.save();
         }
 
         res.status(200).json({
@@ -729,14 +738,14 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
 
   const dataToBeUpdate = {
     // ...req.body,
-    verified: true,
-    status: "Active",
+    // verified: true,
+    // status: "Active",
     // listingDate: dateFormat,
-    verifiedDate: dateFormat,
+    // verifiedDate: dateFormat,
     recommendedPriceRange: recommendedPriceRange,
     deviceRam: deviceRam,
     listingPrice: listingPrice,
-    deviceCondition: deviceCondition,
+    // deviceCondition: deviceCondition,
     images: images,
   };
 

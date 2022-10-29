@@ -1347,6 +1347,9 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     //   }
     // });
 
+    const now = new Date();
+    const dateFormat = moment(now).format("MMM Do");
+
     const dataToBeUpdate = {
       deviceFunctionalGrade: grade,
       functionalTestResults: req.body.functionalTestResults,
@@ -1354,6 +1357,10 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       questionnaireResults: [],
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
+      verified: true,
+      status: "Active",
+      verifiedDate: dateFormat,
+      deviceCondition: condition,
       deviceUniqueId: deviceUniqueId,
       deviceStorage: req.body.storage,
     };
