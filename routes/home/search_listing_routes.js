@@ -29,9 +29,28 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
   const warenty = req.body.warenty;
   const marketingName = req.body.marketingName;
   let page = req.query.pageNumber;
-  page = parseInt(page.toString());   
+  page = parseInt(page.toString());
 
   try {
+    let sortBy = req.query.sortBy;
+    let sorting = {};
+    if (!sortBy) {
+      sortBy = "NA";
+    }
+    if (sortBy == undefined || sortBy == "Featured" || sortBy == "undefined") {
+      sortBy = "NA";
+    } else {
+      sortBy = sortBy;
+      if (sortBy == "Price - Low to High") {
+        sorting = { listingPrice: 1 };
+      } else if (sortBy == "Price - High to Low") {
+        sorting = { listingPrice: -1 };
+      } else if (sortBy == "Newest First") {
+        sorting = { createdAt: -1 };
+      } else if (sortBy == "Oldest First") {
+        sorting = { createdAt: 1 };
+      }
+    }
     let allListings = [];
     let listing = [];
     let totalProducts;
@@ -40,31 +59,34 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       //   .find({ marketingName: marketingName[0], status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
-        .find({ marketingName: marketingName[0], status: ["Active", "Sold_Out"] }, { _id: 0 })
-        // .skip(parseInt(page) * 20)
-        // .limit(20);
+        .find(
+          { marketingName: marketingName[0], status: ["Active", "Sold_Out"] },
+          { _id: 0 }
+        )
+        .sort(sorting);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
       listing.push(...ourListing);
-
     } else if (make.length > 0) {
       // let saveListingLength = await bestDealsModal
       //   .find({ make: make, status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
         .find({ make: make, status: ["Active", "Sold_Out"] }, { _id: 0 })
-        // .skip(parseInt(page) * 20)
-        // .limit(20);
+        .sort(sorting);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
       listing.push(...ourListing);
-
     } else {
       // let saveListingLength = await bestDealsModal
       //   .find({ status: ["Active", "Sold_Out"] }, { _id: 0 })
       //   .countDocuments();
       let ourListing = await bestDealsModal
         .find({ status: ["Active", "Sold_Out"] }, { _id: 0 })
-        // .skip(parseInt(page) * 20)
-        // .limit(20);
+        .sort(sorting);
+      // .skip(parseInt(page) * 20)
+      // .limit(20);
       listing.push(...ourListing);
-
     }
 
     allListings = listing;
@@ -147,16 +169,19 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     if (warenty.length > 0 && reqPage !== "TSM") {
       let tempListings = [];
       tempListings = allListings.filter((item, index) => {
-
-        if (warenty.includes("Brand Warranty")) {
-          return item.isOtherVendor === "N";
+        if (
+          warenty.includes("Brand Warranty") &&
+          warenty.includes("Seller Warranty")
+        ) {
+          return item.warenty != "None";
+        } else if (warenty.includes("Brand Warranty")) {
+          return item.isOtherVendor === "N" && item.warenty != "None";
         } else if (warenty.includes("Seller Warranty")) {
           return item.isOtherVendor === "Y";
         }
       });
       allListings = tempListings;
     }
-
 
     if (verified === true) {
       let tempListings = [];
