@@ -173,9 +173,9 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
           warenty.includes("Brand Warranty") &&
           warenty.includes("Seller Warranty")
         ) {
-          return item.warenty != "None";
+          return item.warranty != "None";
         } else if (warenty.includes("Brand Warranty")) {
-          return item.isOtherVendor === "N" && item.warenty != "None";
+          return item.isOtherVendor === "N" && item.warranty != "None";
         } else if (warenty.includes("Seller Warranty")) {
           return item.isOtherVendor === "Y";
         }

@@ -41,14 +41,15 @@ const commonFunc = async (
         break;
       case "warranty":
         findingData = {
-          $ne: [
-            {
-              warranty: null,
-            },
-            {
-              warranty: "None",
-            },
-          ],
+          warranty: [{ $ne: null }, { $ne: "None" }],
+          // $ne: [
+          //   {
+          //     warranty: null,
+          //   },
+          //   {
+          //     warranty: "None",
+          //   },
+          // ],
           status: ["Active", "Sold_Out"],
         };
         break;
