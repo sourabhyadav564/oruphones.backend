@@ -771,8 +771,8 @@ router.post("/listing/updatefordiag", validUser, logEvent, async (req, res) => {
           }
         );
 
-        await bestDealsModal.findOneAndUpdate(
-          { listingId: dataObject.listingId },
+        let dataObject2 = await bestDealsModal.findOneAndUpdate(
+          { listingId: updateListing.listingId },
           dataToBeUpdate,
           {
             new: true,

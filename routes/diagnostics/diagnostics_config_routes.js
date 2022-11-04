@@ -15,6 +15,7 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const questionModal = require("../../src/database/modals/master/get_question");
 const dignosticsLogsModal = require("../../src/database/modals/diagnostics/diagnostics_log_transection");
 const validUser = require("../../src/middleware/valid_user");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -1376,6 +1377,14 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       if (saveData === "Y") {
         const updatedListing = await saveListingModal.findByIdAndUpdate(
           listing._id,
+          dataToBeUpdate,
+          {
+            new: true,
+          }
+        );
+
+        let dataObject2 = await bestDealsModal.findOneAndUpdate(
+          { listingId: updatedListing.listingId },
           dataToBeUpdate,
           {
             new: true,
