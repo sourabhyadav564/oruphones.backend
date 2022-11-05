@@ -41,46 +41,61 @@ const commonFunc = async (
         break;
       case "warranty":
         findingData = {
-          warranty: [{ $ne: null }, { $ne: "None" }],
-          // $ne: [
-          //   {
-          //     warranty: null,
-          //   },
-          //   {
-          //     warranty: "None",
-          //   },
-          // ],
+          $expr: {
+            $and: [
+              { $ne: ["$warranty", "No"] },
+              { $ne: ["$warranty", "None"] },
+              // { $nin: ["$warranty", ["None", "No"]] },
+              // { "$not": { "$in": ["$warranty", ["None", "No"]] }}
+            ],
+          },
           status: ["Active", "Sold_Out"],
         };
         break;
       case "brandWarranty":
         findingData = {
-          warranty: [
-            "More than 9 months",
-            "More than 6 months",
-            "More than 3 months",
-          ],
-          status: ["Active", "Sold_Out"],
+          $expr: {
+            $and: [
+              {
+                $or: [
+                  { $eq: ["$warranty", "More than 3 months"] },
+                  { $eq: ["$warranty", "More than 6 months"] },
+                  { $eq: ["$warranty", "More than 9 months"] },
+                ],
+              },
+              { $ne: ["$warranty", "None"] },
+              { status: ["Active", "Sold_Out"] },
+            ],
+          },
         };
+
+        // findingData = {
+        //   $expr: {
+        //     $and: [
+        //       {
+        //         warranty: [
+        //           "More than 9 months",
+        //           "More than 6 months",
+        //           "More than 3 months",
+        //         ],
+        //       },
+        //       { status: ["Active", "Sold_Out"] },
+        //     ],
+        //   },
+        // };
         break;
       case "sellerWarranty":
         findingData = {
-          $ne: [
-            {
-              warranty: null,
-            },
-            {
-              warranty: [
-                "More than 9 months",
-                "More than 6 months",
-                "More than 3 months",
-              ],
-            },
-            {
-              warranty: "None",
-            },
-          ],
-          status: ["Active", "Sold_Out"],
+          $expr: {
+            $and: [
+              { $ne: ["$warranty", "More than 3 months"] },
+              { $ne: ["$warranty", "More than 6 months"] },
+              { $ne: ["$warranty", "More than 9 months"] },
+              { $ne: ["$warranty", "None"] },
+              { $ne: ["$warranty", null] },
+              { status: ["Active", "Sold_Out"] },
+            ],
+          },
         };
         break;
       case "like new":
