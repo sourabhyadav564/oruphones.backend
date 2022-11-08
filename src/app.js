@@ -50,7 +50,7 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-schedule.scheduleJob("00 02 * * *", function () {
+schedule.scheduleJob("01 00 * * *", function () {
   startCalculatingLSPTest();
 });
 
@@ -59,11 +59,19 @@ schedule.scheduleJob("00 02 * * *", function () {
 //   generateCollectionDump();
 // });
 
-schedule.scheduleJob("00 03 * * *", function () {
+schedule.scheduleJob("30 01 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
 });
 
-schedule.scheduleJob("00 20 * * *", function () {
+// schedule.scheduleJob("12 21 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+
+//   addOLXData();
+//   // removeDuplicateData();
+// });
+
+schedule.scheduleJob("00 13 * * *", function () {
 // schedule.scheduleJob("59 13 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startDataMigrationJob();
@@ -108,6 +116,8 @@ const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
 const generateCollectionDump = require("../utils/generate_mongo_dump");
 const startDataMigrationJob = require("../utils/migration_data");
+const removeDuplicateData = require("../utils/temp_rem_dup_data");
+const addOLXData = require("../utils/olx_entry");
 
 app.get("/", (req, res) => {
   res.status(200).json({

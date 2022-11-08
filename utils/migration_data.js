@@ -15,13 +15,19 @@ const config = nodemailer.createTransport({
 const startDataMigration = async () => {
   const d = new Date();
   let date = d.getDate() - 1;
-  // console.log("date", date);
-  // console.log("date ", new Date(`2022-10-${date}T20:00:00.837Z`));
+  let month = d.getMonth() + 1;
+  let year = d.getFullYear();
+
+  date = date < 10 ? "0" + date : date;
+  month = month < 10 ? "0" + month : month;
+
+  console.log("date1", date, month, year);
+  console.log("date ", new Date(`${year}-${month}-${date}T20:00:00.837Z`));
   let allListings = await testing_scrapped_data_dump.find({
     $and: [
       {
         created_at: {
-          $gte: new Date(`2022-10-${date}T20:00:00.837Z`),
+          $gte: new Date(`${year}-${month}-${date}T20:00:00.837Z`),
         },
       },
       // {
@@ -43,7 +49,7 @@ const startDataMigration = async () => {
       },
     ],
   });
-  // console.log("listingsLength", allListings);
+  console.log("listingsLength", allListings.length);
 
   // now for each listing, we need to check if it exists in the testScrappedModal and update its values
   for (let i = 0; i < allListings.length; i++) {
@@ -58,8 +64,10 @@ const startDataMigration = async () => {
       type: listing["type"],
       vendor_id: listing["vendor_id"],
     });
+
+    console.log("listingDate", listing["created_at"]);
     if (listingExists) {
-      //   console.log("listingExists", listingExists);
+      console.log("listingExists", listingExists);
       // update the listing
       await testScrappedModal.updateOne(
         {
@@ -84,7 +92,9 @@ const startDataMigration = async () => {
     } else {
       // crreate new object by listing
       const newListing = {
-        make: listing["make"],
+        make: listing["make"]
+          ? listing["make"]
+          : listing["model_name"].toString().split(" ")[0],
         model_name: listing["model_name"],
         storage: listing["storage"],
         ram: listing["ram"],
@@ -95,8 +105,10 @@ const startDataMigration = async () => {
         actualPrice: listing["actualPrice"],
         link: listing["link"],
         warranty: listing["warranty"],
-        created_at: listing["created_at"] ?? new Date(),
+        created_at: listing["created_at"] ? listing["created_at"] : new Date(),
       };
+
+      console.log("newListing", newListing);
 
       // create the listing
       await testScrappedModal.create(newListing);
@@ -108,14 +120,22 @@ const startDataMigration = async () => {
 };
 
 const sendLogMail = async (type) => {
+  // const d = new Date();
+  // let date = d.getDate();
+
   const d = new Date();
-  let date = d.getDate();
+  let date = d.getDate() - 1;
+  let month = d.getMonth() + 1;
+  let year = d.getFullYear();
+
+  date = date < 10 ? "0" + date : date;
+  month = month < 10 ? "0" + month : month;
 
   let todayLogs = await scrappedLogModal.find({
     $and: [
       {
         end_time: {
-          $gte: new Date(`2022-10-${date - 1}T00:00:00.837Z`),
+          $gte: new Date(`${year}-${month}-${date - 1}T00:00:00.837Z`),
         },
       },
       {
@@ -132,11 +152,11 @@ const sendLogMail = async (type) => {
     const logExists = latestLogs.find((l) => l.vendor_id == vendor_id);
     if (!logExists) {
       latestLogs.push(log);
-    }else{
-        if(log.end_time > logExists.end_time){
-            latestLogs = latestLogs.filter((l) => l.vendor_id != vendor_id);
-            latestLogs.push(log);
-        }
+    } else {
+      if (log.end_time > logExists.end_time) {
+        latestLogs = latestLogs.filter((l) => l.vendor_id != vendor_id);
+        latestLogs.push(log);
+      }
     }
   }
 
@@ -160,7 +180,7 @@ const sendLogMail = async (type) => {
     21: "Buyblynk",
     22: "Electronicbazaar",
     23: "Flipkart",
-    26: "OLX"
+    26: "OLX",
   };
   let allVendors = [];
   let totalScrappedModels = 0;
@@ -170,8 +190,12 @@ const sendLogMail = async (type) => {
 
   for (let i = 0; i < latestLogs.length; i++) {
     const log = latestLogs[i];
-    const { vendor_id, total_scrapped_models, total_scrapped_records, total_skipped_models } =
-      log;
+    const {
+      vendor_id,
+      total_scrapped_models,
+      total_scrapped_records,
+      total_skipped_models,
+    } = log;
     allVendors.push(VENDORS[vendor_id]);
     totalScrappedModels += total_scrapped_models;
     totalScrappedRecords += total_scrapped_records;
@@ -199,8 +223,14 @@ const sendLogMail = async (type) => {
   </tr>`;
   for (let i = 0; i < latestLogs.length; i++) {
     const log = latestLogs[i];
-    const { vendor_id, total_scrapped_models, total_scrapped_records, total_skipped_models, start_time, end_time } =
-      log;
+    const {
+      vendor_id,
+      total_scrapped_models,
+      total_scrapped_records,
+      total_skipped_models,
+      start_time,
+      end_time,
+    } = log;
     mailBody += `<tr>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${VENDORS[vendor_id]}</td>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${total_scrapped_models}</td>
@@ -233,7 +263,7 @@ const sendLogMail = async (type) => {
 
   if (type == "Sell") {
     sendLogMail("Buy");
-  }else{
+  } else {
     startDataMigration();
   }
 };

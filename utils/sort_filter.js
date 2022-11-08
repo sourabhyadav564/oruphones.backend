@@ -55,12 +55,12 @@ const applySortFilter = async (sortBy, page, findingData) => {
       .skip(parseInt(page) * 30)
       .limit(30);
   } else {
-    console.log("soryBy", sortBy);
-    console.log("findingData", findingData);
+    // console.log("sortBy", sortBy);
+    // console.log("findingData", findingData);
     // sort by notionalPercentage
     completeDeals = await bestDealsModal
-      .find(findingData)
-      .collation({ locale: "en_US", numericOrdering: true })
+      .find(findingData, { _id: 0 })
+      // .collation({ locale: "en_US", numericOrdering: true })
       .skip(parseInt(page) * 30)
       .limit(30);
   }
