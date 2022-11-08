@@ -116,8 +116,8 @@ const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
 const generateCollectionDump = require("../utils/generate_mongo_dump");
 const startDataMigrationJob = require("../utils/migration_data");
-const removeDuplicateData = require("../utils/temp_rem_dup_data");
-const addOLXData = require("../utils/olx_entry");
+// const removeDuplicateData = require("../utils/temp_rem_dup_data");
+// const addOLXData = require("../utils/olx_entry");
 
 app.get("/", (req, res) => {
   res.status(200).json({
