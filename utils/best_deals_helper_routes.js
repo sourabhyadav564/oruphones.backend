@@ -590,7 +590,7 @@ const bestDealsForSearchListing = async (
         dataObject: {
           bestDeals: updatedBestDeals,
           otherListings: otherListings,
-          totalProducts: totalProducts,
+          totalProducts: totalProducts - updatedBestDeals.length,
         },
       });
     }

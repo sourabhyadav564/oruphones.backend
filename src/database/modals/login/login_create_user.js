@@ -56,6 +56,10 @@ const createUserSchema = new mongoose.Schema({
         }],
         default: [],
     },
+    isBusiness: {
+      type: String,
+      default: "N",
+    },
     city: {
         type: String,
         default: "",

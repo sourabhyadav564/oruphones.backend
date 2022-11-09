@@ -146,6 +146,14 @@ const saveListingSchema = new mongoose.Schema(
       type: String,
       default: "None",
     },
+    prodLink: {
+      type: String,
+      default: "",
+    },
+    storeId: {
+      type: String,
+      default: "000",
+    },
     isOtherVendor: {
       type: String,
       default: "N",

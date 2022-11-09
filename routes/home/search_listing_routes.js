@@ -75,10 +75,15 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       findingData.listingLocation = [listingLocation, "India"];
     }
     if (parseInt(maxsellingPrice) > parseInt(minsellingPrice)) {
-      findingData.listingPrice = {
-        $gte: parseInt(minsellingPrice),
-        $lte: parseInt(maxsellingPrice),
+      let expression = {
+        $expr: {
+          $and: [
+            { $gte: ["$listingPrice", parseInt(minsellingPrice)] },
+            { $lte: ["$listingPrice", parseInt(maxsellingPrice)] },
+          ],
+        },
       };
+      findingData = { ...findingData, ...expression };
     }
 
     if (verified === true) {
@@ -87,33 +92,48 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
 
     if (warenty.length > 0 && reqPage !== "TSM") {
       if (warenty.length > 1) {
-        findingData["$expr"] = {
-          $and: [{ $ne: ["$warranty", "No"] }, { $ne: ["$warranty", "None"] }],
+        // findingData["$expr"] = {
+        let expression = {
+          $expr: {
+            $and: [
+              { $ne: ["$warranty", "No"] },
+              { $ne: ["$warranty", "None"] },
+            ],
+          },
         };
+        findingData = { ...findingData, ...expression };
       } else {
         if (warenty.includes("Seller Warranty")) {
-          findingData["$expr"] = {
-            $and: [
-              { $ne: ["$warranty", "More than 3 months"] },
-              { $ne: ["$warranty", "More than 6 months"] },
-              { $ne: ["$warranty", "More than 9 months"] },
-              { $ne: ["$warranty", "None"] },
-              { $ne: ["$warranty", null] },
-            ],
+          // findingData[`${$expr}`] = {
+          let expression = {
+            $expr: {
+              $and: [
+                { $ne: ["$warranty", "More than 3 months"] },
+                { $ne: ["$warranty", "More than 6 months"] },
+                { $ne: ["$warranty", "More than 9 months"] },
+                { $ne: ["$warranty", "None"] },
+                { $ne: ["$warranty", null] },
+              ],
+            },
           };
+          findingData = { ...findingData, ...expression };
         } else if (warenty.includes("Brand Warranty")) {
-          findingData["$expr"] = {
-            $and: [
-              {
-                $or: [
-                  { $eq: ["$warranty", "More than 3 months"] },
-                  { $eq: ["$warranty", "More than 6 months"] },
-                  { $eq: ["$warranty", "More than 9 months"] },
-                ],
-              },
-              { $ne: ["$warranty", "None"] },
-            ],
+          // findingData[`${$expr}`] = {
+          let expression = {
+            $expr: {
+              $and: [
+                {
+                  $or: [
+                    { $eq: ["$warranty", "More than 3 months"] },
+                    { $eq: ["$warranty", "More than 6 months"] },
+                    { $eq: ["$warranty", "More than 9 months"] },
+                  ],
+                },
+                { $ne: ["$warranty", "None"] },
+              ],
+            },
           };
+          findingData = { ...findingData, ...expression };
         }
       }
     }
@@ -121,7 +141,9 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     let allListings = [];
     // let listing = [];
     let totalProducts;
-    
+
+    // console.log("findingData", findingData);
+
     allListings = await bestDealsModal
       .find(findingData, { _id: 0 })
       .sort(sorting);
@@ -162,8 +184,6 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     // }
 
     // allListings = listing;
-
-    
 
     // if (make.length > 0) {
     //   let tempListings = [];
