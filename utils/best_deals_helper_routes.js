@@ -147,6 +147,8 @@ const commonFunc = async (
     findingData = {
       status: ["Active", "Sold_Out"],
     };
+  } else if (type == "filter") {
+    findingData = term;
   }
 
   // update findingData with location if location is not India
@@ -511,89 +513,100 @@ const bestDealsForSearchListing = async (
   location,
   page,
   userUniqueId,
-  deals,
-  totalProducts,
-  res
+  // deals,
+  // totalProducts,
+  res,
+  findData,
+  sortBy
 ) => {
   try {
-    let updatedBestDeals = [];
-    let otherListings = [];
+    commonFunc(
+      location,
+      findData,
+      page,
+      userUniqueId,
+      sortBy,
+      res,
+      "filter"
+    );
+    // let updatedBestDeals = [];
+    // let otherListings = [];
 
-    let favList = [];
-    if (userUniqueId !== "Guest") {
-      const getFavObject = await favoriteModal.findOne({
-        userUniqueId: userUniqueId,
-      });
+    // let favList = [];
+    // if (userUniqueId !== "Guest") {
+    //   const getFavObject = await favoriteModal.findOne({
+    //     userUniqueId: userUniqueId,
+    //   });
 
-      if (getFavObject) {
-        favList = getFavObject.fav_listings;
-      } else {
-        favList = [];
-      }
-    }
+    //   if (getFavObject) {
+    //     favList = getFavObject.fav_listings;
+    //   } else {
+    //     favList = [];
+    //   }
+    // }
 
-    if (location === "India") {
-      if (userUniqueId !== "Guest") {
-        deals.forEach((item, index) => {
-          if (favList.includes(item.listingId)) {
-            deals[index].favourite = true;
-          } else {
-            deals[index].favourite = false;
-          }
-        });
-      }
+    // if (location === "India") {
+    //   if (userUniqueId !== "Guest") {
+    //     deals.forEach((item, index) => {
+    //       if (favList.includes(item.listingId)) {
+    //         deals[index].favourite = true;
+    //       } else {
+    //         deals[index].favourite = false;
+    //       }
+    //     });
+    //   }
 
-      if (page == 0) {
-        updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, deals.length);
-      } else {
-        otherListings = deals;
-      }
-      res.status(200).json({
-        reason: "Best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          bestDeals: updatedBestDeals,
-          otherListings: otherListings,
-          totalProducts: totalProducts,
-        },
-      });
-    } else {
-      if (userUniqueId !== "Guest") {
-        deals.forEach((item, index) => {
-          if (favList.includes(item.listingId)) {
-            deals[index].favourite = true;
-          } else {
-            deals[index].favourite = false;
-          }
-        });
-      }
+    //   if (page == 0) {
+    //     updatedBestDeals = deals.slice(0, 5);
+    //     otherListings = deals.slice(5, deals.length);
+    //   } else {
+    //     otherListings = deals;
+    //   }
+    //   res.status(200).json({
+    //     reason: "Best deals found",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //     dataObject: {
+    //       bestDeals: updatedBestDeals,
+    //       otherListings: otherListings,
+    //       totalProducts: totalProducts,
+    //     },
+    //   });
+    // } else {
+    //   if (userUniqueId !== "Guest") {
+    //     deals.forEach((item, index) => {
+    //       if (favList.includes(item.listingId)) {
+    //         deals[index].favourite = true;
+    //       } else {
+    //         deals[index].favourite = false;
+    //       }
+    //     });
+    //   }
 
-      // let getSavedDeals = await saveListingModal.find({
-      //   status: ["Active", "Sold_Out"],
-      //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
-      // });
+    //   // let getSavedDeals = await saveListingModal.find({
+    //   //   status: ["Active", "Sold_Out"],
+    //   //   $or: [{ listingLocation: location }, { listingLocation: "India" }],
+    //   // });
 
-      // deals = deals.concat(getSavedDeals);
+    //   // deals = deals.concat(getSavedDeals);
 
-      if (page == 0) {
-        updatedBestDeals = deals.slice(0, 5);
-        otherListings = deals.slice(5, deals.length);
-      } else {
-        otherListings = deals;
-      }
-      res.status(200).json({
-        reason: "Best deals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          bestDeals: updatedBestDeals,
-          otherListings: otherListings,
-          totalProducts: totalProducts - updatedBestDeals.length,
-        },
-      });
-    }
+    //   if (page == 0) {
+    //     updatedBestDeals = deals.slice(0, 5);
+    //     otherListings = deals.slice(5, deals.length);
+    //   } else {
+    //     otherListings = deals;
+    //   }
+    //   res.status(200).json({
+    //     reason: "Best deals found",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //     dataObject: {
+    //       bestDeals: updatedBestDeals,
+    //       otherListings: otherListings,
+    //       totalProducts: totalProducts - updatedBestDeals.length,
+    //     },
+    //   });
+    // }
   } catch (error) {
     console.log(error);
     // res.status(400).json(error);

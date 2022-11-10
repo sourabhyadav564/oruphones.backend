@@ -138,15 +138,32 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       }
     }
 
-    let allListings = [];
-    // let listing = [];
-    let totalProducts;
+    // let allListings = [];
+    // // let listing = [];
+    // let totalProducts;
+    // allListings = await bestDealsModal
+    //   .find(findingData, { _id: 0 })
+    //   .sort(sorting);
+
+
+    bestDealsForSearchListing(
+      listingLocation,
+      page,
+      userUniqueId,
+      // allListings,
+      // totalProducts,
+      res,
+      findingData,
+      sortBy
+    );
+
+
+
+    // Not to do anything below***************************************************
 
     // console.log("findingData", findingData);
 
-    allListings = await bestDealsModal
-      .find(findingData, { _id: 0 })
-      .sort(sorting);
+    
 
     // if (marketingName && marketingName.length > 0) {
     //   // let saveListingLength = await bestDealsModal
@@ -294,18 +311,21 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     //   allListings = tempListings;
     // }
 
-    totalProducts = allListings.length;
+    // totalProducts = allListings.length;
 
-    let location = listingLocation;
+    // let location = listingLocation;
 
-    bestDealsForSearchListing(
-      location,
-      page,
-      userUniqueId,
-      allListings,
-      totalProducts,
-      res
-    );
+
+    // bestDealsForSearchListing(
+    //   listingLocation,
+    //   page,
+    //   userUniqueId,
+    //   // allListings,
+    //   // totalProducts,
+    //   res,
+    //   findingData
+    // );
+    
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
