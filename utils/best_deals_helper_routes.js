@@ -45,6 +45,7 @@ const commonFunc = async (
             $and: [
               { $ne: ["$warranty", "No"] },
               { $ne: ["$warranty", "None"] },
+              { $ne: ["$warranty", null] },
               // { $nin: ["$warranty", ["None", "No"]] },
               // { "$not": { "$in": ["$warranty", ["None", "No"]] }}
             ],
@@ -92,6 +93,7 @@ const commonFunc = async (
               { $ne: ["$warranty", "More than 6 months"] },
               { $ne: ["$warranty", "More than 9 months"] },
               { $ne: ["$warranty", "None"] },
+              { $ne: ["$warranty", "No"] },
               { $ne: ["$warranty", null] },
               { status: ["Active", "Sold_Out"] },
             ],

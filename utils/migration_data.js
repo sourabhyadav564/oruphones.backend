@@ -54,64 +54,91 @@ const startDataMigration = async () => {
   // now for each listing, we need to check if it exists in the testScrappedModal and update its values
   for (let i = 0; i < allListings.length; i++) {
     const listing = allListings[i];
-    const { listingId } = listing;
-    const listingExists = await testScrappedModal.findOne({
-      make: listing["make"],
-      model_name: listing["model_name"],
-      storage: listing["storage"],
-      ram: listing["make"] != "Apple" ? listing["ram"] : null,
-      mobiru_condition: listing["mobiru_condition"],
-      type: listing["type"],
-      vendor_id: listing["vendor_id"],
-    });
-
-    console.log("listingDate", listing["created_at"]);
-    if (listingExists) {
-      console.log("listingExists", listingExists);
-      // update the listing
-      await testScrappedModal.updateOne(
-        {
-          model_name: listingExists["model_name"],
-          make: listingExists["make"],
-          storage: listingExists["storage"],
-          ram: listingExists["ram"],
-          mobiru_condition: listingExists["mobiru_condition"],
-          type: listingExists["type"],
-          vendor_id: listingExists["vendor_id"],
-        },
-        {
-          $set: {
-            price: listing["price"],
-            actualPrice: listing["actualPrice"],
-            link: listing["link"],
-            warranty: listing["warranty"],
-            created_at: listing["created_at"],
-          },
-        }
-      );
+    // const { listingId } = listing;
+    let findingData = {};
+    if (
+      listing.make == "Apple" &&
+      (listing.ram != "--" || listing.ram != null) &&
+      (listing.vendor_id == 8 || listing.vendor_id == 26)
+    ) {
+      continue;
     } else {
-      // crreate new object by listing
-      const newListing = {
-        make: listing["make"]
+      if (listing["make"] != "Apple") {
+        findingData = {
+          make: listing["make"],
+          model_name: listing["model_name"],
+          storage: listing["storage"],
+          ram: listing["ram"],
+          mobiru_condition: listing["mobiru_condition"],
+          type: listing["type"],
+          vendor_id: listing["vendor_id"],
+        };
+      } else {
+        findingData = {
+          make: listing["make"],
+          model_name: listing["model_name"],
+          storage: listing["storage"],
+          mobiru_condition: listing["mobiru_condition"],
+          type: listing["type"],
+          vendor_id: listing["vendor_id"],
+        };
+      }
+
+      const listingExists = await testScrappedModal.findOne(findingData);
+
+      console.log("listingDate", listing["created_at"]);
+      if (listingExists) {
+        console.log("listingExists", listingExists);
+        // update the listing
+        await testScrappedModal.updateOne(
+          {
+            model_name: listingExists["model_name"],
+            make: listingExists["make"],
+            storage: listingExists["storage"],
+            ram: listingExists["ram"],
+            mobiru_condition: listingExists["mobiru_condition"],
+            type: listingExists["type"],
+            vendor_id: listingExists["vendor_id"],
+          },
+          {
+            $set: {
+              price: listing["price"],
+              actualPrice: listing["actualPrice"],
+              ram:
+                listingExists["make"] != "Apple" ? listingExists["ram"] : "--",
+              link: listing["link"],
+              warranty: listing["warranty"],
+              // created_at: listing["created_at"],
+            },
+          }
+        );
+      } else {
+        // crreate new object by listing
+        let brand = listing["make"]
           ? listing["make"]
-          : listing["model_name"].toString().split(" ")[0],
-        model_name: listing["model_name"],
-        storage: listing["storage"],
-        ram: listing["ram"],
-        mobiru_condition: listing["mobiru_condition"],
-        type: listing["type"],
-        vendor_id: listing["vendor_id"],
-        price: listing["price"],
-        actualPrice: listing["actualPrice"],
-        link: listing["link"],
-        warranty: listing["warranty"],
-        created_at: listing["created_at"] ? listing["created_at"] : new Date(),
-      };
+          : listing["model_name"].toString().split(" ")[0];
+        const newListing = {
+          make: brand,
+          model_name: listing["model_name"],
+          storage: listing["storage"],
+          ram: brand != "Apple" ? listing["ram"] : "--",
+          mobiru_condition: listing["mobiru_condition"],
+          type: listing["type"],
+          vendor_id: listing["vendor_id"],
+          price: listing["price"],
+          actualPrice: listing["actualPrice"],
+          link: listing["link"],
+          warranty: listing["warranty"],
+          created_at: listing["created_at"]
+            ? listing["created_at"]
+            : new Date(),
+        };
 
-      console.log("newListing", newListing);
+        console.log("newListing", newListing);
 
-      // create the listing
-      await testScrappedModal.create(newListing);
+        // create the listing
+        await testScrappedModal.create(newListing);
+      }
     }
     if (i == allListings.length - 1) {
       console.log("migration done");
@@ -135,7 +162,7 @@ const sendLogMail = async (type) => {
     $and: [
       {
         end_time: {
-          $gte: new Date(`${year}-${month}-${date - 1}T00:00:00.837Z`),
+          $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
         },
       },
       {

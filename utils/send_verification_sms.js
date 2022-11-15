@@ -50,10 +50,12 @@ const sendverificationSMS = async (number, message, sellerName, marketingName) =
   let link_text = "ORUphones";
   let result = link_text.link(process.env.SERVER_URL);
 
-  let shortLink = await urlShortner(process.env.SERVER_URL);
+  // let shortLink = await urlShortner(process.env.SERVER_URL);
+  let shortLink = "www.oruphones.com";
   
   var params = {
-    Message: `Hey ${sellerName}, You've got a verification request for your ${marketingName}. Visit ORUphones to complete verification. Please use OTP: ${message} to login. Here's the link: ${shortLink} for verification.`,
+    // Message: `Hey ${sellerName}, You've got a verification request for your ${marketingName}. Visit ORUphones to complete verification. Please use OTP: ${message} to login. Here's the link: ${shortLink} for verification.`,
+    Message: `Hey ${sellerName}, Someone wants to buy your ${marketingName}. Please verify your phone to sell quickly. Visit ORUphones to complete verification. Please use OTP: ${message} to login. Here's the link: ${shortLink} for verification.`,
     Subject: "ORU Phones",
     PhoneNumber: "+91" + number,
     MessageAttributes: {

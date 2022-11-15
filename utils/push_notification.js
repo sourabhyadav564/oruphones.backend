@@ -44,7 +44,7 @@ const sendNotification = async (
     registration_ids: notificationTokens,
     notification: {
       title: isVerification
-        ? `Hey ${sellerName}, You've got a verfication request`
+        ? `Hey ${sellerName}, You've got a verification request`
         : `Hey ${sellerName}, A listing has been removed from your favourite list`,
       body: isVerification
         ? `Click here to visit your listings and complete verification for your ${marketingName}.`
@@ -55,7 +55,7 @@ const sendNotification = async (
     },
     data: {
       title: isVerification
-        ? `Hey ${sellerName}, You've got a verfication request`
+        ? `Hey ${sellerName}, Someone wants to buy your ${marketingName}.`
         : `Hey ${sellerName}, A listing has been removed from your favourite list`,
       body: {
         source: "ORU Phones",

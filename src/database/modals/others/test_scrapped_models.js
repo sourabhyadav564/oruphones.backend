@@ -7,6 +7,10 @@ const testScrappedSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       // required: true,
     },
+    make: {
+      type: String,
+      // required: true,
+    },
     ram: {
       type: mongoose.Schema.Types.Mixed,
       // required: true,

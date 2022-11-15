@@ -178,7 +178,7 @@ const getBestDeals = async (
 
         const afterGetPrice = async (price) => {
           let deduction = 0;
-          basePrice = price.actualLSP;
+          basePrice = price != undefined ? price.actualLSP : 0;
           notionalPrice = parseInt(
             item.listingPrice.toString().replace(",", "")
           );
