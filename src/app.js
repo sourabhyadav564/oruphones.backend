@@ -64,15 +64,16 @@ schedule.scheduleJob("30 01 * * *", function () {
   startSavingBestDeals();
 });
 
-// schedule.scheduleJob("12 21 * * *", function () {
+// schedule.scheduleJob("03 18 * * *", function () {
 //   console.log("The answer to life, the universe, and everything!");
 
-//   addOLXData();
+//   // addOLXData();
+//   startDataRefine();
 //   // removeDuplicateData();
 // });
 
 schedule.scheduleJob("00 13 * * *", function () {
-// schedule.scheduleJob("59 13 * * *", function () {
+  // schedule.scheduleJob("59 13 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startDataMigrationJob();
 });
@@ -117,7 +118,8 @@ const collectData = require("../utils/generate_mongo_dump");
 const generateCollectionDump = require("../utils/generate_mongo_dump");
 const startDataMigrationJob = require("../utils/migration_data");
 // const removeDuplicateData = require("../utils/temp_rem_dup_data");
-// const addOLXData = require("../utils/olx_entry");
+// const addOLXData = require("./database/modals/olx_models/olx_entry");
+// const startDataRefine = require("./database/modals/olx_models/scrapping_data_refine");
 
 app.get("/", (req, res) => {
   res.status(200).json({
