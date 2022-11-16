@@ -950,94 +950,94 @@ router.post(
 
       let getListing = {};
 
-      if (isOtherVendor === "N") {
-        getListing = await saveListingModal.findOne({
-          listingId: listingid,
-        });
-        if (!getListing) {
+      // if (isOtherVendor === "N") {
+        // getListing = await saveListingModal.findOne({
+        //   listingId: listingid,
+        // });
+        // if (!getListing) {
           getListing = await bestDealsModal.findOne({
             listingId: listingid,
           });
-        }
-      } else {
-        getThirdsListing = await testScrappedModal.findOne({
-          _id: ObjectId(listingid),
-          type: "buy",
-        });
+        // }
+      // } else {
+      //   getThirdsListing = await testScrappedModal.findOne({
+      //     _id: ObjectId(listingid),
+      //     type: "buy",
+      //   });
 
-        let vendorName = VENDORS[getThirdsListing.vendor_id];
-        let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
-          .toString()
-          .toLowerCase()}_logo.png`;
+      //   let vendorName = VENDORS[getThirdsListing.vendor_id];
+      //   let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+      //     .toString()
+      //     .toLowerCase()}_logo.png`;
 
-        // let imagePath = await getDefaultImage(element.model_name);
-        // let imagePath = getImage(element.model_name);
-        let imagePath = "";
-        let condition = getThirdsListing.mobiru_condition;
+      //   // let imagePath = await getDefaultImage(element.model_name);
+      //   // let imagePath = getImage(element.model_name);
+      //   let imagePath = "";
+      //   let condition = getThirdsListing.mobiru_condition;
 
-        getListing = {
-          //   marketingName: element.marketing_name,
-          marketingName:
-            getThirdsListing.model_name == null
-              ? "--"
-              : getThirdsListing.model_name,
-          make:
-            getThirdsListing.model_name == null
-              ? "--"
-              : getThirdsListing.model_name.split(" ")[0],
-          listingPrice:
-            getThirdsListing.price == null
-              ? "--"
-              : getThirdsListing.price.toString(),
-          deviceStorage:
-            getThirdsListing.storage === "0 GB" ||
-            getThirdsListing.storage === "--" ||
-            getThirdsListing.storage == null
-              ? "--"
-              : `${getThirdsListing.storage} GB`,
-          deviceRam:
-            getThirdsListing.ram === "0 GB" ||
-            getThirdsListing.ram === "--" ||
-            getThirdsListing.ram == null
-              ? "--"
-              : `${getThirdsListing.ram} GB`,
-          warranty: getThirdsListing.warranty,
-          vendorLogo: vendorImage,
-          vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
-          vendorId: getThirdsListing.vendor_id,
-          isOtherVendor: "Y",
-          imagePath: imagePath,
-          verified: false,
-          favourite: false,
-          listingLocation: "India",
-          deviceFinalGrade: " ",
-          deviceCosmeticGrade: " ",
-          deviceFunctionalGrade: " ",
-          imei: " ",
-          model:
-            getThirdsListing.model_name == null
-              ? "--"
-              : getThirdsListing.model_name,
-          deviceCondition: condition,
-          listingId: getThirdsListing._id,
-          listingDate: "",
-          modifiedDate: "",
-          verifiedDate: "",
-          charger: "Y",
-          earphone: "Y",
-          originalbox: "Y",
-          defaultImage: {
-            fullImage: "",
-            // fullImage: imagePath,
-          },
-          // images: [{
-          //   fullImage: imagePath,
-          //   thumbnailImage: imagePath,
-          // }]
-          images: [],
-          status: "Active",
-        };
-      }
+      //   getListing = {
+      //     //   marketingName: element.marketing_name,
+      //     marketingName:
+      //       getThirdsListing.model_name == null
+      //         ? "--"
+      //         : getThirdsListing.model_name,
+      //     make:
+      //       getThirdsListing.model_name == null
+      //         ? "--"
+      //         : getThirdsListing.model_name.split(" ")[0],
+      //     listingPrice:
+      //       getThirdsListing.price == null
+      //         ? "--"
+      //         : getThirdsListing.price.toString(),
+      //     deviceStorage:
+      //       getThirdsListing.storage === "0 GB" ||
+      //       getThirdsListing.storage === "--" ||
+      //       getThirdsListing.storage == null
+      //         ? "--"
+      //         : `${getThirdsListing.storage} GB`,
+      //     deviceRam:
+      //       getThirdsListing.ram === "0 GB" ||
+      //       getThirdsListing.ram === "--" ||
+      //       getThirdsListing.ram == null
+      //         ? "--"
+      //         : `${getThirdsListing.ram} GB`,
+      //     warranty: getThirdsListing.warranty,
+      //     vendorLogo: vendorImage,
+      //     vendorLink: getThirdsListing.link ? getThirdsListing.link : "",
+      //     vendorId: getThirdsListing.vendor_id,
+      //     isOtherVendor: "Y",
+      //     imagePath: imagePath,
+      //     verified: false,
+      //     favourite: false,
+      //     listingLocation: "India",
+      //     deviceFinalGrade: " ",
+      //     deviceCosmeticGrade: " ",
+      //     deviceFunctionalGrade: " ",
+      //     imei: " ",
+      //     model:
+      //       getThirdsListing.model_name == null
+      //         ? "--"
+      //         : getThirdsListing.model_name,
+      //     deviceCondition: condition,
+      //     listingId: getThirdsListing._id,
+      //     listingDate: "",
+      //     modifiedDate: "",
+      //     verifiedDate: "",
+      //     charger: "Y",
+      //     earphone: "Y",
+      //     originalbox: "Y",
+      //     defaultImage: {
+      //       fullImage: "",
+      //       // fullImage: imagePath,
+      //     },
+      //     // images: [{
+      //     //   fullImage: imagePath,
+      //     //   thumbnailImage: imagePath,
+      //     // }]
+      //     images: [],
+      //     status: "Active",
+      //   };
+      // }
 
       if (!getListing) {
         res.status(200).json({
