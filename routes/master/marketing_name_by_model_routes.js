@@ -322,9 +322,9 @@ router.get("/makemodellist", async (req, res) => {
         case "realme":
           make = "Realme";
           break;
-        case "blackberry":
-          make = "Blackberry";
-          break;
+        // case "blackberry":
+        //   make = "Blackberry";
+        //   break;
         case "htc":
           make = "HTC";
           break;
@@ -374,7 +374,7 @@ router.get("/makemodellist", async (req, res) => {
           "Google",
           "Honor",
           "Realme",
-          "Blackberry",
+          // "Blackberry",
           "HTC",
           "Nokia",
           "LG",
