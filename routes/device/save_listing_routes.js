@@ -899,7 +899,7 @@ router.post(
     const isOtherVendor = req.query.isOtherVendor;
     const userUniqueId = req.query.userUniqueId;
 
-    console.log("query", listingid, isOtherVendor, userUniqueId);
+    // console.log("query", listingid, isOtherVendor, userUniqueId);
 
     // let testScrappedModalData = await testScrappedModal.find({
     //   type: 'sell',
@@ -958,22 +958,21 @@ router.post(
       // });
       // if (!getListing) {
       let findingData = {};
-      if (isOtherVendor == "N") {
-        findingData = {
-          listingId: listingid,
-        };
-      } else {
-        findingData = {
-          $expr: {
-            listingId: ObjectId(listingid),
-          },
-        };
-      }
+      // if (isOtherVendor == "N") {
+      findingData = {
+        listingId: listingid,
+      };
+      // } else {
+      //   findingData = {
+      //     // $expr: {
+      //       listingId: ObjectId(`${listingid}`),
+      //       isOtherVendor: "Y"
+      //     // },
+      //   };
+      // }
 
-      console.log("findingData", findingData);
-      let getListing = await bestDealsModal.findOne(
-        findingData
-      );
+      // console.log("findingData", findingData);
+      let getListing = await bestDealsModal.findOne(findingData);
       // console.log("getListing", getListing);
       // }
       // } else {

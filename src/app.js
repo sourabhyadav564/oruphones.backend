@@ -64,12 +64,13 @@ schedule.scheduleJob("30 01 * * *", function () {
   startSavingBestDeals();
 });
 
-// schedule.scheduleJob("03 18 * * *", function () {
+// schedule.scheduleJob("59 11 * * *", function () {
 //   console.log("The answer to life, the universe, and everything!");
 
 //   // addOLXData();
-//   startDataRefine();
+//   // startDataRefine();
 //   // removeDuplicateData();
+//   startDataMigrationOneTime();
 // });
 
 schedule.scheduleJob("00 13 * * *", function () {
@@ -117,6 +118,7 @@ const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
 const generateCollectionDump = require("../utils/generate_mongo_dump");
 const startDataMigrationJob = require("../utils/migration_data");
+// const startDataMigrationOneTime = require("./database/modals/olx_models/migrate_cron_onetime");
 // const removeDuplicateData = require("../utils/temp_rem_dup_data");
 // const addOLXData = require("./database/modals/olx_models/olx_entry");
 // const startDataRefine = require("./database/modals/olx_models/scrapping_data_refine");

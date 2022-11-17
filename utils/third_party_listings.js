@@ -138,7 +138,8 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       imei: " ",
       model: element.model_name == null ? "--" : element.model_name,
       deviceCondition: condition,
-      listingId: element._id,
+      // put value of ObjectId of _id in listingId
+      listingId: element._id.toString(),
       listingDate: element.created_at,
       modifiedDate: "",
       verifiedDate: " ",
@@ -149,13 +150,15 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         // fullImage: "",
         fullImage: imagePath,
       },
-      images: [{
-        fullImage: imagePath,
-        thumbnailImage: imagePath,
-      }],
+      images: [
+        {
+          fullImage: imagePath,
+          thumbnailImage: imagePath,
+        },
+      ],
       // images: [],
       status: "Active",
-      createdAt: element.created_at,
+      createdAt: element.createdAt ? element.createdAt : element.created_at,
     };
 
     dataArray.push(dataObject);

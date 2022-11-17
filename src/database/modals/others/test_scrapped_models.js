@@ -55,10 +55,10 @@ const testScrappedSchema = new mongoose.Schema(
       type: String,
       // required: true,
     },
-    created_at: {
-      type: Date,
-      // required: true,
-    }
+    // created_at: {
+    //   type: Date,
+    //   // required: true,
+    // }
   },
   { timestamps: true }
 );

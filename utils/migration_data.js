@@ -14,34 +14,25 @@ const config = nodemailer.createTransport({
 
 const startDataMigration = async () => {
   const d = new Date();
-  let date = d.getDate() - 1;
+  let date = d.getDate();
   let month = d.getMonth() + 1;
   let year = d.getFullYear();
 
   date = date < 10 ? "0" + date : date;
   month = month < 10 ? "0" + month : month;
 
-  console.log("date1", date, month, year);
-  console.log("date ", new Date(`${year}-${month}-${date}T20:00:00.837Z`));
+  // console.log("date1", date, month, year);
+  // console.log("date ", new Date(`${year}-${month}-${date}T00:00:00.837Z`));
+  // let allListings = fs.readFileSync(`consolidatedDataBS.json`, "utf8");
+  // allListings = await JSON.parse(allListings);
+  // console.log("allListings", allListings.length);
   let allListings = await testing_scrapped_data_dump.find({
     $and: [
       {
         created_at: {
-          $gte: new Date(`${year}-${month}-${date}T20:00:00.837Z`),
+          $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
         },
       },
-      // {
-      //   $or: [
-      //     {
-      //       created_at: {
-      //         $gte: new Date(`2022-10-${date}T20:00:00.837Z`),
-      //       },
-      //     },
-      //     {
-      //       vendor_id: 26,
-      //     },
-      //   ],
-      // },
       {
         price: {
           $gte: 1000,
@@ -49,20 +40,50 @@ const startDataMigration = async () => {
       },
     ],
   });
-  console.log("listingsLength", allListings.length);
+  // console.log("listingsLength", allListings.length);
+
+  const ourConditions = [
+    "Like New",
+    "Good",
+    "Excellent",
+    "Fair",
+    "New - Seal Pack",
+  ];
 
   // now for each listing, we need to check if it exists in the testScrappedModal and update its values
   for (let i = 0; i < allListings.length; i++) {
-    const listing = allListings[i];
-    // const { listingId } = listing;
+    const listing = allListings[i]["_doc"];
+    // const listing = allListings[i];
     let findingData = {};
     if (
-      listing.make == "Apple" &&
-      (listing.ram != "--" || listing.ram != null) &&
-      (listing.vendor_id == 8 || listing.vendor_id == 26)
+      (listing.type == "buy" || listing.type == "Buy") &&
+      listing.make != "Apple" &&
+      (listing.storage == "--" ||
+        listing.ram == "--" ||
+        listing.ram == null ||
+        listing.storage == null ||
+        listing.price > 2500) &&
+      !ourConditions.includes(listing.mobiru_condition) &&
+      listing.link.toString().includes("://")
     ) {
-      continue;
+      // console.log("into 2nd if");
+      // continue;
+      // break;
+    } else if (
+      (listing.type == "buy" || listing.type == "Buy") &&
+      listing.make == "Apple" &&
+      (listing.storage == "--" ||
+        listing.ram == null ||
+        listing.storage == null ||
+        listing.price > 2500) &&
+      !ourConditions.includes(listing.mobiru_condition) &&
+      listing.link.toString().includes("://")
+    ) {
+      // console.log("into 3rd if");
+      // continue;
+      // break;
     } else {
+      // console.log("into else");
       if (listing["make"] != "Apple") {
         findingData = {
           make: listing["make"],
@@ -84,11 +105,12 @@ const startDataMigration = async () => {
         };
       }
 
+      // console.log("findingData", findingData);
+
       const listingExists = await testScrappedModal.findOne(findingData);
 
-      console.log("listingDate", listing["created_at"]);
       if (listingExists) {
-        console.log("listingExists", listingExists);
+        // console.log("listingExists", listingExists["model_name"]);
         // update the listing
         await testScrappedModal.updateOne(
           {
@@ -113,7 +135,8 @@ const startDataMigration = async () => {
           }
         );
       } else {
-        // crreate new object by listing
+        // console.log("listing not exists");
+        // create new object by listing
         let brand = listing["make"]
           ? listing["make"]
           : listing["model_name"].toString().split(" ")[0];
@@ -129,19 +152,19 @@ const startDataMigration = async () => {
           actualPrice: listing["actualPrice"],
           link: listing["link"],
           warranty: listing["warranty"],
-          created_at: listing["created_at"]
-            ? listing["created_at"]
-            : new Date(),
+          // created_at: listing["created_at"]
+          //   ? listing["created_at"]
+          //   : new Date(),
         };
 
-        console.log("newListing", newListing);
+        // console.log("newListing", newListing);
 
         // create the listing
         await testScrappedModal.create(newListing);
       }
     }
     if (i == allListings.length - 1) {
-      console.log("migration done");
+      // console.log("migration done");
     }
   }
 };
@@ -284,7 +307,7 @@ const sendLogMail = async (type) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Email sent: " + info.response);
+      // console.log("Email sent: " + info.response);
     }
   });
 
@@ -297,6 +320,7 @@ const sendLogMail = async (type) => {
 
 const startDataMigrationJob = async () => {
   sendLogMail("Sell");
+  // startDataMigration();
 };
 
 module.exports = startDataMigrationJob;
