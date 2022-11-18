@@ -39,7 +39,8 @@ router.post("/diagConfig", async (req, res) => {
 
   const filtered = (categoryType) => {
     let categoryObject = {};
-    categoryObject["issueName"] = categoryType;
+    categoryObject["issueName"] =
+      categoryType == "BuyerVerification" ? "RunAllDiagnostics" : categoryType;
     categoryObject["displayname"] =
       allDescriptions[0][categoryType]["displayname"];
     categoryObject["description"] =
@@ -117,21 +118,27 @@ router.post("/diagConfig", async (req, res) => {
     category.push(verify_category);
     data["category"] = category;
     data["checkMyDevice"] = check_category;
+  } else if (req.body.transactionName == "BuyerVerification") {
+    const buyer_category = filtered("BuyerVerification");
+    const check_category = filtered("checkMyDevice");
+    category.push(buyer_category);
+    data["category"] = category;
+    data["checkMyDevice"] = check_category;
   } else {
-    const battery_category = filtered("BatteryCharging");
-    const system_crash_category = filtered("SystemCrash");
-    const connectivity_category = filtered("Connectivity");
-    const audio_vibrate_category = filtered("AudioVibrate");
-    const camera_category = filtered("Camera");
-    const display_touch_category = filtered("DisplayTouch");
+    // const battery_category = filtered("BatteryCharging");
+    // const system_crash_category = filtered("SystemCrash");
+    // const connectivity_category = filtered("Connectivity");
+    // const audio_vibrate_category = filtered("AudioVibrate");
+    // const camera_category = filtered("Camera");
+    // const display_touch_category = filtered("DisplayTouch");
     const run_all_category = filtered("RunAllDiagnostics");
     const check_category = filtered("checkMyDevice");
-    category.push(battery_category);
-    category.push(system_crash_category);
-    category.push(connectivity_category);
-    category.push(audio_vibrate_category);
-    category.push(camera_category);
-    category.push(display_touch_category);
+    // category.push(battery_category);
+    // category.push(system_crash_category);
+    // category.push(connectivity_category);
+    // category.push(audio_vibrate_category);
+    // category.push(camera_category);
+    // category.push(display_touch_category);
     category.push(run_all_category);
     data["category"] = category;
     data["checkMyDevice"] = check_category;

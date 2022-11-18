@@ -522,15 +522,7 @@ const bestDealsForSearchListing = async (
   sortBy
 ) => {
   try {
-    commonFunc(
-      location,
-      findData,
-      page,
-      userUniqueId,
-      sortBy,
-      res,
-      "filter"
-    );
+    commonFunc(location, findData, page, userUniqueId, sortBy, res, "filter");
     // let updatedBestDeals = [];
     // let otherListings = [];
 
