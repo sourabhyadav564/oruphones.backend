@@ -1341,6 +1341,7 @@ router.post(
 router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
   const deviceId = req.query.deviceId;
   const userUniqueId = req.query.userUniqueId;
+  const modelData = req.query.modelData;
 
   try {
     // const isValidUser = await createUserModal.find({
@@ -1354,6 +1355,30 @@ router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
     });
 
     if (!getListing) {
+      if (modelData) {
+        const getListing2 = await saveListingModal.findOne({
+          userUniqueId: userUniqueId,
+          marketingName: modelData.marketingName,
+          deviceStorage: modelData.deviceStorage,
+          deviceRam: modelData.deviceRam,
+        });
+        if (!getListing2) {
+          res.status(200).json({
+            reason: "Invalid device id provided",
+            statusCode: 200,
+            status: "INVALID",
+            dataObject: {},
+          });
+          return;
+        } else {
+          res.status(200).json({
+            reason: "Listing found successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: getListing2,
+          });
+        }
+      }
       res.status(200).json({
         reason: "Invalid device id provided",
         statusCode: 200,

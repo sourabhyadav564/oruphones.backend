@@ -38,13 +38,14 @@ router.post("/diagConfig", async (req, res) => {
   let lastRestart = req.body.lastRestart;
 
   const filtered = (categoryType) => {
+    console.log("categoryType", categoryType, allDescriptions[0]["_doc"]);
     let categoryObject = {};
     categoryObject["issueName"] =
       categoryType == "BuyerVerification" ? "RunAllDiagnostics" : categoryType;
     categoryObject["displayname"] =
-      allDescriptions[0][categoryType]["displayname"];
+      allDescriptions[0]["_doc"][categoryType]["displayname"];
     categoryObject["description"] =
-      allDescriptions[0][categoryType]["description"];
+      allDescriptions[0]["_doc"][categoryType]["description"];
 
     categoryType =
       categoryType == "checkMyDevice" ? "RunAllDiagnostics" : categoryType;
@@ -52,7 +53,7 @@ router.post("/diagConfig", async (req, res) => {
     let testToBeSend = [];
     let autoTests = [];
     let manualTests = [];
-    allTestCategory[categoryType].forEach((item) => {
+    allTestCategory["_doc"][categoryType].forEach((item) => {
       allTest.forEach((element) => {
         if (element.name === item) {
           testToBeSend.push(element);
