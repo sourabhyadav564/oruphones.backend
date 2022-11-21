@@ -1092,18 +1092,18 @@ router.post("/diagConfigIOS", async (req, res) => {
 });
 
 router.post("/grade/price", validUser, logEvent, async (req, res) => {
-  const companyId = req.body.companyId;
-  const diagSessionId = req.body.diagSessionId;
+  // const companyId = req.body.companyId;
+  // const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
   const listingId = req.body.listingId;
-  const questionnaireResults = req.body.questionnaireResults;
+  // const questionnaireResults = req.body.questionnaireResults;
   const deviceUniqueId = req.body.deviceUniqueId;
   const ram = req.body.ram;
-  const userUniqueId = req.body.userUniqueId;
+  // const userUniqueId = req.body.userUniqueId;
 
-  const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
-  const deviceFinalGrade = req.body.deviceFinalGrade;
-  const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
+  // const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
+  // const deviceFinalGrade = req.body.deviceFinalGrade;
+  // const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
   const saveData = req.body.saveData;
 
   try {
@@ -1279,7 +1279,8 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     // }
 
     const listing = await saveListingModal.findOne({ listingId: listingId });
-    let deviceCondition = listing.deviceCondition;
+    // let deviceCondition = listing.deviceCondition;
+    let cosmetic = listing.cosmetic;
     let deviceAge = listing.warranty;
 
     if (deviceAge === "More than 9 months") {
@@ -1292,17 +1293,45 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       warrantyPeriod = "more";
     }
 
-    if (deviceCondition === "Like New") {
-      cosmeticGrade = "S";
-    } else if (deviceCondition === "Excellent") {
-      cosmeticGrade = "A";
-    } else if (deviceCondition === "Good") {
-      cosmeticGrade = "B";
-    } else if (deviceCondition === "Fair") {
-      cosmeticGrade = "C";
-    } else if (deviceCondition === "Needs Repair") {
+    // cosmeticGrade = listing.deviceCosmeticGrade;
+
+    if (!cosmetic || cosmetic[0].toString().includes("No")) {
       cosmeticGrade = "D";
+    } else {
+      if (
+        cosmetic[1].toString().includes("Has significant") ||
+        cosmetic[2].toString().includes("Has significant")
+      ) {
+        cosmeticGrade = "C";
+      } else if (
+        cosmetic[1].toString().includes("Up to 5") ||
+        cosmetic[2].toString().includes("Up to 5")
+      ) {
+        cosmeticGrade = "B";
+      } else if (
+        cosmetic[1].toString().includes("Up to 2") ||
+        cosmetic[2].toString().includes("Up to 2")
+      ) {
+        cosmeticGrade = "A";
+      } else if (
+        cosmetic[1].toString().includes("No scratch") &&
+        cosmetic[2].toString().includes("No scratch")
+      ) {
+        cosmeticGrade = "S";
+      }
     }
+
+    // if (deviceCondition === "Like New") {
+    //   cosmeticGrade = "S";
+    // } else if (deviceCondition === "Excellent") {
+    //   cosmeticGrade = "A";
+    // } else if (deviceCondition === "Good") {
+    //   cosmeticGrade = "B";
+    // } else if (deviceCondition === "Fair") {
+    //   cosmeticGrade = "C";
+    // } else if (deviceCondition === "Needs Repair") {
+    //   cosmeticGrade = "D";
+    // }
 
     if (grade === "S" && cosmeticGrade === "S") {
       finalGrade = "S";
