@@ -78,15 +78,29 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       let expression = {
         $expr: {
           $and: [
-            { $gte: ["$listingPrice", parseInt(minsellingPrice)] },
-            { $lte: ["$listingPrice", parseInt(maxsellingPrice)] },
+            {
+              $gte: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                parseInt(minsellingPrice),
+              ],
+            },
+            {
+              $lte: [
+                {
+                  $toInt: "$listingPrice",
+                },
+                parseInt(maxsellingPrice),
+              ],
+            },
           ],
         },
       };
       findingData = { ...findingData, ...expression };
     }
 
-    if (verified === true) {
+    if (verified == true) {
       findingData.verified = true;
     }
 
@@ -145,7 +159,6 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     //   .find(findingData, { _id: 0 })
     //   .sort(sorting);
 
-
     bestDealsForSearchListing(
       listingLocation,
       page,
@@ -157,13 +170,9 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       sortBy
     );
 
-
-
     // Not to do anything below***************************************************
 
     // console.log("findingData", findingData);
-
-    
 
     // if (marketingName && marketingName.length > 0) {
     //   // let saveListingLength = await bestDealsModal
@@ -315,7 +324,6 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
 
     // let location = listingLocation;
 
-
     // bestDealsForSearchListing(
     //   listingLocation,
     //   page,
@@ -325,7 +333,6 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     //   res,
     //   findingData
     // );
-    
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
