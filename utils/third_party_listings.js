@@ -140,7 +140,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       deviceCondition: condition,
       // put value of ObjectId of _id in listingId
       listingId: element._id.toString(),
-      listingDate: element.created_at,
+      listingDate: element.createdAt,
       modifiedDate: "",
       verifiedDate: " ",
       charger: "Y",

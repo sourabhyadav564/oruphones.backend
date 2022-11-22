@@ -54,36 +54,52 @@ const startDataMigration = async () => {
   for (let i = 0; i < allListings.length; i++) {
     const listing = allListings[i]["_doc"];
     // const listing = allListings[i];
-    let findingData = {};
+    // if (
+    //   (listing.type == "buy" || listing.type == "Buy") &&
+    //   listing.make != "Apple" &&
+    //   (listing.storage == "--" ||
+    //     listing.ram == "--" ||
+    //     listing.ram == null ||
+    //     listing.storage == null ||
+    //     listing.price > 2500) &&
+    //   !ourConditions.includes(listing.mobiru_condition) &&
+    //   !listing.link.toString().includes("://")
+    // ) {
+    //   // console.log("into 2nd if");
+    //   // continue;
+    //   // break;
+    // } else if (
+    //   (listing.type == "buy" || listing.type == "Buy") &&
+    //   listing.make == "Apple" &&
+    //   (listing.storage == "--" ||
+    //     listing.ram == null ||
+    //     listing.storage == null ||
+    //     listing.price > 2500) &&
+    //   !ourConditions.includes(listing.mobiru_condition) &&
+    //   !listing.link.toString().includes("://")
+    // ) {
+    //   // console.log("into 3rd if");
+    //   // continue;
+    //   // break;
+    // } else
     if (
-      (listing.type == "buy" || listing.type == "Buy") &&
-      listing.make != "Apple" &&
-      (listing.storage == "--" ||
-        listing.ram == "--" ||
-        listing.ram == null ||
-        listing.storage == null ||
-        listing.price > 2500) &&
-      !ourConditions.includes(listing.mobiru_condition) &&
-      listing.link.toString().includes("://")
+      listing.type == "sell" ||
+      listing.type == "Sell" ||
+      ((listing.type == "buy" || listing.type == "Buy") &&
+        !(
+          listing.make != "Apple" &&
+          (listing.ram == "--" ||
+            listing.storage == "--" ||
+            listing.ram == null ||
+            listing.storage == null)
+        ) &&
+        ourConditions.includes(listing.mobiru_condition) &&
+        listing.price > 2500 &&
+        listing.link.toString().includes("://"))
     ) {
-      // console.log("into 2nd if");
-      // continue;
-      // break;
-    } else if (
-      (listing.type == "buy" || listing.type == "Buy") &&
-      listing.make == "Apple" &&
-      (listing.storage == "--" ||
-        listing.ram == null ||
-        listing.storage == null ||
-        listing.price > 2500) &&
-      !ourConditions.includes(listing.mobiru_condition) &&
-      listing.link.toString().includes("://")
-    ) {
-      // console.log("into 3rd if");
-      // continue;
-      // break;
-    } else {
-      // console.log("into else");
+      let findingData = {};
+
+      // console.log("into the only if");
       if (listing["make"] != "Apple") {
         findingData = {
           make: listing["make"],
@@ -319,8 +335,8 @@ const sendLogMail = async (type) => {
 };
 
 const startDataMigrationJob = async () => {
-  sendLogMail("Sell");
-  // startDataMigration();
+  // sendLogMail("Sell");
+  startDataMigration();
 };
 
 module.exports = startDataMigrationJob;
