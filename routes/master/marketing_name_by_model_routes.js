@@ -244,7 +244,7 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
 });
 
 router.get("/makemodellist", async (req, res) => {
-  if (cache.has("makeAndModal")) {
+  if (cache.has("makeAndModal") && cache.get("makeAndModal").length > 1) {
     res.status(200).json({
       reason: "Modals found",
       statusCode: 200,

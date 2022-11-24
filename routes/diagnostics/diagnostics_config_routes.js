@@ -1112,6 +1112,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "BarometerTest",
       "MagneticSensorTest",
       "LinearAccelerationSensorTest",
+      "GeomagneticRotationSensorTest"
     ];
     const severityMedium = [
       "VibrationTest",

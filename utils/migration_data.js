@@ -335,8 +335,8 @@ const sendLogMail = async (type) => {
 };
 
 const startDataMigrationJob = async () => {
-  // sendLogMail("Sell");
-  startDataMigration();
+  sendLogMail("Sell");
+  // startDataMigration();
 };
 
 module.exports = startDataMigrationJob;
