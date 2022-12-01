@@ -180,9 +180,9 @@ const startDataMigration = async () => {
       }
     }
     if (i == allListings.length - 1) {
-      if (process.env.Collection == "oru_phones_production_database") {
+      //if (process.env.Collection == "oru_phones_production_database") {
         sendLogMail("Sell");
-      }
+      //}
       // console.log("migration done");
     }
   }
