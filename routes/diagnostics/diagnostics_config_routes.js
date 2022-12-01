@@ -1112,7 +1112,10 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "BarometerTest",
       "MagneticSensorTest",
       "LinearAccelerationSensorTest",
-      "GeomagneticRotationSensorTest"
+      "GeomagneticRotationSensorTest",
+      "AccelerometerTest",
+      "WallChargingTest",
+      "FingerPrintSensorTest"
     ];
     const severityMedium = [
       "VibrationTest",
@@ -1124,6 +1127,17 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "GameRotationSensorTest",
       "GyroscopeSensorTest",
       "Mic2Test",
+      "LCDTest",
+      "DimmingTest",
+      "ProximityTest",
+      "LightSensorTest",
+      "DeadPixelTest",
+      "DiscolorationTest",
+      "ScreenBurnTest",
+      "EarphoneJackTest",
+      "EarphoneTest",
+      "CameraFlashTest",
+      "FrontFlashTest",
     ];
     const severityHigh = [
       "GenuineOSTest",
@@ -1132,6 +1146,11 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "EarpieceTest",
       "RearCameraPictureTest",
       "MicTest",
+      "RearCameraVideoTest",
+      "FrontCameraVideoTest",
+      "TouchTest",
+      "HardKeysTest",
+      "USBManualConnectionTest",
     ];
 
     let grade;

@@ -180,6 +180,9 @@ const startDataMigration = async () => {
       }
     }
     if (i == allListings.length - 1) {
+      if (process.env.Collection == "oru_phones_production_database") {
+        sendLogMail("Sell");
+      }
       // console.log("migration done");
     }
   }
@@ -195,6 +198,7 @@ const sendLogMail = async (type) => {
   let year = d.getFullYear();
 
   date = date < 10 ? "0" + date : date;
+  date = date == "00" ? "01" : date;
   month = month < 10 ? "0" + month : month;
 
   let todayLogs = await scrappedLogModal.find({
@@ -209,6 +213,46 @@ const sendLogMail = async (type) => {
       },
     ],
   });
+
+  let totalMigrated = {};
+  if (type == "Buy") {
+    let totalBuyListings = await testScrappedModal.countDocuments({
+      type: ["buy", "Buy"],
+      updatedAt: {
+        $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
+        // $gte: new Date(`2022-11-29T22:00:00.837Z`),
+      },
+    });
+    let totalSellListings = await testScrappedModal.countDocuments({
+      type: ["sell", "Sell"],
+      updatedAt: {
+        $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
+        // $gte: new Date(`2022-11-29T22:00:00.837Z`),
+      },
+    });
+
+    let newListings = await testScrappedModal.countDocuments({
+      createdAt: {
+        $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
+        // $gte: new Date(`2022-11-29T22:00:00.837Z`),
+      },
+    });
+
+    let totalListings = await testScrappedModal.countDocuments({
+      updatedAt: {
+        $gte: new Date(`${year}-${month}-${date}T00:00:00.837Z`),
+        // $gte: new Date(`2022-11-29T22:00:00.837Z`),
+      },
+    });
+
+    totalMigrated = {
+      totalBuyListings: totalBuyListings,
+      totalSellListings: totalSellListings,
+      newListings: newListings,
+      totalListings: totalListings,
+      updatedListings: totalListings - newListings,
+    };
+  }
 
   // get only latest objects if there are multiple objects for same vendor in todayLogs
   let latestLogs = [];
@@ -308,13 +352,22 @@ const sendLogMail = async (type) => {
   }
   mailBody += `</table>`;
 
+  mailBody += `<br><br><br><h2>Migration Logs for CronJob</h2>`;
+  mailBody += `<p>Today\'s Buy Listings: ${totalMigrated.totalBuyListings}</p>`;
+  mailBody += `<p>Today\'s Sell Listings: ${totalMigrated.totalSellListings}</p>`;
+  mailBody += `<p>Total Listings: ${totalMigrated.totalListings}</p>`;
+  mailBody += `<p>New Listings: ${totalMigrated.newListings}</p>`;
+  mailBody += `<p>Updated Listings: ${totalMigrated.updatedListings}</p>`;
+  // mailBody += `<p>Skipped Listings: ${totalMigrated.skippedListings}</p>`;
+  mailBody += `<br><br><br>`;
+
   // add allLogs to mailBody
   // mailBody += `<p>Logs: ${JSON.stringify(allLogs)}</p>`;
 
   // send mail
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp, ashish.khandelwal@gmail.com",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@gmail.com, anish@zenro.co.jp",
     subject: `Scrapped Logs for ${type}`,
     html: mailBody,
   };
@@ -330,13 +383,14 @@ const sendLogMail = async (type) => {
   if (type == "Sell") {
     sendLogMail("Buy");
   } else {
-    startDataMigration();
+    // startDataMigration();
   }
 };
 
 const startDataMigrationJob = async () => {
-  sendLogMail("Sell");
-  // startDataMigration();
+  // sendLogMail("Sell");
+  startDataMigration();
+  // sendLogMail("Buy");
 };
 
 module.exports = startDataMigrationJob;
