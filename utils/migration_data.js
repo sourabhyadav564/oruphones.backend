@@ -3,6 +3,7 @@ const testing_scrapped_data_dump = require("../src/database/modals/others/migrat
 const scrappedLogModal = require("../src/database/modals/others/scrapped_log_models");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 const fs = require("fs");
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 const config = nodemailer.createTransport({
   service: "gmail",
