@@ -1257,11 +1257,27 @@ router.post(
 
         let dataObject = { externalSource, ...(getListing._doc || getListing) };
         if (currentPercentage > -3) {
-          let scrappedModels = await lspModal.find({
-            model: getListing?.marketingName,
-            storage: [getListing?.deviceStorage, "-- GB"],
-            type: "buy",
-          });
+          // let scrappedModels = await lspModal.find({
+          //   model: getListing?.marketingName,
+          //   storage: [getListing?.deviceStorage, "-- GB"],
+          //   type: ["buy", "Buy"],
+          // });
+
+          let tempStr = getListing?.deviceStorage;
+          tempStr = tempStr.replace("GB", "").trim();
+
+          let findingData = {
+            model_name: getListing?.marketingName,
+            storage: parseInt(tempStr),
+            type: ["buy", "Buy"],
+            mobiru_condition: getListing?.deviceCondition
+          };
+
+          let scrappedModels = await testScrappedModal.find(findingData);
+          // console.log("scrappedModels", scrappedModels.length, findingData);
+
+
+          // let scrappedModels = testScrappedModal
 
           let selectdModels = [];
           let itemId = "";
@@ -1272,13 +1288,13 @@ router.post(
 
           let pushedVendors = [];
 
-          scrappedModels.forEach((item, index) => {
-            if (
-              item.model === marketingname &&
-              item.condition === condition &&
-              item.storage === storage
-            ) {
-              item.vendor.forEach((vendor) => {
+          scrappedModels.forEach((vendor, index) => {
+            // if (
+            //   item.model === marketingname &&
+            //   item.condition === condition &&
+            //   item.storage === storage
+            // ) {
+            //   item.vendor.forEach((vendor) => {
                 // console.log("vendor", vendor);
                 vendorName = VENDORS[vendor.vendor_id];
                 vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
@@ -1287,6 +1303,7 @@ router.post(
                 let vendorObject = {
                   externalSourcePrice: vendor.price,
                   externalSourceImage: vendorImage,
+                  productLink: vendor.link ? vendor.link : "",
                 };
                 if (!pushedVendors.includes(vendorName)) {
                   if (
@@ -1296,8 +1313,8 @@ router.post(
                     pushedVendors.push(vendorName);
                   }
                 }
-              });
-            }
+            //   });
+            // }
           });
 
           if (selectdModels.length > 0) {
