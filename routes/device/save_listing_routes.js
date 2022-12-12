@@ -1218,84 +1218,135 @@ router.post(
         let dataObject = { externalSource, ...(getListing._doc || getListing) };
         // console.log("currentPercentage", currentPercentage);
         // if (currentPercentage > -3) {
-          // let scrappedModels = await lspModal.find({
-          //   model: getListing?.marketingName,
-          //   storage: [getListing?.deviceStorage, "-- GB"],
-          //   type: ["buy", "Buy"],
-          // });
+        // let scrappedModels = await lspModal.find({
+        //   model: getListing?.marketingName,
+        //   storage: [getListing?.deviceStorage, "-- GB"],
+        //   type: ["buy", "Buy"],
+        // });
 
-          let tempStr = getListing?.deviceStorage;
-          tempStr = tempStr.replace("GB", "").trim();
+        // marketingName: getListing?.marketingName,
+        //   deviceStorage: getListing?.deviceStorage,
+        //   deviceCondition: getListing?.deviceCondition,
+        //   isOtherVendor: "N",
 
-          let findingData = {
-            model_name: getListing?.marketingName,
-            storage: parseInt(tempStr),
-            type: ["buy", "Buy"],
-            mobiru_condition: getListing?.deviceCondition
+        let findingBestData = {
+          $expr: {
+            $and: [
+              { marketingName: getListing?.marketingName },
+              { deviceStorage: getListing?.deviceStorage },
+              { deviceCondition: getListing?.deviceCondition },
+              { isOtherVendor: "N" },
+              {
+                notionalPercentage: {
+                  $gte:
+                    [ "$notionalPercentage", getListing?.notionalPercentage &&
+                    getListing?.notionalPercentage > 0
+                      ? getListing?.notionalPercentage
+                      : 0,]
+                },
+              },
+              // {
+              //   $gte: [
+              //     {
+              //       $toInt: "$notionalPercentage",
+              //     },
+              //     parseInt(getListing?.notionalPercentage),
+              //   ],
+              // },
+            ],
+          },
+        };
+
+        let oruBest = await bestDealsModal.findOne(findingBestData);
+
+        let tempStr = getListing?.deviceStorage;
+        tempStr = tempStr.replace("GB", "").trim();
+
+        let findingData = {
+          model_name: getListing?.marketingName,
+          storage: parseInt(tempStr),
+          type: ["buy", "Buy"],
+          mobiru_condition: getListing?.deviceCondition,
+        };
+
+        let scrappedModels = await testScrappedModal.find(findingData);
+        // console.log("scrappedModels", scrappedModels.length, findingData);
+
+        // let scrappedModels = testScrappedModal
+
+        let selectdModels = [];
+        let itemId = "";
+        const marketingname = getListing.marketingName;
+        const condition = getListing.deviceCondition;
+        const storage = getListing.deviceStorage;
+        let leastSellingPrice;
+
+        let pushedVendors = [];
+
+        scrappedModels.forEach((vendor, index) => {
+          // if (
+          //   item.model === marketingname &&
+          //   item.condition === condition &&
+          //   item.storage === storage
+          // ) {
+          //   item.vendor.forEach((vendor) => {
+          // console.log("vendor", vendor);
+          vendorName = VENDORS[vendor.vendor_id];
+          vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+            .toString()
+            .toLowerCase()}_logo.png`;
+          let vendorObject = {
+            externalSourcePrice: vendor.price,
+            externalSourceImage: vendorImage,
+            productLink: vendor.link ? vendor.link : "",
           };
+          if (!pushedVendors.includes(vendorName)) {
+            if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
+              selectdModels.push(vendorObject);
+              pushedVendors.push(vendorName);
+            }
+          }
+          //   });
+          // }
+        });
 
-          let scrappedModels = await testScrappedModal.find(findingData);
-          // console.log("scrappedModels", scrappedModels.length, findingData);
+        // add oruBest to the selectdModels
+        if (oruBest) {
+          const dy_link = `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+          let vendorObject = {
+            externalSourcePrice: parseInt(oruBest?.listingPrice),
+            externalSourceImage: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/oru_logo.png",
+            productLink: dy_link,
+            userName: oruBest?.listedBy,
+            listingId: oruBest?.listingId,
+          };
+          selectdModels.push(vendorObject);
+        }
 
+        if (selectdModels.length > 0) {
 
-          // let scrappedModels = testScrappedModal
-
-          let selectdModels = [];
-          let itemId = "";
-          const marketingname = getListing.marketingName;
-          const condition = getListing.deviceCondition;
-          const storage = getListing.deviceStorage;
-          let leastSellingPrice;
-
-          let pushedVendors = [];
-
-          scrappedModels.forEach((vendor, index) => {
-            // if (
-            //   item.model === marketingname &&
-            //   item.condition === condition &&
-            //   item.storage === storage
-            // ) {
-            //   item.vendor.forEach((vendor) => {
-                // console.log("vendor", vendor);
-                vendorName = VENDORS[vendor.vendor_id];
-                vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
-                  .toString()
-                  .toLowerCase()}_logo.png`;
-                let vendorObject = {
-                  externalSourcePrice: vendor.price,
-                  externalSourceImage: vendorImage,
-                  productLink: vendor.link ? vendor.link : "",
-                };
-                if (!pushedVendors.includes(vendorName)) {
-                  if (
-                    getListing?.vendorLogo != vendorObject.externalSourceImage
-                  ) {
-                    selectdModels.push(vendorObject);
-                    pushedVendors.push(vendorName);
-                  }
-                }
-            //   });
-            // }
+          // sort selectdModels by price
+          selectdModels.sort((a, b) => {
+            return a.externalSourcePrice - b.externalSourcePrice;
           });
 
-          if (selectdModels.length > 0) {
-            externalSource.push(...selectdModels);
-            //TODO: Need to remove the duplicate objects. Objects from the rarest.
-          }
-          dataObject = { externalSource, ...(getListing._doc || getListing) };
-          let tempArray = [];
-          tempArray.push(dataObject);
+          externalSource.push(...selectdModels);
+          //TODO: Need to remove the duplicate objects. Objects from the rarest.
+        }
+        dataObject = { externalSource, ...(getListing._doc || getListing) };
+        let tempArray = [];
+        tempArray.push(dataObject);
 
-          // add favorite listings to the final list
-          if (userUniqueId != "Guest" && isOtherVendor != "Y") {
-            tempArray.forEach((item, index) => {
-              if (favList.includes(item.listingId)) {
-                dataObject = { ...dataObject, favourite: true };
-              } else {
-                dataObject = { ...dataObject, favourite: false };
-              }
-            });
-          }
+        // add favorite listings to the final list
+        if (userUniqueId != "Guest" && isOtherVendor != "Y") {
+          tempArray.forEach((item, index) => {
+            if (favList.includes(item.listingId)) {
+              dataObject = { ...dataObject, favourite: true };
+            } else {
+              dataObject = { ...dataObject, favourite: false };
+            }
+          });
+        }
         // }
         // Remove mobileNumber from the response
         if (dataObject.mobileNumber) {
