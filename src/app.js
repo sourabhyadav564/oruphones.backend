@@ -49,7 +49,7 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
-schedule.scheduleJob("01 00 * * *", function () {
+schedule.scheduleJob("00 16 * * *", function () {
   startCalculatingLSPTest();
 });
 
@@ -58,7 +58,7 @@ schedule.scheduleJob("01 00 * * *", function () {
 //   generateCollectionDump();
 // });
 
-schedule.scheduleJob("30 01 * * *", function () {
+schedule.scheduleJob("30 17 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
 });

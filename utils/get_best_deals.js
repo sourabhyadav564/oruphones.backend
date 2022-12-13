@@ -452,6 +452,10 @@ const getBestDeals = async (
             if (item.verified == false) {
               item.functionalTestResults = [];
             }
+          }else{
+            if(item.notionalPercentage > 0){
+              item.notionalPercentage = 0;
+            }
           }
           if (
             item.notionalPercentage.toString() === "NaN" ||

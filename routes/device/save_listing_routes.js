@@ -597,12 +597,18 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
           updatedListings.status = "Active";
           updatedListings.save();
         } else {
+          const newListings = await saveListingModal.findOne(
+            activateListing[0]?._id
+          );
+
           // create new bestdealmodel
-          const newBestDeal = new bestDealsModal({
-            ...activatedListing,
-            status: "Active",
-          });
-          newBestDeal.save();
+          if (newListings) {
+            const newBestDeal = new bestDealsModal({
+              ...newListings,
+              status: "Active",
+            });
+            newBestDeal.save();
+          }
         }
 
         res.status(200).json({
@@ -1230,34 +1236,31 @@ router.post(
         //   isOtherVendor: "N",
 
         let findingBestData = {
-          $expr: {
-            $and: [
-              { marketingName: getListing?.marketingName },
-              { deviceStorage: getListing?.deviceStorage },
-              { deviceCondition: getListing?.deviceCondition },
-              { isOtherVendor: "N" },
-              {
-                notionalPercentage: {
-                  $gte:
-                    [ "$notionalPercentage", getListing?.notionalPercentage &&
-                    getListing?.notionalPercentage > 0
-                      ? getListing?.notionalPercentage
-                      : 0,]
-                },
-              },
-              // {
-              //   $gte: [
-              //     {
-              //       $toInt: "$notionalPercentage",
-              //     },
-              //     parseInt(getListing?.notionalPercentage),
-              //   ],
-              // },
-            ],
-          },
+          marketingName: getListing?.marketingName,
+          deviceStorage: getListing?.deviceStorage,
+          deviceCondition: getListing?.deviceCondition,
+          isOtherVendor: "N",
+          $gte: [
+            {
+              $toInt: "$notionalPercentage",
+            },
+            parseInt(getListing?.notionalPercentage),
+          ],
+          $lte: [
+            {
+              $toInt: "$notionalPercentage",
+            },
+            parseInt(getListing?.notionalPercentage),
+          ],
         };
 
-        let oruBest = await bestDealsModal.findOne(findingBestData);
+        let oruBest = await bestDealsModal.findOne(
+          //{ marketingName: getListing?.marketingName,
+          // deviceStorage: getListing?.deviceStorage,
+          // deviceCondition: getListing?.deviceCondition,
+          // isOtherVendor: "N",}
+          findingBestData
+        );
 
         let tempStr = getListing?.deviceStorage;
         tempStr = tempStr.replace("GB", "").trim();
@@ -1311,11 +1314,21 @@ router.post(
         });
 
         // add oruBest to the selectdModels
-        if (oruBest) {
-          const dy_link = `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+        // console.log("oruBest", oruBest);
+        if (oruBest && oruBest?.isOtherVendor == "N") {
+          const dy_link =
+            oruBest?.listingId == getListing?.listingId
+              ? ""
+              : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+
+          const dy_img =
+            oruBest?.listingId == getListing?.listingId
+              ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png"
+              : "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/oru_logo.png";
+
           let vendorObject = {
             externalSourcePrice: parseInt(oruBest?.listingPrice),
-            externalSourceImage: "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/oru_logo.png",
+            externalSourceImage: dy_img,
             productLink: dy_link,
             userName: oruBest?.listedBy,
             listingId: oruBest?.listingId,
@@ -1324,7 +1337,6 @@ router.post(
         }
 
         if (selectdModels.length > 0) {
-
           // sort selectdModels by price
           selectdModels.sort((a, b) => {
             return a.externalSourcePrice - b.externalSourcePrice;
