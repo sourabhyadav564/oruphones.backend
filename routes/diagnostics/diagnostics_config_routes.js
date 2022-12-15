@@ -1165,7 +1165,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
 
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
-        if (item.testStatus !== "PASS") {
+        if (item.testStatus == "FAIL") {//!== "PASS"
           // grade = "C";
           grade = "D";
           // condition = "Fair";
@@ -1173,7 +1173,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
           break;
         }
       } else if (severityMedium.includes(item.commandName)) {
-        if (item.testStatus !== "PASS") {
+        if (item.testStatus == "FAIL") {
           if (count <= 3) {
             // grade = "B";
             // condition = "Good";
@@ -1188,7 +1188,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
           }
         }
       } else if (severityLow.includes(item.commandName)) {
-        if (item.testStatus !== "PASS") {
+        if (item.testStatus == "FAIL") {
           if (lCount <= 3) {
             grade = "A";
             condition = "Excellent";

@@ -184,7 +184,7 @@ const getBestDeals = async (
           );
 
           if ("charger" in item === true) {
-            if (item.charger === "N") {
+            if (item.charger === "Y") {
               deduction = deduction + has_charger_percentage;
               // notionalPrice =
               // notionalPrice + (basePrice / 100) * has_charger_percentage;
@@ -192,7 +192,7 @@ const getBestDeals = async (
           }
 
           if ("earphone" in item === true) {
-            if (item.earphone === "N") {
+            if (item.earphone === "Y") {
               deduction = deduction + has_earphone_percentage;
               // notionalPrice =
               //   notionalPrice + (basePrice / 100) * has_earphone_percentage;
@@ -200,7 +200,7 @@ const getBestDeals = async (
           }
 
           if ("originalbox" in item === true) {
-            if (item.originalbox === "N") {
+            if (item.originalbox === "Y") {
               deduction = deduction + has_original_box_percentage;
               // notionalPrice =
               //   notionalPrice + (basePrice / 100) * has_original_box_percentage;

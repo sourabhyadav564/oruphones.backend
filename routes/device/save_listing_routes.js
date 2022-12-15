@@ -1298,9 +1298,15 @@ router.post(
           vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
             .toString()
             .toLowerCase()}_logo.png`;
+
+          const dy_img =
+            getListing?.listingId == vendor._id.toString()
+              ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png"
+              : vendorImage;
+
           let vendorObject = {
             externalSourcePrice: vendor.price,
-            externalSourceImage: vendorImage,
+            externalSourceImage: dy_img,
             productLink: vendor.link ? vendor.link : "",
           };
           if (!pushedVendors.includes(vendorName)) {
@@ -1338,8 +1344,8 @@ router.post(
 
         if (selectdModels.length > 0) {
           // sort selectdModels by price
-          selectdModels.sort((a, b) => {
-            return a.externalSourcePrice - b.externalSourcePrice;
+          selectdModels.sort((b, a) => {
+            return a.notionalPercentage - b.notionalPercentage;
           });
 
           externalSource.push(...selectdModels);
