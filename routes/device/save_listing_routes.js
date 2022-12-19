@@ -1322,11 +1322,13 @@ router.post(
         // add oruBest to the selectdModels
         // console.log("oruBest", oruBest);
         if (oruBest && oruBest?.isOtherVendor == "N") {
-          const dy_link =
+          let dy_link =
             oruBest?.listingId == getListing?.listingId
               ? ""
               : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
 
+              // replace spaces with %20 in dy_link
+              dy_link = dy_link.replace(/ /g, "%20");
           const dy_img =
             oruBest?.listingId == getListing?.listingId
               ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png"
