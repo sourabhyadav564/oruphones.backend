@@ -1388,7 +1388,7 @@ router.post(
             listingId: oruBest?.listingId,
             Object: oruBest,
           };
-          selectdModels.push(vendorObject);
+          externalSource.push(vendorObject);
         }
 
         if (selectdModels.length > 0) {
@@ -1397,8 +1397,8 @@ router.post(
           selectdModels.sort((b, a) => {
             return b.externalSourcePrice - a.externalSourcePrice;
           });
-
-          externalSource.push(...selectdModels);
+          // externalSource.push(vendorObject);
+          externalSource.push(...externalSource, ...selectdModels);
           //TODO: Need to remove the duplicate objects. Objects from the rarest.
         }
         dataObject = { externalSource, ...(getListing._doc || getListing) };
