@@ -186,12 +186,12 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   let duplicated = limitExceeded
     ? limitExceeded
     : (await saveListingModal.find().countDocuments({
-        userUniqueId,
-        marketingName,
-        deviceStorage,
-        deviceRam,
-        verified: false,
-      })) >= 1;
+      userUniqueId,
+      marketingName,
+      deviceStorage,
+      deviceRam,
+      verified: false,
+    })) >= 1;
 
   const data = {
     charger,
@@ -248,11 +248,11 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
 
     let message = limitExceeded
       ? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
-        "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
+      "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
       : duplicated
-      ? // ? "Added Successfully but Paused because This exact listing already present!"
+        ? // ? "Added Successfully but Paused because This exact listing already present!"
         "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device."
-      : "Listing saved successfully";
+        : "Listing saved successfully";
 
     res.status(201).json({
       // reason: "Listing saved successfully",
@@ -262,8 +262,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       type: limitExceeded
         ? "Unverified Listings Limit Exceeded"
         : duplicated
-        ? "Duplicate Listing"
-        : "",
+          ? "Duplicate Listing"
+          : "",
       dataObject: dataObject,
     });
     return;
@@ -543,13 +543,13 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
     let duplicated = limitExceeded
       ? limitExceeded
       : (await saveListingModal.find().countDocuments({
-          mobileNumber: activateListing[0]?.mobileNumber,
-          marketingName: activateListing[0]?.marketingName,
-          deviceStorage: activateListing[0]?.deviceStorage,
-          deviceRam: activateListing[0]?.deviceRam,
-          verified: false,
-          status: "Active",
-        })) >= 1;
+        mobileNumber: activateListing[0]?.mobileNumber,
+        marketingName: activateListing[0]?.marketingName,
+        deviceStorage: activateListing[0]?.deviceStorage,
+        deviceRam: activateListing[0]?.deviceRam,
+        verified: false,
+        status: "Active",
+      })) >= 1;
 
     if (!activateListing) {
       res.status(200).json({
@@ -563,8 +563,8 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
       const reasonMsg = limitExceeded
         ? "You are not allowed to activate more then 5 unverified listings."
         : duplicated
-        ? "Looks like your activated listing for this device is available on our platform. Please verify your listing."
-        : ``;
+          ? "Looks like your activated listing for this device is available on our platform. Please verify your listing."
+          : ``;
 
       res.status(200).json({
         reason: reasonMsg,
@@ -1240,27 +1240,65 @@ router.post(
           deviceStorage: getListing?.deviceStorage,
           deviceCondition: getListing?.deviceCondition,
           isOtherVendor: "N",
-          $gte: [
-            {
-              $toInt: "$notionalPercentage",
-            },
-            parseInt(getListing?.notionalPercentage),
-          ],
-          $lte: [
-            {
-              $toInt: "$notionalPercentage",
-            },
-            parseInt(getListing?.notionalPercentage),
-          ],
+          mobiru_condition: getListing?.deviceCondition,
+          $expr: {
+            $and:
+              [
+                {
+                  $ne: [
+                    "$notionalPercentage", NaN
+                  ]
+                },
+                {
+                  $gte: [
+                    {
+                      $toInt: "$notionalPercentage",
+                    },
+                    parseInt(getListing?.notionalPercentage),
+                  ]
+                },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$notionalPercentage",
+                    },
+                    40,
+                  ],
+                }
+              ]
+          }
         };
 
-        let oruBest = await bestDealsModal.findOne(
-          //{ marketingName: getListing?.marketingName,
-          // deviceStorage: getListing?.deviceStorage,
-          // deviceCondition: getListing?.deviceCondition,
-          // isOtherVendor: "N",}
-          findingBestData
-        );
+        // console.log("findingBestData", findingBestData);
+
+        // let findingBestData = {
+        //   marketingName: getListing?.marketingName,
+        //   deviceStorage: getListing?.deviceStorage,
+        //   deviceCondition: getListing?.deviceCondition,
+        //   isOtherVendor: "N",
+        //   $gte: [
+        //     {
+        //       $toInt: "$notionalPercentage",
+        //     },
+        //     getListing?.notionalPercentage,
+        //   ],
+        //   $lte: [
+        //     {
+        //       $toInt: "$notionalPercentage",
+        //     },
+        //     40,
+        //   ],
+        //   $ne: [
+        //     "$notionalPercentage",
+        //     NaN
+        //   ],
+        // };
+
+        if (getListing?.make != "Apple") {
+          findingBestData["deviceRam"] = getListing?.deviceRam;
+        }
+
+        let oruBest = await bestDealsModal.findOne(findingBestData);
 
         let tempStr = getListing?.deviceStorage;
         tempStr = tempStr.replace("GB", "").trim();
@@ -1270,12 +1308,19 @@ router.post(
           storage: parseInt(tempStr),
           type: ["buy", "Buy"],
           mobiru_condition: getListing?.deviceCondition,
+          isOtherVendor: "Y",
         };
+
+        if (getListing?.make != "Apple") {
+          let ram = getListing?.deviceRam;
+          ram = ram.replace("GB", "").trim();
+          findingData["deviceRam"] = ram;
+        }
 
         let scrappedModels = await testScrappedModal.find(findingData);
         // console.log("scrappedModels", scrappedModels.length, findingData);
-
         // let scrappedModels = testScrappedModal
+        // console.log("scrappedModels", scrappedModels);
 
         let selectdModels = [];
         let itemId = "";
@@ -1285,7 +1330,7 @@ router.post(
         let leastSellingPrice;
 
         let pushedVendors = [];
-
+        // console.log("vendorImage", scrappedModels);
         scrappedModels.forEach((vendor, index) => {
           // if (
           //   item.model === marketingname &&
@@ -1300,14 +1345,15 @@ router.post(
             .toLowerCase()}_logo.png`;
 
           const dy_img =
-            getListing?.listingId == vendor._id.toString()
-              ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png"
-              : vendorImage;
+            // getListing?.listingId == vendor._id.toString()
+            //   ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png":
+            vendorImage;
 
           let vendorObject = {
             externalSourcePrice: vendor.price,
             externalSourceImage: dy_img,
             productLink: vendor.link ? vendor.link : "",
+            listingId: vendor._id.toString(),
           };
           if (!pushedVendors.includes(vendorName)) {
             if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
@@ -1327,12 +1373,12 @@ router.post(
               ? ""
               : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
 
-              // replace spaces with %20 in dy_link
-              dy_link = dy_link.replace(/ /g, "%20");
+          // replace spaces with %20 in dy_link
+          dy_link = dy_link.replace(/ /g, "%20");
           const dy_img =
             oruBest?.listingId == getListing?.listingId
-              ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png"
-              : "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/oru_logo.png";
+              ? "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png"
+              : "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/oru_logo.png";
 
           let vendorObject = {
             externalSourcePrice: parseInt(oruBest?.listingPrice),
@@ -1340,14 +1386,16 @@ router.post(
             productLink: dy_link,
             userName: oruBest?.listedBy,
             listingId: oruBest?.listingId,
+            Object: oruBest,
           };
           selectdModels.push(vendorObject);
         }
 
         if (selectdModels.length > 0) {
+          console.log("selectdModels", selectdModels);
           // sort selectdModels by price
           selectdModels.sort((b, a) => {
-            return a.notionalPercentage - b.notionalPercentage;
+            return b.externalSourcePrice - a.externalSourcePrice;
           });
 
           externalSource.push(...selectdModels);

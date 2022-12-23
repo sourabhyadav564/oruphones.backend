@@ -226,7 +226,7 @@ const getBestDeals = async (
               item.model_name === marketingname &&
               item.make === make &&
               item.storage ===
-                parseInt(storage.toString().split(" ")[0].toString()) &&
+              parseInt(storage.toString().split(" ")[0].toString()) &&
               item.type === "sell" &&
               item.vendor_id === 8
             ) {
@@ -278,8 +278,15 @@ const getBestDeals = async (
               notionalPercentage: currentPercentage,
             };
           } else {
+            let oldItem = item._doc;
+            await oldItem.images.forEach((imgItem) => {
+              let oldImg = imgItem.fullImage;
+              let newImg = oldImg.replace("https://demo-bucket-c2c-001.s3.amazonaws.com/", "https://d1tl44nezj10jx.cloudfront.net/");
+              imgItem.fullImage = newImg;
+              imgItem.thumbnailImage = newImg;
+            });
             newDataObject = {
-              ...item._doc,
+              ...oldItem,
               notionalPercentage: currentPercentage,
             };
           }
@@ -452,8 +459,8 @@ const getBestDeals = async (
             if (item.verified == false) {
               item.functionalTestResults = [];
             }
-          }else{
-            if(item.notionalPercentage > 0){
+          } else {
+            if (item.notionalPercentage > 0) {
               item.notionalPercentage = 0;
             }
           }

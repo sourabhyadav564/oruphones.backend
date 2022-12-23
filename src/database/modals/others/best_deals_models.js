@@ -60,7 +60,7 @@ const bestDealsSchema = new mongoose.Schema(
       },
       default: {
         fullImage:
-          "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png",
+          "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png",
       },
     },
     imei: {

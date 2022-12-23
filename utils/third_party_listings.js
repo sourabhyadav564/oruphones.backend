@@ -86,7 +86,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
   let dataArray = [];
   filterd.forEach(async (element) => {
     let vendorName = VENDORS[element.vendor_id];
-    let vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+    let vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
       .toString()
       .toLowerCase()}_logo.png`;
 
