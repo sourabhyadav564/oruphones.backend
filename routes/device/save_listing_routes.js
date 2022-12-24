@@ -1401,11 +1401,6 @@ router.post(
           });
           // externalSource.push(vendorObject);
           externalSource.push(...selectdModels);
-          //Need to remove the duplicate objects
-          externalSource = externalSource.filter(
-            (thing, index, self) =>
-              index === self.findIndex((t) => t.listingId === thing.listingId)
-          );
 
         }
         dataObject = { externalSource, ...(getListing._doc || getListing) };
