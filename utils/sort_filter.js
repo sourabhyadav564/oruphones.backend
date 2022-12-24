@@ -43,12 +43,14 @@ const applySortFilter = async (sortBy, page, findingData) => {
       .skip(parseInt(page) * 30)
       .limit(30);
   } else if (sortBy === "Newest First") {
+    findingData.createdAt = { $ne: null };
     completeDeals = await bestDealsModal
       .find(findingData)
       .sort({ createdAt: -1 })
       .skip(parseInt(page) * 30)
       .limit(30);
   } else if (sortBy === "Oldest First") {
+    findingData.createdAt = { $ne: null };
     completeDeals = await bestDealsModal
       .find(findingData)
       .sort({ createdAt: 1 })

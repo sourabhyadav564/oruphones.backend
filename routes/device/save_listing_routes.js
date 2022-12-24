@@ -1400,8 +1400,13 @@ router.post(
             return b.externalSourcePrice - a.externalSourcePrice;
           });
           // externalSource.push(vendorObject);
-          externalSource.push(...externalSource, ...selectdModels);
-          //TODO: Need to remove the duplicate objects. Objects from the rarest.
+          externalSource.push(...selectdModels);
+          //Need to remove the duplicate objects
+          externalSource = externalSource.filter(
+            (thing, index, self) =>
+              index === self.findIndex((t) => t.listingId === thing.listingId)
+          );
+
         }
         dataObject = { externalSource, ...(getListing._doc || getListing) };
         let tempArray = [];
