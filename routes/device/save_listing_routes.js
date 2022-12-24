@@ -309,6 +309,7 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
         });
         if (updatedListings) {
           updatedListings.status = "Sold_Out";
+          updatedListings.notionalPercentage = (!(updatedListings.notionalPercentage) || updatedListings.notionalPercentage == NaN || updatedListings.notionalPercentage.toString() == "NaN" || updatedListings.notionalPercentage == undefined || updatedListings.notionalPercentage.toString() == "undefined") ? -999999 : updatedListings.notionalPercentage;
           updatedListings.save();
         }
         res.status(200).json({
@@ -1241,6 +1242,7 @@ router.post(
           deviceCondition: getListing?.deviceCondition,
           isOtherVendor: "N",
           mobiru_condition: getListing?.deviceCondition,
+          status: "Active",
           $expr: {
             $and:
               [

@@ -456,6 +456,7 @@ const getBestDeals = async (
           // console.log("item", index);
           if (item.isOtherVendor == "N") {
             delete item.mobileNumber;
+            delete item.userUniqueId;
             if (item.verified == false) {
               item.functionalTestResults = [];
             }
@@ -468,6 +469,9 @@ const getBestDeals = async (
             item.notionalPercentage.toString() === "NaN" ||
             item.notionalPercentage > 40
           ) {
+            if (item.notionalPercentage.toString() === "NaN") {
+              item.notionalPercentage = -99999;
+            }
             console.log("item", item.notionalPercentage);
             fakeData.push(item);
           } else {
