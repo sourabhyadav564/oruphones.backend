@@ -1475,7 +1475,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
     const hasEarphone = listing.earphone === "Y" ? true : false;
     const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
-    const hasOrignalBox = listing.orignalBox === "Y" ? true : false;
+    const hasOrignalBox = listing.originalbox === "Y" ? true : false;
     const isVarified = true;
 
     const price = await getRecommendedPrice(
