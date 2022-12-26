@@ -1382,15 +1382,15 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
 
     if (saveData == "N" && buyerCondition != null) {
       if (condition != buyerCondition) {
-        if (buyerCondition == "Needs Repair" || condition == "Needs Repair") {
+        if (buyerCondition == "Needs Repair" || grade == "D") {
           condition = "Needs Repair";
-        } else if (buyerCondition == "Fair" || condition == "Fair") {
+        } else if (buyerCondition == "Fair" || grade == "C") {
           condition = "Fair";
-        } else if (buyerCondition == "Good" || condition == "Good") {
+        } else if (buyerCondition == "Good" || grade == "B") {
           condition = "Good";
-        } else if (buyerCondition == "Excellent"|| condition == "Excellent") {
+        } else if (buyerCondition == "Excellent" || grade == "A") {
           condition = "Excellent";
-        } else if (buyerCondition == "Like New" || condition == "Like New") {
+        } else if (buyerCondition == "Like New" || grade == "S") {
           condition = "Like New";
         }
       }
