@@ -1256,7 +1256,7 @@ router.post(
                     {
                       $toInt: "$notionalPercentage",
                     },
-                    parseInt(getListing?.notionalPercentage),
+                    0,
                   ]
                 },
                 {

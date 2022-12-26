@@ -1099,6 +1099,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
   // const questionnaireResults = req.body.questionnaireResults;
   const deviceUniqueId = req.body.deviceUniqueId;
   const ram = req.body.ram;
+  const buyerCondition = req.body.buyerCondition;
   // const userUniqueId = req.body.userUniqueId;
 
   // const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
@@ -1377,6 +1378,22 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       condition = "Fair";
     } else if (finalGrade === "D") {
       condition = "Needs Repair";
+    }
+
+    if (saveData == "N" && buyerCondition != null) {
+      if (condition != buyerCondition) {
+        if (buyerCondition == "Needs Repair" || condition == "Needs Repair") {
+          condition = "Needs Repair";
+        } else if (buyerCondition == "Fair" || condition == "Fair") {
+          condition = "Fair";
+        } else if (buyerCondition == "Good" || condition == "Good") {
+          condition = "Good";
+        } else if (buyerCondition == "Excellent"|| condition == "Excellent") {
+          condition = "Excellent";
+        } else if (buyerCondition == "Like New" || condition == "Like New") {
+          condition = "Like New";
+        }
+      }
     }
 
     // let questionArray = req.body.questionnaireResults;
