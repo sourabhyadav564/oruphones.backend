@@ -107,10 +107,6 @@ router.post("/diagConfig", async (req, res) => {
       categoryObject["manualTests"] = finalMT;
       return categoryObject;
     }
-
-    // categoryObject["autoTests"] = autoTests;
-    // categoryObject["manualTests"] = manualTests;
-    // return categoryObject;
   };
 
   if (req.body.transactionName === "VerifyDevice") {
@@ -126,20 +122,8 @@ router.post("/diagConfig", async (req, res) => {
     data["category"] = category;
     data["checkMyDevice"] = check_category;
   } else {
-    // const battery_category = filtered("BatteryCharging");
-    // const system_crash_category = filtered("SystemCrash");
-    // const connectivity_category = filtered("Connectivity");
-    // const audio_vibrate_category = filtered("AudioVibrate");
-    // const camera_category = filtered("Camera");
-    // const display_touch_category = filtered("DisplayTouch");
     const run_all_category = filtered("RunAllDiagnostics");
     const check_category = filtered("checkMyDevice");
-    // category.push(battery_category);
-    // category.push(system_crash_category);
-    // category.push(connectivity_category);
-    // category.push(audio_vibrate_category);
-    // category.push(camera_category);
-    // category.push(display_touch_category);
     category.push(run_all_category);
     data["category"] = category;
     data["checkMyDevice"] = check_category;
@@ -147,12 +131,10 @@ router.post("/diagConfig", async (req, res) => {
 
   const getMarketingName = async (make, model) => {
     try {
-      // FURTHER: use aggregate to get the data when complex query is needed
       let Object = await gsmarenaModal.aggregate([{ $match: { make: make } }]);
 
       let modelName = "";
       let makeArray = Object[0][make];
-      // Get the model name from the make array based on the model number
       makeArray.forEach((item, index) => {
         let keys = [];
         for (let key in item) {
@@ -1076,13 +1058,11 @@ router.post("/diagConfigIOS", async (req, res) => {
   const diagnosticsData = { ...req.body, sessionId: randomNumber };
   const saveDiagnosticsData = new dignosticsConfigModal(diagnosticsData);
   try {
-    // const givedSavedData = await saveDiagnosticsData.save();
     res.status(201).json({
       data: data,
       status: "SUCCESS",
       message: "Valid store id",
       sessionId: parseInt(randomNumber),
-      // statusCode: 201,
     });
     return;
   } catch (error) {
@@ -1092,19 +1072,11 @@ router.post("/diagConfigIOS", async (req, res) => {
 });
 
 router.post("/grade/price", validUser, logEvent, async (req, res) => {
-  // const companyId = req.body.companyId;
-  // const diagSessionId = req.body.diagSessionId;
   const functionalTestResults = req.body.functionalTestResults;
   const listingId = req.body.listingId;
-  // const questionnaireResults = req.body.questionnaireResults;
   const deviceUniqueId = req.body.deviceUniqueId;
   const ram = req.body.ram;
   const buyerCondition = req.body.buyerCondition;
-  // const userUniqueId = req.body.userUniqueId;
-
-  // const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
-  // const deviceFinalGrade = req.body.deviceFinalGrade;
-  // const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
   const saveData = req.body.saveData;
 
   try {
@@ -1213,94 +1185,9 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       }
     }
 
-    // for (item of questionnaireResults) {
-    //   if (item.questionId === 1 && item.childQuestions.length > 0) {
-    //     if (item.childQuestions.length === 3) {
-    //       cosmeticGrade = "C";
-    //       break;
-    //     } else if (item.childQuestions.length === 2) {
-    //       cosmeticGrade = "B";
-    //       break;
-    //     } else if (
-    //       item.childQuestions.includes(3) ||
-    //       item.childQuestions.includes(5)
-    //     ) {
-    //       cosmeticGrade = "B";
-    //       break;
-    //     } else if (item.childQuestions.includes(4)) {
-    //       cosmeticGrade = "A";
-    //       break;
-    //     }
-    //   } else if (item.questionId === 6 && item.childQuestions.length > 0) {
-    //     if (item.childQuestions.length >= 3) {
-    //       cosmeticGrade = "C";
-    //       break;
-    //     } else if (item.childQuestions.length === 2) {
-    //       if (
-    //         item.childQuestions.includes(7) &&
-    //         item.childQuestions.includes(8)
-    //       ) {
-    //         cosmeticGrade = "C";
-    //         break;
-    //       } else if (
-    //         (item.childQuestions.includes(7) &&
-    //           item.childQuestions.includes(9)) ||
-    //         (item.childQuestions.includes(7) &&
-    //           item.childQuestions.includes(10)) ||
-    //         (item.childQuestions.includes(8) &&
-    //           item.childQuestions.includes(9)) ||
-    //         (item.childQuestions.includes(8) &&
-    //           item.childQuestions.includes(10))
-    //       ) {
-    //         cosmeticGrade = "B";
-    //         break;
-    //       } else if (
-    //         item.childQuestions.includes(9) ||
-    //         item.childQuestions.includes(10)
-    //       ) {
-    //         cosmeticGrade = "A";
-    //       }
-    //     } else if (
-    //       item.childQuestions.includes(7) ||
-    //       item.childQuestions.includes(8)
-    //     ) {
-    //       cosmeticGrade = "B";
-    //       break;
-    //     } else if (
-    //       item.childQuestions.includes(9) ||
-    //       item.childQuestions.includes(10)
-    //     ) {
-    //       cosmeticGrade = "A";
-    //       break;
-    //     }
-    //   } else if (item.childQuestions.length === 0) {
-    //     cosmeticGrade = "S";
-    //   }
-    // }
-
     let warrantyPeriod;
-    // for (item of questionnaireResults) {
-    //   if (item.questionId === 11 && item.childQuestions.length > 0) {
-    //     if (item.childQuestions[0] == "12" || item.childQuestions[0] == 12) {
-    //       warrantyPeriod = "zero";
-    //     } else if (
-    //       item.childQuestions[0] == "13" ||
-    //       item.childQuestions[0] == 13
-    //     ) {
-    //       warrantyPeriod = "four";
-    //     } else if (
-    //       item.childQuestions[0] == "14" ||
-    //       item.childQuestions[0] == 14
-    //     ) {
-    //       warrantyPeriod = "seven";
-    //     } else {
-    //       warrantyPeriod = "more";
-    //     }
-    //   }
-    // }
 
     const listing = await saveListingModal.findOne({ listingId: listingId });
-    // let deviceCondition = listing.deviceCondition;
     let cosmetic = listing.cosmetic;
     let deviceAge = listing.warranty;
 
@@ -1314,7 +1201,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       warrantyPeriod = "more";
     }
 
-    // cosmeticGrade = listing.deviceCosmeticGrade;
 
     if (!cosmetic || cosmetic[0].toString().includes("No")) {
       cosmeticGrade = "D";
@@ -1341,18 +1227,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
         cosmeticGrade = "S";
       }
     }
-
-    // if (deviceCondition === "Like New") {
-    //   cosmeticGrade = "S";
-    // } else if (deviceCondition === "Excellent") {
-    //   cosmeticGrade = "A";
-    // } else if (deviceCondition === "Good") {
-    //   cosmeticGrade = "B";
-    // } else if (deviceCondition === "Fair") {
-    //   cosmeticGrade = "C";
-    // } else if (deviceCondition === "Needs Repair") {
-    //   cosmeticGrade = "D";
-    // }
 
     if (grade === "S" && cosmeticGrade === "S") {
       finalGrade = "S";
@@ -1396,40 +1270,12 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       }
     }
 
-    // let questionArray = req.body.questionnaireResults;
-
-    // let finalQuestionArray = [];
-
-    // questionArray.forEach((item, index) => {
-    //   let childQuestions = item.childQuestions;
-    //   if (childQuestions.length > 0) {
-    //     let exactChildQuestions = [];
-    //     childQuestions.forEach((child) => {
-    //       let currentQuestion = getQuestions.find(
-    //         (element) => element.questionId === item.questionId
-    //       );
-    //       let currentChildQuestion = currentQuestion["childQuestions"].find(
-    //         (element2) => element2.questionId === child
-    //       );
-    //       exactChildQuestions.push(currentChildQuestion["question"]);
-    //     });
-    //     const updatedChildQuestionArray = {
-    //       ...questionArray[index],
-    //       childQuestions: exactChildQuestions,
-    //     };
-    //     finalQuestionArray.push(updatedChildQuestionArray);
-    //   } else {
-    //     finalQuestionArray.push(item);
-    //   }
-    // });
-
     const now = new Date();
     const dateFormat = moment(now).format("MMM Do");
 
     const dataToBeUpdate = {
       deviceFunctionalGrade: grade,
       functionalTestResults: req.body.functionalTestResults,
-      // questionnaireResults: finalQuestionArray,
       questionnaireResults: [],
       deviceCosmeticGrade: cosmeticGrade,
       deviceFinalGrade: finalGrade,
@@ -1469,7 +1315,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
 
     const make = req.body.make;
     const marketingname = req.body.marketingName;
-    // const condition = "Good"; //TODO: Need to make create the dynamic condition
     const storage = req.body.storage;
     const hasCharger = listing.charger === "Y" ? true : false;
     const isAppleChargerIncluded = make === "Apple" ? hasCharger : false;
@@ -1477,6 +1322,35 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     const isAppleEarphoneIncluded = make === "Apple" ? hasEarphone : false;
     const hasOrignalBox = listing.originalbox === "Y" ? true : false;
     const isVarified = true;
+
+    const oldPrice = await getRecommendedPrice(
+      listing.make,
+      listing.marketingName,
+      listing.deviceCondition,
+      listing.deviceStorage,
+      listing.deviceRam,
+      listing.charger === "Y" ? true : false,
+      listing.make === "Apple" ? listing.charger === "Y" ? true : false : false,
+      listing.earphone === "Y" ? true : false,
+      listing.make === "Apple" ? listing.earphone === "Y" ? true : false : false,
+      listing.originalbox === "Y" ? true : false,
+      listing.verified,
+      false,
+      warrantyPeriod
+    );
+    console.log("oldPrice", listing.make,
+      listing.marketingName,
+      listing.deviceCondition,
+      listing.deviceStorage,
+      listing.deviceRam,
+      listing.charger === "Y" ? true : false,
+      listing.make === "Apple" ? listing.charger === "Y" ? true : false : false,
+      listing.earphone === "Y" ? true : false,
+      listing.make === "Apple" ? listing.earphone === "Y" ? true : false : false,
+      listing.originalbox === "Y" ? true : false,
+      listing.verified,
+      false,
+      warrantyPeriod);
 
     const price = await getRecommendedPrice(
       make,
@@ -1497,6 +1371,8 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     const dataObject = {};
     dataObject["minPrice"] = price.leastSellingprice ?? "-";
     dataObject["maxPrice"] = price.maxsellingprice ?? "-";
+    dataObject["oldMinPrice"] = oldPrice.leastSellingprice ?? "-";
+    dataObject["oldMaxPrice"] = oldPrice.maxsellingprice ?? "-";
     dataObject["grade"] = finalGrade;
     dataObject["functionalGrade"] = grade;
     dataObject["cosmaticGrade"] = cosmeticGrade;
@@ -1547,14 +1423,6 @@ router.post("/logDiagTransaction", async (req, res) => {
         data: saveLogData || {},
       });
     }
-    // const dataToBeSave = new dignosticsLogsModal(req.body);
-    // const createLog = await dataToBeSave.save();
-    // res.status(200).json({
-    //   reason: "Diagnostics logs saved successfully",
-    //   statusCode: 201,
-    //   status: "SUCCESS",
-    //   // data: createLog,
-    // });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);

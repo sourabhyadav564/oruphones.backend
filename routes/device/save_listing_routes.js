@@ -1300,7 +1300,7 @@ router.post(
           findingBestData["deviceRam"] = getListing?.deviceRam;
         }
 
-        let oruBest = await bestDealsModal.findOne(findingBestData);
+        let oruBests = await bestDealsModal.find(findingBestData).limit(3);
 
         let tempStr = getListing?.deviceStorage;
         tempStr = tempStr.replace("GB", "").trim();
@@ -1369,28 +1369,31 @@ router.post(
 
         // add oruBest to the selectdModels
         // console.log("oruBest", oruBest);
-        if (oruBest && oruBest?.isOtherVendor == "N") {
-          let dy_link =
-            oruBest?.listingId == getListing?.listingId
-              ? ""
-              : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+        if (oruBests.length > 0) {
+          await oruBests.forEach((oruBest) => {
+            let dy_link =
+              oruBest?.listingId == getListing?.listingId
+                ? ""
+                : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
 
-          // replace spaces with %20 in dy_link
-          dy_link = dy_link.replace(/ /g, "%20");
-          const dy_img =
-            oruBest?.listingId == getListing?.listingId
-              ? "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png"
-              : "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/oru_logo.png";
+            // replace spaces with %20 in dy_link
+            dy_link = dy_link.replace(/ /g, "%20");
+            const dy_img =
+              oruBest?.listingId == getListing?.listingId
+                ? "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png"
+                : "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/oru_logo.png";
 
-          let vendorObject = {
-            externalSourcePrice: parseInt(oruBest?.listingPrice),
-            externalSourceImage: dy_img,
-            productLink: dy_link,
-            userName: oruBest?.listedBy,
-            listingId: oruBest?.listingId,
-            Object: oruBest,
-          };
-          externalSource.push(vendorObject);
+            let vendorObject = {
+              externalSourcePrice: parseInt(oruBest?.listingPrice),
+              externalSourceImage: dy_img,
+              productLink: dy_link,
+              userName: oruBest?.listedBy,
+              listingId: oruBest?.listingId,
+              Object: oruBest,
+            };
+            externalSource.push(vendorObject);
+          }
+          );
         }
 
         if (selectdModels.length > 0) {
