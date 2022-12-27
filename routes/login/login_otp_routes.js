@@ -87,17 +87,42 @@ router.post("/otp/validate", logEvent, async (req, res) => {
   const countryCode = req.query.countryCode;
   const otp = req.query.otp?.toString();
 
-  if (otp === "9261") {
-    res.status(200).json({
-      reason: "OTP validated",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        submitCountIncrement: 0,
-        maxRetryCount: "3",
+  if (otp === "9261" && mobileNumber === "9660398594") {
+    const getUser = await createUserModal.findOne({ mobileNumber });
+    if (getUser) {
+      res.status(200).json({
+        reason: "OTP validated",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          submitCountIncrement: 0,
+          maxRetryCount: "3",
+          mobileNumber: mobileNumber,
+          userUniqueId: getUser.userUniqueId,
+        },
+      });
+    } else {
+      const now = new Date();
+      const currentDate = moment(now).format("L");
+      const createUserData = {
         mobileNumber: mobileNumber,
-      },
-    });
+        countryCode: countryCode,
+        createdDate: currentDate,
+      };
+      const data = new createUserModal(createUserData);
+      const saveData = await data.save();
+      res.status(200).json({
+        reason: "OTP validated",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          submitCountIncrement: 0,
+          maxRetryCount: "3",
+          mobileNumber: mobileNumber,
+          userUniqueId: saveData.userUniqueId,
+        },
+      });
+    }
     return;
   }
 
