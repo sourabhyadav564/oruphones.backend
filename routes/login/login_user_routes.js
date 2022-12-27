@@ -16,32 +16,44 @@ const bestDealsModal = require("../../src/database/modals/others/best_deals_mode
 router.get("/user/details", logEvent, async (req, res) => {
   const mobileNumber = parseInt(req.query.mobileNumber);
   const countryCode = req.query.countryCode;
+  const userUniqueId = req.query.userUniqueId;
 
   try {
-    const getUser = await createUserModal.findOne({ mobileNumber });
-
-    if (getUser) {
-      res.status(200).json({
-        reason: "User found successfully",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          userUniqueId: getUser.userUniqueId,
-          userdetails: getUser,
-        },
+    let getUser = {};
+    if (mobileNumber !== undefined && mobileNumber !== null && mobileNumber.toString() !== "NaN") {
+      getUser = await createUserModal.findOne({ mobileNumber });
+      afterGettingUser(getUser, res);
+    } else if (userUniqueId !== undefined && userUniqueId !== null) {
+      getUser = await createUserModal.findOne({
+        userUniqueId,
       });
-    } else {
-      res.status(404).json({
-        reason: "User not found",
-        statusCode: 404,
-        status: "FAILURE",
-      });
+      afterGettingUser(getUser, res);
     }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
   }
 });
+
+afterGettingUser = async (getUser, res) => {
+  if (getUser) {
+    res.status(200).json({
+      reason: "User found successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: {
+        userUniqueId: getUser.userUniqueId,
+        userdetails: getUser,
+      },
+    });
+  } else {
+    res.status(404).json({
+      reason: "User not found",
+      statusCode: 404,
+      status: "FAILURE",
+    });
+  }
+};
 
 router.post("/user/create", logEvent, async (req, res) => {
   const now = new Date();
@@ -199,24 +211,24 @@ router.post("/user/delete", validUser, logEvent, async (req, res) => {
       {
         userUniqueId: userUniqueId,
       },
-      {status: "Sold_Out"}
+      { status: "Sold_Out" }
     );
     // const userListings = await saveListingModal.find({
     //   userUniqueId: userUniqueId,
     // });
     // if (userListings) {
-      deleteUserListings = await saveListingModal.deleteMany({
-        userUniqueId: userUniqueId,
-      });
+    deleteUserListings = await saveListingModal.deleteMany({
+      userUniqueId: userUniqueId,
+    });
     // }
 
     // const userAccount = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
     // if (userAccount) {
-      deleteUserAccount = await createUserModal.findOneAndDelete({
-        userUniqueId: userUniqueId,
-      });
+    deleteUserAccount = await createUserModal.findOneAndDelete({
+      userUniqueId: userUniqueId,
+    });
     // }
 
     if (
