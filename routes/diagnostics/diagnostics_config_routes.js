@@ -1087,7 +1087,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "LinearAccelerationSensorTest",
       "GeomagneticRotationSensorTest",
       "AccelerometerTest",
-      "WallChargingTest",
       "FingerPrintSensorTest"
     ];
     const severityMedium = [
@@ -1113,6 +1112,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "FrontFlashTest",
     ];
     const severityHigh = [
+      "WallChargingTest",
       "GenuineOSTest",
       "SpeakerTest",
       "FrontCameraPictureTest",
@@ -1338,19 +1338,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       false,
       warrantyPeriod
     );
-    console.log("oldPrice", listing.make,
-      listing.marketingName,
-      listing.deviceCondition,
-      listing.deviceStorage,
-      listing.deviceRam,
-      listing.charger === "Y" ? true : false,
-      listing.make === "Apple" ? listing.charger === "Y" ? true : false : false,
-      listing.earphone === "Y" ? true : false,
-      listing.make === "Apple" ? listing.earphone === "Y" ? true : false : false,
-      listing.originalbox === "Y" ? true : false,
-      listing.verified,
-      false,
-      warrantyPeriod);
 
     const price = await getRecommendedPrice(
       make,
@@ -1378,7 +1365,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     dataObject["cosmaticGrade"] = cosmeticGrade;
     dataObject["condition"] = condition;
     // dataObject["finalQuestionArray"] = finalQuestionArray;
-
     res.status(200).json({
       reason: "Listing updated successfully",
       statusCode: 201,
