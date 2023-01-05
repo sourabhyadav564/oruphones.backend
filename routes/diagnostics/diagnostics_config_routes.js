@@ -1150,12 +1150,12 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
           if (count <= 3) {
             // grade = "B";
             // condition = "Good";
-            grade = "D";
-            condition = "Needs Repair";
-            count++;
-          } else {
             grade = "C";
             condition = "Fair";
+            count++;
+          } else {
+            grade = "D";
+            condition = "Needs Repair";
             count = 0;
             break;
           }
