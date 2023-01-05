@@ -613,7 +613,7 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
         }
 
         res.status(200).json({
-          reason: "Listing activated successfully",
+          reason: "Listing activated successfully\nIt will be appear on marketplace within 24 hours.",
           statusCode: 200,
           status: "SUCCESS",
           activatedListing,

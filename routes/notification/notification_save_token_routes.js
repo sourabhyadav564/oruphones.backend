@@ -167,4 +167,43 @@ router.get("/read", validUser, logEvent, async (req, res) => {
   }
 });
 
+router.get("/remove", validUser, logEvent, async (req, res) => {
+  const notificationId = req.query.id;
+  const userUniqueId = req.query.userUniqueId;
+
+  try {
+    const notification = await notificationModel.findOne({
+      userUniqueId: userUniqueId,
+      notification: {
+        $elemMatch: {
+          notificationId: notificationId,
+        },
+      },
+    });
+    if (!notification) {
+      res.status(202).json({
+        reason: "Notification not found",
+        statusCode: 202,
+        status: "ACCEPTED",
+      });
+      return;
+    }
+    const notificationIndex = notification.notification.findIndex(
+      (element) => element.notificationId === notificationId
+    );
+    notification.notification.splice(notificationIndex, 1);
+    const updatedNotification = await notification.save();
+    res.status(200).json({
+      reason: "Notification removed successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: updatedNotification,
+    });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
 module.exports = router;
