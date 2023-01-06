@@ -1342,7 +1342,7 @@ router.post(
           //   item.vendor.forEach((vendor) => {
           // console.log("vendor", vendor);
           vendorName = VENDORS[vendor.vendor_id];
-          vendorImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/vendors/${vendorName
+          vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
             .toString()
             .toLowerCase()}_logo.png`;
 
