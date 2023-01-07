@@ -1385,7 +1385,7 @@ router.post("/logDiagTransaction", async (req, res) => {
 
     if (getLogData.length > 0) {
       const updateLogData = await dignosticsLogsModal.updateOne(
-        { sessionId: req.body.sessionId },
+        { sessionId: parseInt(req.body.sessionId.toString()) },
         {
           $set: {
             ...req.body,
