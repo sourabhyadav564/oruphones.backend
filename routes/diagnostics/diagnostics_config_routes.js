@@ -1380,7 +1380,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
 router.post("/logDiagTransaction", async (req, res) => {
   try {
     const getLogData = await dignosticsLogsModal.find({
-      sessionId: req.body.sessionId,
+      sessionId: parseInt(req.body.sessionId.toString()),
     });
 
     if (getLogData.length > 0) {
