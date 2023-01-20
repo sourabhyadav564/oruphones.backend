@@ -368,7 +368,7 @@ const sendLogMail = async (type) => {
   // send mail
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@gmail.com, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
     subject: `Scrapped Logs for ${type}`,
     html: mailBody,
   };

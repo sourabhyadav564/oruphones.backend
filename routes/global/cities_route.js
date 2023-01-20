@@ -6,6 +6,7 @@ const cityModal = require("../../src/database/modals/global/cities_modal");
 const logEvent = require("../../src/middleware/event_logging");
 
 const NodeCache = require("node-cache");
+const shortLinkModal = require("../../src/database/modals/others/short_link_model");
 
 const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
@@ -38,6 +39,32 @@ router.get("/cities", async (req, res) => {
       console.log(error);
       res.status(400).json(error);
     }
+  }
+});
+
+router.get("/getLink", logEvent, async (req, res) => {
+  try {
+    const keyId = req.query.keyId;
+    const getData = await shortLinkModal.findOne({ unKey: keyId });
+    if (getData) {
+      res.status(200).json({
+        reason: "Link found successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          link: getData.linkStr,
+        },
+      });
+    } else {
+      res.status(404).json({
+        reason: "Link not found",
+        statusCode: 404,
+        status: "FAILURE",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
   }
 });
 
