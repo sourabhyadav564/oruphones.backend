@@ -97,7 +97,11 @@ const getBestDeals = async (
   //   return;
   // }
 
-  let testScrappedModalData = await testScrappedModal.find({});
+  let testScrappedModalData = await testScrappedModal.find({
+    updatedAt: {
+      $gte: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+    },
+  });
 
   let basePrice;
   let notionalPrice;
@@ -226,7 +230,7 @@ const getBestDeals = async (
               item.model_name === marketingname &&
               item.make === make &&
               item.storage ===
-              parseInt(storage.toString().split(" ")[0].toString()) &&
+                parseInt(storage.toString().split(" ")[0].toString()) &&
               item.type === "sell" &&
               item.vendor_id === 8
             ) {
@@ -281,7 +285,10 @@ const getBestDeals = async (
             let oldItem = item._doc;
             await oldItem.images.forEach((imgItem) => {
               let oldImg = imgItem.fullImage;
-              let newImg = oldImg.replace("https://demo-bucket-c2c-001.s3.amazonaws.com/", "https://d1tl44nezj10jx.cloudfront.net/");
+              let newImg = oldImg.replace(
+                "https://demo-bucket-c2c-001.s3.amazonaws.com/",
+                "https://d1tl44nezj10jx.cloudfront.net/"
+              );
               imgItem.fullImage = newImg;
               imgItem.thumbnailImage = newImg;
             });

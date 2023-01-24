@@ -66,16 +66,21 @@ router.get("/topselling/models", async (req, res) => {
         }
       });
       dataObject.sort(function (a, b) { return b.quantity - a.quantity }); 
-      return dataObject.slice(0, 50);  
+      // return dataObject.slice(0, 50);  
+      return dataObject;  
     };
 
-    const dataObject = await topModels();
+    let dataObject = await topModels();
+    let allModels = [];
+    allModels = allModels.concat(dataObject);
+    dataObject = dataObject.slice(0, 50);  
     //TODO: Save the title object in the database for top selling collection
     res.status(200).json({
       reason: "Listings by marketing name",
       statusCode: 200,
       status: "SUCCESS",
       dataObject,
+      allModels,
     });
   } catch (error) {
     console.log(error);

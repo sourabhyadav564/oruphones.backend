@@ -13,6 +13,18 @@ const config = nodemailer.createTransport({
   },
 });
 
+const deleteOldData = async () => {
+  let expression = {
+    updatedAt: {
+      $lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    },
+    vendor_id: 13,
+  };
+
+  let deletedData = await testScrappedModal.deleteMany(expression);
+  console.log("deletedData", deletedData.deletedCount);
+};
+
 const startDataMigration = async () => {
   const d = new Date();
   let date = d.getDate();
@@ -42,6 +54,8 @@ const startDataMigration = async () => {
     ],
   });
   // console.log("listingsLength", allListings.length);
+
+  deleteOldData();
 
   const ourConditions = [
     "Like New",
