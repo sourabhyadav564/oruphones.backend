@@ -25,7 +25,7 @@ const corsOptions = {
     "http://localhost:3001",
     "http://localhost:3002",
     "https://localhost:3003",
-    "http://localhost:5500",
+    "https://opcs.io",
     "https://oruphones-desk-web.vercel.app",
     "https://oru-phones-web.vercel.app",
     "https://oruphones-mobile-web2.vercel.app",
@@ -63,14 +63,10 @@ schedule.scheduleJob("30 17 * * *", function () {
   startSavingBestDeals();
 });
 
-// schedule.scheduleJob("59 11 * * *", function () {
-//   console.log("The answer to life, the universe, and everything!");
-
-//   // addOLXData();
-//   // startDataRefine();
-//   // removeDuplicateData();
-//   startDataMigrationOneTime();
-// });
+schedule.scheduleJob("30 02 * * *", function () {
+  console.log("Daily SMS Job Started");
+  SendingSmsJob(true);
+});
 
 schedule.scheduleJob("00 13 * * *", function () {
   // schedule.scheduleJob("59 13 * * *", function () {
@@ -113,10 +109,13 @@ const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes"
 const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
 const getNewTokenRoute = require("../routes/login/get_new_token");
-const wordpressRoute = require("../routes/others/wordpress_route");
+// const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
 const generateCollectionDump = require("../utils/generate_mongo_dump");
 const startDataMigrationJob = require("../utils/migration_data");
+const SendingSmsJob = require("../utils/sms_cron");
+const SendSMS = require("../utils/send_sms_textlcl");
+const sendingSms = require("../utils/sms_assign");
 // const startDataMigrationOneTime = require("./database/modals/olx_models/migrate_cron_onetime");
 // const removeDuplicateData = require("../utils/temp_rem_dup_data");
 // const addOLXData = require("./database/modals/olx_models/olx_entry");
@@ -163,7 +162,7 @@ app.use("/api/v1/user", getMIPLoginRoutes);
 app.use("/api/v1/global", addSubscriptionRoute);
 app.use("/api/v1/global", addContactUsRoute);
 app.use("/api/v1/auth", getNewTokenRoute);
-app.use("/api/v1/wordpress", wordpressRoute);
+// app.use("/api/v1/wordpress", wordpressRoute);
 
 app.listen(port, () => {
   console.log(`The app listening on port ${port}`);

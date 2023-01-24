@@ -12,6 +12,7 @@ const saveNotificationModel = require("../src/database/modals/notification/notif
 const notificationModel = require("../src/database/modals/notification/complete_notifications");
 const sendverificationSMS = require("./send_verification_sms");
 const sendLoginOtp = require("./send_login_otp");
+const sendingSms = require("./sms_assign");
 
 const sendNotification = async (
   sellerUniqueId,
@@ -21,8 +22,6 @@ const sendNotification = async (
   sellerContactNumber,
   clientOTP
   ) => {
-
-  const sendMessage = sendverificationSMS(sellerContactNumber, clientOTP, sellerName, marketingName);
 
   const now = new Date();
   const currentDate = moment(now).format("L");
@@ -114,35 +113,7 @@ const sendNotification = async (
     );
   }
 
-  //   let fcm = new FCM(process.env.FCM_KEY);
-  //   let message = {
-  // to: notificationTokens[2],
-  //     notification: {
-  //       title: "Want to sell your phone at best deal??",
-  //       body: "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
-  //       sound: "default",
-  //       click_action: "FCM_PLUGIN_ACTIVITY",
-  //       icon: "fcm_push_icon",
-  //     },
-  //     data: {
-  //       title: "ok tested!",
-  //       body: {
-  //         source: "ORU Phones",
-  //         messageContent:
-  //           "Download the ORU Phones app today and get the best market price of your phone with our complete verification.",
-  //       },
-  //       appEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
-  //       webEventAction: isVerification ? "MY_LISTINGS" : "MY_FAVORITES",
-  //     },
-  //   };
-  //   fcm.send(message, function (err, response) {
-  //     if (err) {
-  //       console.log("Something has gone wrong!");
-  //     } else {
-  //       console.log("Successfully sent with response: ", response);
-  //       return response;
-  //     }
-  //   });
+  const sendMessage = await sendingSms("verify", sellerContactNumber, sellerUniqueId, sellerName, marketingName);
 };
 
 module.exports = sendNotification;
