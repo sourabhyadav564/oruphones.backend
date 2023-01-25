@@ -976,9 +976,14 @@ router.post(
         });
         return;
       } else {
-        const externalSource = [];
+        let externalSource = [];
+        let compareData = [];
 
-        let dataObject = { externalSource, ...(getListing._doc || getListing) };
+        let dataObject = {
+          externalSource,
+          compareData,
+          ...(getListing._doc || getListing),
+        };
         let findingBestData = {
           marketingName: getListing?.marketingName,
           deviceStorage: getListing?.deviceStorage,
@@ -1060,7 +1065,6 @@ router.post(
         let pushedVendors = [];
         // console.log("vendorImage", scrappedModels);
         scrappedModels.forEach((vendor, index) => {
-
           vendor = vendor._doc || vendor;
           // if (
           //   item.model === marketingname &&
@@ -1099,6 +1103,9 @@ router.post(
           // };
           if (!pushedVendors.includes(vendorName)) {
             if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
+              compareData.push(vendorObject);
+              delete vendorObject.Object;
+              // delete vendorObject.listingId;
               selectdModels.push(vendorObject);
               pushedVendors.push(vendorName);
             }
@@ -1131,6 +1138,8 @@ router.post(
               listingId: oruBest?.listingId,
               Object: oruBest,
             };
+            compareData.push(vendorObject);
+            delete vendorObject.Object;
             externalSource.push(vendorObject);
           });
         }
@@ -1149,6 +1158,8 @@ router.post(
             listingId: getListing?.listingId,
             Object: getListing,
           };
+          compareData.push(vendorObject);
+          delete vendorObject.Object;
           selectdModels.push(vendorObject);
         }
 
@@ -1161,7 +1172,11 @@ router.post(
           // externalSource.push(vendorObject);
           externalSource.push(...selectdModels);
         }
-        dataObject = { externalSource, ...(getListing._doc || getListing) };
+        dataObject = {
+          externalSource,
+          compareData,
+          ...(getListing._doc || getListing),
+        };
         let tempArray = [];
         tempArray.push(dataObject);
 
