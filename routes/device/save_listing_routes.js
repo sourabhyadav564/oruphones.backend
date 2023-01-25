@@ -1103,9 +1103,8 @@ router.post(
           // };
           if (!pushedVendors.includes(vendorName)) {
             if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
-              compareData.push(vendorObject);
-              delete vendorObject.Object;
-              // delete vendorObject.listingId;
+              // compareData.push(vendorObject);
+              // delete vendorObject.Object;
               selectdModels.push(vendorObject);
               pushedVendors.push(vendorName);
             }
@@ -1138,8 +1137,8 @@ router.post(
               listingId: oruBest?.listingId,
               Object: oruBest,
             };
-            compareData.push(vendorObject);
-            delete vendorObject.Object;
+            // compareData.push(vendorObject);
+            // delete vendorObject.Object;
             externalSource.push(vendorObject);
           });
         }
@@ -1158,8 +1157,8 @@ router.post(
             listingId: getListing?.listingId,
             Object: getListing,
           };
-          compareData.push(vendorObject);
-          delete vendorObject.Object;
+          // compareData.push(vendorObject);
+          // delete vendorObject.Object;
           selectdModels.push(vendorObject);
         }
 
@@ -1172,6 +1171,22 @@ router.post(
           // externalSource.push(vendorObject);
           externalSource.push(...selectdModels);
         }
+
+        let tempExternalSource = [];
+        externalSource.forEach((item) => {
+          compareData.push(item);
+          let vendorObject = {
+            externalSourcePrice: item.externalSourcePrice,
+            externalSourceImage: item.externalSourceImage,
+            productLink: item.productLink,
+            userName: item.userName,
+            listingId: item.listingId,
+          };
+          tempExternalSource.push(vendorObject);
+        });
+
+        externalSource = tempExternalSource;
+
         dataObject = {
           externalSource,
           compareData,
