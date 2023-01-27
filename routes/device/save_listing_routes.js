@@ -1147,11 +1147,13 @@ router.post(
         if (
           !externalSource.some(
             (item) => item.listingId == getListing?.listingId
-          )
+          ) &&
+          !selectdModels.some((item) => item.listingId == getListing?.listingId)
         ) {
           let vendorObject = {
-            externalSourcePrice: parseInt(getListing?.listingPrice),
-            externalSourceImage: "",
+            externalSourcePrice: parseInt(getListing?.listingPrice).toString(),
+            externalSourceImage:
+              "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png",
             productLink: "",
             userName: getListing?.listedBy,
             listingId: getListing?.listingId,
