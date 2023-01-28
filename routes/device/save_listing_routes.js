@@ -1030,13 +1030,13 @@ router.post(
           storage: parseInt(tempStr),
           type: ["buy", "Buy"],
           mobiru_condition: getListing?.deviceCondition,
-          isOtherVendor: "Y",
+          // isOtherVendor: "Y",
         };
 
         if (getListing?.make != "Apple") {
           let ram = getListing?.deviceRam;
           ram = ram.replace("GB", "").trim();
-          findingData["deviceRam"] = ram;
+          findingData["ram"] = parseInt(ram); //["deviceRam"] & remove parseInt()
         }
 
         let scrappedModelsTemp = await testScrappedModal.find(findingData);
