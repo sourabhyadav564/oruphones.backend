@@ -1183,6 +1183,7 @@ router.post(
             productLink: item.productLink,
             userName: item.userName,
             listingId: item.listingId,
+            Object: item.Object,
           };
           tempExternalSource.push(vendorObject);
         });
