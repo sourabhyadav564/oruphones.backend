@@ -1183,7 +1183,7 @@ router.post(
             productLink: item.productLink,
             userName: item.userName,
             listingId: item.listingId,
-            Object: item.Object,
+            Object: item.Object != undefined && item.Object.isOtherVendor == "N" ? item.Object : undefined,
           };
           tempExternalSource.push(vendorObject);
         });
