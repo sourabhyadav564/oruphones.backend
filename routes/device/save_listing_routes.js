@@ -1183,9 +1183,22 @@ router.post(
             productLink: item.productLink,
             userName: item.userName,
             listingId: item.listingId,
-            Object: item.Object != undefined && item.Object.isOtherVendor == "N" ? item.Object : undefined,
+            Object:
+              item.Object != undefined && item.Object.isOtherVendor == "N"
+                ? item.Object
+                : undefined,
           };
-          tempExternalSource.push(vendorObject);
+          if (
+            getListing?.listingId == item.listingId &&
+            (getListing.notionalPercentage == null ||
+              getListing.notionalPercentage == "" ||
+              getListing.notionalPercentage == undefined ||
+              getListing.notionalPercentage < 0 ||
+              getListing.notionalPercentage > 40)
+          ) {
+          } else {
+            tempExternalSource.push(vendorObject);
+          }
         });
 
         externalSource = tempExternalSource;
