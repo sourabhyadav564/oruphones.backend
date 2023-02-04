@@ -91,7 +91,7 @@ router.post(
       21: "mbr_Buyblynk",
       22: "mbr_Electronicbazaar",
       23: "Flipkart",
-      26: "OLX"
+      26: "OLX",
     };
 
     try {
@@ -103,13 +103,16 @@ router.post(
           dataObject: [],
         });
       } else {
+        marketingName = marketingName.replace("+", " Plus");
         const listings = await testScrappedModal.find({
           type: "sell",
           storage: [parseInt(deviceStorage), "--", "-- GB"],
           ram: [parseInt(deviceRam), "--", "-- GB"],
           make: make,
           // model_name: [marketingName, exact_model_name, tempModelName],
-          model_name: [marketingName],
+          model_name: {
+            $regex: new RegExp("^" + marketingName.toLowerCase() + "$", "i"),
+          },
           // model_name: { $regex: marketingName.toString(), $options: "i" },
           // TODO: compare modelname with lowercase using expr
           // $expr: {
