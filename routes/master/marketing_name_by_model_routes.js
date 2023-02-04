@@ -11,6 +11,7 @@ const newMakeAndModal = require("../../src/database/modals/others/new_make_and_m
 
 const NodeCache = require("node-cache");
 const validUser = require("../../src/middleware/valid_user");
+const NonFoundedModels = require("../../src/database/modals/others/non_founded_models");
 
 const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
@@ -127,7 +128,7 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
   try {
     // FURTHER: use aggregate to get the data when complex query is needed
     // let Object = await gsmarenaModal.aggregate([{ $match: { make: make } }]);
-    let objects = {};
+    let objects = [];
     if (marketingName == "") {
       objects = await newMakeAndModal.find({
         make: make,
@@ -142,7 +143,7 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
       });
     }
 
-    if ("make" in objects[0]) {
+    if (objects.length > 0 && "make" in objects[0]) {
       let modelName = objects[0].marketingName;
       // let modelName = "";
       // let makeArray = Object[0][make];
@@ -224,6 +225,16 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
         res.status(500).json(error);
       }
     } else {
+      const nonData = NonFoundedModels({
+        make: make || "Unknown",
+        model: model || "Unknown",
+        marketingName: marketingName || "Unknown",
+        deviceStorage: deviceStorage || "0",
+        ram: ram || "0",
+      });
+
+      await nonData.save();
+
       res.status(203).json({
         reason: "Modals not found",
         statusCode: 203,
