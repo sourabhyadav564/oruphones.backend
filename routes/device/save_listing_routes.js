@@ -1092,6 +1092,7 @@ router.post(
             productLink: vendor.vendorLink ? vendor.vendorLink : "",
             listingId: vendor.listingId.toString(),
             Object: vendor,
+            location: "India",
             // warranty: vendor.warranty,
           };
           // let vendorObject = {
@@ -1136,6 +1137,7 @@ router.post(
               userName: oruBest?.listedBy,
               listingId: oruBest?.listingId,
               Object: oruBest,
+              location: oruBest?.listingLocation,
             };
             // compareData.push(vendorObject);
             // delete vendorObject.Object;
@@ -1158,6 +1160,7 @@ router.post(
             userName: getListing?.listedBy,
             listingId: getListing?.listingId,
             Object: getListing,
+            location: getListing?.listingLocation,
           };
           // compareData.push(vendorObject);
           // delete vendorObject.Object;
@@ -1203,9 +1206,60 @@ router.post(
 
         externalSource = tempExternalSource;
 
+        let thisListingPrice = parseInt(getListing?.listingPrice);
+        let newExpr = {
+          // deviceCondition: ["Like New", getListing?.deviceCondition],
+          $expr: {
+            $and: [
+              {
+                $gte: [
+                  {
+                    $toInt: "$listingPrice",
+                  },
+                  parseInt(thisListingPrice * 0.9),
+                ],
+              },
+              {
+                $lte: [
+                  {
+                    $toInt: "$listingPrice",
+                  },
+                  parseInt(thisListingPrice * 1.2),
+                ],
+              },
+              // notionalPercentage should be between 0 and 40
+              {
+                $gte: [
+                  {
+                    $toInt: "$notionalPercentage",
+                  },
+                  parseInt(getListing?.notionalPercentage),
+                ],
+              },
+              {
+                $lte: [
+                  {
+                    $toInt: "$notionalPercentage",
+                  },
+                  40,
+                ],
+              },
+            ],
+          },
+        };
+
+        if (getListing?.make == "Apple") {
+          newExpr.$expr.$and.push({
+            $eq: ["$make", getListing?.make],
+          });
+        }
+
+        const getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
+
         dataObject = {
           externalSource,
           compareData,
+          similarListTable: getSimilarTable,
           ...(getListing._doc || getListing),
         };
         let tempArray = [];
