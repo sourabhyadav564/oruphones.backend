@@ -1256,6 +1256,14 @@ router.post(
 
         const getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
 
+        if (
+          !getSimilarTable.some(
+            (item) => item.listingId == getListing?.listingId
+          )
+        ) {
+          getSimilarTable.unshift(getListing);
+        }
+
         dataObject = {
           externalSource,
           compareData,
