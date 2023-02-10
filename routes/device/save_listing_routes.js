@@ -1267,6 +1267,15 @@ router.post(
           getSimilarTable.unshift(getListing);
         }
 
+        if (
+          getSimilarTable.some(
+            (item) => item.listingId == getListing?.listingId
+          ) &&
+          getSimilarTable.length == 1
+        ) {
+          getSimilarTable = [];
+        }
+
         dataObject = {
           externalSource,
           compareData,
