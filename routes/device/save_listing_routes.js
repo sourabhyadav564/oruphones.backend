@@ -1254,7 +1254,8 @@ router.post(
           });
         }
 
-        const getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
+        let getSimilarTable = [];
+        getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
 
         if (
           getSimilarTable &&
