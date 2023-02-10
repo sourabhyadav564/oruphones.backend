@@ -512,7 +512,7 @@ router.post("/listing/pause", validUser, logEvent, async (req, res) => {
         const updatedListings = await bestDealsModal.findOne({
           listingId: pausedListing.listingId,
         });
-        if (updatedListings) {
+        if (updatedListings && updatedListings.make != null) {
           updatedListings.status = "Sold_Out";
           updatedListings.save();
         }
@@ -610,7 +610,7 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
           );
 
           // create new bestdealmodel
-          if (newListings) {
+          if (newListings && newListings.make != null) {
             const newBestDeal = new bestDealsModal({
               ...newListings,
               status: "Active",
@@ -1257,6 +1257,8 @@ router.post(
         const getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
 
         if (
+          getSimilarTable &&
+          getSimilarTable.length > 0 &&
           !getSimilarTable.some(
             (item) => item.listingId == getListing?.listingId
           )

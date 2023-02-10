@@ -108,6 +108,7 @@ const getMIPImageVerificationRoutes = require("../routes/mip/mip_image_verificat
 const getBatteryTestRoutes = require("../routes/diagnostics/battery_test_routes");
 const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
+const dashboard = require("../routes/global/dashboard");
 const getNewTokenRoute = require("../routes/login/get_new_token");
 // const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
@@ -161,6 +162,7 @@ app.use("/api/v1/cscglobal", logEventInfoRoute);
 app.use("/api/v1/user", getMIPLoginRoutes);
 app.use("/api/v1/global", addSubscriptionRoute);
 app.use("/api/v1/global", addContactUsRoute);
+app.use("/api/v1/global", dashboard);
 app.use("/api/v1/auth", getNewTokenRoute);
 // app.use("/api/v1/wordpress", wordpressRoute);
 

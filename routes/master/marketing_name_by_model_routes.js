@@ -233,7 +233,13 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
         ram: ram || "0",
       });
 
-      await nonData.save();
+      let hasNonData = await NonFoundedModels.findOne({
+        model: model,
+      });
+
+      if (!hasNonData) {
+        await nonData.save();
+      }
 
       res.status(203).json({
         reason: "Modals not found",
