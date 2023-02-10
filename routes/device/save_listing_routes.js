@@ -1074,8 +1074,8 @@ router.post(
           //   item.vendor.forEach((vendor) => {
           // console.log("vendor", vendor);
           vendorName = vendor.vendorId ? VENDORS[vendor.vendorId] : "";
-          console.log("vendorName", vendorName);
-          console.log("vendor", vendor);
+          // console.log("vendorName", vendorName);
+          // console.log("vendor", vendor);
           // vendorName = VENDORS[vendor.vendor_id];
           vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
             .toString()
@@ -1233,7 +1233,7 @@ router.post(
                   {
                     $toInt: "$notionalPercentage",
                   },
-                  parseInt(getListing?.notionalPercentage),
+                  0,
                 ],
               },
               {
@@ -1268,10 +1268,10 @@ router.post(
         }
 
         if (
+          getSimilarTable.length == 1 &&
           getSimilarTable.some(
             (item) => item.listingId == getListing?.listingId
-          ) &&
-          getSimilarTable.length == 1
+          )
         ) {
           getSimilarTable = [];
         }
