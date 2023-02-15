@@ -1255,7 +1255,7 @@ router.post(
         }
 
         let getSimilarTable = [];
-        getSimilarTable = await bestDealsModal.find(newExpr).limit(5);
+        getSimilarTable = await bestDealsModal.find({newExpr}).limit(5).exec();
 
         if (
           getSimilarTable &&
