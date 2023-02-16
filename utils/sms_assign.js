@@ -44,7 +44,7 @@ const uploadUrlInDb = async (url) => {
     linkStr: url,
   });
   const saveData = await data.save();
-  return "opcs.io/" + data.unKey.toString();
+  return "oruphones.com/" + data.unKey.toString();
 };
 
 const sendingSms = async (type, phone, uuid, userName, model) => {
