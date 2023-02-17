@@ -75,13 +75,13 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
 
 router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
-  const listedBy = req.body.listedBy;
+  let listedBy = req.body.listedBy;
   const userDetails = await createUserModal.findOne({
     userUniqueId: userUniqueId,
   });
 
   if (userDetails) {
-    if (userDetails?.userName?.length === 0) {
+    if (userDetails?.userName == null || userDetails?.userName?.length === 0) {
       const userName = listedBy;
       const dataToBeUpdate = {
         userName: userName,
@@ -93,18 +93,20 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
           new: true,
         }
       );
-    } else if (userDetails?.userName == null) {
-      const userName = listedBy;
-      const dataToBeUpdate = {
-        userName: userName,
-      };
-      let data = await createUserModal.findByIdAndUpdate(
-        userDetails._id,
-        dataToBeUpdate,
-        {
-          new: true,
-        }
-      );
+      // } else if (userDetails?.userName == null) {
+      //   const userName = listedBy;
+      //   const dataToBeUpdate = {
+      //     userName: userName,
+      //   };
+      //   let data = await createUserModal.findByIdAndUpdate(
+      //     userDetails._id,
+      //     dataToBeUpdate,
+      //     {
+      //       new: true,
+      //     }
+      //   );
+    } else {
+      listedBy = userDetails?.userName;
     }
   }
 
@@ -241,7 +243,9 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       };
 
       const tempModelInfo = new bestDealsModal(newData);
-      const tempDataObject = await tempModelInfo.save();
+      if (tempModelInfo.make != null) {
+        const tempDataObject = await tempModelInfo.save();
+      }
     }
 
     // create dynamic string for response message reason on basis of limitExceeded and duplicated value
@@ -307,7 +311,7 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
         const updatedListings = await bestDealsModal.findOne({
           listingId: deleletedListing.listingId,
         });
-        if (updatedListings) {
+        if (updatedListings && updatedListings.make != null) {
           updatedListings.status = "Sold_Out";
           updatedListings.notionalPercentage =
             !updatedListings.notionalPercentage ||
@@ -453,7 +457,9 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
             updateListing?.deviceCondition === deviceCondition
               ? updatedListings.functionalTestResults
               : [];
-          updatedListings.save();
+          if (updatedListings.make != null) {
+            updatedListings.save();
+          }
         }
         res.status(200).json({
           reason: "Listing updated successfully",
@@ -601,13 +607,15 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
         const updatedListings = await bestDealsModal.findOne({
           listingId: activatedListing.listingId,
         });
-        if (updatedListings) {
+        if (updatedListings && updatedListings.make != null) {
           updatedListings.status = "Active";
           updatedListings.save();
         } else {
-          const newListings = await saveListingModal.findOne(
+          let newListings = await saveListingModal.findOne(
             activateListing[0]?._id
           );
+
+          newListings = newListings._doc ? newListings._doc : newListings;
 
           // create new bestdealmodel
           if (newListings && newListings.make != null) {
@@ -1255,7 +1263,10 @@ router.post(
         }
 
         let getSimilarTable = [];
-        getSimilarTable = await bestDealsModal.find({newExpr}).limit(5).exec();
+        getSimilarTable = await bestDealsModal
+          .find({ newExpr })
+          .limit(5)
+          .exec();
 
         if (
           getSimilarTable &&

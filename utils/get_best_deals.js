@@ -282,7 +282,7 @@ const getBestDeals = async (
               notionalPercentage: currentPercentage,
             };
           } else {
-            let oldItem = item._doc;
+            let oldItem = item;
             await oldItem.images.forEach((imgItem) => {
               let oldImg = imgItem.fullImage;
               let newImg = oldImg.replace(
@@ -328,6 +328,8 @@ const getBestDeals = async (
         const hasOrignalBox = item.originalbox === "Y" ? true : false;
         const isVarified =
           item.verified === "no" || !item.verified ? false : true;
+
+        item.warranty = item.warranty ? item.warranty : "None";
 
         filterData2(
           make,

@@ -6,6 +6,8 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
 const validUser = require("../../src/middleware/valid_user");
+const { bestDealFigures } = require("../../utils/matrix_figures");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 
 router.post("/add", validUser, logEvent, async (req, res) => {
   const listingId = req.body.listingId;
@@ -15,7 +17,6 @@ router.post("/add", validUser, logEvent, async (req, res) => {
     const getFavObject = await favoriteModal.findOne({
       userUniqueId: userUniqueId,
     });
-
 
     // To update a particular document, whether it is existing or not. You need to first get all the elements out of the array and push into another array. And then get the ID of that object and save it using "findByIdAndUpdate" ----> getFavObject._id,
 
@@ -138,52 +139,106 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.query.userUniqueId;
 
   try {
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
+    // const getFavObject = await favoriteModal.findOne({
+    //   userUniqueId,
+    // });
+
+    // find in mongo via fastest query
+    let getFavObject = await favoriteModal.aggregate([
+      {
+        $match: {
+          userUniqueId: userUniqueId,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          fav_listings: 1,
+        },
+      },
+    ]);
+
+    let fav_list = getFavObject[0].fav_listings;
 
     let dataObject = [];
 
-    if (getFavObject && getFavObject?.fav_listings.length > 0) {
+    if (getFavObject && getFavObject[0].fav_listings.length > 0) {
       let arr = [];
-      arr = getFavObject.fav_listings;
-      let allFavListings = [];
+      arr = getFavObject[0].fav_listings;
 
-      for (item in arr) {
-        let single_listing = await saveListingModal.findOne({
-          listingId: arr[item],
-          status: ["Active", "Sold_Out"]
+      // for (item in arr) {
+      //   let single_listing = await saveListingModal.findOne({
+      //     listingId: arr[item],
+      //     status: ["Active", "Sold_Out"]
+      //   });
+      //   if (single_listing) {
+      //     single_listing = {
+      //       ...single_listing?._doc,
+      //       imagePath: single_listing?.defaultImage?.fullImage,
+      //     };
+      //     // remove mobileNumber from the response if exists
+      //     if (single_listing?.mobileNumber) {
+      //       delete single_listing.mobileNumber;
+      //     }
+      //     allFavListings.push(single_listing);
+      //   }
+      //   if (item == arr.length - 1) {
+
+      //     if (allFavListings.length > 0) {
+      //       dataObject = allFavListings;
+      //       return res.status(200).json({
+      //         reason: "Favorite listings fetched successfully",
+      //         statusCode: 200,
+      //         status: "SUCCESS",
+      //         dataObject,
+      //       });
+      //     } else {
+      //       return res.status(200).json({
+      //         reason: "You do not have any favourite listing",
+      //         statusCode: 200,
+      //         status: "SUCCESS",
+      //         dataObject: [],
+      //       });
+      //     }
+      //   }
+      // }
+
+      if (arr.length > 0) {
+        let allFavListings = await bestDealsModal.find({
+          isOtherVendor: "N",
+          status: ["Active", "Sold_Out"],
+          listingId: arr,
         });
-        if (single_listing) {
-          single_listing = {
-            ...single_listing?._doc,
-            imagePath: single_listing?.defaultImage?.fullImage,
-          };
-          // remove mobileNumber from the response if exists
-          if (single_listing?.mobileNumber) {
-            delete single_listing.mobileNumber;
-          }
-          allFavListings.push(single_listing);
-        }
-        if (item == arr.length - 1) {
 
-          if (allFavListings.length > 0) {
-            dataObject = allFavListings;
-            return res.status(200).json({
-              reason: "Favorite listings fetched successfully",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject,
-            });
-          } else {
-            return res.status(200).json({
-              reason: "You do not have any favourite listing",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject: [],
-            });
-          }
+        if (allFavListings.length > 0) {
+          dataObject = allFavListings;
+          return res.status(200).json({
+            reason: "Favorite listings fetched successfully",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject,
+          });
+        } else {
+          // first remove the listingId from the fav_listings array
+          // let deletingResp = await favoriteModal.findOneAndUpdate(
+          //   { userUniqueId: userUniqueId },
+          //   { $pull: { fav_listings: { $in: arr } } },
+          //   { new: true }
+          // );
+          return res.status(200).json({
+            reason: "You do not have any favourite listing",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: [],
+          });
         }
+      } else {
+        return res.status(200).json({
+          reason: "You do not have any favourite listing",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: [],
+        });
       }
     } else {
       return res.status(200).json({

@@ -85,6 +85,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
   let dataObject = {};
   let dataArray = [];
   filterd.forEach(async (element) => {
+    element = element._doc;
     let vendorName = VENDORS[element.vendor_id];
     let vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
       .toString()
@@ -123,7 +124,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
         element.storage == null
           ? "--"
           : `${element.ram} GB`,
-      warranty: element.warranty,
+      warranty: element.warranty ? element.warranty : "None",
       vendorLogo: vendorImage,
       vendorLink: element.link ? element.link : "",
       vendorId: element.vendor_id,

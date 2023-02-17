@@ -20,7 +20,7 @@ const startSavingBestDeals = async () => {
         status: ["Active", "Sold_Out"],
       });
       defaultDataObject2.forEach((element) => {
-        defaultDataObject.push(element);
+        defaultDataObject.push(element._doc);
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "");
       thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
