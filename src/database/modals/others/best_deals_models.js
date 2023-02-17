@@ -143,6 +143,10 @@ const bestDealsSchema = new mongoose.Schema(
       type: String,
       default: "N",
     },
+    warranty: {
+      type: String,
+      default: "None",
+    },
     questionnaireResults: {
       type: [
         {
