@@ -106,8 +106,18 @@ router.post(
         marketingName = marketingName.replace("+", " Plus");
         const listings = await testScrappedModal.find({
           type: "sell",
-          storage: [parseInt(deviceStorage), "--", "-- GB"],
-          ram: [parseInt(deviceRam), "--", "-- GB"],
+          storage: [
+            parseInt(deviceStorage),
+            "--",
+            "-- GB",
+            `${parseInt(deviceStorage)} GB`,
+          ],
+          ram: [
+            parseInt(deviceRam),
+            "--",
+            "-- GB",
+            `${parseInt(deviceRam)} GB`,
+          ],
           make: make,
           // model_name: [marketingName, exact_model_name, tempModelName],
           model_name: {

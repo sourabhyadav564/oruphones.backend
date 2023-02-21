@@ -101,6 +101,7 @@ const getBestDeals = async (
     updatedAt: {
       $gte: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
     },
+    vendor_id: 8,
   });
 
   let basePrice;

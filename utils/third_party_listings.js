@@ -48,39 +48,55 @@ const getThirdPartyVendors = async (model_name, make, page) => {
   };
 
   let filterd = [];
-  if (make != "") {
-    dataLength = await testScrappedModal
-      .find({
-        type: "buy",
-        model_name: { $regex: make.toLowerCase(), $options: "i" },
-      })
-      .countDocuments();
-    filterd = await testScrappedModal.find({
-      type: "buy",
-      model_name: { $regex: make },
-    });
-    // .skip(parseInt(page) * 20)
-    // .limit(20);
-  } else if (model_name != "") {
-    dataLength = await testScrappedModal
-      .find({
-        type: "buy",
-        model_name: model_name,
-      })
-      .countDocuments();
+  // if (make != "") {
+  //   dataLength = await testScrappedModal
+  //     .find({
+  //       type: "buy",
+  //       model_name: { $regex: make.toLowerCase(), $options: "i" },
+  //     })
+  //     .countDocuments();
+  //   filterd = await testScrappedModal.find({
+  //     type: "buy",
+  //     model_name: { $regex: make },
+  //   });
+  //   // .skip(parseInt(page) * 20)
+  //   // .limit(20);
+  // } else if (model_name != "") {
+  //   dataLength = await testScrappedModal
+  //     .find({
+  //       type: "buy",
+  //       model_name: model_name,
+  //     })
+  //     .countDocuments();
 
-    filterd = await testScrappedModal.find({
-      type: "buy",
+  //   filterd = await testScrappedModal.find({
+  //     type: "buy",
+  //     model_name: model_name,
+  //   });
+  //   // .skip(parseInt(page) * 20)
+  //   // .limit(20);
+  // } else {
+  //   dataLength = await testScrappedModal.find({ type: "buy" }).countDocuments();
+  //   filterd = await testScrappedModal.find({ type: "buy" });
+  //   // .skip(parseInt(page) * 20)
+  //   // .limit(20);
+  // }
+
+  let exper = { type: "buy", vendor_id: { $ne: 26 } };
+  if (make != "") {
+    exper = {
+      ...exper,
+      model_name: { $regex: make.toLowerCase(), $options: "i" },
+    };
+  } else if (model_name != "") {
+    exper = {
+      ...exper,
       model_name: model_name,
-    });
-    // .skip(parseInt(page) * 20)
-    // .limit(20);
-  } else {
-    dataLength = await testScrappedModal.find({ type: "buy" }).countDocuments();
-    filterd = await testScrappedModal.find({ type: "buy" });
-    // .skip(parseInt(page) * 20)
-    // .limit(20);
+    };
   }
+
+  dataLength = await testScrappedModal.find(exper).countDocuments();
+  filterd = await testScrappedModal.find(exper);
 
   let dataObject = {};
   let dataArray = [];

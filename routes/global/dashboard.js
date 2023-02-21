@@ -4,13 +4,15 @@ const createUserModal = require("../../src/database/modals/login/login_create_us
 const eventModal = require("../../src/database/modals/others/event_logs");
 const router = express.Router();
 
+const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
+
 router.get("/dashboard/home", async (req, res) => {
   try {
     let user = req.query.user;
     let passwd = req.query.password;
 
     if (user == "admin" && passwd == "adminPwd") {
-      const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
+      // const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
       let allTimeUsers = {};
 
       let users = await createUserModal.countDocuments();
@@ -178,9 +180,62 @@ router.get("/dashboard/home", async (req, res) => {
   }
 });
 
+router.get("/dashboard/listingsByCity", async (req, res) => {
+  try {
+    let startTime = req.query.startTime || initialTIme;
+    let endTime = req.query.endTime || new Date();
+
+    let allListings = await saveListingModal.countDocuments({
+      createdAt: {
+        $gte: startTime,
+        $lte: endTime,
+      },
+    });
+
+    let cityWiseListings = await saveListingModal.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startTime,
+            $lte: endTime,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$listingLocation",
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+    ]);
+
+    const dataObject = {};
+    dataObject.allListings = allListings;
+    dataObject.cityWiseListings = cityWiseListings;
+
+    res.status(200).json({
+      reason: "Listings found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
 router.get("/dashboard/users", async (req, res) => {
   try {
     const timeFor = req.query.timeFor;
+    // const cityFor = req.query.cityFor;
 
     const dataObject = [];
     res.status(200).json({

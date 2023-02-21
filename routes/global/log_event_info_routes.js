@@ -7,6 +7,21 @@ const favoriteModal = require("../../src/database/modals/favorite/favorite_add")
 const eventModal = require("../../src/database/modals/others/event_logs");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const validUser = require("../../src/middleware/valid_user");
+const { uploadLogFile } = require("../../src/s3");
+const reportModal = require("../../src/database/modals/others/report_log");
+const fs = require("fs");
+const util = require("util");
+const unlinkFile = util.promisify(fs.unlink);
+
+require("dotenv").config();
+const nodemailer = require("nodemailer");
+const config = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mobiruindia22@gmail.com",
+    pass: "rtrmntzuzwzisajb",
+  },
+});
 
 router.get("/logeventinfo", validUser, logEvent, async (req, res) => {
   try {
@@ -14,6 +29,81 @@ router.get("/logeventinfo", validUser, logEvent, async (req, res) => {
       status: "SUCCESS",
       statusCode: 200,
       reason: "Event logged successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.post("/reportIssue", async (req, res) => {
+  try {
+    const file = req.file || null;
+    const hasLog = req.query.hasLog === "true" ? true : false;
+    const issueType = req.query.issueType || "Crash";
+    const description = req.query.description || "No description";
+    const email = req.query.email || "No email";
+    const phone = req.query.phone || "No phone";
+    const name = req.query.name || "No name";
+    const modelName = req.query.modelName || "No model name";
+
+    let dataObject = {};
+
+    if (hasLog && file) {
+      const result = await uploadLogFile(file);
+      await unlinkFile(file?.path);
+      dataObject = {
+        filePath: `${result.Location}`,
+        fileKey: `${result.Key}`,
+      };
+    }
+
+    dataObject = {
+      ...dataObject,
+      hasLog,
+      issueType,
+      description,
+      email,
+      phone,
+      name,
+      modelName,
+    };
+
+    // save query in database
+    const newQuery = new reportModal(dataObject);
+    await newQuery.save();
+
+    // Send email to support team with the file path
+    if (hasLog && file) {
+      let mailBody = `<H1>Hi Team,</H1>
+      <p>There is a new query from ${name} with email ${email} and phone ${phone}.</p>
+      <H3>Issue Type: ${issueType}</H3>
+      <p>Description: ${description}</p>
+      <p>Model Name: ${modelName}</p>
+      <a>Log File: ${dataObject.filePath}</a>
+      <p>Thanks</p>
+      <p>Team ORUphones</p>
+      `;
+
+      const mailOptions = {
+        from: "mobiruindia22@gmail.com",
+        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp", //, anish@zenro.co.jp
+        subject: `New Query from ${name}`,
+        html: mailBody,
+      };
+
+      config.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        }
+      });
+    }
+
+    res.status(200).json({
+      reason: "Query logged successfully",
+      statusCode: 201,
+      status: "SUCCESS",
+      dataObject,
     });
   } catch (error) {
     console.log(error);

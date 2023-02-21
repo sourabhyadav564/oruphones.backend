@@ -103,7 +103,10 @@ router.post("/search", validUser, logEvent, async (req, res) => {
         {
           $match: {
             models: {
-              $regex: new RegExp(userInputText.toLowerCase(), "i"),
+              // $regex: new RegExp(userInputText.toLowerCase(), "i"),
+              $all: userInputText.split(" ").map((word) => {
+                return new RegExp(word, "i");
+              }),
             },
           },
         },
