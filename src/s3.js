@@ -43,6 +43,8 @@ function uploadLogFile(file) {
 
 exports.uploadFile = uploadFile;
 
+exports.uploadLogFile = uploadLogFile;
+
 // downloads a file from s3
 function getFileStream(fileKey) {
   const downloadParams = {
