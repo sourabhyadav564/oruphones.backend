@@ -27,15 +27,17 @@ function uploadFile(file) {
 }
 
 // uploads a file to s3
-function uploadLogFile(file) {
+function uploadLogFile(file, fName, forCrash) {
   const fileStream = fs.createReadStream(file.path);
   let monthName = new Date().toLocaleString("default", { month: "long" });
   let year = new Date().getFullYear();
   let date = new Date().getDate();
+  let dir = forCrash ? "crash" : "logs";
   const uploadParams = {
-    Bucket: bucketName + "/logs/" + year + "/" + monthName + "/" + date + "/",
+    Bucket: bucketName + "/logs/" + year + "/" + monthName + "/" + date + "/" + dir,
     Body: fileStream,
-    Key: file.filename,
+    // Key: file.filename,
+    Key: fName,
   };
 
   return s3.upload(uploadParams).promise();

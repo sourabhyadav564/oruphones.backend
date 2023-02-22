@@ -76,7 +76,8 @@ async (req, res) => {
 
     if (hasLog && file) {
       console.log("saving file");
-      const result = await uploadLogFile(file);
+      let fName = modelName.replace(/\s/g, "_") + "_" + Date.now() + ".txt";
+      const result = await uploadLogFile(file, fName, forCrash);
       console.log(result);
       await unlinkFile(file?.path);
       dataObject = {
