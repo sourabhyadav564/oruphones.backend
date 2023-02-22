@@ -15,6 +15,7 @@ const unlinkFile = util.promisify(fs.unlink);
 
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const multer = require("multer");
 const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -36,21 +37,47 @@ router.get("/logeventinfo", validUser, logEvent, async (req, res) => {
   }
 });
 
-router.post("/reportIssue", async (req, res) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, next) {
+    next(null, __dirname);
+  },
+  filename: function (req, file, next) {
+    next(null, Date.now().toString() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 },
+  // fileFilter: fileFilter,
+});
+
+router.get("/reportIssue/:key", (req, res) => {
+  const key = req.params.key;
+  const readStream = getFileStream(key);
+  readStream.pipe(res);
+});
+
+router.post("/reportIssue", 
+upload.single("logFile"), 
+async (req, res) => {
   try {
     const file = req.file || null;
-    const hasLog = req.query.hasLog === "true" ? true : false;
+    const hasLog = req.query.hasLog == "true" ? true : false;
     const issueType = req.query.issueType || "Crash";
     const description = req.query.description || "No description";
     const email = req.query.email || "No email";
     const phone = req.query.phone || "No phone";
     const name = req.query.name || "No name";
     const modelName = req.query.modelName || "No model name";
+    const forCrash = req.query.forCrash == "true" ? true : false;
 
     let dataObject = {};
 
     if (hasLog && file) {
+      console.log("saving file");
       const result = await uploadLogFile(file);
+      console.log(result);
       await unlinkFile(file?.path);
       dataObject = {
         filePath: `${result.Location}`,
