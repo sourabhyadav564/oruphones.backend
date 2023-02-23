@@ -75,10 +75,10 @@ async (req, res) => {
     let dataObject = {};
 
     if (hasLog && file) {
-      console.log("saving file");
-      let fName = modelName.replace(/\s/g, "_") + "_" + Date.now() + ".txt";
+      // get currentTime as 14_26_58 
+      let currentTime = new Date().toLocaleTimeString().replace(/:/g, "_");
+      let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".txt";
       const result = await uploadLogFile(file, fName, forCrash);
-      console.log(result);
       await unlinkFile(file?.path);
       dataObject = {
         filePath: `${result.Location}`,
