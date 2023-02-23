@@ -1239,7 +1239,9 @@ router.post(
               {
                 $gte: [
                   {
-                    $toInt: "$notionalPercentage",
+                    $toInt: {
+                      $toString: "$notionalPercentage",
+                    },
                   },
                   0,
                 ],
@@ -1247,7 +1249,9 @@ router.post(
               {
                 $lte: [
                   {
-                    $toInt: "$notionalPercentage",
+                    $toInt: {
+                      $toString: "$notionalPercentage",
+                    },
                   },
                   40,
                 ],
@@ -1256,15 +1260,14 @@ router.post(
           },
         };
 
+        let makes = [];
         if (getListing?.make == "Apple") {
-          newExpr.$expr.$and.push({
-            $eq: ["$make", getListing?.make],
-          });
+          makes = ["Apple"];
         }
 
         let getSimilarTable = [];
         getSimilarTable = await bestDealsModal
-          .find({ newExpr })
+          .find({ make: makes, newExpr })
           .limit(5)
           .exec();
 

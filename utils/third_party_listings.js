@@ -161,7 +161,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       modifiedDate: "",
       verifiedDate: " ",
       charger: "Y",
-      earphone: "Y",
+      earphone: "N",
       originalbox: "Y",
       defaultImage: {
         // fullImage: "",
