@@ -1235,24 +1235,28 @@ router.post(
                   parseInt(thisListingPrice * 1.2),
                 ],
               },
+              // ],
+              // $and: [
               // notionalPercentage should be between 0 and 40
               {
                 $gte: [
-                  {
-                    $toInt: {
-                      $toString: "$notionalPercentage",
-                    },
-                  },
+                  // {
+                  //   $toInt: {
+                  //     $toString: "$notionalPercentage",
+                  //   },
+                  // },
+                  "$notionalPercentage",
                   0,
                 ],
               },
               {
                 $lte: [
-                  {
-                    $toInt: {
-                      $toString: "$notionalPercentage",
-                    },
-                  },
+                  // {
+                  //   $toInt: {
+                  //     $toString: "$notionalPercentage",
+                  //   },
+                  // },
+                  "$notionalPercentage",
                   40,
                 ],
               },
@@ -1260,16 +1264,14 @@ router.post(
           },
         };
 
-        let makes = [];
         if (getListing?.make == "Apple") {
-          makes = ["Apple"];
+          newExpr["$expr"]["$and"].push({
+            $eq: ["$make", "Apple"],
+          });
         }
 
         let getSimilarTable = [];
-        getSimilarTable = await bestDealsModal
-          .find({ make: makes, ...newExpr })
-          .limit(5)
-          .exec();
+        getSimilarTable = await bestDealsModal.find(newExpr).limit(5).exec();
 
         if (
           getSimilarTable &&
