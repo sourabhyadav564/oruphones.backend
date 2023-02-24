@@ -58,9 +58,7 @@ router.get("/reportIssue/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-router.post("/reportIssue", 
-upload.single("logFile"), 
-async (req, res) => {
+router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
     const file = req.file || null;
     const hasLog = req.query.hasLog == "true" ? true : false;
@@ -71,11 +69,14 @@ async (req, res) => {
     const name = req.query.name || "No name";
     const modelName = req.query.modelName || "No model name";
     const forCrash = req.query.forCrash == "true" ? true : false;
+    const shareLog = req.query.shareLog || false;
+    const scheduleCall = req.query.scheduleCall || false;
+    // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
 
     if (hasLog && file) {
-      // get currentTime as 14_26_58 
+      // get currentTime as 14_26_58
       let currentTime = new Date().toLocaleTimeString().replace(/:/g, "_");
       let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".txt";
       const result = await uploadLogFile(file, fName, forCrash);
@@ -95,6 +96,9 @@ async (req, res) => {
       phone,
       name,
       modelName,
+      forCrash,
+      shareLog,
+      scheduleCall,
     };
 
     // save query in database
@@ -116,7 +120,9 @@ async (req, res) => {
       const mailOptions = {
         from: "mobiruindia22@gmail.com",
         to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp", //, anish@zenro.co.jp
-        subject: `New Query from ${name}`,
+        subject: scheduleCall
+          ? `Call Schedule from ${name}`
+          : `New Query from ${name}`,
         html: mailBody,
       };
 

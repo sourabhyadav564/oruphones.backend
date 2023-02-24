@@ -23,7 +23,7 @@ const reportSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-    //   required: true,
+      //   required: true,
     },
     phone: {
       type: String,
@@ -34,8 +34,20 @@ const reportSchema = new mongoose.Schema(
       required: true,
     },
     modelName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
+    },
+    forCrash: {
+      type: Boolean,
+      // required: true,
+    },
+    shareLog: {
+      type: Boolean,
+      // required: true,
+    },
+    scheduleCall: {
+      type: Boolean,
+      // required: true,
     },
   },
   { timestamps: true }

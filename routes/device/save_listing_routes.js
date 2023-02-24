@@ -1267,7 +1267,7 @@ router.post(
 
         let getSimilarTable = [];
         getSimilarTable = await bestDealsModal
-          .find({ make: makes, newExpr })
+          .find({ make: makes, ...newExpr })
           .limit(5)
           .exec();
 
