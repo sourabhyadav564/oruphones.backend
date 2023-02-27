@@ -14,7 +14,7 @@ router.get("/brands", async (req, res) => {
         reason: "Brands found",
         statusCode: 200,
         status: "SUCCESS",
-        clientIp: req.socket.remoteAddress,
+        // clientIp: req.socket,
         dataObject,
       });
   } catch (error) {
