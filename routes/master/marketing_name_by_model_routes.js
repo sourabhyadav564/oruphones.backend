@@ -458,51 +458,51 @@ router.get("/makemodellist", async (req, res) => {
     let make = req.query.make;
     // const isPrimary = req.query.isPrimary;
 
-    if (!make || make == "") {
-      const dataObject = await brandModal.find();
-      res.status(200).json({
-        reason: "Brands found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
-      });
-    } else {
-      let dataObject = await newMakeAndModal.aggregate([
-        {
-          $match: {
-            make:
-              make && make != ""
-                ? {
-                    $all: make.split(" ").map((word) => {
-                      return new RegExp(word, "i");
-                    }),
-                  }
-                : { $exists: true },
-          },
+    // if (!make || make == "") {
+    //   const dataObject = await brandModal.find();
+    //   res.status(200).json({
+    //     reason: "Brands found",
+    //     statusCode: 200,
+    //     status: "SUCCESS",
+    //     dataObject,
+    //   });
+    // } else {
+    let dataObject = await newMakeAndModal.aggregate([
+      {
+        $match: {
+          make:
+            make && make != ""
+              ? {
+                  $all: make.split(" ").map((word) => {
+                    return new RegExp(word, "i");
+                  }),
+                }
+              : { $exists: true },
         },
-        {
-          $group: {
-            _id: "$make",
-            make: { $first: "$make" },
-            models: {
-              $push: {
-                marketingname: "$marketingName",
-                color: "$color",
-                storage: "$storage",
-                ram: "$ram",
-              },
+      },
+      {
+        $group: {
+          _id: "$make",
+          make: { $first: "$make" },
+          models: {
+            $push: {
+              marketingname: "$marketingName",
+              color: "$color",
+              storage: "$storage",
+              ram: "$ram",
             },
           },
         },
-      ]);
+      },
+    ]);
 
-      res.status(200).json({
-        reason: "Modals found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject,
-      });
-    }
+    res.status(200).json({
+      reason: "Modals found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject,
+    });
+    // }
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -514,69 +514,67 @@ router.get("/makemodellist", async (req, res) => {
 });
 
 router.get("/modellist", async (req, res) => {
-  // this api is enhanced version for above makemodellist api
   let make = req.query.make || "";
   let searchModel = req.query.searchModel || "";
 
   if (!make || make == "") {
-    let allMakes = await newMakeAndModal.aggregate([
+    const dataObject = await brandModal.find();
+    res.status(200).json({
+      reason: "Brands found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject,
+    });
+  } else {
+    let object = await newMakeAndModal.aggregate([
+      {
+        $match: {
+          make:
+            make && make != ""
+              ? {
+                  $all: make.split(" ").map((word) => {
+                    return new RegExp(word, "i");
+                  }),
+                }
+              : { $exists: true },
+          marketingName: {
+            $all: searchModel.split(" ").map((word) => {
+              return new RegExp(word, "i");
+            }),
+          },
+        },
+      },
       {
         $group: {
           _id: "$make",
           make: { $first: "$make" },
-        },
-      },
-    ]);
-  }
-
-  let object = await newMakeAndModal.aggregate([
-    {
-      $match: {
-        make:
-          make && make != ""
-            ? {
-                $all: make.split(" ").map((word) => {
-                  return new RegExp(word, "i");
-                }),
-              }
-            : { $exists: true },
-        marketingName: {
-          $all: searchModel.split(" ").map((word) => {
-            return new RegExp(word, "i");
-          }),
-        },
-      },
-    },
-    {
-      $group: {
-        _id: "$make",
-        make: { $first: "$make" },
-        models: {
-          $push: {
-            marketingname: "$marketingName",
-            color: "$color",
-            storage: "$storage",
-            ram: "$ram",
+          models: {
+            $push: {
+              marketingname: "$marketingName",
+              color: "$color",
+              storage: "$storage",
+              ram: "$ram",
+            },
           },
         },
       },
-    },
-  ]);
+    ]);
 
-  if (object.length > 0) {
-    res.status(200).json({
-      reason: "Modals found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: object,
-    });
-  } else {
-    res.status(200).json({
-      reason: "Modals not found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: [],
-    });
+    if (object.length > 0) {
+      res.status(200).json({
+        reason: "Modals found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: object,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Modals not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: [],
+      });
+    }
   }
 });
 
