@@ -5,6 +5,7 @@ const createUserModal = require("../src/database/modals/login/login_create_user"
 const sendingSms = require("./sms_assign");
 
 const nodemailer = require("nodemailer");
+const NonFoundedModels = require("../src/database/modals/others/non_founded_models");
 const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -149,12 +150,77 @@ const sendLogMail = async () => {
   dataToMail = [];
 };
 
+const nonFoundedModelMail = async() =>{
+  let allData = await NonFoundedModels.find({}).sort({ createdAt: -1 });
+
+  // remove duplicates from allData using model
+  let uniqueData = [];
+  allData.map((item) => {
+    let found = uniqueData.find((x) => x.model == item.model);
+    if (!found) {
+      uniqueData.push(item);
+    }
+  });
+
+  allData = uniqueData;
+
+  let dataLen = allData.length;
+
+  let mailBody = `<h3>Non Founded Models</h3>`;
+  mailBody += `<p>Total Non Founded Models: ${dataLen}</p>`;
+  mailBody += `<table style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+  <tr>
+    <th style="border: 1px solid black; border-collapse: collapse; padding: 5px;">Make</th>
+    <th style="border: 1px solid black; border-collapse: collapse; padding: 5px;">Model Name</th>
+    <th style="border: 1px solid black; border-collapse: collapse; padding: 5px;">Storage</th>
+    <th style="border: 1px solid black; border-collapse: collapse; padding: 5px;">Ram</th>
+    <th style="border: 1px solid black; border-collapse: collapse; padding: 5px;">Created At</th>
+  </tr>`;
+  for (let i = 0; i < dataLen; i++) {
+    const data = allData[i];
+    const {
+      make,
+      model,
+      deviceStorage,
+      ram,
+      createdAt,
+    } = data;
+    mailBody += `<tr>
+    <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${make}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${model}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${deviceStorage}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${ram}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${createdAt}</td>
+  </tr>`;
+  }
+
+  mailBody += `</table>`;
+
+
+  let mailOptions2 = {
+    from: "mobiruindia22@gmail.com",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+    subject: `Non Founded Models`,
+    html: mailBody,
+  };
+
+  config.sendMail(mailOptions2, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      // console.log("Email sent: " + info.response);
+    }
+  });
+}
+
 const SendingSmsJob = async (daily) => {
   if (daily) {
     SendingSmsDaily();
   } else {
     SendingSmsWeekly();
   }
+
+  nonFoundedModelMail();
 };
 
 module.exports = SendingSmsJob;
