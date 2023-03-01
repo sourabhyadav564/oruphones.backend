@@ -69,8 +69,8 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     const name = req.query.name || "No name";
     const modelName = req.query.modelName || "No model name";
     const forCrash = req.query.forCrash == "true" ? true : false;
-    const shareLog = req.query.shareLog || false;
-    const scheduleCall = req.query.scheduleCall || false;
+    const shareLog = req.query.shareLog == "true" ? true : false;
+    const scheduleCall = req.query.scheduleCall == "true" ? true : false;
     // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
@@ -106,7 +106,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     await newQuery.save();
 
     // Send email to support team with the file path
-    if (hasLog && file) {
+    if ((hasLog && file) || scheduleCall) {
       let mailBody = `<H1>Hi Team,</H1>
       <p>There is a new query from ${name} with email ${email} and phone ${phone}.</p>
       <H3>Issue Type: ${issueType}</H3>
@@ -119,7 +119,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
 
       const mailOptions = {
         from: "mobiruindia22@gmail.com",
-        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp", //, anish@zenro.co.jp
+        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
         subject: scheduleCall
           ? `Call Schedule from ${name}`
           : `New Query from ${name}`,
