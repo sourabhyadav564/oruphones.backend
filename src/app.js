@@ -49,16 +49,23 @@ app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
 
+// schedule.scheduleJob("55 17 * * *", function () {
+//   console.log("The answer to life, the universe, and everything!");
+//   // generateCollectionDump();
+//   addNonFoundedModels();
+// });
+
+schedule.scheduleJob("00 13 * * *", function () {
+  // schedule.scheduleJob("59 13 * * *", function () {
+  console.log("The answer to life, the universe, and everything!");
+  startDataMigrationJob();
+});
+
 schedule.scheduleJob("00 16 * * *", function () {
   startCalculatingLSPTest();
 });
 
-// schedule.scheduleJob("09 17 * * *", function () {
-//   console.log("The answer to life, the universe, and everything!");
-//   generateCollectionDump();
-// });
-
-schedule.scheduleJob("30 17 * * *", function () {
+schedule.scheduleJob("30 18 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
 });
@@ -68,11 +75,6 @@ schedule.scheduleJob("30 02 * * *", function () {
   SendingSmsJob(true);
 });
 
-schedule.scheduleJob("00 13 * * *", function () {
-  // schedule.scheduleJob("59 13 * * *", function () {
-  console.log("The answer to life, the universe, and everything!");
-  startDataMigrationJob();
-});
 
 const testRoute = require("../routes/others/test_routes");
 const brandRoute = require("../routes/master/master_brand_routes");
