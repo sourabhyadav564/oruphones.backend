@@ -1280,7 +1280,11 @@ router.post(
             (item) => item.listingId == getListing?.listingId
           )
         ) {
-          getSimilarTable.unshift(getListing);
+          // getSimilarTable.unshift(getListing);
+          let tempTable = [];
+          tempTable.push(getListing);
+          tempTable.push(...getSimilarTable);
+          getSimilarTable = tempTable;
         }
 
         if (
@@ -1294,8 +1298,8 @@ router.post(
 
         dataObject = {
           externalSource,
-          compareData,
-          similarListTable: getSimilarTable,
+          compareData: compareData.length > 1 ? compareData : [],
+          similarListTable: getSimilarTable > 1 ? getSimilarTable : [],
           ...(getListing._doc || getListing),
         };
         let tempArray = [];
