@@ -19,7 +19,7 @@ var MongoClient = require("mongodb").MongoClient;
 var url = process.env.MONGO;
 
 let currentDate = new Date();
-let dateFormat = moment(currentDate).add(10, "days").calendar();
+let dateFormat = moment(currentDate).calendar();
 
 const newMakeAndModal = require("../src/database/modals/others/new_make_and_model");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
@@ -28,23 +28,6 @@ let fileData = [];
 
 const collectData = async (data, collection) => {
   try {
-    MongoClient.connect(url, function (err, db) {
-      if (err) throw err;
-      var dbo = db.db(process.env.Collection);
-      dbo
-        .collection(collection)
-        .deleteMany({})
-        .then(() => {
-          dbo.collection(collection).insertMany(data, function (err, res) {
-            if (err) throw err;
-            console.log(
-              `${data.length} documents inserted successfully in ${collection} on ${dateFormat})}`
-            );
-            db.close();
-          });
-        });
-    });
-
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
@@ -53,15 +36,34 @@ const collectData = async (data, collection) => {
       text:
         "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
         data.length +
-        ". The data is not ready to use for other business logics",
+        ".",
     };
 
-    config.sendMail(mailOptions, function (err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Email sent: " + result.response);
-      }
+    MongoClient.connect(url, function (err, db) {
+      if (err) throw err;
+      var dbo = db.db(process.env.Collection);
+      dbo
+        .collection(collection)
+        .deleteMany({})
+        .then(() => {
+          dbo.collection(collection).insertMany(data, function (err, res) {
+            if (err) {
+              mailOptions["subject"] = "Error in migrating data to MongoDB";
+              throw err;
+            }
+            console.log(
+              `${data.length} documents inserted successfully in ${collection} on ${dateFormat})}`
+            );
+            db.close();
+            config.sendMail(mailOptions, function (err, result) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("Email sent: " + result.response);
+              }
+            });
+          });
+        });
     });
   } catch (error) {
     console.log(error);
