@@ -57,6 +57,7 @@ const neededKeysForDeals = {
   isOtherVendor: 1,
   imagePath: 1,
   defaultImage: 1,
+  status: 1,
 };
 
 exports.neededKeysForDeals = neededKeysForDeals;
