@@ -38,6 +38,49 @@ const bestDealFigures = {
   has_non_apple_earphone_percentage: 1,
   has_original_box_percentage: 0.5,
   third_party_warranty_percentage: 8,
-}
+};
 
 exports.bestDealFigures = bestDealFigures;
+
+const neededKeysForDeals = {
+  listingPrice: 1,
+  marketingName: 1,
+  deviceStorage: 1,
+  deviceRam: 1,
+  deviceCondition: 1,
+  listingDate: 1,
+  listedBy: 1,
+  listingLocation: 1,
+  listingId: 1,
+  images: 1,
+  verified: 1,
+  isOtherVendor: 1,
+  imagePath: 1,
+  defaultImage: 1,
+};
+
+exports.neededKeysForDeals = neededKeysForDeals;
+
+const unwantedKeysForTables = {
+  _id: 0,
+  storeId: 0,
+  color: 0,
+  deviceCosmeticGrade: 0,
+  deviceFinalGrade: 0,
+  deviceFunctionalGrade: 0,
+  images: 0,
+  imei: 0,
+  model: 0,
+  platform: 0,
+  agent: 0,
+  recommendedPriceRange: 0,
+  cosmetic: 0,
+  questionnaireResults: 0,
+  functionalTestResults: 0,
+  createdAt: 0,
+  updatedAt: 0,
+  __v: 0,
+  prodLink: 0,
+};
+
+exports.unwantedKeysForTables = unwantedKeysForTables;

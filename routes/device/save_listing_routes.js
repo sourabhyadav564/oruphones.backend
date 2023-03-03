@@ -40,7 +40,8 @@ const downloadImage = require("../../utils/download_image_from_url");
 router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
-    let dataObject = await saveListingModal.find({ userUniqueId });
+    const neededKeys = allMatrix.neededKeysForDeals;
+    let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
 
     if (!dataObject) {
       res.status(404).json({ message: "User unique ID not found" });
@@ -929,6 +930,8 @@ router.post(
     //   vendor_id: 8
     // });
 
+    const unwantKeysForTable = allMatrix.unwantedKeysForTables;
+
     const VENDORS = {
       6: "Amazon",
       7: "Quikr",
@@ -1028,7 +1031,9 @@ router.post(
           findingBestData["deviceRam"] = getListing?.deviceRam;
         }
 
-        let oruBests = await bestDealsModal.find(findingBestData).limit(3);
+        let oruBests = await bestDealsModal
+          .find(findingBestData, unwantKeysForTable)
+          .limit(3);
 
         let tempStr = getListing?.deviceStorage;
         tempStr = tempStr.replace("GB", "").trim();
@@ -1055,20 +1060,23 @@ router.post(
         let listingIds = scrappedModelsTemp.map((item) => item._id.toString());
 
         // console.log("listingIds", listingIds);
-        let scrappedModels = await bestDealsModal.find({
-          // listingid: { $in: listingIds },
-          listingId: listingIds,
-          status: "Active",
-        });
+        let scrappedModels = await bestDealsModal.find(
+          {
+            // listingid: { $in: listingIds },
+            listingId: listingIds,
+            status: "Active",
+          },
+          unwantKeysForTable
+        );
 
         // console.log("scrappedModels", scrappedModels.length);
 
         let selectdModels = [];
-        let itemId = "";
-        const marketingname = getListing.marketingName;
-        const condition = getListing.deviceCondition;
-        const storage = getListing.deviceStorage;
-        let leastSellingPrice;
+        // let itemId = "";
+        // const marketingname = getListing.marketingName;
+        // const condition = getListing.deviceCondition;
+        // const storage = getListing.deviceStorage;
+        // let leastSellingPrice;
 
         let pushedVendors = [];
         // console.log("vendorImage", scrappedModels);
@@ -1271,7 +1279,29 @@ router.post(
         }
 
         let getSimilarTable = [];
-        getSimilarTable = await bestDealsModal.find(newExpr).limit(5).exec();
+        getSimilarTable = await bestDealsModal
+          .find(newExpr, {
+            _id: 0,
+            storeId: 0,
+            color: 0,
+            deviceCosmeticGrade: 0,
+            deviceFinalGrade: 0,
+            deviceFunctionalGrade: 0,
+            images: 0,
+            imei: 0,
+            model: 0,
+            platform: 0,
+            agent: 0,
+            recommendedPriceRange: 0,
+            cosmetic: 0,
+            questionnaireResults: 0,
+            functionalTestResults: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0,
+          })
+          .limit(5)
+          .exec();
 
         if (
           getSimilarTable &&
@@ -1299,7 +1329,7 @@ router.post(
         dataObject = {
           externalSource,
           compareData: compareData.length > 1 ? compareData : [],
-          similarListTable: getSimilarTable > 1 ? getSimilarTable : [],
+          similarListTable: getSimilarTable.length > 1 ? getSimilarTable : [],
           ...(getListing._doc || getListing),
         };
         let tempArray = [];

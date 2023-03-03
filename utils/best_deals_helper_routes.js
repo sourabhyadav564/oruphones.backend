@@ -1,9 +1,10 @@
-const getBestDeals = require("./get_best_deals");
+// const getBestDeals = require("./get_best_deals");
 const bestDealsModal = require("../src/database/modals/others/best_deals_models");
 const favoriteModal = require("../src/database/modals/favorite/favorite_add");
-const saveListingModal = require("../src/database/modals/device/save_listing_device");
+// const saveListingModal = require("../src/database/modals/device/save_listing_device");
 const applySortFilter = require("./sort_filter");
 const { async } = require("@firebase/util");
+const { neededKeysForDeals } = require("./matrix_figures");
 
 const commonFunc = async (
   location,
@@ -19,12 +20,26 @@ const commonFunc = async (
 
   let favList = [];
   if (userUniqueId !== "Guest") {
-    const getFavObject = await favoriteModal.findOne({
-      userUniqueId: userUniqueId,
-    });
+    // const getFavObject = await favoriteModal.findOne({
+    //   userUniqueId: userUniqueId,
+    // });
 
-    if (getFavObject) {
-      favList = getFavObject.fav_listings;
+    let getFavObject = await favoriteModal.aggregate([
+      {
+        $match: {
+          userUniqueId: userUniqueId,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          fav_listings: 1,
+        },
+      },
+    ]);
+
+    if (getFavObject && getFavObject.length > 0 && getFavObject[0].length > 0) {
+      favList = getFavObject[0].fav_listings;
     } else {
       favList = [];
     }
@@ -185,13 +200,16 @@ const commonFunc = async (
 
   if (type != "nearme") {
     completeDeals = await bestDealsModal
-      .find({
-        ...findingData,
-        notionalPercentage: {
-          $gt: 0,
-          $lte: 40,
+      .find(
+        {
+          ...findingData,
+          notionalPercentage: {
+            $gt: 0,
+            $lte: 40,
+          },
         },
-      })
+        neededKeysForDeals
+      )
       .limit(5);
   }
 

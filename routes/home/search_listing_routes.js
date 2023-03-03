@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 require("../../src/database/connection");
-const saveListingModal = require("../../src/database/modals/device/save_listing_device");
-const getThirdPartyVendors = require("../../utils/third_party_listings");
-const getRecommendedPrice = require("../../utils/get_recommended_price");
-const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
-const getBestDeals = require("../../utils/get_best_deals");
+// const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+// const getThirdPartyVendors = require("../../utils/third_party_listings");
+// const getRecommendedPrice = require("../../utils/get_recommended_price");
+// const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
+// const getBestDeals = require("../../utils/get_best_deals");
 const logEvent = require("../../src/middleware/event_logging");
-const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
+// const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 const {
   bestDealsForSearchListing,
 } = require("../../utils/best_deals_helper_routes");

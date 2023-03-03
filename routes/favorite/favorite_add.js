@@ -3,10 +3,10 @@ const router = express.Router();
 
 require("../../src/database/connection");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
-const saveListingModal = require("../../src/database/modals/device/save_listing_device");
+// const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const logEvent = require("../../src/middleware/event_logging");
 const validUser = require("../../src/middleware/valid_user");
-const { bestDealFigures } = require("../../utils/matrix_figures");
+const { neededKeysForDeals } = require("../../utils/matrix_figures");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 
 router.post("/add", validUser, logEvent, async (req, res) => {
@@ -158,7 +158,7 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
       },
     ]);
 
-    let fav_list = getFavObject[0].fav_listings;
+    // let fav_list = getFavObject[0].fav_listings;
 
     let dataObject = [];
 
@@ -208,7 +208,7 @@ router.post("/fetch", validUser, logEvent, async (req, res) => {
           isOtherVendor: "N",
           status: ["Active", "Sold_Out"],
           listingId: arr,
-        });
+        }, neededKeysForDeals);
 
         if (allFavListings.length > 0) {
           dataObject = allFavListings;
