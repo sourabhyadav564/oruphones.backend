@@ -58,6 +58,7 @@ const neededKeysForDeals = {
   imagePath: 1,
   defaultImage: 1,
   status: 1,
+  verifiedDate: 1,
 };
 
 exports.neededKeysForDeals = neededKeysForDeals;

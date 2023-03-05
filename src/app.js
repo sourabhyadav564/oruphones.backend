@@ -61,11 +61,11 @@ schedule.scheduleJob("00 13 * * *", function () {
   startDataMigrationJob();
 });
 
-schedule.scheduleJob("00 16 * * *", function () {
+schedule.scheduleJob("30 16 * * *", function () {
   startCalculatingLSPTest();
 });
 
-schedule.scheduleJob("30 18 * * *", function () {
+schedule.scheduleJob("30 20 * * *", function () {
   console.log("The answer to life, the universe, and everything!");
   startSavingBestDeals();
 });

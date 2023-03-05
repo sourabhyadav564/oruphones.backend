@@ -27,18 +27,17 @@ const testScrappedModal = require("../src/database/modals/others/test_scrapped_m
 let fileData = [];
 
 const collectData = async (data, collection) => {
+  let mailOptions = {
+    from: "mobiruindia22@gmail.com",
+    // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+    subject: "Data has successfully been migrated to MongoDB",
+    text:
+      "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
+      data.length +
+      ".",
+  };
   try {
-    let mailOptions = {
-      from: "mobiruindia22@gmail.com",
-      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
-      subject: "Data has successfully been migrated to MongoDB",
-      text:
-        "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: " +
-        data.length +
-        ".",
-    };
-
     MongoClient.connect(url, function (err, db) {
       if (err) throw err;
       var dbo = db.db(process.env.Collection);
@@ -59,14 +58,23 @@ const collectData = async (data, collection) => {
               if (err) {
                 console.log(err);
               } else {
-                console.log("Email sent: " + result.response);
+                // console.log("Email sent: " + result.response);
               }
             });
           });
         });
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    mailOptions["subject"] = "Error in LSP : migrating data to MongoDB";
+    mailOptions["text"] = error.toString();
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        // console.log("Email sent: " + result.response);
+      }
+    });
   }
 };
 
@@ -210,8 +218,16 @@ const firstFunction = async () => {
             let make = element.make;
             let model = element.marketingName;
             // let model_id = elm.model_id;
-            let storage = elm.storage ? `${elm.storage} GB` : "--";
-            let ram = elm.ram ? `${elm.ram} GB` : "--";
+            let storage = elm.storage
+              ? elm.storage.toString().includes("GB")
+                ? elm.storage
+                : `${elm.storage} GB`
+              : "--";
+            let ram = elm.ram
+              ? elm.ram.toString().includes("GB")
+                ? elm.ram
+                : `${elm.ram} GB`
+              : "--";
             let condition = con;
             let tempPrice = elm.price != null ? elm.price.toString() : "";
             if (tempPrice.includes(".")) {
