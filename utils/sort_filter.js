@@ -1,5 +1,5 @@
 const bestDealsModal = require("../src/database/modals/others/best_deals_models");
-
+const { neededKeysForDeals } = require("./matrix_figures");
 // const applySortFilter = async (sortBy, type, page, location, findingData) => {
 const applySortFilter = async (sortBy, page, findingData) => {
   let totalProducts;
@@ -28,44 +28,93 @@ const applySortFilter = async (sortBy, page, findingData) => {
     },
   });
 
-  if (sortBy === "Price - High to Low") {
-    completeDeals = await bestDealsModal
-      .find(findingData)
-      .sort({ listingPrice: -1 })
-      .collation({ locale: "en_US", numericOrdering: true })
-      .skip(parseInt(page) * 30)
-      .limit(30);
-  } else if (sortBy === "Price - Low to High") {
-    completeDeals = await bestDealsModal
-      .find(findingData)
-      .sort({ listingPrice: 1 })
-      .collation({ locale: "en_US", numericOrdering: true })
-      .skip(parseInt(page) * 30)
-      .limit(30);
-  } else if (sortBy === "Newest First") {
-    findingData.createdAt = { $ne: null };
-    completeDeals = await bestDealsModal
-      .find(findingData)
-      .sort({ createdAt: -1 })
-      .skip(parseInt(page) * 30)
-      .limit(30);
-  } else if (sortBy === "Oldest First") {
-    findingData.createdAt = { $ne: null };
-    completeDeals = await bestDealsModal
-      .find(findingData)
-      .sort({ createdAt: 1 })
-      .skip(parseInt(page) * 30)
-      .limit(30);
-  } else {
-    // console.log("sortBy", sortBy);
-    // console.log("findingData", findingData);
-    // sort by notionalPercentage
-    completeDeals = await bestDealsModal
-      .find(findingData, { _id: 0 })
-      // .collation({ locale: "en_US", numericOrdering: true })
-      .skip(parseInt(page) * 30)
-      .limit(30);
+  // if (sortBy === "Price - High to Low") {
+  //   completeDeals = await bestDealsModal
+  //     .find(findingData)
+  //     .sort({ listingPrice: -1 })
+  //     .collation({ locale: "en_US", numericOrdering: true })
+  //     .skip(parseInt(page) * 30)
+  //     .limit(30);
+  // } else if (sortBy === "Price - Low to High") {
+  //   completeDeals = await bestDealsModal
+  //     .find(findingData)
+  //     .sort({ listingPrice: 1 })
+  //     .collation({ locale: "en_US", numericOrdering: true })
+  //     .skip(parseInt(page) * 30)
+  //     .limit(30);
+  // } else if (sortBy === "Newest First") {
+  //   findingData.createdAt = { $ne: null };
+  //   completeDeals = await bestDealsModal
+  //     .find(findingData)
+  //     .sort({ createdAt: -1 })
+  //     .skip(parseInt(page) * 30)
+  //     .limit(30);
+  // } else if (sortBy === "Oldest First") {
+  //   findingData.createdAt = { $ne: null };
+  //   completeDeals = await bestDealsModal
+  //     .find(findingData)
+  //     .sort({ createdAt: 1 })
+  //     .skip(parseInt(page) * 30)
+  //     .limit(30);
+  // } else {
+  //   // sort by notionalPercentage
+  //   completeDeals = await bestDealsModal
+  //     .find(findingData, { _id: 0 })
+  //     .skip(parseInt(page) * 30)
+  //     .limit(30);
+  // }
+
+  // rewrite the above code using switch case and for faster response
+
+  let sortingData = {};
+  let collationData = {};
+  switch (sortBy) {
+    case "Price - High to Low":
+      sortingData = { listingPrice: -1 };
+      collationData = { locale: "en_US", numericOrdering: true };
+      break;
+    case "Price - Low to High":
+      sortingData = { listingPrice: 1 };
+      collationData = { locale: "en_US", numericOrdering: true };
+      break;
+    case "Newest First":
+      sortingData = { createdAt: -1 };
+      findingData.createdAt = { $ne: null };
+      break;
+    case "Oldest First":
+      sortingData = { createdAt: 1 };
+      findingData.createdAt = { $ne: null };
+      break;
+    default:
+      // sort by notionalPercentage
+      break;
   }
+
+  // create faster query for fetching data faster
+  completeDeals = await bestDealsModal.aggregate([
+    { $match: findingData },
+    {
+      $project: {
+        ...neededKeysForDeals,
+        images: {
+          $cond: {
+            if: {
+              $and: [
+                { $isArray: "$images" },
+                { $gt: [{ $size: "$images" }, 0] },
+              ],
+            },
+            then: { $arrayElemAt: ["$images", 0] },
+            else: "$images",
+          },
+        },
+      },
+    },
+    { $sort: sortingData },
+    { $collation: collationData },
+    { $skip: parseInt(page) * 30 },
+    { $limit: 30 },
+  ]);
 
   // if (location === "India") {
   //   if (sortBy === "NA" && type === "all") {

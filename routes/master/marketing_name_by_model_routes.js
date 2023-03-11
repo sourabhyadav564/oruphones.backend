@@ -487,7 +487,7 @@ router.get("/makemodellist", async (req, res) => {
           models: {
             $push: {
               marketingname: "$marketingName",
-              color: "$color",
+              // color: "$color",
               storage: "$storage",
               ram: "$ram",
             },
@@ -551,7 +551,7 @@ router.get("/modellist", async (req, res) => {
           models: {
             $push: {
               marketingname: "$marketingName",
-              color: "$color",
+              // color: "$color",
               storage: "$storage",
               ram: "$ram",
             },

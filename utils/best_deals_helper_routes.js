@@ -199,18 +199,51 @@ const commonFunc = async (
   // let isFromZero = sortBy === "NA" ? false : true;
 
   if (type != "nearme") {
-    completeDeals = await bestDealsModal
-      .find(
-        {
+    // completeDeals = await bestDealsModal
+    //   .find(
+    //     {
+    //       ...findingData,
+    //       notionalPercentage: {
+    //         $gt: 0,
+    //         $lte: 40,
+    //       },
+    //     },
+    //     neededKeysForDeals
+    //   )
+    //   .limit(5);
+
+    //  rewrite the above query to get the best deals with faster response time
+    completeDeals = await bestDealsModal.aggregate([
+      {
+        $match: {
           ...findingData,
           notionalPercentage: {
             $gt: 0,
             $lte: 40,
           },
         },
-        neededKeysForDeals
-      )
-      .limit(5);
+      },
+      {
+        $project: {
+          ...neededKeysForDeals,
+          images: {
+            $cond: {
+              if: {
+                $and: [
+                  { $isArray: "$images" },
+                  { $gt: [{ $size: "$images" }, 0] },
+                ],
+              },
+              then: { $arrayElemAt: ["$images", 0] },
+              else: "$images",
+            },
+          },
+        },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
   }
 
   updatedBestDeals = completeDeals;
