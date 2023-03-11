@@ -77,9 +77,12 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
 router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   let listedBy = req.body.listedBy;
-  const userDetails = await createUserModal.findOne({
-    userUniqueId: userUniqueId,
-  });
+  const userDetails = await createUserModal.findOne(
+    {
+      userUniqueId: userUniqueId,
+    },
+    { userName: 1, mobileNumber: 1, _id: 1}
+  );
 
   if (userDetails) {
     if (userDetails?.userName == null || userDetails?.userName?.length === 0) {

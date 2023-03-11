@@ -106,10 +106,23 @@ router.get("/topselling/models", async (req, res) => {
       { $limit: 50 },
     ]);
 
-    let allModels = [];
-    allModels = allModels.concat(dataObject);
-    dataObject = dataObject.slice(0, 50);
-    //TODO: Save the title object in the database for top selling collection
+    // let allModels = [];
+    // allModels = allModels.concat(dataObject.map((item) => item.marketingName));
+
+    // let allModels = await saveListingModal.distinct("marketingName");
+    // for allModels we need count of each model
+    let allModels = await saveListingModal.aggregate([
+      {
+        $group: {
+          _id: "$marketingName",
+          marketingName: { $first: "$marketingName" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+
     res.status(200).json({
       reason: "Listings by marketing name",
       statusCode: 200,
