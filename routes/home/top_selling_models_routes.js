@@ -115,6 +115,7 @@ router.get("/topselling/models", async (req, res) => {
       {
         $group: {
           _id: "$marketingName",
+          make: { $first: "$make" },
           marketingName: { $first: "$marketingName" },
           count: { $sum: 1 },
         },
