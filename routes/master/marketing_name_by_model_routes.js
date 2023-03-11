@@ -262,211 +262,8 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
 });
 
 router.get("/makemodellist", async (req, res) => {
-  // let make = req.query.make;
-  // const isPrimary = req.query.isPrimary;
-
-  // if (make) {
-  //   let tempMake = make.toLowerCase();
-
-  //   switch (tempMake) {
-  //     case "samsung":
-  //       make = "Samsung";
-  //       break;
-  //     case "oneplus":
-  //       make = "OnePlus";
-  //       break;
-  //     case "huawei":
-  //       make = "Huawei";
-  //       break;
-  //     case "google":
-  //       make = "Google";
-  //       break;
-  //     case "honor":
-  //       make = "Honor";
-  //       break;
-  //     case "xiaomi":
-  //       make = "Xiaomi";
-  //       break;
-  //     case "vivo":
-  //       make = "Vivo";
-  //       break;
-  //     case "oppo":
-  //       make = "Oppo";
-  //       break;
-  //     case "google":
-  //       make = "Google";
-  //       break;
-  //     case "htc":
-  //       make = "HTC";
-  //       break;
-  //     case "lenovo":
-  //       make = "Lenovo";
-  //       break;
-  //     case "apple":
-  //       make = "Apple";
-  //       break;
-  //     case "sony":
-  //       make = "Sony";
-  //       break;
-  //     case "nokia":
-  //       make = "Nokia";
-  //       break;
-  //     case "infinix":
-  //       make = "Infinix";
-  //       break;
-  //     case "acer":
-  //       make = "Acer";
-  //       break;
-  //     case "asus":
-  //       make = "Asus";
-  //       break;
-  //     case "honor":
-  //       make = "Honor";
-  //       break;
-  //     case "microsoft":
-  //       make = "Microsoft";
-  //       break;
-  //     case "lg":
-  //       make = "LG";
-  //       break;
-  //     case "realme":
-  //       make = "Realme";
-  //       break;
-  //     // case "blackberry":
-  //     //   make = "Blackberry";
-  //     //   break;
-  //     case "htc":
-  //       make = "HTC";
-  //       break;
-  //     case "huawei":
-  //       make = "Huawei";
-  //       break;
-  //     case "panasonic":
-  //       make = "Panasonic";
-  //       break;
-  //     case "zte":
-  //       make = "ZTE";
-  //       break;
-  //     case "alcatel":
-  //       make = "Alcatel";
-  //       break;
-  //     case "gionee":
-  //       make = "Gionee";
-  //       break;
-  //     case "lava":
-  //       make = "Lava";
-  //       break;
-  //     case "tecno":
-  //       make = "Tecno";
-  //       break;
-  //     case "intex":
-  //       make = "Intex";
-  //       break;
-  //     case "meizu":
-  //       make = "Meizu";
-  //       break;
-  //     case "nothing":
-  //       make = "Nothing";
-  //       break;
-  //   }
-  // }
-
-  // let object;
-  // if (isPrimary === "Y") {
-  //   object = await newMakeAndModal.find({ make: make });
-  // } else {
-  //   object = await newMakeAndModal.find({
-  //     make: [
-  //       "Samsung",
-  //       "Apple",
-  //       "OnePlus",
-  //       "Xiaomi",
-  //       "Google",
-  //       "Honor",
-  //       "Realme",
-  //       // "Blackberry",
-  //       "HTC",
-  //       "Nokia",
-  //       "LG",
-  //       "Motorola",
-  //       "Huawei",
-  //       "Panasonic",
-  //       "ZTE",
-  //       "Alcatel",
-  //       "Sony",
-  //       "Lenovo",
-  //       "Asus",
-  //       "Vivo",
-  //       "Oppo",
-  //       "Infinix",
-  //       "Micromax",
-  //       "Karbonn",
-  //       "Lava",
-  //       "Gionee",
-  //       "Tecno",
-  //       "Intex",
-  //       "Meizu",
-  //       "Nothing",
-  //     ],
-  //   });
-  // }
-
-  // let dataObject = [];
-  // let makes = [];
-
-  // object.forEach((item, index) => {
-  //   let newModels = [];
-  //   newModels.push({
-  //     marketingname: item.marketingName,
-  //     color: item.color,
-  //     storage: item.storage,
-  //     ram: item.ram,
-  //   });
-
-  //   if (!makes.includes(item.make)) {
-  //     dataObject.push({
-  //       make: item.make,
-  //       models: newModels,
-  //     });
-  //   } else {
-  //     dataObject.forEach((item2, index) => {
-  //       if (item2.make === item.make) {
-  //         item2.models.push({
-  //           marketingname: item.marketingName,
-  //           color: item.color,
-  //           storage: item.storage,
-  //           ram: item.ram,
-  //         });
-  //       }
-  //     });
-  //   }
-
-  //   makes.push(item.make);
-
-  //   if (index === object.length - 1) {
-  //     // cache.set("makeAndModal", dataObject);
-  //     res.status(200).json({
-  //       reason: "Modals found",
-  //       statusCode: 200,
-  //       status: "SUCCESS",
-  //       dataObject,
-  //     });
-  //   }
-  // });
-
   try {
     let make = req.query.make;
-    // const isPrimary = req.query.isPrimary;
-
-    // if (!make || make == "") {
-    //   const dataObject = await brandModal.find();
-    //   res.status(200).json({
-    //     reason: "Brands found",
-    //     statusCode: 200,
-    //     status: "SUCCESS",
-    //     dataObject,
-    //   });
-    // } else {
     let dataObject = await newMakeAndModal.aggregate([
       {
         $match: {
@@ -488,8 +285,9 @@ router.get("/makemodellist", async (req, res) => {
             $push: {
               marketingname: "$marketingName",
               // color: "$color",
+              color: [],
               storage: "$storage",
-              ram: "$ram",
+              // ram: "$ram",
             },
           },
         },
@@ -553,7 +351,7 @@ router.get("/modellist", async (req, res) => {
               marketingname: "$marketingName",
               // color: "$color",
               storage: "$storage",
-              ram: "$ram",
+              // ram: "$ram",
             },
           },
         },

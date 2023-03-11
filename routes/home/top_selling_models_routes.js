@@ -117,12 +117,14 @@ router.get("/topselling/models", async (req, res) => {
           _id: "$marketingName",
           make: { $first: "$make" },
           marketingName: { $first: "$marketingName" },
-          count: { $sum: 1 },
+          imagePath: { $first: "$defaultImage.fullImage" },
+          displayOrder: { $first: 9999 },
+          isTopSelling: { $first: false },
+          quantity: { $sum: 1 },
         },
       },
-      { $sort: { count: -1 } },
+      { $sort: { quantity: -1 } },
     ]);
-
 
     res.status(200).json({
       reason: "Listings by marketing name",
