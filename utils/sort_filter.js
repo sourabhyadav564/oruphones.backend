@@ -67,7 +67,7 @@ const applySortFilter = async (sortBy, page, findingData) => {
   // rewrite the above code using switch case and for faster response
 
   let sortingData = {};
-  let collationData = {};
+  let collationData = { locale: "en_US" };
   switch (sortBy) {
     case "Price - High to Low":
       sortingData = { listingPrice: -1 };
@@ -91,30 +91,54 @@ const applySortFilter = async (sortBy, page, findingData) => {
   }
 
   // create faster query for fetching data faster
-  completeDeals = await bestDealsModal.aggregate([
-    { $match: findingData },
-    {
-      $project: {
+  // completeDeals = await bestDealsModal.aggregate([
+  //   { $match: findingData },
+  //   {
+  //     $project: {
+  //       ...neededKeysForDeals,
+  //       images: {
+  //         $cond: {
+  //           if: {
+  //             $and: [
+  //               { $isArray: "$images" },
+  //               { $gt: [{ $size: "$images" }, 0] },
+  //             ],
+  //           },
+  //           then: { $arrayElemAt: ["$images", 0] },
+  //           else: "$images",
+  //         },
+  //       },
+  //     },
+  //   },
+  //   { $sort: sortingData },
+  //   // { $collation: collationData },
+  //   { $skip: parseInt(page) * 30 },
+  //   { $limit: 30 },
+  // ]);
+
+  completeDeals = await bestDealsModal
+    .find(
+      findingData,
+      {
         ...neededKeysForDeals,
-        images: {
-          $cond: {
-            if: {
-              $and: [
-                { $isArray: "$images" },
-                { $gt: [{ $size: "$images" }, 0] },
-              ],
-            },
-            then: { $arrayElemAt: ["$images", 0] },
-            else: "$images",
-          },
-        },
-      },
-    },
-    { $sort: sortingData },
-    { $collation: collationData },
-    { $skip: parseInt(page) * 30 },
-    { $limit: 30 },
-  ]);
+        // images: {
+        //   $cond: {
+        //     if: {
+        //       $and: [
+        //         { $isArray: "$images" },
+        //         { $gt: [{ $size: "$images" }, 0] },
+        //       ],
+        //     },
+        //     then: { $arrayElemAt: ["$images", 0] },
+        //     else: "$images",
+        //   },
+        // },
+      }
+    )
+    .sort(sortingData)
+    .collation(collationData)
+    .skip(parseInt(page) * 30)
+    .limit(30);
 
   // if (location === "India") {
   //   if (sortBy === "NA" && type === "all") {
