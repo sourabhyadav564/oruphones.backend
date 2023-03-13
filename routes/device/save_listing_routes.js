@@ -738,19 +738,19 @@ router.get("/listing/detail", validUser, logEvent, async (req, res) => {
     // const isValidUser = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
-    // const validListing = await saveListingModal.findOne({
-    //   listingId: listingId,
-    //   userUniqueId: userUniqueId,
-    // });
+    const validListing = await saveListingModal.findOne({
+      listingId: listingId,
+      userUniqueId: userUniqueId,
+    });
 
-    const validListing = await saveListingModal.aggregate([
-      {
-        $match: {
-          listingId: listingId,
-          userUniqueId: userUniqueId,
-        },
-      },
-    ]);
+    // const validListing = await saveListingModal.aggregate([
+    //   {
+    //     $match: {
+    //       listingId: listingId,
+    //       userUniqueId: userUniqueId,
+    //     },
+    //   },
+    // ]);
 
     if (validListing) {
       // const dataObject = validListing;
