@@ -51,13 +51,6 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
         },
       },
       {
-        $project: {
-          _id: 1,
-          userUniqueId: 1,
-          ...neededKeys,
-        },
-      },
-      {
         $sort: {
           _id: -1,
         },
@@ -102,7 +95,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     {
       userUniqueId: userUniqueId,
     },
-    { userName: 1, mobileNumber: 1, _id: 1}
+    { userName: 1, mobileNumber: 1, _id: 1 }
   );
 
   if (userDetails) {
@@ -745,18 +738,27 @@ router.get("/listing/detail", validUser, logEvent, async (req, res) => {
     // const isValidUser = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
-    const validListing = await saveListingModal.findOne({
-      listingId: listingId,
-      userUniqueId: userUniqueId,
-    });
+    // const validListing = await saveListingModal.findOne({
+    //   listingId: listingId,
+    //   userUniqueId: userUniqueId,
+    // });
+
+    const validListing = await saveListingModal.aggregate([
+      {
+        $match: {
+          listingId: listingId,
+          userUniqueId: userUniqueId,
+        },
+      },
+    ]);
 
     if (validListing) {
-      const dataObject = validListing;
+      // const dataObject = validListing;
       res.status(200).json({
         reason: "Listing found successfully",
         statusCode: 200,
         status: "SUCCESS",
-        dataObject,
+        dataObject: validListing,
       });
     } else {
       res.status(200).json({
