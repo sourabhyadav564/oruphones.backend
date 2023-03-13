@@ -45,6 +45,10 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+app.use(function setCommonHeaders(req, res, next) {
+  res.set("Access-Control-Allow-Private-Network", "true");
+  next();
+});
 app.use(cors(corsOptions));
 
 let schedule = require("node-schedule");
