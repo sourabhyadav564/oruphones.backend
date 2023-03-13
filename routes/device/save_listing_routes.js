@@ -41,7 +41,28 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
     const neededKeys = allMatrix.neededKeysForDeals;
-    let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
+    // let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
+    // dataObject.reverse();
+
+    let dataObject = await saveListingModal.aggregate([
+      {
+        $match: {
+          userUniqueId,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          userUniqueId: 1,
+          ...neededKeys,
+        },
+      },
+      {
+        $sort: {
+          _id: -1,
+        },
+      },
+    ]);
 
     if (!dataObject) {
       res.status(404).json({ message: "User unique ID not found" });
@@ -59,7 +80,7 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
           ? `You have ${unVerifiedCount} unverified listings. Verify them >`
           : "";
 
-      dataObject.reverse();
+      // dataObject.reverse();
       res.status(200).json({
         reason: "Listings found successfully",
         statusCode: 200,
