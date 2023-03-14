@@ -50,13 +50,13 @@ const logEvent = async (req, res, next) => {
         );
         next();
       } else {
-        // res.status(200).send({
-        //   status: "SESSION_INVALID",
-        //   statusCode: 200,
-        //   reason: "User session invalid",
-        // });
-        // return;
-        next();
+        res.status(200).send({
+          status: "SESSION_INVALID",
+          statusCode: 200,
+          reason: "User session invalid",
+        });
+        return;
+        // next();
       }
     } else {
       next();
