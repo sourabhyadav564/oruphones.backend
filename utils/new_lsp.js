@@ -27,6 +27,7 @@ const testScrappedModal = require("../src/database/modals/others/test_scrapped_m
 let fileData = [];
 
 const collectData = async (data, collection) => {
+  sendMailWithAttachment("Collecting data");
   let mailOptions = {
     from: "mobiruindia22@gmail.com",
     // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
@@ -78,32 +79,34 @@ const collectData = async (data, collection) => {
   }
 };
 
-const sendMailWithAttachment = async (file, message) => {
+const sendMailWithAttachment = async (message) => {
   try {
     let mailOptions = {
       from: "mobiruindia22@gmail.com",
       // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp",
-      subject: "Data has successfully been migrated to MongoDB",
-      text:
-        message === "lspMismatch"
-          ? "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of miss matched models are attatched below."
-          : "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of models not founds are attatched below.",
-      attachments: [
-        {
-          filename: file,
-          path: `../${message}.json`,
-        },
-      ],
+      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+      subject: "Lsp runtime log",
+      text: message,
+      // message === "lspMismatch"
+      //   ? "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of miss matched models are attatched below."
+      //   : "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of models not founds are attatched below.",
+      // attachments: [
+      //   {
+      //     filename: file,
+      //     path: `../${message}.json`,
+      //   },
+      // ],
     };
 
-    config.sendMail(mailOptions, function (err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Email sent: " + result.response);
-      }
-    });
+    if (process.env.SERVER_URL == "https://oruphones.com") {
+      config.sendMail(mailOptions, function (err, result) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Email sent: " + result.response);
+        }
+      });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -111,6 +114,7 @@ const sendMailWithAttachment = async (file, message) => {
 
 let allModelNotFound = [];
 const firstFunction = async () => {
+  sendMailWithAttachment("First function started");
   fileData = await testScrappedModal.find({}, { _id: 0 });
   // Map all data with GSM arena data sets
   let foundObjects = [];
@@ -273,6 +277,7 @@ const firstFunction = async () => {
 };
 
 const secondFunction = (foundObjects) => {
+  sendMailWithAttachment("Second Function Started");
   // Merge all common objects into one
   let commonModels = [];
   foundObjects.forEach((element, index) => {
@@ -336,6 +341,7 @@ const secondFunction = (foundObjects) => {
 
 const thirdFunction = async (commonModels) => {
   // find all possible LSPs and put into an array
+  sendMailWithAttachment("Third Function Started");
   commonModels.forEach((elem, index) => {
     let foundCommonIndex = commonModels.findIndex(
       (item) =>
@@ -396,6 +402,7 @@ const thirdFunction = async (commonModels) => {
 
 const forthFunction = (commonModels, goToSix) => {
   // Get one least price from the LSP array and from derived for buy
+  sendMailWithAttachment("Forth Function Started");
   commonModels.forEach((element, index) => {
     if (element.priceArray.length > 0) {
       let foundIndex = commonModels.findIndex(
@@ -428,6 +435,7 @@ const forthFunction = (commonModels, goToSix) => {
 
 const fifthFunction = (commonModels) => {
   // Handler function for skipped objects for find lsp
+  sendMailWithAttachment("Fifth Function Started");
   commonModels.forEach((element, index) => {
     let foundIndex = commonModels.findIndex(
       (item) =>
@@ -474,6 +482,7 @@ const fifthFunction = (commonModels) => {
 
 const sixthFunction = (commonModels) => {
   // For find derivedPrice array by sell just for empty lsp objects
+  sendMailWithAttachment("Sixth Function Started");
   commonModels.forEach((elem, index) => {
     let foundCommonIndex = commonModels.findIndex(
       (item) =>
@@ -538,6 +547,7 @@ const sixthFunction = (commonModels) => {
 
 const seventhFunction = (commonModels, goToNine) => {
   // find maxPrice from that array for lsp
+  sendMailWithAttachment("Seventh Function Started");
   commonModels.forEach((element, index) => {
     if (element.priceArray.length > 0) {
       let foundIndex = commonModels.findIndex(
@@ -573,6 +583,7 @@ const seventhFunction = (commonModels, goToNine) => {
 
 const eighthFunction = (commonModels) => {
   // handler function for finding max price for skipped objects
+  sendMailWithAttachment("Eighth Function Started");
   commonModels.forEach((element, index) => {
     let foundIndex = commonModels.findIndex(
       (item) =>
@@ -618,6 +629,7 @@ const eighthFunction = (commonModels) => {
 
 const ninthFunction = (commonModels) => {
   // Handler for null values in priceArray.
+  sendMailWithAttachment("Ninth Function Started");
   commonModels.forEach((element, index) => {
     let newPriceArray = commonModels[index].priceArray.filter((element) => {
       return element != null;
@@ -639,6 +651,7 @@ const ninthFunction = (commonModels) => {
 
 const tenthFunction = (commonModels) => {
   // Final function for finding derived lsp for skipped objects for both Buy and Sell
+  sendMailWithAttachment("Tenth Function Started");
   let finalObjects = [];
   let conditions = ["Like New", "Excellent", "Good", "Fair"];
   commonModels.forEach((element, index) => {
@@ -684,6 +697,7 @@ const tenthFunction = (commonModels) => {
 
 const eleventh = (finalObjects) => {
   // sell multiplied by 1.2 & 1.4
+  sendMailWithAttachment("Eleventh Function Started");
 
   finalObjects.forEach((finalObject, index) => {
     if (finalObjects[index].priceArray == []) {
@@ -705,6 +719,7 @@ const eleventh = (finalObjects) => {
 
 const twelth = (finalObjects) => {
   // find lsp greater smaller
+  sendMailWithAttachment("Twelth Function Started");
   let objectsArr = [];
   // fs.writeFileSync("finalObjects.json", JSON.stringify(finalObjects, null, 2));
   if (allModelNotFound.length > 0) {
@@ -747,6 +762,7 @@ const twelth = (finalObjects) => {
 };
 
 const lastFunction = (finalObjects) => {
+  sendMailWithAttachment("Last Function Started");
   fileData.forEach((elm, index) => {
     let mdl = elm.model_name != null ? elm.model_name.toString() : "";
     if (mdl.includes("(")) {
