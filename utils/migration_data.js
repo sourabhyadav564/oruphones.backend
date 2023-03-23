@@ -23,7 +23,15 @@ const deleteOldData = async () => {
   };
 
   let deletedData = await testScrappedModal.deleteMany(expression);
-  console.log("deletedData", deletedData.deletedCount);
+  // console.log("deletedData", deletedData.deletedCount);
+
+  let expression2 = {
+    updatedAt: {
+      $lte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    },
+  };
+
+  let deletedData2 = await scrappedLogModal.deleteMany(expression2);
 };
 
 const startDataMigration = async () => {
@@ -403,7 +411,7 @@ const sendLogMail = async (type) => {
   }
 };
 
-const nonFoundedModelMail = async() =>{
+const nonFoundedModelMail = async () => {
   let allData = await NonFoundedModels.find({}).sort({ createdAt: -1 });
 
   // remove duplicates from allData using model
@@ -431,13 +439,7 @@ const nonFoundedModelMail = async() =>{
   </tr>`;
   for (let i = 0; i < dataLen; i++) {
     const data = allData[i];
-    const {
-      make,
-      model,
-      deviceStorage,
-      ram,
-      createdAt,
-    } = data;
+    const { make, model, deviceStorage, ram, createdAt } = data;
     mailBody += `<tr>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${make}</td>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${model}</td>
@@ -448,7 +450,6 @@ const nonFoundedModelMail = async() =>{
   }
 
   mailBody += `</table>`;
-
 
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
@@ -464,7 +465,7 @@ const nonFoundedModelMail = async() =>{
       // console.log("Email sent: " + info.response);
     }
   });
-}
+};
 
 const startDataMigrationJob = async () => {
   // sendLogMail("Sell");
