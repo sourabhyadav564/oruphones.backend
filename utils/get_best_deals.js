@@ -286,12 +286,14 @@ const getBestDeals = async (
             let oldItem = item;
             await oldItem.images.forEach((imgItem) => {
               let oldImg = imgItem.fullImage;
-              let newImg = oldImg.replace(
-                "https://demo-bucket-c2c-001.s3.amazonaws.com/",
-                "https://d1tl44nezj10jx.cloudfront.net/"
-              );
-              imgItem.fullImage = newImg;
-              imgItem.thumbnailImage = newImg;
+              if (oldImg) {
+                let newImg = oldImg.replace(
+                  "https://demo-bucket-c2c-001.s3.amazonaws.com/",
+                  "https://d1tl44nezj10jx.cloudfront.net/"
+                );
+                imgItem.fullImage = newImg;
+                imgItem.thumbnailImage = newImg;
+              }
             });
             newDataObject = {
               ...oldItem,
