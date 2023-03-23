@@ -29,7 +29,8 @@ const fileFilter = (req, file, next) => {
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg"
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/webp"
   ) {
     next(null, true);
   } else {
@@ -57,13 +58,14 @@ router.post(
   async (req, res) => {
     try {
       const file = req.file;
-      // console.log("file.path", req.file);
-      const result = await uploadFile(file);
+      let fileName = file?.filename ? file?.filename.split(".")[0] : "";
+
       // get the actual height and width of the image
       let ch = 100;
       let cw = 80;
-      const { width, height } = await sharp(req.file?.path.toString())
-      .metadata();
+      const { width, height } = await sharp(
+        req.file?.path.toString()
+      ).metadata();
       if (height >= 3000 || width >= 3000) {
         ch = height * 0.03;
         cw = width * 0.03;
@@ -93,91 +95,54 @@ router.post(
       ch = parseInt(ch);
       cw = parseInt(cw);
 
-      let thumbFile = await sharp(req.file?.path.toString())
-        .resize(cw, ch)
-        .toFile("output.webp", (err, info) => {});
+      let origPath = `routes/device/${fileName}_org.webp`;
+      let tempPath = `routes/device/${fileName}.webp`;
+      let result = {};
+      let result2 = {};
+      await sharp(req.file?.path.toString()).toFile(
+        origPath,
+        async (err, info) => {
+          await sharp(req.file?.path.toString())
+            .resize(cw, ch)
+            .toFile(tempPath, async (err, info) => {
+              // })
+              // .then(async () => {
 
-      const result2 = await uploadFile(thumbFile);
+              let origFile = {
+                path: origPath,
+                filename: `${fileName}_org.webp`,
+                mimetype: "image/webp",
+              };
 
-      await unlinkFile(file?.path);
+              let thumb = {
+                path: tempPath,
+                filename: `${fileName}.webp`,
+                mimetype: "image/webp",
+                isThumbnail: true,
+              };
 
-      const dataObject = {
-        imagePath: `${result2.Location}`,
-        thumbnailImagePath: `${result2.Location || result2.Location}`,
-        imageKey: `${result2.Key}`,
-      };
+              result = await uploadFile(origFile);
+              result2 = await uploadFile(thumb);
 
-      res.status(200).json({
-        reason: "Image uploaded successfully",
-        statusCode: 201,
-        status: "SUCCESS",
-        dataObject,
-      });
+              await unlinkFile(origFile?.path);
+              await unlinkFile(thumb?.path);
+              await unlinkFile(file?.path);
 
-      // make & uploading thumbnail image
-      // const { buffer, originalname } = req.file;
-      // const timestamp = new Date().toISOString();
-      // const ref = `${timestamp}-${originalname}.webp`;
-      // // const thumbnail = await sharp(buffer)
-      // //   .webp({ quality: 10 })
-      // //   .toFile("thumb_" + ref);
-      // const thumbnail = sharp(req.file).resize(1000).jpeg({ quality: 10 });
-      // const thumbnailResult = await uploadFile(thumbnail);
+              const dataObject = {
+                imagePath: `${result.Location}`,
+                thumbnailImagePath: `${result2.Location || result.Location}`,
+                imageKey: `${result.Key}`,
+              };
 
-      // const buf = await resizeImg(req.file, {
-      //   width: 250,
-      //   height: 250,
-      // });
-      // var file_path = req.file.path;
-      // fs.readFile(file_path, async function (err, data) {
-      //   const buf = await resizeImg(data, {
-      //     width: 50,
-      //     height: 70,
-      //   });
-      //   fs.writeFile(file_path, buf, function (err) {
-      //     res.end(
-      //       JSON.stringify({
-      //         message: "file uploaded successfully",
-      //         success: true,
-      //       })
-      //     );
-      //   });
-      //   const result2 = await uploadFile(buf);
-      //   await unlinkFile(file?.path);
-
-      //   const file = req.file;
-      //   const result = await uploadFile(file);
-      //   await unlinkFile(file?.path);
-
-      //   const dataObject = {
-      //     imagePath: `${result.Location}`,
-      //     // thumbnailImagePath: `${result.Location}`,
-      //     // thumbnailImagePath: `${thumbnailResult.Location}`,
-      //     result2: `${result2.Location}`,
-      //     imageKey: `${result.Key}`,
-      //   };
-
-      //   res.status(200).json({
-      //     reason: "Image uploaded successfully",
-      //     statusCode: 201,
-      //     status: "SUCCESS",
-      //     dataObject,
-      //   });
-      // });
-
-      // const imageInfo ={
-      //   deviceFace: req.query.deviceFace,
-      //   deviceStorage: req.query.deviceStorage,
-      //   make: req.query.make,
-      //   model: req.query.model,
-      //   userUniqueId: req.query.userUniqueId,
-      //   imagePath: result.Location
-      // }
-
-      // const saveData = new imageUploadModal(imageInfo);
-
-      // //TODO: for future use
-      // const createdObject = await saveData.save();
+              res.status(200).json({
+                reason: "Image uploaded successfully",
+                statusCode: 201,
+                status: "SUCCESS",
+                dataObject,
+              });
+            });
+        }
+      );
     } catch (error) {
       console.log(error);
       res

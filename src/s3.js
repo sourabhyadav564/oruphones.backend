@@ -16,9 +16,10 @@ const s3 = new S3({
 // uploads an image to s3
 function uploadFile(file) {
   const fileStream = fs.createReadStream(file.path);
+  let additionalPath = file.isThumbnail ? "/thumbnails" : "";
 
   const uploadParams = {
-    Bucket: bucketName,
+    Bucket: bucketName + additionalPath,
     Body: fileStream,
     Key: file.filename,
   };
@@ -34,7 +35,8 @@ function uploadLogFile(file, fName, forCrash) {
   let date = new Date().getDate();
   let dir = forCrash ? "crash" : "logs";
   const uploadParams = {
-    Bucket: bucketName + "/logs/" + year + "/" + monthName + "/" + date + "/" + dir,
+    Bucket:
+      bucketName + "/logs/" + year + "/" + monthName + "/" + date + "/" + dir,
     Body: fileStream,
     // Key: file.filename,
     Key: fName,
