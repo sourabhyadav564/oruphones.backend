@@ -42,7 +42,7 @@ const saveListingSchema = new mongoose.Schema(
     images: {
       type: [
         {
-          thumbnailImage: {
+          thumbImage: {
             type: String,
           },
           fullImage: {

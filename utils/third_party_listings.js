@@ -170,7 +170,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
       images: [
         {
           fullImage: imagePath,
-          thumbnailImage: imagePath,
+          thumbImage: imagePath,
         },
       ],
       // images: [],

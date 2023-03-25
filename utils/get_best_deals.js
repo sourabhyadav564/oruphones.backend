@@ -292,7 +292,7 @@ const getBestDeals = async (
                   "https://d1tl44nezj10jx.cloudfront.net/"
                 );
                 imgItem.fullImage = newImg;
-                imgItem.thumbnailImage = newImg;
+                imgItem.thumbImage = newImg;
               }
             });
             newDataObject = {
@@ -371,7 +371,7 @@ const getBestDeals = async (
         if (!item.images.length) {
           finalBestDeals[index].imagePath = item.defaultImage.fullImage;
         } else {
-          finalBestDeals[index].imagePath = item.images[0].fullImage;
+          finalBestDeals[index].imagePath = item.images[0].thumbImage || item.images[0].fullImage;
         }
         let tempDate = moment(item.createdAt).format("MMM Do");
         finalBestDeals[index].listingDate = tempDate.toString();
@@ -388,7 +388,7 @@ const getBestDeals = async (
         if (!item.images.length) {
           otherListings[index].imagePath = item.defaultImage.fullImage;
         } else {
-          otherListings[index].imagePath = item.images[0].fullImage;
+          otherListings[index].imagePath = item.images[0].thumbImage || item.images[0].fullImage;
         }
         let tempDate = moment(item.createdAt).format("MMM Do");
         otherListings[index].listingDate = tempDate.toString();

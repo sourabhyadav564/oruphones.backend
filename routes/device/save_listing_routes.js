@@ -254,8 +254,10 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
         notionalPercentage: -999999,
         status: limitExceeded || duplicated ? "Sold_Out" : "Active",
         imagePath:
-          (defaultImage.fullImage != "" ? defaultImage.fullImage : "") ||
-          (images.length > 0 ? images[0].fullImage : ""),
+          (images.length > 0
+            ? images[0].thumbImage || images[0].fullImage
+            : "") ||
+          (defaultImage.fullImage != "" ? defaultImage.fullImage : ""),
         listingId: dataObject.listingId,
         listingDate: moment(now).format("MMM Do"),
       };
