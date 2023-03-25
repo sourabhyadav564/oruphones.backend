@@ -16,7 +16,7 @@ const s3 = new S3({
 // uploads an image to s3
 function uploadFile(file) {
   const fileStream = fs.createReadStream(file.path);
-  let additionalPath = file.isThumbnail ? "/thumbnails" : "";
+  let additionalPath = file.isThumbnail ? "/thumbnails" : "/originals";
 
   const uploadParams = {
     Bucket: bucketName + additionalPath,
