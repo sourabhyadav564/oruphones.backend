@@ -950,6 +950,7 @@ router.post(
     const listingid = req.query.listingid;
     const isOtherVendor = req.query.isOtherVendor;
     const userUniqueId = req.query.userUniqueId;
+    const isLimited = req.query.isLimited || false;
 
     // console.log("query", listingid, isOtherVendor, userUniqueId);
 
@@ -1021,8 +1022,11 @@ router.post(
         let dataObject = {
           externalSource,
           compareData,
+          similarListTable: [],
           ...(getListing._doc || getListing),
         };
+
+        if(!isLimited){
         let findingBestData = {
           marketingName: getListing?.marketingName,
           deviceStorage: getListing?.deviceStorage,
@@ -1360,6 +1364,8 @@ router.post(
           similarListTable: getSimilarTable.length > 1 ? getSimilarTable : [],
           ...(getListing._doc || getListing),
         };
+
+      }
         let tempArray = [];
         tempArray.push(dataObject);
 

@@ -16,44 +16,13 @@ const { uploadFile, getFileStream } = require("../../src/s3");
 const validUser = require("../../src/middleware/valid_user");
 // const sharp = require("sharp");
 
-const nodemailer = require("nodemailer");
-
-const config = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "mobiruindia22@gmail.com",
-    pass: "rtrmntzuzwzisajb",
-  },
-});
-
-// const sendMail = (text) => {
-//   try {
-//     let mailOptions = {
-//       from: "mobiruindia22@gmail.com",
-//       to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
-//       subject: "Image runtime log",
-//       text: text,
-//     };
-
-//     config.sendMail(mailOptions, function (err, result) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         console.log("Email sent: " + result.response);
-//       }
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const dirPath = __dirname.toString();
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
-    // sendMail("destination", __dirname.toString());
-    next(null, __dirname.toString());
+    next(null, dirPath);
   },
   filename: function (req, file, next) {
-    // sendMail("filename", Date.now().toString() + "-" + file.originalname);
     next(null, Date.now().toString() + "-" + file.originalname);
   },
 });
@@ -62,7 +31,8 @@ const fileFilter = (req, file, next) => {
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg"
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/webp"
   ) {
     next(null, true);
   } else {
@@ -81,7 +51,6 @@ router.get("/uploadimage/:key", (req, res) => {
   const readStream = getFileStream(key);
   readStream.pipe(res);
 });
-
 router.post(
   "/uploadimage",
   upload.single("image"),
@@ -90,8 +59,6 @@ router.post(
   async (req, res) => {
     try {
       const file = req.file;
-      // add some delay to make sure the file is written to disk
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       let fileName = file?.filename ? file?.filename.split(".")[0] : "";
       // sendMail("uploadimage", file?.filename ? file?.filename : "no file");
 
@@ -130,8 +97,8 @@ router.post(
       ch = parseInt(ch);
       cw = parseInt(cw);
 
-      let origPath = `routes/device/${fileName}_org.webp`;
-      let tempPath = `routes/device/${fileName}.webp`;
+      let origPath = dirPath+`/${fileName}_org.webp`;
+      let tempPath = dirPath+`/${fileName}.webp`;
       let result = {};
       let result2 = {};
       await sharp(req.file?.path.toString()).toFile(
