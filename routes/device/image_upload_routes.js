@@ -16,11 +16,46 @@ const { uploadFile, getFileStream } = require("../../src/s3");
 const validUser = require("../../src/middleware/valid_user");
 // const sharp = require("sharp");
 
+const nodemailer = require("nodemailer");
+
+const config = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "mobiruindia22@gmail.com",
+      pass: "rtrmntzuzwzisajb",
+    },
+  });
+
+  const sendMail = (text) => {
+    try {
+      let mailOptions = {
+        from: "mobiruindia22@gmail.com",
+        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+        subject: "Image runtime log",
+        text: text,
+      };
+  
+      if (process.env.SERVER_URL == "https://oruphones.com") {
+        config.sendMail(mailOptions, function (err, result) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("Email sent: " + result.response);
+          }
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
-    next(null, __dirname);
+    sendMail("destination", __dirname.toString());
+    next(null, __dirname.toString());
   },
   filename: function (req, file, next) {
+    sendMail("filename", Date.now().toString() + "-" + file.originalname);
     next(null, Date.now().toString() + "-" + file.originalname);
   },
 });
@@ -29,8 +64,7 @@ const fileFilter = (req, file, next) => {
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/webp"
+    file.mimetype === "image/jpg"
   ) {
     next(null, true);
   } else {
@@ -59,6 +93,7 @@ router.post(
     try {
       const file = req.file;
       let fileName = file?.filename ? file?.filename.split(".")[0] : "";
+      sendMail("uploadimage", file?.filename ? file?.filename : "no file");
 
       // get the actual height and width of the image
       let ch = 100;
