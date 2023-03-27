@@ -19,35 +19,33 @@ const validUser = require("../../src/middleware/valid_user");
 const nodemailer = require("nodemailer");
 
 const config = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "mobiruindia22@gmail.com",
-      pass: "rtrmntzuzwzisajb",
-    },
-  });
+  service: "gmail",
+  auth: {
+    user: "mobiruindia22@gmail.com",
+    pass: "rtrmntzuzwzisajb",
+  },
+});
 
-  const sendMail = (text) => {
-    try {
-      let mailOptions = {
-        from: "mobiruindia22@gmail.com",
-        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
-        subject: "Image runtime log",
-        text: text,
-      };
-  
-      if (process.env.SERVER_URL == "https://oruphones.com") {
-        config.sendMail(mailOptions, function (err, result) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log("Email sent: " + result.response);
-          }
-        });
+const sendMail = (text) => {
+  try {
+    let mailOptions = {
+      from: "mobiruindia22@gmail.com",
+      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+      subject: "Image runtime log",
+      text: text,
+    };
+
+    config.sendMail(mailOptions, function (err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + result.response);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    });
+  } catch (error) {
+    console.log(error);
   }
+};
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
@@ -92,6 +90,8 @@ router.post(
   async (req, res) => {
     try {
       const file = req.file;
+      // add some delay to make sure the file is written to disk
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       let fileName = file?.filename ? file?.filename.split(".")[0] : "";
       sendMail("uploadimage", file?.filename ? file?.filename : "no file");
 
