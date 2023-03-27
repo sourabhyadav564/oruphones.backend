@@ -26,34 +26,34 @@ const config = nodemailer.createTransport({
   },
 });
 
-const sendMail = (text) => {
-  try {
-    let mailOptions = {
-      from: "mobiruindia22@gmail.com",
-      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
-      subject: "Image runtime log",
-      text: text,
-    };
+// const sendMail = (text) => {
+//   try {
+//     let mailOptions = {
+//       from: "mobiruindia22@gmail.com",
+//       to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+//       subject: "Image runtime log",
+//       text: text,
+//     };
 
-    config.sendMail(mailOptions, function (err, result) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log("Email sent: " + result.response);
-      }
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     config.sendMail(mailOptions, function (err, result) {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         console.log("Email sent: " + result.response);
+//       }
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 const storage = multer.diskStorage({
   destination: function (req, file, next) {
-    sendMail("destination", __dirname.toString());
+    // sendMail("destination", __dirname.toString());
     next(null, __dirname.toString());
   },
   filename: function (req, file, next) {
-    sendMail("filename", Date.now().toString() + "-" + file.originalname);
+    // sendMail("filename", Date.now().toString() + "-" + file.originalname);
     next(null, Date.now().toString() + "-" + file.originalname);
   },
 });
@@ -93,7 +93,7 @@ router.post(
       // add some delay to make sure the file is written to disk
       await new Promise((resolve) => setTimeout(resolve, 1000));
       let fileName = file?.filename ? file?.filename.split(".")[0] : "";
-      sendMail("uploadimage", file?.filename ? file?.filename : "no file");
+      // sendMail("uploadimage", file?.filename ? file?.filename : "no file");
 
       // get the actual height and width of the image
       let ch = 100;
