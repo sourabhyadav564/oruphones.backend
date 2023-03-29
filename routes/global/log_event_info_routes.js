@@ -75,7 +75,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     const forCrash = req.query.forCrash == "true" ? true : false;
     const shareLog = req.query.shareLog == "true" ? true : false;
     const scheduleCall = req.query.scheduleCall == "true" ? true : false;
-    const src = req.headers.devicePlatform || "No source";
+    const src = req.headers.deviceplatform || "No source";
     // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
