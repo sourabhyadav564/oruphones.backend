@@ -88,6 +88,9 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
     case "lg":
       make = "LG";
       break;
+    case "lge":
+      make = "LG";
+      break;
     case "alcatel":
       make = "Alcatel";
       break;
@@ -133,7 +136,7 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
     if (marketingName == "") {
       objects = await newMakeAndModal.find({
         make: make,
-        models: { $in: model },
+        models: { $in: model.toString().trim() },
       });
     } else {
       objects = await newMakeAndModal.find({

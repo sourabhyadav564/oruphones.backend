@@ -71,6 +71,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     const forCrash = req.query.forCrash == "true" ? true : false;
     const shareLog = req.query.shareLog == "true" ? true : false;
     const scheduleCall = req.query.scheduleCall == "true" ? true : false;
+    const src = req.headers.srcfrom || "No source";
     // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
@@ -99,6 +100,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
       forCrash,
       shareLog,
       scheduleCall,
+      src,
     };
 
     // save query in database
@@ -109,6 +111,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     if ((hasLog && file) || scheduleCall) {
       let mailBody = `<H1>Hi Team,</H1>
       <p>There is a new query from ${name} with email ${email} and phone ${phone}.</p>
+      <p>Source: ${src}</p>
       <H3>Issue Type: ${issueType}</H3>
       <p>Description: ${description}</p>
       <p>Model Name: ${modelName}</p>

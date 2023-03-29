@@ -116,11 +116,14 @@ let allModelNotFound = [];
 const firstFunction = async () => {
   sendMailWithAttachment("First function started");
   try {
+    let path = __dirname.toString().split("utils")[0];
     fileData = await testScrappedModal.find({}, { _id: 0 });
     // Map all data with GSM arena data sets
     let foundObjects = [];
     let allModelFound = [];
-    const allgsmData = await JSON.parse(fs.readFileSync("/home/ubuntu/Production_Build/phone_bazaar_node_backend/gsm_arena_filtered.json"));
+    const allgsmData = await JSON.parse(
+      fs.readFileSync(`${path}gsm_arena_filtered.json`)
+    );
     // const fileData = await testScrappedModal.find({}, { _id: 0 });
 
     let gsmData = allgsmData.filter((item) => item.models.length >= 0);

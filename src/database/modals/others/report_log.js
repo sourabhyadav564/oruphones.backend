@@ -37,6 +37,10 @@ const reportSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    src: {
+      type: String,
+      required: true,
+    },
     forCrash: {
       type: Boolean,
       // required: true,
