@@ -10,7 +10,7 @@ const logEvent = async (req, res, next) => {
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
   const location = req.headers.location;
-  const devicePlatform = req.headers.devicePlatform;
+  const devicePlatform = req.headers.deviceplatform;
 
   const getEvent = await eventModal.findOne({ sessionId: sessionId });
   // const getUser = await createUserModal.findOne({

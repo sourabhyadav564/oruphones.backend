@@ -20,7 +20,7 @@ router.get("/sessionid", async (req, res) => {
   const eventName = req.headers.eventname;
   const srcFrom = req.headers.srcfrom;
   const sessionId = req.headers.sessionid;
-  const devicePlatform = req.headers.devicePlatform;
+  const devicePlatform = req.headers.deviceplatform;
   const location = req.headers.location;
 
   try {
