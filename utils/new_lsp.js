@@ -80,36 +80,36 @@ const collectData = async (data, collection) => {
 };
 
 const sendMailWithAttachment = async (message) => {
-  try {
-    let mailOptions = {
-      from: "mobiruindia22@gmail.com",
-      // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-      to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
-      subject: "Lsp runtime log",
-      text: message,
-      // message === "lspMismatch"
-      //   ? "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of miss matched models are attatched below."
-      //   : "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of models not founds are attatched below.",
-      // attachments: [
-      //   {
-      //     filename: file,
-      //     path: `../${message}.json`,
-      //   },
-      // ],
-    };
+  // try {
+  //   let mailOptions = {
+  //     from: "mobiruindia22@gmail.com",
+  //     // to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+  //     to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp",
+  //     subject: "Lsp runtime log",
+  //     text: message,
+  //     // message === "lspMismatch"
+  //     //   ? "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of miss matched models are attatched below."
+  //     //   : "Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of models not founds are attatched below.",
+  //     // attachments: [
+  //     //   {
+  //     //     filename: file,
+  //     //     path: `../${message}.json`,
+  //     //   },
+  //     // ],
+  //   };
 
-    if (process.env.SERVER_URL == "https://oruphones.com") {
-      config.sendMail(mailOptions, function (err, result) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Email sent: " + result.response);
-        }
-      });
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  //   if (process.env.SERVER_URL == "https://oruphones.com") {
+  //     config.sendMail(mailOptions, function (err, result) {
+  //       if (err) {
+  //         console.log(err);
+  //       } else {
+  //         console.log("Email sent: " + result.response);
+  //       }
+  //     });
+  //   }
+  // } catch (error) {
+  //   console.log(error);
+  // }
 };
 
 let allModelNotFound = [];

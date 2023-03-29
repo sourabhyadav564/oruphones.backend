@@ -58,6 +58,10 @@ router.get("/reportIssue/:key", (req, res) => {
   readStream.pipe(res);
 });
 
+const devMails =
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
+const prodMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
+
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
     const file = req.file || null;
@@ -71,7 +75,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     const forCrash = req.query.forCrash == "true" ? true : false;
     const shareLog = req.query.shareLog == "true" ? true : false;
     const scheduleCall = req.query.scheduleCall == "true" ? true : false;
-    const src = req.headers.srcfrom || "No source";
+    const src = req.headers.DevicePlatform || "No source";
     // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
@@ -122,7 +126,10 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
 
       const mailOptions = {
         from: "mobiruindia22@gmail.com",
-        to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+        to:
+          process.env.SERVER_URL === "https://oruphones.com"
+            ? prodMails
+            : devMails,
         subject: scheduleCall
           ? `Call Schedule from ${name}`
           : `New Query from ${name}`,
