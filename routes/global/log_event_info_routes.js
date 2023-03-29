@@ -59,12 +59,13 @@ router.get("/reportIssue/:key", (req, res) => {
 });
 
 const devMails =
-  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
-const prodMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
+const prodMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
 
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
     const file = req.file || null;
+    const src = await req.headers.deviceplatform || "No source";
     const hasLog = req.query.hasLog == "true" ? true : false;
     const issueType = req.query.issueType || "Crash";
     const description = req.query.description || "No description";
@@ -75,7 +76,6 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
     const forCrash = req.query.forCrash == "true" ? true : false;
     const shareLog = req.query.shareLog == "true" ? true : false;
     const scheduleCall = req.query.scheduleCall == "true" ? true : false;
-    const src = req.headers.deviceplatform || "No source";
     // const scheduledTime = req.query.scheduledTime || Date.now();
 
     let dataObject = {};
