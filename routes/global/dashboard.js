@@ -3,6 +3,8 @@ const saveListingModal = require("../../src/database/modals/device/save_listing_
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const eventModal = require("../../src/database/modals/others/event_logs");
 const router = express.Router();
+const moment = require("moment");
+const { sendMailUtil } = require("../../utils/mail_util");
 
 const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
 
@@ -303,6 +305,140 @@ router.get("/dashboard/event", async (req, res) => {
     };
     res.status(200).json({
       reason: "Events found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.get("/dashboard/listingsByAgent", async (req, res) => {
+  try {
+    let startTime =
+      req.query.startTime ||
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    let endTime = req.query.endTime || new Date();
+
+    let agentWiseListings = await saveListingModal.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startTime,
+            $lte: endTime,
+          },
+          storeId: "001",
+        },
+      },
+      {
+        $group: {
+          _id: "$agent",
+          Listings: {
+            $sum: 1,
+          },
+          Without_Image: {
+            $sum: {
+              $cond: [{ $eq: [{ $size: "$images" }, 0] }, 1, 0],
+            },
+          },
+        },
+      },
+      {
+        $sort: {
+          Listings: -1,
+        },
+      },
+    ]);
+
+    // now find total users for the given time agentwise
+
+    let agentWiseUsers = await createUserModal.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startTime,
+            $lte: endTime,
+          },
+          userType: "olxUser",
+        },
+      },
+      {
+        $group: {
+          _id: "$agent",
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+    ]);
+
+    // merge both the arrays for agents
+
+    let agentWiseData = agentWiseListings.map((agent) => {
+      let agentWiseUser = agentWiseUsers.find((user) => user._id === agent._id);
+      return {
+        ...agent,
+        Total_Users: agentWiseUser ? agentWiseUser.count : 0,
+      };
+    });
+
+    const dataObject = {
+      // from and to will be in the format of 30 Aug 2021 00:00:00
+      From: moment(startTime).format("DD MMM YYYY HH:mm:ss"),
+      To: moment(endTime).format("DD MMM YYYY HH:mm:ss"),
+      TotalListings: agentWiseListings.reduce((acc, curr) => {
+        return acc + curr.Listings;
+      }, 0),
+      TotalUsers: agentWiseUsers.reduce((acc, curr) => {
+        return acc + curr.count;
+      }, 0),
+      AgentWiseData: agentWiseData,
+    };
+
+    // mail body will be in html format and with appropriate styling
+
+    let mailBody = `
+    <h1 style="text-align: center;">Agent Wise Data</h1>
+    <h3 style="text-align: center;">From: ${dataObject.From}</h3>
+    <h3 style="text-align: center;">To: ${dataObject.To}</h3>
+    <h3 style="text-align: center;">Total Listings: ${
+      dataObject.TotalListings
+    }</h3>
+    <h3 style="text-align: center;">Total Users: ${dataObject.TotalUsers}</h3>
+    <table style="width: 100%; border: 1px solid black; border-collapse: collapse;">
+    <tr style="border: 1px solid black; border-collapse: collapse;">
+    <th style="border: 1px solid black; border-collapse: collapse;">Agent</th>
+    <th style="border: 1px solid black; border-collapse: collapse;">Total Listings</th>
+    <th style="border: 1px solid black; border-collapse: collapse;">Unique Users</th>
+    <th style="border: 1px solid black; border-collapse: collapse;">Without Image</th>
+    </tr>
+    ${dataObject.AgentWiseData.map(
+      (agent) => `
+    <tr style="border: 1px solid black; border-collapse: collapse;">
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent._id.toString().toUpperCase()}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Listings}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Total_Users}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Without_Image}</td>
+    </tr>
+    `
+    ).join("")}
+    </table>
+
+    <br />
+    <h4 style="text-align: left;">Team ORUphones</h4>
+    `;
+
+    sendMailUtil("Daily Listings by Agents", mailBody);
+
+    res.status(200).json({
+      reason: "Daily by agent found",
       statusCode: 200,
       status: "SUCCESS",
       dataObject,
