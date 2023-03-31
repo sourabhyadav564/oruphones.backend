@@ -13,6 +13,7 @@ const notificationModel = require("../src/database/modals/notification/complete_
 const sendverificationSMS = require("./send_verification_sms");
 const sendLoginOtp = require("./send_login_otp");
 const sendingSms = require("./sms_assign");
+const { sendMailUtil } = require("./mail_util");
 
 const sendNotification = async (
   sellerUniqueId,
@@ -21,8 +22,7 @@ const sendNotification = async (
   sellerName,
   sellerContactNumber,
   clientOTP
-  ) => {
-
+) => {
   const now = new Date();
   const currentDate = moment(now).format("L");
 
@@ -67,7 +67,7 @@ const sendNotification = async (
     },
   };
 
-  fetch("https://fcm.googleapis.com/fcm/send", {
+  await fetch("https://fcm.googleapis.com/fcm/send", {
     method: "POST",
     headers: {
       // replace authorization key with your key
@@ -77,10 +77,16 @@ const sendNotification = async (
     body: JSON.stringify(notification_body),
   })
     .then(function (response) {
-      console.log(response);
+      // console.log(response);
+      // send response in mail
+      let mailbody = `Hey ${sellerName}, You've got a verification request. It's response is ${response}.`;
+      sendMailUtil("Notification Send Response", mailbody);
     })
     .catch(function (error) {
-      console.error(error);
+      // console.error(error);
+      // send error in mail
+      let mailbody = `Hey ${sellerName}, You've got a verification request. It's error is ${error}.`;
+      sendMailUtil("Notification Send Error", mailbody);
     });
 
   //Save notification to database
@@ -113,7 +119,13 @@ const sendNotification = async (
     );
   }
 
-  const sendMessage = await sendingSms("verify", sellerContactNumber, sellerUniqueId, sellerName, marketingName);
+  const sendMessage = await sendingSms(
+    "verify",
+    sellerContactNumber,
+    sellerUniqueId,
+    sellerName,
+    marketingName
+  );
 };
 
 module.exports = sendNotification;

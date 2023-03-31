@@ -9,6 +9,7 @@ const createUserModal = require("../../src/database/modals/login/login_create_us
 const validUser = require("../../src/middleware/valid_user");
 const { uploadLogFile } = require("../../src/s3");
 const reportModal = require("../../src/database/modals/others/report_log");
+const gradeModal = require("../../src/database/modals/others/report_grade");
 const fs = require("fs");
 const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
@@ -16,6 +17,7 @@ const unlinkFile = util.promisify(fs.unlink);
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 const multer = require("multer");
+const { sendMailUtil } = require("../../utils/mail_util");
 const config = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -48,7 +50,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5 },
+  limits: { fileSize: 1024 * 1024 * 10 },
   // fileFilter: fileFilter,
 });
 
@@ -58,14 +60,14 @@ router.get("/reportIssue/:key", (req, res) => {
   readStream.pipe(res);
 });
 
-const devMails =
-  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
-const prodMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
+const devMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
+const prodMails =
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
 
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
     const file = req.file || null;
-    const src = await req.headers.deviceplatform || "No source";
+    const src = (await req.headers.deviceplatform) || "No source";
     const hasLog = req.query.hasLog == "true" ? true : false;
     const issueType = req.query.issueType || "Crash";
     const description = req.query.description || "No description";
@@ -80,11 +82,13 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
 
     let dataObject = {};
 
+    sendMailUtil("report Issue header", req.headers.toString());
+
     if (hasLog && file) {
       // get currentTime as 14_26_58
       let currentTime = new Date().toLocaleTimeString().replace(/:/g, "_");
       let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".txt";
-      const result = await uploadLogFile(file, fName, forCrash);
+      const result = await uploadLogFile(file, fName, forCrash, false);
       await unlinkFile(file?.path);
       dataObject = {
         filePath: `${result.Location}`,
@@ -149,6 +153,59 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
       status: "SUCCESS",
       dataObject,
     });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+
+router.get("/uploadReport/:key", (req, res) => {
+  const key = req.params.key;
+  const readStream = getFileStream(key);
+  readStream.pipe(res);
+});
+
+router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
+  try {
+    const file = req.file || null;
+    const src = (await req.headers.deviceplatform) || "No source";
+    const reportId = req.query.reportId || "Abc12345678";
+    const userUniqueId = req.query.userUniqueId || "Guest";
+    const modelName = req.query.modelName || "No model name";
+
+    let dataObject = {};
+
+    if (file) {
+      let currentTime = new Date().toLocaleTimeString().replace(/:/g, "_");
+      let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".txt";
+      const result = await uploadLogFile(file, fName, false, true);
+      await unlinkFile(file?.path);
+      dataObject = {
+        filePath: `${result.Location}`,
+        fileKey: `${result.Key}`,
+        src,
+        reportId,
+        userUniqueId,
+      };
+
+      // save query in database
+      const newQuery = new gradeModal(dataObject);
+      await newQuery.save();
+
+      res.status(200).json({
+        reason: "Report saved into your account",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } else {
+      res.status(400).json({
+        reason: "No file found",
+        statusCode: 400,
+        status: "FAILED",
+        dataObject,
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
