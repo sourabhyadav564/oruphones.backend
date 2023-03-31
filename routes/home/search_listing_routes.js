@@ -66,7 +66,10 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
       findingData.deviceStorage = deviceStorage;
     }
     if (deviceRam.length > 0) {
-      findingData.deviceRam = deviceRam;
+      if (make.length == 1 && make[0] == "Apple") {
+      } else {
+        findingData.deviceRam = deviceRam;
+      }
     }
     if (deviceCondition.length > 0 && reqPage !== "TSM") {
       findingData.deviceCondition = deviceCondition;

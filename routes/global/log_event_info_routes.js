@@ -67,7 +67,7 @@ const prodMails =
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
     const file = req.file || null;
-    const src = (await req.headers.deviceplatform) || "No source";
+    const src = req.headers.deviceplatform || "No source";
     const hasLog = req.query.hasLog == "true" ? true : false;
     const issueType = req.query.issueType || "Crash";
     const description = req.query.description || "No description";
@@ -82,7 +82,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
 
     let dataObject = {};
 
-    sendMailUtil("report Issue header", req.headers.deviceplatform);
+    // sendMailUtil("report Issue header", req.headers.deviceplatform);
 
     if (hasLog && file) {
       // get currentTime as 14_26_58
