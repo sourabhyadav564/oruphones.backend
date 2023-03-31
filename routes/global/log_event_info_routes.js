@@ -82,7 +82,7 @@ router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
 
     let dataObject = {};
 
-    sendMailUtil("report Issue header", req.headers.toString());
+    sendMailUtil("report Issue header", req.headers.deviceplatform);
 
     if (hasLog && file) {
       // get currentTime as 14_26_58

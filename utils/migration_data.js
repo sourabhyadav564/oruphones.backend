@@ -16,18 +16,70 @@ const config = nodemailer.createTransport({
 
 const deleteOldData = async () => {
   let expression = {
-    updatedAt: {
-      $lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    // updatedAt: {
+    //   $lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    // },
+    // vendor_id: 13,
+
+    $expr: {
+      $and: [
+        {
+          $lte: [
+            {
+              $cond: {
+                if: {
+                  $eq: ["$updatedAt", null],
+                },
+                // then use the createdAt field and if createdAt is null, use the created_at field
+                then: "$createdAt",
+                else: "$updatedAt",
+              },
+            },
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          ],
+        },
+        {
+          $eq: ["$vendor_id", 13],
+        },
+      ],
     },
-    vendor_id: 13,
   };
 
   let deletedData = await testScrappedModal.deleteMany(expression);
   // console.log("deletedData", deletedData.deletedCount);
 
   let expression2 = {
-    updatedAt: {
-      $lte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    // updatedAt: [
+    //   {
+    //     $lte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    //   },
+    //   {
+    //     $eq: null,
+    //   },
+    // ],
+    // type: ["buy", "Buy"],
+
+    $expr: {
+      $and: [
+        {
+          $lte: [
+            {
+              $cond: {
+                if: {
+                  $eq: ["$updatedAt", null],
+                },
+                // then use the createdAt field
+                then: "$createdAt",
+                else: "$updatedAt",
+              },
+            },
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+          ],
+        },
+        {
+          $eq: ["$type", "buy"],
+        },
+      ],
     },
   };
 
