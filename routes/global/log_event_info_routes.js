@@ -212,7 +212,7 @@ router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
   }
 });
 
-router.post("/checkReport", upload.single("reportFile"), async (req, res) => {
+router.get("/checkReport", upload.single("reportFile"), async (req, res) => {
   try {
     let reportId = req.query.reportId;
     // let userUniqueId = req.query.userUniqueId;
@@ -230,16 +230,24 @@ router.post("/checkReport", upload.single("reportFile"), async (req, res) => {
           reportLink: report.filePath,
         },
       });
+    } else {
+      res.status(200).json({
+        reason: "No report found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          reportLink: "No report found",
+        },
+      });
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
     res.status(200).json({
       reason: "No report found",
       statusCode: 200,
       status: "SUCCESS",
       dataObject: {
-        reportLink: "No report found"
+        reportLink: "No report found",
       },
     });
   }
