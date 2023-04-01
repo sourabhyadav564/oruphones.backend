@@ -80,12 +80,12 @@ const sendNotification = async (
       // console.log(response);
       // send response in mail
       let mailbody = `Hey ${sellerName}, You've got a verification request. It's response is ${response}.`;
-      sendMailUtil("Notification Send Response", mailbody);
+      // sendMailUtil("Notification Send Response", mailbody);
     })
     .catch(function (error) {
       // console.error(error);
       // send error in mail
-      let mailbody = `Hey ${sellerName}, You've got a verification request. It's error is ${error}.`;
+      let mailbody = `Hey ${sellerName}, It's error is ${error}.`;
       sendMailUtil("Notification Send Error", mailbody);
     });
 
