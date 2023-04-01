@@ -950,7 +950,7 @@ router.post(
     const listingid = req.query.listingid;
     const isOtherVendor = req.query.isOtherVendor;
     const userUniqueId = req.query.userUniqueId;
-    const isLimited = req.query.isLimited || false;
+    const isLimited = req.query.isLimited.toString() === "true" ? true : false;
 
     // console.log("query", listingid, isOtherVendor, userUniqueId);
 
