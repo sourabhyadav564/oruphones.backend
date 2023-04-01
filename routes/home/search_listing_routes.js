@@ -162,6 +162,29 @@ router.post("/listings/search", validUser, logEvent, async (req, res) => {
     //   .find(findingData, { _id: 0 })
     //   .sort(sorting);
 
+    // update findingData object if make contains apple then deviceRam can be any value for apple but not for other brands ***
+
+    if (make.length > 0 && make.includes("Apple")) {
+      let expression = {
+        $expr: {
+          $or: [
+            {
+              $and: [
+                {
+                  $eq: ["$make", "Apple"],
+                },
+                {
+                  // here, deviceRam can be any value
+                  $ne: ["$deviceRam", "NA"],
+                },
+              ],
+            },
+          ],
+        },
+      };
+      findingData = { ...findingData, ...expression };
+    }
+
     bestDealsForSearchListing(
       listingLocation,
       page,

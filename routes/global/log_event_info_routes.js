@@ -169,7 +169,7 @@ router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
   try {
     const file = req.file || null;
     const src = (await req.headers.deviceplatform) || "No source";
-    const reportId = req.query.reportId || "Abc12345678";
+    const reportId = req.query.reportId || "ORU-12345678";
     const userUniqueId = req.query.userUniqueId || "Guest";
     const modelName = req.query.modelName || "No model name";
 
@@ -177,7 +177,7 @@ router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
 
     if (file) {
       let currentTime = new Date().toLocaleTimeString().replace(/:/g, "_");
-      let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".txt";
+      let fName = modelName.replace(/\s/g, "_") + "_" + currentTime + ".pdf";
       const result = await uploadLogFile(file, fName, false, true);
       await unlinkFile(file?.path);
       dataObject = {
