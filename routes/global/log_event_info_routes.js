@@ -212,6 +212,39 @@ router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
   }
 });
 
+router.post("/checkReport", upload.single("reportFile"), async (req, res) => {
+  try {
+    let reportId = req.query.reportId;
+    // let userUniqueId = req.query.userUniqueId;
+
+    const report = await gradeModal.findOne({
+      reportId: reportId,
+    });
+
+    if (report) {
+      res.status(200).json({
+        reason: "Report found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          reportLink: report.filePath,
+        },
+      });
+    }
+  }
+  catch (error) {
+    console.log(error);
+    res.status(200).json({
+      reason: "No report found",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: {
+        reportLink: "No report found"
+      },
+    });
+  }
+});
+
 router.get("/logs/geteventinfo", async (req, res) => {
   const location = req.query.location;
   try {
