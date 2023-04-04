@@ -184,8 +184,10 @@ router.get("/dashboard/home", async (req, res) => {
 
 router.get("/dashboard/listingsByCity", async (req, res) => {
   try {
-    let startTime = req.query.startTime || initialTIme;
-    let endTime = req.query.endTime || new Date();
+    let startTime = req.query.startTime
+      ? new Date(req.query.startTime)
+      : initialTIme;
+    let endTime = req.query.endTime ? new Date(req.query.endTime) : new Date();
 
     let allListings = await saveListingModal.countDocuments({
       createdAt: {
@@ -317,10 +319,11 @@ router.get("/dashboard/event", async (req, res) => {
 
 router.get("/dashboard/listingsByAgent", async (req, res) => {
   try {
-    let startTime =
-      req.query.startTime ||
-      new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-    let endTime = req.query.endTime || new Date();
+    let last24Hours = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    let startTime = req.query.startTime
+      ? new Date(req.query.startTime)
+      : last24Hours;
+    let endTime = req.query.endTime ? new Date(req.query.endTime) : new Date();
 
     let agentWiseListings = await saveListingModal.aggregate([
       {
@@ -422,10 +425,18 @@ router.get("/dashboard/listingsByAgent", async (req, res) => {
     ${dataObject.AgentWiseData.map(
       (agent) => `
     <tr style="border: 1px solid black; border-collapse: collapse;">
-    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent._id.toString().toUpperCase()}</td>
-    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Listings}</td>
-    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Total_Users}</td>
-    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent.Without_Image}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent._id
+      .toString()
+      .toUpperCase()}</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${
+      agent.Listings
+    }</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${
+      agent.Total_Users
+    }</td>
+    <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${
+      agent.Without_Image
+    }</td>
     </tr>
     `
     ).join("")}

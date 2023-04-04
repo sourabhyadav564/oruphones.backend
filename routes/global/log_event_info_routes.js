@@ -215,30 +215,69 @@ router.post("/uploadReport", upload.single("reportFile"), async (req, res) => {
 router.get("/checkReport", upload.single("reportFile"), async (req, res) => {
   try {
     let reportId = req.query.reportId;
-    // let userUniqueId = req.query.userUniqueId;
+    let userUniqueId = req.query.userUniqueId;
+    let getMine = req.query.getMine || false;
 
-    const report = await gradeModal.findOne({
-      reportId: reportId,
-    });
+    switch (getMine) {
+      case "true" || true:
+        getMine = true;
+        break;
+      case "false" || false:
+        getMine = false;
+        break;
+      default:
+        getMine = false;
+        break;
+    }
 
-    if (report) {
-      res.status(200).json({
-        reason: "Report found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          reportLink: report.filePath,
-        },
+    if (getMine) {
+      const reports = await gradeModal.find({
+        userUniqueId: userUniqueId,
       });
+
+      if (reports) {
+        res.status(200).json({
+          reason: "Report found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            reports: reports,
+          },
+        });
+      } else {
+        res.status(200).json({
+          reason: "No report found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            reports: [],
+          },
+        });
+      }
     } else {
-      res.status(200).json({
-        reason: "No report found",
-        statusCode: 200,
-        status: "SUCCESS",
-        dataObject: {
-          reportLink: "No report found",
-        },
+      const report = await gradeModal.findOne({
+        reportId: reportId,
       });
+
+      if (report) {
+        res.status(200).json({
+          reason: "Report found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            reportLink: report.filePath,
+          },
+        });
+      } else {
+        res.status(200).json({
+          reason: "No report found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            reportLink: "No report found",
+          },
+        });
+      }
     }
   } catch (error) {
     console.log(error);
