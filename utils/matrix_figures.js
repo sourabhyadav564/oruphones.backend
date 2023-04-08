@@ -28,7 +28,7 @@ const recommendedPriceFigures = {
 exports.recommendedPriceFigures = recommendedPriceFigures;
 
 const bestDealFigures = {
-  verified_percentage: 0,
+  verified_percentage: 2,
   warranty_percentage1: 21,
   warranty_percentage2: 14,
   warranty_percentage3: 6,
@@ -38,6 +38,7 @@ const bestDealFigures = {
   has_non_apple_earphone_percentage: 1,
   has_original_box_percentage: 0.5,
   third_party_warranty_percentage: 8,
+  daily_removed_percentage: 0.1,
 };
 
 exports.bestDealFigures = bestDealFigures;

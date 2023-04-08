@@ -111,6 +111,8 @@ const getBestDeals = async (
   const warranty_percentage1 = allMatrix.bestDealFigures.warranty_percentage1;
   const warranty_percentage2 = allMatrix.bestDealFigures.warranty_percentage2;
   const warranty_percentage3 = allMatrix.bestDealFigures.warranty_percentage3;
+  const daily_removed_percentage =
+    allMatrix.bestDealFigures.daily_removed_percentage;
   // const warranty_percentage2 = 8;
   // const warranty_percentage3 = 5;
   // const warranty_percentage4 = 0;
@@ -213,6 +215,12 @@ const getBestDeals = async (
             }
           }
 
+          if ("verified" in item === true) {
+            if (item.verified == true) {
+              deduction = deduction + verified_percentage;
+            }
+          }
+
           notionalPrice = notionalPrice - (basePrice / 100) * deduction;
 
           // let testScrappedModal = JSON.parse(
@@ -312,6 +320,23 @@ const getBestDeals = async (
               mdlName = mdlName.replace("+", " plus");
               oldItem.defaultImage["fullImage"] = newModelImages[mdlName];
             }
+
+            // count days from updatedAt
+            let days = 0;
+            if (oldItem.updatedAt) {
+              let date1 = new Date(oldItem.updatedAt);
+              let date2 = new Date();
+              let Difference_In_Time = date2.getTime() - date1.getTime();
+              days = Difference_In_Time / (1000 * 3600 * 24);
+            }
+
+            if (days > 15) {
+              days = days - 15;
+              let percentToReduce = daily_removed_percentage * days;
+              percentToReduce = percentToReduce > 18 ? 18 : percentToReduce;
+              currentPercentage = currentPercentage - percentToReduce;
+            }
+
             newDataObject = {
               ...oldItem,
               notionalPercentage: currentPercentage,
@@ -605,4 +630,3 @@ const getBestDeals = async (
 };
 
 module.exports = getBestDeals;
-

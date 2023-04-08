@@ -41,9 +41,9 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenphone_5.jpg",
   "asus zenphone 5 lite":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenphone_5_lite.jpg",
-  "google pixel7 new":
+  "google pixel 7":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/google_pixel7_new.jpg",
-  "google pixel7 pro new":
+  "google pixel 7 pro":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/google_pixel7_pro_new.jpg",
   "honor 80":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/honor_80.jpg",
@@ -131,7 +131,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/lava_yuva_pro.jpg",
   "lenovo k14 plus":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/lenovo_k14_plus.jpg",
-  "motorola moto e13 new":
+  "motorola moto e13":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/motorola_moto_e13_new.jpg",
   "motorola moto e22":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/motorola_moto_e22.jpg",
@@ -243,13 +243,13 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a04_core.jpg",
   "samsung galaxy a14 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a14_5g.jpg",
-  "samsung galaxy f04 new":
+  "samsung galaxy f04":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_f04_new.jpg",
   "samsung galaxy m04":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_m04.jpg",
-  "samsung galaxy m32 5g new":
+  "samsung galaxy m32 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_m32_5g_new.jpg",
-  "samsung galaxy note 101 2014 new":
+  "samsung galaxy note 101 2014":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_note_101_2014_new.jpg",
   "samsung galaxy note 101 lte n8020":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_note_101_lte_n8020.jpg",
@@ -345,7 +345,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_poco_c50.jpg",
   "xiaomi redmi 12c":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_12c.jpg",
-  "xiaomi redmi a1 plus new":
+  "xiaomi redmi a1 plus":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_a1_plus_new.jpg",
   "xiaomi redmi k60":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_k60.jpg",
@@ -450,7 +450,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenfone_8.jpg",
   "asus zenfone 8 flip":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenfone_8_flip.jpg",
-  "asus zenfone 9 new":
+  "asus zenfone 9":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenfone_9_new.jpg",
   "asus zenfone lite l1 za551kl":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/asus_zenfone_lite_l1_za551kl.jpg",
@@ -799,7 +799,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/oppo_a95.jpg",
   "oppo a96":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/oppo_a96.jpg",
-  "oppo a96 new":
+  "oppo a96":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/oppo_a96_new.jpg",
   "oppo a97 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/oppo_a97_5g.jpg",
@@ -899,7 +899,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/realme_gt_neo2.jpg",
   "realme gt neo2t":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/realme_gt_neo2t.jpg",
-  "realme gt neo3 new":
+  "realme gt neo3":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/realme_gt_neo3_new.jpg",
   "realme narzo 50":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/realme_narzo_50.jpg",
@@ -931,7 +931,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/realme_v25.jpg",
   "samsung galaxy a02":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a02.jpg",
-  "samsung galaxy a02s sm a025 new":
+  "samsung galaxy a02s sm a025":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a02s_sm_a025_new.jpg",
   "samsung galaxy a03":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a03.jpg",
@@ -961,7 +961,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a23.jpg",
   "samsung galaxy a23 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a23_5g.jpg",
-  "samsung galaxy a32 4g new":
+  "samsung galaxy a32 4g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a32_4g_new.jpg",
   "samsung galaxy a32 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/samsung_galaxy_a32_5g.jpg",
@@ -1181,7 +1181,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_12s_pro.jpg",
   "xiaomi 12s ultra":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_12s_ultra.jpg",
-  "xiaomi 12 lite 5g new":
+  "xiaomi 12 lite 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_12_lite_5g_new.jpg",
   "xiaomi 12 lite":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_12_lite_5g_new.jpg",
@@ -1291,9 +1291,9 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_note10_pro_india.jpg",
   "xiaomi redmi note11":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_note11.jpg",
-  "xiaomi redmi note11 pro plus new":
+  "xiaomi redmi note11 pro plus":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_note11_pro_plus_new.jpg",
-  "xiaomi redmi note 10 pro china new":
+  "xiaomi redmi note 10 pro china":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_note_10_pro_china_new.jpg",
   "xiaomi redmi note 11s 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/xiaomi_redmi_note_11s_5g.jpg",

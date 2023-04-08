@@ -131,7 +131,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const mobileNumber = userDetails?.mobileNumber;
   const charger = req.body.charger;
   const color = req.body.color;
-  const deviceCondition = req.body.deviceCondition;
+  let deviceCondition = req.body.deviceCondition;
   const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
   const deviceFinalGrade = req.body.deviceFinalGrade;
   const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
@@ -161,6 +161,46 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     await cityModal.create({ city: listingLocation, displayWithImage: "0" });
   }
 
+  if (
+    deviceCondition == "Like New"
+  ) {
+    switch (deviceWarranty) {
+      case "four":
+        deviceCondition = "Excellent";
+        break;
+      case "seven":
+        deviceCondition = "Good";
+        break;
+      case "more":
+        deviceCondition = "Fair";
+        break;
+      default:
+        deviceCondition = deviceCondition;
+        break;
+    }
+  } else if (deviceCondition == "Excellent") {
+    switch (deviceWarranty) {
+      case "seven":
+        deviceCondition = "Good";
+        break;
+      case "more":
+        deviceCondition = "Fair";
+        break;
+      default:
+        deviceCondition = deviceCondition;
+        break;
+    }
+  } else if (deviceCondition == "Good") {
+    switch (deviceWarranty) {
+      case "more":
+        deviceCondition = "Fair";
+        break;
+      default:
+        deviceCondition = deviceCondition;
+        break;
+    }
+  }
+
   switch (deviceWarranty) {
     case "zero":
       deviceWarranty = "More than 9 months";
@@ -176,6 +216,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       break;
     default:
       deviceWarranty = "None";
+      break;
   }
 
   const now = new Date();
@@ -950,13 +991,13 @@ router.post(
     const listingid = req.query.listingid;
     const isOtherVendor = req.query.isOtherVendor;
     const userUniqueId = req.query.userUniqueId;
-    let isLimited = req.query.isLimited || 'false';
+    let isLimited = req.query.isLimited || "false";
 
     switch (isLimited) {
-      case 'true' || true:
+      case "true" || true:
         isLimited = true;
         break;
-      case 'false' || false:
+      case "false" || false:
         isLimited = false;
         break;
       default:
@@ -1038,346 +1079,351 @@ router.post(
           ...(getListing._doc || getListing),
         };
 
-        if(!isLimited){
-        let findingBestData = {
-          marketingName: getListing?.marketingName,
-          deviceStorage: getListing?.deviceStorage,
-          deviceCondition: getListing?.deviceCondition,
-          isOtherVendor: "N",
-          mobiru_condition: getListing?.deviceCondition,
-          status: "Active",
-          $expr: {
-            $and: [
-              {
-                $ne: ["$notionalPercentage", NaN],
-              },
-              {
-                $gte: [
-                  {
-                    $toInt: "$notionalPercentage",
-                  },
-                  0,
-                ],
-              },
-              {
-                $lte: [
-                  {
-                    $toInt: "$notionalPercentage",
-                  },
-                  40,
-                ],
-              },
-            ],
-          },
-        };
-
-        if (getListing?.make != "Apple") {
-          findingBestData["deviceRam"] = getListing?.deviceRam;
-        }
-
-        let oruBests = await bestDealsModal
-          .find(findingBestData, unwantKeysForTable)
-          .limit(3);
-
-        let tempStr = getListing?.deviceStorage;
-        tempStr = tempStr.replace("GB", "").trim();
-
-        let findingData = {
-          model_name: getListing?.marketingName,
-          storage: parseInt(tempStr),
-          type: ["buy", "Buy"],
-          mobiru_condition: getListing?.deviceCondition,
-          // isOtherVendor: "Y",
-        };
-
-        if (getListing?.make != "Apple") {
-          let ram = getListing?.deviceRam;
-          ram = ram.replace("GB", "").trim();
-          findingData["ram"] = parseInt(ram); //["deviceRam"] & remove parseInt()
-        }
-
-        let scrappedModelsTemp = await testScrappedModal.find(findingData);
-        // console.log("scrappedModels", scrappedModels.length, findingData);
-        // let scrappedModels = testScrappedModal
-        // console.log("scrappedModels", scrappedModels);
-
-        let listingIds = scrappedModelsTemp.map((item) => item._id.toString());
-
-        // console.log("listingIds", listingIds);
-        let scrappedModels = await bestDealsModal.find(
-          {
-            // listingid: { $in: listingIds },
-            listingId: listingIds,
+        if (!isLimited) {
+          let findingBestData = {
+            marketingName: getListing?.marketingName,
+            deviceStorage: getListing?.deviceStorage,
+            deviceCondition: getListing?.deviceCondition,
+            isOtherVendor: "N",
+            mobiru_condition: getListing?.deviceCondition,
             status: "Active",
-          },
-          unwantKeysForTable
-        );
-
-        // console.log("scrappedModels", scrappedModels.length);
-
-        let selectdModels = [];
-        // let itemId = "";
-        // const marketingname = getListing.marketingName;
-        // const condition = getListing.deviceCondition;
-        // const storage = getListing.deviceStorage;
-        // let leastSellingPrice;
-
-        let pushedVendors = [];
-        // console.log("vendorImage", scrappedModels);
-        scrappedModels.forEach((vendor, index) => {
-          vendor = vendor._doc || vendor;
-          // if (
-          //   item.model === marketingname &&
-          //   item.condition === condition &&
-          //   item.storage === storage
-          // ) {
-          //   item.vendor.forEach((vendor) => {
-          // console.log("vendor", vendor);
-          vendorName = vendor.vendorId ? VENDORS[vendor.vendorId] : "";
-          // console.log("vendorName", vendorName);
-          // console.log("vendor", vendor);
-          // vendorName = VENDORS[vendor.vendor_id];
-          vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
-            .toString()
-            .toLowerCase()}_logo.png`;
-
-          const dy_img =
-            // getListing?.listingId == vendor._id.toString()
-            //   ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png":
-            vendorImage;
-
-          let vendorObject = {
-            externalSourcePrice: vendor.listingPrice,
-            externalSourceImage: dy_img,
-            productLink: vendor.vendorLink ? vendor.vendorLink : "",
-            listingId: vendor.listingId.toString(),
-            Object: vendor,
-            location: "India",
-            // warranty: vendor.warranty,
+            $expr: {
+              $and: [
+                {
+                  $ne: ["$notionalPercentage", NaN],
+                },
+                {
+                  $gte: [
+                    {
+                      $toInt: "$notionalPercentage",
+                    },
+                    0,
+                  ],
+                },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$notionalPercentage",
+                    },
+                    40,
+                  ],
+                },
+              ],
+            },
           };
-          // let vendorObject = {
-          //   externalSourcePrice: vendor.price,
-          //   externalSourceImage: dy_img,
-          //   productLink: vendor.link ? vendor.link : "",
-          //   listingId: vendor._id.toString(),
-          //   warranty: vendor.warranty,
-          // };
-          if (!pushedVendors.includes(vendorName)) {
-            if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
-              // compareData.push(vendorObject);
-              // delete vendorObject.Object;
-              selectdModels.push(vendorObject);
-              pushedVendors.push(vendorName);
-            }
+
+          if (getListing?.make != "Apple") {
+            findingBestData["deviceRam"] = getListing?.deviceRam;
           }
-          //   });
-          // }
-        });
 
-        // add oruBest to the selectdModels
-        // console.log("oruBest", oruBest);
-        if (oruBests.length > 0) {
-          await oruBests.forEach((oruBest) => {
-            let dy_link =
-              oruBest?.listingId == getListing?.listingId
-                ? ""
-                : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+          let oruBests = await bestDealsModal
+            .find(findingBestData, unwantKeysForTable)
+            .limit(3);
 
-            // replace spaces with %20 in dy_link
-            dy_link = dy_link.replace(/ /g, "%20");
+          let tempStr = getListing?.deviceStorage;
+          tempStr = tempStr.replace("GB", "").trim();
+
+          let findingData = {
+            model_name: getListing?.marketingName,
+            storage: parseInt(tempStr),
+            type: ["buy", "Buy"],
+            mobiru_condition: getListing?.deviceCondition,
+            // isOtherVendor: "Y",
+          };
+
+          if (getListing?.make != "Apple") {
+            let ram = getListing?.deviceRam;
+            ram = ram.replace("GB", "").trim();
+            findingData["ram"] = parseInt(ram); //["deviceRam"] & remove parseInt()
+          }
+
+          let scrappedModelsTemp = await testScrappedModal.find(findingData);
+          // console.log("scrappedModels", scrappedModels.length, findingData);
+          // let scrappedModels = testScrappedModal
+          // console.log("scrappedModels", scrappedModels);
+
+          let listingIds = scrappedModelsTemp.map((item) =>
+            item._id.toString()
+          );
+
+          // console.log("listingIds", listingIds);
+          let scrappedModels = await bestDealsModal.find(
+            {
+              // listingid: { $in: listingIds },
+              listingId: listingIds,
+              status: "Active",
+            },
+            unwantKeysForTable
+          );
+
+          // console.log("scrappedModels", scrappedModels.length);
+
+          let selectdModels = [];
+          // let itemId = "";
+          // const marketingname = getListing.marketingName;
+          // const condition = getListing.deviceCondition;
+          // const storage = getListing.deviceStorage;
+          // let leastSellingPrice;
+
+          let pushedVendors = [];
+          // console.log("vendorImage", scrappedModels);
+          scrappedModels.forEach((vendor, index) => {
+            vendor = vendor._doc || vendor;
+            // if (
+            //   item.model === marketingname &&
+            //   item.condition === condition &&
+            //   item.storage === storage
+            // ) {
+            //   item.vendor.forEach((vendor) => {
+            // console.log("vendor", vendor);
+            vendorName = vendor.vendorId ? VENDORS[vendor.vendorId] : "";
+            // console.log("vendorName", vendorName);
+            // console.log("vendor", vendor);
+            // vendorName = VENDORS[vendor.vendor_id];
+            vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
+              .toString()
+              .toLowerCase()}_logo.png`;
+
             const dy_img =
-              oruBest?.listingId == getListing?.listingId
-                ? "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png"
-                : "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/oru_logo.png";
+              // getListing?.listingId == vendor._id.toString()
+              //   ? "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/oru/product/mobiledevices/img/txt_phone.png":
+              vendorImage;
 
             let vendorObject = {
-              externalSourcePrice: parseInt(oruBest?.listingPrice),
+              externalSourcePrice: vendor.listingPrice,
               externalSourceImage: dy_img,
-              productLink: dy_link,
-              userName: oruBest?.listedBy,
-              listingId: oruBest?.listingId,
-              Object: oruBest,
-              location: oruBest?.listingLocation,
+              productLink: vendor.vendorLink ? vendor.vendorLink : "",
+              listingId: vendor.listingId.toString(),
+              Object: vendor,
+              location: "India",
+              // warranty: vendor.warranty,
+            };
+            // let vendorObject = {
+            //   externalSourcePrice: vendor.price,
+            //   externalSourceImage: dy_img,
+            //   productLink: vendor.link ? vendor.link : "",
+            //   listingId: vendor._id.toString(),
+            //   warranty: vendor.warranty,
+            // };
+            if (!pushedVendors.includes(vendorName)) {
+              if (getListing?.vendorLogo != vendorObject.externalSourceImage) {
+                // compareData.push(vendorObject);
+                // delete vendorObject.Object;
+                selectdModels.push(vendorObject);
+                pushedVendors.push(vendorName);
+              }
+            }
+            //   });
+            // }
+          });
+
+          // add oruBest to the selectdModels
+          // console.log("oruBest", oruBest);
+          if (oruBests.length > 0) {
+            await oruBests.forEach((oruBest) => {
+              let dy_link =
+                oruBest?.listingId == getListing?.listingId
+                  ? ""
+                  : `${process.env.SERVER_URL}/product/buy-old-refurbished-used-mobiles/${oruBest?.make}/${oruBest?.marketingName}/${oruBest?.listingId}?isOtherVendor=N`;
+
+              // replace spaces with %20 in dy_link
+              dy_link = dy_link.replace(/ /g, "%20");
+              const dy_img =
+                oruBest?.listingId == getListing?.listingId
+                  ? "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png"
+                  : "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/oru_logo.png";
+
+              let vendorObject = {
+                externalSourcePrice: parseInt(oruBest?.listingPrice),
+                externalSourceImage: dy_img,
+                productLink: dy_link,
+                userName: oruBest?.listedBy,
+                listingId: oruBest?.listingId,
+                Object: oruBest,
+                location: oruBest?.listingLocation,
+              };
+              // compareData.push(vendorObject);
+              // delete vendorObject.Object;
+              externalSource.push(vendorObject);
+            });
+          }
+
+          // push getListing to the externalSource if it's listingId Object is not in the externalSource
+          if (
+            !externalSource.some(
+              (item) => item.listingId == getListing?.listingId
+            ) &&
+            !selectdModels.some(
+              (item) => item.listingId == getListing?.listingId
+            )
+          ) {
+            let vendorObject = {
+              externalSourcePrice: parseInt(
+                getListing?.listingPrice
+              ).toString(),
+              externalSourceImage:
+                "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png",
+              productLink: "",
+              userName: getListing?.listedBy,
+              listingId: getListing?.listingId,
+              Object: getListing,
+              location: getListing?.listingLocation,
             };
             // compareData.push(vendorObject);
             // delete vendorObject.Object;
-            externalSource.push(vendorObject);
-          });
-        }
-
-        // push getListing to the externalSource if it's listingId Object is not in the externalSource
-        if (
-          !externalSource.some(
-            (item) => item.listingId == getListing?.listingId
-          ) &&
-          !selectdModels.some((item) => item.listingId == getListing?.listingId)
-        ) {
-          let vendorObject = {
-            externalSourcePrice: parseInt(getListing?.listingPrice).toString(),
-            externalSourceImage:
-              "https://d1tl44nezj10jx.cloudfront.net/devImg/oru/product/mobiledevices/img/txt_phone.png",
-            productLink: "",
-            userName: getListing?.listedBy,
-            listingId: getListing?.listingId,
-            Object: getListing,
-            location: getListing?.listingLocation,
-          };
-          // compareData.push(vendorObject);
-          // delete vendorObject.Object;
-          selectdModels.push(vendorObject);
-        }
-
-        if (selectdModels.length > 0) {
-          // console.log("selectdModels", selectdModels);
-          // sort selectdModels by price
-          selectdModels.sort((b, a) => {
-            return b.externalSourcePrice - a.externalSourcePrice;
-          });
-          // externalSource.push(vendorObject);
-          externalSource.push(...selectdModels);
-        }
-
-        let tempExternalSource = [];
-        externalSource.forEach((item) => {
-          compareData.push(item);
-          let vendorObject = {
-            externalSourcePrice: item.externalSourcePrice,
-            externalSourceImage: item.externalSourceImage,
-            productLink: item.productLink,
-            userName: item.userName,
-            listingId: item.listingId,
-            Object:
-              item.Object != undefined && item.Object.isOtherVendor == "N"
-                ? item.Object
-                : undefined,
-          };
-          if (
-            getListing?.listingId == item.listingId &&
-            (getListing.notionalPercentage == null ||
-              getListing.notionalPercentage == "" ||
-              getListing.notionalPercentage == undefined ||
-              getListing.notionalPercentage < 0 ||
-              getListing.notionalPercentage > 40)
-          ) {
-          } else {
-            tempExternalSource.push(vendorObject);
+            selectdModels.push(vendorObject);
           }
-        });
 
-        externalSource = tempExternalSource;
+          if (selectdModels.length > 0) {
+            // console.log("selectdModels", selectdModels);
+            // sort selectdModels by price
+            selectdModels.sort((b, a) => {
+              return b.externalSourcePrice - a.externalSourcePrice;
+            });
+            // externalSource.push(vendorObject);
+            externalSource.push(...selectdModels);
+          }
 
-        let thisListingPrice = parseInt(getListing?.listingPrice);
-        let newExpr = {
-          // deviceCondition: ["Like New", getListing?.deviceCondition],
-          $expr: {
-            $and: [
-              {
-                $gte: [
-                  {
-                    $toInt: "$listingPrice",
-                  },
-                  parseInt(thisListingPrice * 0.9),
-                ],
-              },
-              {
-                $lte: [
-                  {
-                    $toInt: "$listingPrice",
-                  },
-                  parseInt(thisListingPrice * 1.2),
-                ],
-              },
-              // ],
-              // $and: [
-              // notionalPercentage should be between 0 and 40
-              {
-                $gte: [
-                  // {
-                  //   $toInt: {
-                  //     $toString: "$notionalPercentage",
-                  //   },
-                  // },
-                  "$notionalPercentage",
-                  0,
-                ],
-              },
-              {
-                $lte: [
-                  // {
-                  //   $toInt: {
-                  //     $toString: "$notionalPercentage",
-                  //   },
-                  // },
-                  "$notionalPercentage",
-                  40,
-                ],
-              },
-            ],
-          },
-        };
-
-        if (getListing?.make == "Apple") {
-          newExpr["$expr"]["$and"].push({
-            $eq: ["$make", "Apple"],
+          let tempExternalSource = [];
+          externalSource.forEach((item) => {
+            compareData.push(item);
+            let vendorObject = {
+              externalSourcePrice: item.externalSourcePrice,
+              externalSourceImage: item.externalSourceImage,
+              productLink: item.productLink,
+              userName: item.userName,
+              listingId: item.listingId,
+              Object:
+                item.Object != undefined && item.Object.isOtherVendor == "N"
+                  ? item.Object
+                  : undefined,
+            };
+            if (
+              getListing?.listingId == item.listingId &&
+              (getListing.notionalPercentage == null ||
+                getListing.notionalPercentage == "" ||
+                getListing.notionalPercentage == undefined ||
+                getListing.notionalPercentage < 0 ||
+                getListing.notionalPercentage > 40)
+            ) {
+            } else {
+              tempExternalSource.push(vendorObject);
+            }
           });
+
+          externalSource = tempExternalSource;
+
+          let thisListingPrice = parseInt(getListing?.listingPrice);
+          let newExpr = {
+            // deviceCondition: ["Like New", getListing?.deviceCondition],
+            $expr: {
+              $and: [
+                {
+                  $gte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(thisListingPrice * 0.9),
+                  ],
+                },
+                {
+                  $lte: [
+                    {
+                      $toInt: "$listingPrice",
+                    },
+                    parseInt(thisListingPrice * 1.2),
+                  ],
+                },
+                // ],
+                // $and: [
+                // notionalPercentage should be between 0 and 40
+                {
+                  $gte: [
+                    // {
+                    //   $toInt: {
+                    //     $toString: "$notionalPercentage",
+                    //   },
+                    // },
+                    "$notionalPercentage",
+                    0,
+                  ],
+                },
+                {
+                  $lte: [
+                    // {
+                    //   $toInt: {
+                    //     $toString: "$notionalPercentage",
+                    //   },
+                    // },
+                    "$notionalPercentage",
+                    40,
+                  ],
+                },
+              ],
+            },
+          };
+
+          if (getListing?.make == "Apple") {
+            newExpr["$expr"]["$and"].push({
+              $eq: ["$make", "Apple"],
+            });
+          }
+
+          let getSimilarTable = [];
+          getSimilarTable = await bestDealsModal
+            .find(newExpr, {
+              _id: 0,
+              storeId: 0,
+              color: 0,
+              deviceCosmeticGrade: 0,
+              deviceFinalGrade: 0,
+              deviceFunctionalGrade: 0,
+              images: 0,
+              imei: 0,
+              model: 0,
+              platform: 0,
+              agent: 0,
+              recommendedPriceRange: 0,
+              cosmetic: 0,
+              questionnaireResults: 0,
+              functionalTestResults: 0,
+              createdAt: 0,
+              updatedAt: 0,
+              __v: 0,
+            })
+            .limit(5)
+            .exec();
+
+          if (
+            getSimilarTable &&
+            getSimilarTable.length > 0 &&
+            !getSimilarTable.some(
+              (item) => item.listingId == getListing?.listingId
+            )
+          ) {
+            // getSimilarTable.unshift(getListing);
+            let tempTable = [];
+            tempTable.push(getListing);
+            tempTable.push(...getSimilarTable);
+            getSimilarTable = tempTable;
+          }
+
+          if (
+            getSimilarTable.length == 1 &&
+            getSimilarTable.some(
+              (item) => item.listingId == getListing?.listingId
+            )
+          ) {
+            getSimilarTable = [];
+          }
+
+          dataObject = {
+            externalSource,
+            compareData: compareData.length > 1 ? compareData : [],
+            similarListTable: getSimilarTable.length > 1 ? getSimilarTable : [],
+            ...(getListing._doc || getListing),
+          };
         }
-
-        let getSimilarTable = [];
-        getSimilarTable = await bestDealsModal
-          .find(newExpr, {
-            _id: 0,
-            storeId: 0,
-            color: 0,
-            deviceCosmeticGrade: 0,
-            deviceFinalGrade: 0,
-            deviceFunctionalGrade: 0,
-            images: 0,
-            imei: 0,
-            model: 0,
-            platform: 0,
-            agent: 0,
-            recommendedPriceRange: 0,
-            cosmetic: 0,
-            questionnaireResults: 0,
-            functionalTestResults: 0,
-            createdAt: 0,
-            updatedAt: 0,
-            __v: 0,
-          })
-          .limit(5)
-          .exec();
-
-        if (
-          getSimilarTable &&
-          getSimilarTable.length > 0 &&
-          !getSimilarTable.some(
-            (item) => item.listingId == getListing?.listingId
-          )
-        ) {
-          // getSimilarTable.unshift(getListing);
-          let tempTable = [];
-          tempTable.push(getListing);
-          tempTable.push(...getSimilarTable);
-          getSimilarTable = tempTable;
-        }
-
-        if (
-          getSimilarTable.length == 1 &&
-          getSimilarTable.some(
-            (item) => item.listingId == getListing?.listingId
-          )
-        ) {
-          getSimilarTable = [];
-        }
-
-        dataObject = {
-          externalSource,
-          compareData: compareData.length > 1 ? compareData : [],
-          similarListTable: getSimilarTable.length > 1 ? getSimilarTable : [],
-          ...(getListing._doc || getListing),
-        };
-
-      }
         let tempArray = [];
         tempArray.push(dataObject);
 
