@@ -22,7 +22,7 @@ router.post(
         : req.body.deviceRam.split("GB")[0];
     let make = req.body.make;
     let marketingName = req.body.marketingName;
-    const deviceCondition = req.body.deviceCondition;
+    let deviceCondition = req.body.deviceCondition;
     const hasCharger = req.body.hasCharger;
     const hasEarphone = req.body.hasEarphone;
     const hasOriginalBox = req.body.hasOriginalBox;
@@ -57,6 +57,44 @@ router.post(
         warrantyPeriodPercentage =
           allMatrix.externalSellSourceFigures.moreThanElevenAgePercentage;
         break;
+    }
+
+    if (deviceCondition == "Like New") {
+      switch (warrantyPeriod) {
+        case "four":
+          deviceCondition = "Excellent";
+          break;
+        case "seven":
+          deviceCondition = "Good";
+          break;
+        case "more":
+          deviceCondition = "Fair";
+          break;
+        default:
+          deviceCondition = deviceCondition;
+          break;
+      }
+    } else if (deviceCondition == "Excellent") {
+      switch (warrantyPeriod) {
+        case "seven":
+          deviceCondition = "Good";
+          break;
+        case "more":
+          deviceCondition = "Fair";
+          break;
+        default:
+          deviceCondition = deviceCondition;
+          break;
+      }
+    } else if (deviceCondition == "Good") {
+      switch (warrantyPeriod) {
+        case "more":
+          deviceCondition = "Fair";
+          break;
+        default:
+          deviceCondition = deviceCondition;
+          break;
+      }
     }
 
     let totalPercentageToBeReduced = 0;
