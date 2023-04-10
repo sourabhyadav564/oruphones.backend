@@ -26,6 +26,7 @@ router.get("/agent/create", async (req, res) => {
       address: address,
       city: city,
       code: code,
+      type: "Agent",
     });
 
     let result = await createAgentModal.findOne({
@@ -93,24 +94,36 @@ router.get("/agent/login", async (req, res) => {
   try {
     const mobileNumber = req.query.mobileNumber;
     const countryCode = req.query.countryCode;
-    const clientOTP = generateOTP();
 
-    const data = new userModal(userDatas);
-    const saveData = await data.save();
+    let foundUser = await createAgentModal.findOne({ mobileNumber });
 
-    const sendMessage = await sendLoginOtp(mobileNumber, clientOTP);
+    if (foundUser) {
+      const clientOTP = generateOTP();
 
-    res.status(200).json({
-      reason: "OTP generated successfully",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject: {
-        maxTime: 120,
-        submitCountIncrement: 0,
-        maxRetryCount: "3",
-        mobileNumber: `${countryCode}${mobileNumber}`,
-      },
-    });
+      const data = new userModal(userDatas);
+      const saveData = await data.save();
+
+      const sendMessage = await sendLoginOtp(mobileNumber, clientOTP);
+
+      res.status(200).json({
+        reason: "OTP generated successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          maxTime: 120,
+          submitCountIncrement: 0,
+          maxRetryCount: "3",
+          mobileNumber: `${countryCode}${mobileNumber}`,
+        },
+      });
+    } else {
+      res.status(200).json({
+        reason: "User not found",
+        statusCode: 200,
+        status: "FAILURE",
+        dataObject: {},
+      });
+    }
   } catch (error) {
     res.status(500).json({
       reason: "Internal server error",
@@ -135,8 +148,11 @@ router.get("/agent/otp/validate", async (req, res) => {
     });
     // savedOtp = getOtp[0]?.otp?.toString();
     let savedOtp = getOtp?.otp?.toString();
-    if (savedOtp.toString() == otp.toString()) {
-      const getUser = await createAgentModal.findOne({ mobileNumber });
+    if (savedOtp.toString() === otp.toString()) {
+      const getUser = await createAgentModal.findOne(
+        { mobileNumber },
+        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1 }
+      );
 
       res.status(200).json({
         reason: "OTP validated",
@@ -145,8 +161,6 @@ router.get("/agent/otp/validate", async (req, res) => {
         dataObject: {
           submitCountIncrement: 0,
           maxRetryCount: "3",
-          //   mobileNumber: mobileNumber,
-          //   userUniqueId: getUser.userUniqueId,
           getUser: getUser._doc,
         },
       });
@@ -164,6 +178,105 @@ router.get("/agent/otp/validate", async (req, res) => {
           submitCountIncrement: 0,
           maxRetryCount: "3",
           mobileNumber: mobileNumber,
+        },
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      reason: "Internal server error",
+      statusCode: 500,
+      status: "FAILURE",
+      dataObject: {
+        error: error,
+      },
+    });
+  }
+});
+
+router.post("/oruMitra/create", async (req, res) => {
+  try {
+    let kiyoskId = req.body.kiyoskId;
+    let name = req.body.name;
+    let email = req.body.email;
+    let address = req.body.address;
+    let city = req.query.city;
+    let code = codeStr();
+    let images = req.body.images;
+    let mobileNumber = req.body.mobileNumber;
+    let upiId = req.body.upiId;
+    let agentId = req.body.agentId;
+
+    // TODO: check if kiyoaskId is blacklisted or not
+
+    let oruMitra = new createAgentModal({
+      kiyoskId: kiyoskId,
+      name: name,
+      email: email,
+      address: address,
+      city: city,
+      code: code,
+      type: "OruMitra",
+      images: images,
+      mobileNumber: mobileNumber,
+      upiId: upiId,
+      agentId: agentId,
+    });
+
+    let result = await createAgentModal.findOne({
+      // check if agent already exists or the code is already used
+      $or: [
+        { mobileNumber: mobileNumber },
+        { code: code },
+        { kiyoskId: kiyoskId },
+      ],
+    });
+
+    let successMsg =
+      "Congratulations!\n\n\nYou have successfully created OruMitra";
+
+    if (result) {
+      result = result._doc;
+      if (result.mobileNumber.toString() == mobileNumber.toString()) {
+        // agent already exists
+        res.status(200).json({
+          reason: "OruMitra already exists",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {},
+        });
+      } else {
+        // code already exists
+        code = codeStr();
+        oruMitra.code = code;
+        let dataObj = await oruMitra.save().catch((err) => {
+          res.status(500).json({
+            reason: "Internal server error",
+            statusCode: 500,
+            status: "FAILURE",
+            dataObject: {
+              error: err,
+            },
+          });
+        });
+        res.status(200).json({
+          reason: "OruMitra created successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            ...dataObj._doc,
+            successMsg: successMsg,
+          },
+        });
+      }
+    } else {
+      let dataObj = await oruMitra.save();
+      res.status(200).json({
+        reason: "OruMitra created successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {
+          ...dataObj._doc,
+          successMsg: successMsg,
         },
       });
     }

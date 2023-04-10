@@ -20,7 +20,6 @@ const createAgentSchema = new mongoose.Schema(
     },
     profilePicPath: {
       type: String,
-      default: "",
     },
     mobileNumber: {
       type: String,
@@ -35,10 +34,36 @@ const createAgentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    type: {
+      type: String,
+      default: "",
+    },
     code: {
       type: String,
       required: true,
       unique: true,
+    },
+    kiyoskId: {
+      type: String,
+      unique: true,
+    },
+    upiId: {
+      type: String,
+    },
+    agentId: {
+      type: String,
+    },
+    images: {
+      type: [
+        {
+          thumbImage: {
+            type: String,
+          },
+          fullImage: {
+            type: String,
+          },
+        },
+      ],
     },
   },
   { timestamps: true }
@@ -49,6 +74,9 @@ createAgentSchema.pre("save", async function (next) {
   next();
 });
 
-const createAgentModal = new mongoose.model("a_created_agents", createAgentSchema);
+const createAgentModal = new mongoose.model(
+  "a_created_agents",
+  createAgentSchema
+);
 
 module.exports = createAgentModal;
