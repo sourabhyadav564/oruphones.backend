@@ -11,6 +11,7 @@ const { uploadLogFile } = require("../../src/s3");
 const reportModal = require("../../src/database/modals/others/report_log");
 const gradeModal = require("../../src/database/modals/others/report_grade");
 const fs = require("fs");
+const moment = require("moment");
 const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
 
@@ -231,9 +232,24 @@ router.get("/checkReport", upload.single("reportFile"), async (req, res) => {
     }
 
     if (getMine) {
-      const reports = await gradeModal.find({
-        userUniqueId: userUniqueId,
-      });
+      // createdAt will be in Mar 23 2023 format using moment
+      const reports = await gradeModal.aggregate([
+        {
+          $match: {
+            userUniqueId: userUniqueId,
+          },
+        },
+        {
+          $project: {
+            reportId: 1,
+            createdAt: moment({ $add: ["$createdAt", 19800000] }).format(
+              "MMM Do YYYY"
+            ),
+            src: 1,
+            filePath: 1,
+          },
+        },
+      ]);
 
       if (reports) {
         res.status(200).json({

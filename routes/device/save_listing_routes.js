@@ -409,7 +409,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const listingId = req.body.listingId;
   const charger = req.body.charger;
   const color = req.body.color;
-  const deviceCondition = req.body.deviceCondition;
+  let deviceCondition = req.body.deviceCondition;
   const deviceStorage = req.body.deviceStorage;
   const deviceRam = req.body.deviceRam;
   const earphone = req.body.earphone;
@@ -434,6 +434,47 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
       });
       return;
     } else {
+
+      if (
+        deviceCondition == "Like New"
+      ) {
+        switch (deviceWarranty) {
+          case "four":
+            deviceCondition = "Excellent";
+            break;
+          case "seven":
+            deviceCondition = "Good";
+            break;
+          case "more":
+            deviceCondition = "Fair";
+            break;
+          default:
+            deviceCondition = deviceCondition;
+            break;
+        }
+      } else if (deviceCondition == "Excellent") {
+        switch (deviceWarranty) {
+          case "seven":
+            deviceCondition = "Good";
+            break;
+          case "more":
+            deviceCondition = "Fair";
+            break;
+          default:
+            deviceCondition = deviceCondition;
+            break;
+        }
+      } else if (deviceCondition == "Good") {
+        switch (deviceWarranty) {
+          case "more":
+            deviceCondition = "Fair";
+            break;
+          default:
+            deviceCondition = deviceCondition;
+            break;
+        }
+      }
+
       switch (warranty) {
         case "zero":
           warranty = "More than 9 months";

@@ -1087,7 +1087,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       "LinearAccelerationSensorTest",
       "GeomagneticRotationSensorTest",
       "AccelerometerTest",
-      "FingerPrintSensorTest"
+      "FingerPrintSensorTest",
     ];
     const severityMedium = [
       "VibrationTest",
@@ -1138,7 +1138,8 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
 
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
-        if (item.testStatus == "FAIL") {//!== "PASS"
+        if (item.testStatus == "FAIL") {
+          //!== "PASS"
           // grade = "C";
           grade = "D";
           // condition = "Fair";
@@ -1200,7 +1201,6 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     } else if (deviceAge === "None") {
       warrantyPeriod = "more";
     }
-
 
     if (!cosmetic || cosmetic[0].toString().includes("No")) {
       cosmeticGrade = "D";
@@ -1270,6 +1270,44 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       }
     }
 
+    if (condition == "Like New") {
+      switch (warrantyPeriod) {
+        case "four":
+          condition = "Excellent";
+          break;
+        case "seven":
+          condition = "Good";
+          break;
+        case "more":
+          condition = "Fair";
+          break;
+        default:
+          condition = condition;
+          break;
+      }
+    } else if (condition == "Excellent") {
+      switch (warrantyPeriod) {
+        case "seven":
+          condition = "Good";
+          break;
+        case "more":
+          condition = "Fair";
+          break;
+        default:
+          condition = condition;
+          break;
+      }
+    } else if (condition == "Good") {
+      switch (warrantyPeriod) {
+        case "more":
+          condition = "Fair";
+          break;
+        default:
+          condition = condition;
+          break;
+      }
+    }
+
     const now = new Date();
     const dateFormat = moment(now).format("MMM Do");
 
@@ -1330,9 +1368,17 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       listing.deviceStorage,
       listing.deviceRam,
       listing.charger === "Y" ? true : false,
-      listing.make === "Apple" ? listing.charger === "Y" ? true : false : false,
+      listing.make === "Apple"
+        ? listing.charger === "Y"
+          ? true
+          : false
+        : false,
       listing.earphone === "Y" ? true : false,
-      listing.make === "Apple" ? listing.earphone === "Y" ? true : false : false,
+      listing.make === "Apple"
+        ? listing.earphone === "Y"
+          ? true
+          : false
+        : false,
       listing.originalbox === "Y" ? true : false,
       listing.verified,
       false,
