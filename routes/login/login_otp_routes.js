@@ -38,31 +38,6 @@ router.post("/otp/generate", logEvent, async (req, res) => {
     const data = new userModal(userDatas);
     const saveData = await data.save();
 
-    // const from = "ORU Phones";
-    // const to = `${countryCode}${mobileNumber}`;
-    // const text = `${clientOTP} is your OTP for login`;
-
-    // vonage.message.sendSms(from, to, text, (err, responseData) => {
-    //   if (err) {
-    //     console.log(err);
-    //   } else {
-    //     if (responseData.messages[0]["status"] === "0") {
-    //       console.log("Message sent successfully.");
-    //     } else {
-    //       console.log(
-    //         `Message failed with error: ${responseData.messages[0]["error-text"]}`
-    //       );
-    //     }
-    //   }
-    // });
-
-    // twilio.messages.create({
-    //   from: "918005879678",
-    //   to: "919261638242",
-    //   body: `${clientOTP} is your OTP for login`
-    // }).then((message) => console.log(message.sid))
-    // .catch((error) => console.log(error));
-
     const sendMessage = sendLoginOtp(mobileNumber, clientOTP);
 
     res.status(200).json({
@@ -132,69 +107,74 @@ router.post("/otp/validate", logEvent, async (req, res) => {
       otp: otp,
     });
     // savedOtp = getOtp[0]?.otp?.toString();
-    savedOtp = getOtp?.otp?.toString();
+    let savedOtp = getOtp?.otp?.toString();
     if (savedOtp === otp) {
-      const delete_user = await userModal.findOneAndRemove({
-        mobileNumber: req.query.mobileNumber,
-        otp: otp,
-      });
-      if (delete_user) {
-        const now = new Date();
-        const currentDate = moment(now).format("L");
+      // if (delete_user) {
+      const now = new Date();
+      const currentDate = moment(now).format("L");
 
-        const createUserData = {
-          mobileNumber: mobileNumber,
-          countryCode: countryCode,
-          createdDate: currentDate,
-        };
+      const createUserData = {
+        mobileNumber: mobileNumber,
+        countryCode: countryCode,
+        createdDate: currentDate,
+      };
 
-        try {
-          const getUser = await createUserModal.findOne({ mobileNumber });
+      try {
+        const getUser = await createUserModal.findOne({ mobileNumber });
 
-          if (getUser) {
-            res.status(200).json({
-              reason: "OTP validated",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject: {
-                submitCountIncrement: 0,
-                maxRetryCount: "3",
-                mobileNumber: mobileNumber,
-                userUniqueId: getUser.userUniqueId,
-              },
-            });
-            return;
-          } else {
-            const data = new createUserModal(createUserData);
-            const saveData = await data.save();
-            res.status(200).json({
-              reason: "OTP validated",
-              statusCode: 200,
-              status: "SUCCESS",
-              dataObject: {
-                submitCountIncrement: 0,
-                maxRetryCount: "3",
-                mobileNumber: mobileNumber,
-                userUniqueId: saveData.userUniqueId,
-              },
-            });
-          }
-        } catch (error) {
-          console.log(error);
-          res.status(400).json(error);
+        if (getUser) {
+          res.status(200).json({
+            reason: "OTP validated",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: {
+              submitCountIncrement: 0,
+              maxRetryCount: "3",
+              mobileNumber: mobileNumber,
+              userUniqueId: getUser.userUniqueId,
+            },
+          });
+          return;
+        } else {
+          const data = new createUserModal(createUserData);
+          const saveData = await data.save();
+          res.status(200).json({
+            reason: "OTP validated",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: {
+              submitCountIncrement: 0,
+              maxRetryCount: "3",
+              mobileNumber: mobileNumber,
+              userUniqueId: saveData.userUniqueId,
+            },
+          });
         }
-
-        // res.status(200).json({
-        //   reason: "OTP validated",
-        //   statusCode: 200,
-        //   status: "SUCCESS",
-        //   dataObject: {
-        //     submitCountIncrement: 0,
-        //     maxRetryCount: "3",
-        //     mobileNumber: mobileNumber,
-        //   },
+        // const delete_user = await userModal.findOneAndRemove({
+        //   mobileNumber: req.query.mobileNumber,
+        //   otp: otp,
         // });
+
+        // find all for the mobile number and delete all
+        const delete_user = await userModal.deleteMany({
+          mobileNumber: req.query.mobileNumber,
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
       }
+
+      // res.status(200).json({
+      //   reason: "OTP validated",
+      //   statusCode: 200,
+      //   status: "SUCCESS",
+      //   dataObject: {
+      //     submitCountIncrement: 0,
+      //     maxRetryCount: "3",
+      //     mobileNumber: mobileNumber,
+      //   },
+      // });
+      // }
     } else {
       res.status(200).json({
         reason: "You have entered an invalid OTP",
