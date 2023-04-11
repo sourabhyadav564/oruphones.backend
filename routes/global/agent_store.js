@@ -202,6 +202,12 @@ router.get("/agent/login", async (req, res) => {
     if (foundUser) {
       const clientOTP = generateOTP();
 
+      const userDatas = {
+        countryCode: countryCode,
+        mobileNumber: mobileNumber,
+        otp: clientOTP,
+      };
+
       const data = new userModal(userDatas);
       const saveData = await data.save();
 
