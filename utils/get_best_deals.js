@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 require("../src/database/connection");
-const saveListingModal = require("../src/database/modals/device/save_listing_device");
+// const saveListingModal = require("../src/database/modals/device/save_listing_device");
 const favoriteModal = require("../src/database/modals/favorite/favorite_add");
-const logEvent = require("../src/middleware/event_logging");
+// const logEvent = require("../src/middleware/event_logging");
 const getRecommendedPrice = require("../utils/get_recommended_price");
-const getThirdPartyVendors = require("../utils/third_party_listings");
+// const getThirdPartyVendors = require("../utils/third_party_listings");
 const allMatrix = require("../utils/matrix_figures");
-const fs = require("fs");
+// const fs = require("fs");
 
 const nodemailer = require("nodemailer");
 const moment = require("moment");

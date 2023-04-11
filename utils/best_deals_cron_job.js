@@ -43,20 +43,20 @@ const startSavingBestDeals = async () => {
         defaultDataObject2.push(thirdPartyVendor);
       });
       totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
-      if (!defaultDataObject2.length) {
-        res.status(200).json({
-          reason: "No best deals found",
-          statusCode: 200,
-          status: "SUCCESS",
-          dataObject: {
-            otherListings: [],
-            bestDeals: [],
-          },
-        });
-        return;
-      } else {
+      // if (!defaultDataObject2.length) {
+      //   res.status(200).json({
+      //     reason: "No best deals found",
+      //     statusCode: 200,
+      //     status: "SUCCESS",
+      //     dataObject: {
+      //       otherListings: [],
+      //       bestDeals: [],
+      //     },
+      //   });
+      //   return;
+      // } else {
         defaultDataObject.push(...defaultDataObject2);
-      }
+      // }
     }
 
     getBestDeals(defaultDataObject, userUniqueId, false);

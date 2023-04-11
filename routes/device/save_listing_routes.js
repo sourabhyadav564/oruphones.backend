@@ -8,17 +8,17 @@ dotenv.config();
 
 // const FCM = require("fcm-node");
 const fetch = require("node-fetch");
-const ObjectId = require("mongodb").ObjectId;
+// const ObjectId = require("mongodb").ObjectId;
 
-const fs = require("fs");
-const path = require("path");
+// const fs = require("fs");
+// const path = require("path");
 
 // require("../../src/database/connection");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
-const scrappedModal = require("../../src/database/modals/others/scrapped_models");
+// const scrappedModal = require("../../src/database/modals/others/scrapped_models");
 const favoriteModal = require("../../src/database/modals/favorite/favorite_add");
-const scrappedExternalSourceModal = require("../../src/database/modals/others/scrapped_for_external_source_models");
+// const scrappedExternalSourceModal = require("../../src/database/modals/others/scrapped_for_external_source_models");
 // const connection = require("../../src/database/mysql_connection");
 
 const logEvent = require("../../src/middleware/event_logging");
@@ -27,7 +27,7 @@ const getRecommendedPrice = require("../../utils/get_recommended_price");
 const saveNotificationModel = require("../../src/database/modals/notification/notification_save_token");
 const notificationModel = require("../../src/database/modals/notification/complete_notifications");
 const makeRandomString = require("../../utils/generate_random_string");
-const lspModal = require("../../src/database/modals/others/new_scrapped_models");
+// const lspModal = require("../../src/database/modals/others/new_scrapped_models");
 const testScrappedModal = require("../../src/database/modals/others/test_scrapped_models");
 
 const cityModal = require("../../src/database/modals/global/cities_modal");
@@ -35,7 +35,8 @@ const cityModal = require("../../src/database/modals/global/cities_modal");
 const allMatrix = require("../../utils/matrix_figures");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 const validUser = require("../../src/middleware/valid_user");
-const downloadImage = require("../../utils/download_image_from_url");
+const createAgentModal = require("../../src/database/modals/global/oru_mitra/agent_modal");
+// const downloadImage = require("../../utils/download_image_from_url");
 
 router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
@@ -91,11 +92,12 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
 router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   let listedBy = req.body.listedBy;
+  let associatedWith = "";
   const userDetails = await createUserModal.findOne(
     {
       userUniqueId: userUniqueId,
     },
-    { userName: 1, mobileNumber: 1, _id: 1 }
+    { userName: 1, mobileNumber: 1, _id: 1, associatedWith: 1 }
   );
 
   if (userDetails) {
@@ -111,20 +113,12 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
           new: true,
         }
       );
-      // } else if (userDetails?.userName == null) {
-      //   const userName = listedBy;
-      //   const dataToBeUpdate = {
-      //     userName: userName,
-      //   };
-      //   let data = await createUserModal.findByIdAndUpdate(
-      //     userDetails._id,
-      //     dataToBeUpdate,
-      //     {
-      //       new: true,
-      //     }
-      //   );
     } else {
       listedBy = userDetails?.userName;
+    }
+
+    if (userDetails?.associatedWith) {
+      associatedWith = userDetails?.associatedWith;
     }
   }
 
@@ -161,9 +155,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     await cityModal.create({ city: listingLocation, displayWithImage: "0" });
   }
 
-  if (
-    deviceCondition == "Like New"
-  ) {
+  if (deviceCondition == "Like New") {
     switch (deviceWarranty) {
       case "four":
         deviceCondition = "Excellent";
@@ -283,6 +275,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     warranty: deviceWarranty,
     cosmetic,
     status: limitExceeded || duplicated ? "Paused" : "Active",
+    associatedWith: associatedWith == "" ? null : associatedWith,
   };
 
   try {
@@ -434,10 +427,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
       });
       return;
     } else {
-
-      if (
-        deviceCondition == "Like New"
-      ) {
+      if (deviceCondition == "Like New") {
         switch (deviceWarranty) {
           case "four":
             deviceCondition = "Excellent";
@@ -758,25 +748,35 @@ router.get(
       });
 
       if (isValidUser) {
-        const listing = await saveListingModal.findOne({
-          listingId: listingId,
-        });
-        const mobileNumber = listing.mobileNumber;
-
-        const getListingObject = await saveRequestModal.findOne({
-          mobileNumber: mobileNumber,
-          listingId: listingId,
+        // find count of saveRequestModal entries for this userUniqueId in last 24 hours
+        const count = await saveRequestModal.countDocuments({
+          userUniqueId: userUniqueId,
+          createdAt: {
+            $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+          },
         });
 
-        if (!getListingObject) {
-          const data = {
-            listingId: listingId,
-            userUniqueId: userUniqueId,
-            mobileNumber: isValidUser.mobileNumber,
-          };
+        if (count < 15) {
+          const listing = await saveListingModal.findOne(
+            {
+              listingId: listingId,
+            },
+            { mobileNumber: 1, associatedWith: 1 }
+          );
+          let mobileNumber = listing.mobileNumber;
+          let associatedWith = listing.associatedWith;
 
-          const saveRequest = new saveRequestModal(data);
-          let savedData = await saveRequest.save();
+          if (associatedWith) {
+            let associateData = await createAgentModal.findOne(
+              {
+                code: associatedWith,
+              },
+              { mobileNumber: 1 }
+            );
+            if (associateData) {
+              mobileNumber = associateData.mobileNumber;
+            }
+          }
 
           const dataObject = {
             mobileNumber,
@@ -788,16 +788,42 @@ router.get(
             status: "SUCCESS",
             dataObject,
           });
-        } else {
-          const dataObject = {
-            mobileNumber,
-          };
 
+          const getListingObject = await saveRequestModal.findOne({
+            mobileNumber: mobileNumber,
+            listingId: listingId,
+          });
+
+          if (!getListingObject) {
+            const data = {
+              listingId: listingId,
+              userUniqueId: userUniqueId,
+              mobileNumber: isValidUser.mobileNumber,
+            };
+
+            const saveRequest = new saveRequestModal(data);
+            let savedData = await saveRequest.save();
+
+            const dataObject = {
+              mobileNumber,
+            };
+
+            // res.status(200).json({
+            //   reason: "Mobile number retrieved successfully",
+            //   statusCode: 200,
+            //   status: "SUCCESS",
+            //   dataObject,
+            // });
+          }
+        } else {
           res.status(200).json({
-            reason: "Mobile number retrieved again",
+            reason:
+              "You have reached maximum limit of 15 requests last in 24 hours",
             statusCode: 200,
             status: "SUCCESS",
-            dataObject,
+            dataObject: {
+              mobileNumber: "Limit Exceeded",
+            },
           });
         }
       } else {
@@ -1112,6 +1138,24 @@ router.post(
       } else {
         let externalSource = [];
         let compareData = [];
+
+        let associatedWithId = getListing.associatedWith;
+
+        if (associatedWithId) {
+          let associateData = await createAgentModal.findOne({
+            code: associatedWithId,
+          });
+
+          if (associateData) {
+            let addr = associateData.address || "";
+            let city = associateData.city || "";
+            let newAddr = addr + ", " + city;
+
+            getListing.listedBy = associateData.name;
+            getListing.listingLocation =
+              newAddr == ", " ? getListing.listingLocation : newAddr;
+          }
+        }
 
         let dataObject = {
           externalSource,

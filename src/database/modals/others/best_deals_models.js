@@ -218,6 +218,9 @@ const bestDealsSchema = new mongoose.Schema(
         },
       },
     },
+    associatedWith: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

@@ -216,8 +216,11 @@ const saveListingSchema = new mongoose.Schema(
         },
         2: {
           type: String,
-        }
+        },
       },
+    },
+    associatedWith: {
+      type: String,
     },
   },
   { timestamps: true }
