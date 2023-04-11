@@ -120,7 +120,10 @@ router.post("/otp/validate", logEvent, async (req, res) => {
       };
 
       try {
-        const getUser = await createUserModal.findOne({ mobileNumber });
+        const getUser = await createUserModal.findOne(
+          { mobileNumber },
+          { userUniqueId: 1 }
+        );
 
         if (getUser) {
           res.status(200).json({

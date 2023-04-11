@@ -11,7 +11,7 @@ const SendingSmsFunction = async (phone, msg) => {
   textlocal
     .sendSms(textlocalAPI, textlocalNumbers, textlocalSender, textlocalMessage)
     .then((response) => {
-      console.log(response);
+      // console.log(response);
     });
 };
 

@@ -26,7 +26,7 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
     // fs.writeFileSync(`models.json`, JSON.stringify(models));
 
     if (condition == "Like New") {
-      switch (deviceWarranty) {
+      switch (warrantyPeriod) {
         case "four":
           condition = "Excellent";
           break;
@@ -41,7 +41,7 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
           break;
       }
     } else if (condition == "Excellent") {
-      switch (deviceWarranty) {
+      switch (warrantyPeriod) {
         case "seven":
           condition = "Good";
           break;
@@ -53,7 +53,7 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
           break;
       }
     } else if (condition == "Good") {
-      switch (deviceWarranty) {
+      switch (warrantyPeriod) {
         case "more":
           condition = "Fair";
           break;
