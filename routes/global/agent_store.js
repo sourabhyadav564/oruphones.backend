@@ -1,7 +1,9 @@
 const express = require("express");
+const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const router = express.Router();
 const createAgentModal = require("../../src/database/modals/global/oru_mitra/agent_modal");
 const scrappedMitrasModal = require("../../src/database/modals/global/oru_mitra/scrapped_mitras");
+const createUserModal = require("../../src/database/modals/login/login_create_user");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
 const generateOTP = require("../../utils/generate_otp");
 
@@ -295,7 +297,7 @@ router.get("/agent/otp/validate", async (req, res) => {
 
 router.get("/agent/info", async (req, res) => {
   try {
-    let agentUuId = req.query.agentUuId;
+    let agentUuId = req.query.userUniqueId;
     let agentId = req.query.agentId;
 
     let agent = await createAgentModal.findOne(
@@ -360,10 +362,11 @@ router.get("/agent/info", async (req, res) => {
 router.get("/agent/oruMitra/info", async (req, res) => {
   try {
     let kiyoaskId = req.query.kiyoaskId;
+    let agentUuId = req.query.userUniqueId;
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne(
-      { kiyoaskId: kiyoaskId },
+      { kiyoaskId: kiyoaskId, userUniqueId: agentUuId },
       { _id: 0, __v: 0 }
     );
 
@@ -433,6 +436,90 @@ router.get("/agent/oruMitra/info", async (req, res) => {
   }
 });
 
-router.get("/agent/oruMitra/data", async (req, res) => {});
+router.get("/agent/oruMitra/data", async (req, res) => {
+  try {
+    let kiyoaskId = req.query.kiyoaskId;
+    let agentUuId = req.query.userUniqueId;
+
+    // get oru mitra info
+    let oruMitra = await createAgentModal.findOne(
+      {
+        kiyoaskId: kiyoaskId,
+        userUniqueId: agentUuId,
+      },
+      { code: 1 }
+    );
+
+    if (oruMitra) {
+      // get users with the code
+      let users = await createUserModal.find(
+        {
+          associatedWith: oruMitra.code,
+        },
+        { userUniqueId: 1 }
+      );
+
+      let listings = await saveListingModal.find(
+        {
+          userUniqueId: { $in: users },
+        },
+        {
+          listingDate: 1,
+          make: 1,
+          model: 1,
+          deviceStorage: 1,
+          deviceRam: 1,
+          listingPrice: 1,
+          mobileNumber: 1,
+          verified: 1,
+          verifiedDate: 1,
+          status: 1,
+        }
+      );
+
+      let totalVerified = 0;
+      let totalListings = 0;
+
+      listings.forEach((listing) => {
+        if (listing.verified) {
+          totalVerified++;
+        }
+        totalListings++;
+      });
+
+      let totalEarnings = totalVerified * 5;
+
+      let dataObject = {
+        totalListings: totalListings,
+        totalVerified: totalVerified,
+        totalEarnings: totalEarnings,
+        listings: listings,
+      };
+
+      res.status(200).json({
+        reason: "OruMitra info",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: dataObject,
+      });
+    } else {
+      res.status(200).json({
+        reason: "OruMitra not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      reason: "Internal server error",
+      statusCode: 500,
+      status: "FAILURE",
+      dataObject: {
+        error: error,
+      },
+    });
+  }
+});
 
 module.exports = router;
