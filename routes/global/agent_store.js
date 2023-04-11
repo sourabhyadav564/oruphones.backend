@@ -13,11 +13,11 @@ const codeStr = () => {
 
 router.get("/agent/create", async (req, res) => {
   try {
-    let mobileNumber = req.query.mobileNumber;
-    let name = req.query.name;
-    let email = req.query.email;
-    let address = req.query.address;
-    let city = req.query.city;
+    let mobileNumber = req.query.mobileNumber.toString();
+    let name = req.query.name.toString();
+    let email = req.query.email.toString();
+    let address = req.query.address.toString();
+    let city = req.query.city.toString();
     let code = codeStr();
 
     // generate random code of 6 char alpha-numeric for agent
@@ -95,16 +95,16 @@ router.get("/agent/create", async (req, res) => {
 
 router.post("/agent/oruMitra/create", async (req, res) => {
   try {
-    let kiyoskId = req.body.kiyoskId;
-    let name = req.body.name;
-    let email = req.body.email;
-    let address = req.body.address;
-    let city = req.query.city;
+    let kiyoskId = req.body.kiyoskId.toString();
+    let name = req.body.name.toString();
+    let email = req.body.email.toString();
+    let address = req.body.address.toString();
+    let city = req.query.city.toString();
     let code = codeStr();
-    let images = req.body.images;
-    let mobileNumber = req.body.mobileNumber;
-    let upiId = req.body.upiId;
-    let agentId = req.body.agentId;
+    let images = req.body.images.toString();
+    let mobileNumber = req.body.mobileNumber.toString();
+    let upiId = req.body.upiId.toString();
+    let agentId = req.body.agentId.toString();
 
     // TODO: check if kiyoaskId is blacklisted or not
 
@@ -194,8 +194,8 @@ router.post("/agent/oruMitra/create", async (req, res) => {
 
 router.get("/agent/login", async (req, res) => {
   try {
-    const mobileNumber = req.query.mobileNumber;
-    const countryCode = req.query.countryCode;
+    const mobileNumber = req.query.mobileNumber.toString();
+    const countryCode = req.query.countryCode.toString();
 
     let foundUser = await createAgentModal.findOne({ mobileNumber });
 
@@ -241,7 +241,7 @@ router.get("/agent/login", async (req, res) => {
 router.get("/agent/otp/validate", async (req, res) => {
   try {
     const mobileNumber = req.query.mobileNumber?.toString();
-    const countryCode = req.query.countryCode;
+    const countryCode = req.query.countryCode.toString();
     const otp = req.query.otp?.toString();
 
     const getOtp = await userModal.findOne({
@@ -297,8 +297,8 @@ router.get("/agent/otp/validate", async (req, res) => {
 
 router.get("/agent/info", async (req, res) => {
   try {
-    let agentUuId = req.query.userUniqueId;
-    let agentId = req.query.agentId;
+    let agentUuId = req.query.userUniqueId.toString();
+    let agentId = req.query.agentId.toString();
 
     let agent = await createAgentModal.findOne(
       {
@@ -361,8 +361,8 @@ router.get("/agent/info", async (req, res) => {
 
 router.get("/agent/oruMitra/info", async (req, res) => {
   try {
-    let kiyoaskId = req.query.kiyoaskId;
-    let agentUuId = req.query.userUniqueId;
+    let kiyoaskId = req.query.kiyoaskId.toString();
+    let agentUuId = req.query.userUniqueId.toString();
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne(
@@ -438,8 +438,8 @@ router.get("/agent/oruMitra/info", async (req, res) => {
 
 router.get("/agent/oruMitra/data", async (req, res) => {
   try {
-    let kiyoaskId = req.query.kiyoaskId;
-    let agentUuId = req.query.userUniqueId;
+    let kiyoaskId = req.query.kiyoaskId.toString();
+    let agentUuId = req.query.userUniqueId.toString();
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne(
@@ -481,6 +481,7 @@ router.get("/agent/oruMitra/data", async (req, res) => {
       let totalListings = 0;
 
       listings.forEach((listing) => {
+        listing.status = listing.status == "Active" ? "Linked" : listing.status;
         if (listing.verified) {
           totalVerified++;
         }
