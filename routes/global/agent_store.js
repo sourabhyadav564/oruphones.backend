@@ -6,6 +6,7 @@ const scrappedMitrasModal = require("../../src/database/modals/global/oru_mitra/
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
 const generateOTP = require("../../utils/generate_otp");
+const sendLoginOtp = require("../../utils/send_login_otp");
 
 const codeStr = () => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -210,9 +211,7 @@ router.get("/agent/login", async (req, res) => {
 
       const data = new userModal(userDatas);
       const saveData = await data.save();
-
       const sendMessage = await sendLoginOtp(mobileNumber, clientOTP);
-
       res.status(200).json({
         reason: "OTP generated successfully",
         statusCode: 200,
