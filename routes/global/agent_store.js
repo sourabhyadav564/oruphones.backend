@@ -305,6 +305,9 @@ router.get("/agent/info", async (req, res) => {
     let agentUuId = req.query.userUniqueId.toString();
     let agentId = req.query.agentId.toString();
 
+    console.log("agentUuId", agentUuId);
+    console.log("agentId", agentId);
+
     let agent = await createAgentModal.findOne(
       {
         userUniqueId: agentUuId,
@@ -314,6 +317,7 @@ router.get("/agent/info", async (req, res) => {
     );
 
     if (agent) {
+      agent = agent._doc;
       if (agent.type == "Agent") {
         // get all oru mitras associated with this agent
         let oruMitra = await createAgentModal.find(
@@ -329,11 +333,12 @@ router.get("/agent/info", async (req, res) => {
             address: 1,
             city: 1,
             status: 1,
-            _id: 0,
-            __v: 0,
           }
         );
-        agent._doc.oruMitra = oruMitra;
+
+        if (oruMitra) {
+          agent.oruMitra = oruMitra.map((item) => item._doc);
+        }
       }
 
       res.status(200).json({
@@ -341,7 +346,7 @@ router.get("/agent/info", async (req, res) => {
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
-          agent: agent._doc,
+          agent: agent,
         },
       });
     } else {
