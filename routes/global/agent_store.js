@@ -258,7 +258,7 @@ router.get("/agent/otp/validate", async (req, res) => {
     if (savedOtp.toString() === otp.toString()) {
       const getUser = await createAgentModal.findOne(
         { mobileNumber },
-        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1 }
+        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1, code: 1 }
       );
 
       res.status(200).json({
@@ -308,7 +308,7 @@ router.get("/agent/info", async (req, res) => {
     let agent = await createAgentModal.findOne(
       {
         userUniqueId: agentUuId,
-        agentId: agentId,
+        code: agentId,
       },
       { _id: 0, __v: 0 }
     );

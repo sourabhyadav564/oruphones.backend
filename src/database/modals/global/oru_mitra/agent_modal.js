@@ -45,7 +45,6 @@ const createAgentSchema = new mongoose.Schema(
     },
     kiyoskId: {
       type: String,
-      unique: true,
     },
     upiId: {
       type: String,
