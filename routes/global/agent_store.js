@@ -19,7 +19,7 @@ router.get("/agent/create", async (req, res) => {
     let email = req.query.email.toString();
     let address = req.query.address.toString();
     let city = req.query.city.toString();
-    let code = codeStr();
+    let referralCode = codeStr();
 
     // generate random code of 6 char alpha-numeric for agent
 
@@ -29,13 +29,13 @@ router.get("/agent/create", async (req, res) => {
       email: email,
       address: address,
       city: city,
-      code: code,
+      referralCode: referralCode,
       type: "Agent",
     });
 
     let result = await createAgentModal.findOne({
       // check if agent already exists or the code is already used
-      $or: [{ mobileNumber: mobileNumber }, { code: code }],
+      $or: [{ mobileNumber: mobileNumber }, { referralCode: referralCode }],
     });
 
     if (result) {
@@ -52,8 +52,8 @@ router.get("/agent/create", async (req, res) => {
         });
       } else {
         // code already exists
-        code = codeStr();
-        agent.code = code;
+        referralCode = codeStr();
+        agent.referralCode = referralCode;
         await agent.save().catch((err) => {
           res.status(500).json({
             reason: "Internal server error",
@@ -101,7 +101,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
     let email = req.body.email.toString();
     let address = req.body.address.toString();
     let city = req.query.city.toString();
-    let code = codeStr();
+    let referralCode = codeStr();
     let images = req.body.images.toString();
     let mobileNumber = req.body.mobileNumber.toString();
     let upiId = req.body.upiId.toString();
@@ -115,7 +115,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
       email: email,
       address: address,
       city: city,
-      code: code,
+      referralCode: referralCode,
       type: "OruMitra",
       images: images,
       mobileNumber: mobileNumber,
@@ -127,7 +127,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
       // check if agent already exists or the code is already used
       $or: [
         { mobileNumber: mobileNumber },
-        { code: code },
+        { referralCode: referralCode },
         { kiyoskId: kiyoskId },
       ],
     });
@@ -147,8 +147,8 @@ router.post("/agent/oruMitra/create", async (req, res) => {
         });
       } else {
         // code already exists
-        code = codeStr();
-        oruMitra.code = code;
+        referralCode = codeStr();
+        oruMitra.referralCode = referralCode;
         let dataObj = await oruMitra.save().catch((err) => {
           res.status(500).json({
             reason: "Internal server error",
@@ -258,7 +258,7 @@ router.get("/agent/otp/validate", async (req, res) => {
     if (savedOtp.toString() === otp.toString()) {
       const getUser = await createAgentModal.findOne(
         { mobileNumber },
-        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1, code: 1 }
+        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1, referralCode: 1 }
       );
 
       res.status(200).json({
@@ -311,7 +311,7 @@ router.get("/agent/info", async (req, res) => {
     let agent = await createAgentModal.findOne(
       {
         userUniqueId: agentUuId,
-        code: agentId,
+        referralCode: agentId,
       },
       { _id: 0, __v: 0 }
     );
@@ -457,14 +457,14 @@ router.get("/agent/oruMitra/data", async (req, res) => {
         kiyoaskId: kiyoaskId,
         userUniqueId: agentUuId,
       },
-      { code: 1 }
+      { referralCode: 1 }
     );
 
     if (oruMitra) {
       // get users with the code
       let users = await createUserModal.find(
         {
-          associatedWith: oruMitra.code,
+          associatedWith: oruMitra.referralCode,
         },
         { userUniqueId: 1 }
       );
@@ -516,6 +516,134 @@ router.get("/agent/oruMitra/data", async (req, res) => {
     } else {
       res.status(200).json({
         reason: "OruMitra not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      reason: "Internal server error",
+      statusCode: 500,
+      status: "FAILURE",
+      dataObject: {
+        error: error,
+      },
+    });
+  }
+});
+
+router.get("/agent/oruMitra/attach", async (req, res) => {
+  try {
+    let userUniqueId = req.query.userUniqueId.toString();
+    let referralCode = req.query.referralCode.toString();
+
+    // check referral code
+    let oruMitra = await createAgentModal.findOne({
+      referralCode: referralCode,
+    });
+
+    if (oruMitra) {
+      let userData = await createUserModal.findOneAndUpdate(
+        {
+          userUniqueId: userUniqueId,
+        },
+        {
+          $set: {
+            associatedWith: referralCode,
+          },
+        }
+      );
+
+      if (userData) {
+        let listings = await saveListingModal.find({
+          userUniqueId: userUniqueId,
+        });
+
+        listings.forEach(async (listing) => {
+          await saveListingModal.findOneAndUpdate(
+            {
+              _id: listing._id,
+            },
+            {
+              $set: {
+                associatedWith: referralCode,
+              },
+            }
+          );
+        });
+        res.status(200).json({
+          reason: "OruMitra attached",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {},
+        });
+      } else {
+        res.status(200).json({
+          reason: "OruMitra not found",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {},
+        });
+      }
+    } else {
+      res.status(200).json({
+        reason: "OruMitra not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      reason: "Internal server error",
+      statusCode: 500,
+      status: "FAILURE",
+      dataObject: {
+        error: error,
+      },
+    });
+  }
+});
+
+router.get("/agent/oruMitra/detach", async (req, res) => {
+  try {
+    let userUniqueId = req.query.userUniqueId.toString();
+
+    let userData = await createUserModal.findOneAndUpdate({
+      userUniqueId: userUniqueId,
+    });
+
+    if (userData) {
+      delete userData.associatedWith;
+      await userData.save();
+
+      let listings = await saveListingModal.find({
+        userUniqueId: userUniqueId,
+      });
+
+      listings.forEach(async (listing) => {
+        await saveListingModal.findOneAndUpdate(
+          {
+            _id: listing._id,
+          },
+          {
+            $set: {
+              associatedWith: "",
+            },
+          }
+        );
+      });
+
+      res.status(200).json({
+        reason: "OruMitra detached",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    } else {
+      res.status(200).json({
+        reason: "User not found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},

@@ -31,6 +31,23 @@ router.get("/topselling/models", async (req, res) => {
           marketingName: { $first: "$marketingName" },
           maxPrice: { $max: { $toInt: "$listingPrice" } },
           minPrice: { $min: { $toInt: "$listingPrice" } },
+
+          // for maxPrice and minPrice, listingPrice is string & can contain . in it so we need to split it and then convert it to int
+          // maxPrice: {
+          //   $max: {
+          //     $toInt: {
+          //       $arrayElemAt: [{ $split: ["$listingPrice", "."] }, 0],
+          //     },
+          //   },
+          // },
+          // minPrice: {
+          //   $min: {
+          //     $toInt: {
+          //       $arrayElemAt: [{ $split: ["$listingPrice", "."] }, 0],
+          //     },
+          //   },
+          // },
+
           // imagePath: { $first: "$defaultImage.fullImage" },
 
           // imagePath: newModelImages[{ $toLower: { $first: "$marketingName" } }],

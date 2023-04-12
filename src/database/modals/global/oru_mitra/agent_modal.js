@@ -38,7 +38,7 @@ const createAgentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    code: {
+    referralCode: {
       type: String,
       required: true,
       unique: true,

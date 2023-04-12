@@ -769,7 +769,7 @@ router.get(
           if (associatedWith) {
             let associateData = await createAgentModal.findOne(
               {
-                code: associatedWith,
+                referralCode: associatedWith,
               },
               { mobileNumber: 1 }
             );
@@ -1143,7 +1143,7 @@ router.post(
 
         if (associatedWithId) {
           let associateData = await createAgentModal.findOne({
-            code: associatedWithId,
+            referralCode: associatedWithId,
           });
 
           if (associateData) {
