@@ -15,11 +15,11 @@ const codeStr = () => {
 
 router.get("/agent/create", async (req, res) => {
   try {
-    let mobileNumber = req.query.mobileNumber.toString();
-    let name = req.query.name.toString();
-    let email = req.query.email.toString();
-    let address = req.query.address.toString();
-    let city = req.query.city.toString();
+    let mobileNumber = req.query.mobileNumber;
+    let name = req.query.name;
+    let email = req.query.email;
+    let address = req.query.address;
+    let city = req.query.city;
     let referralCode = codeStr();
 
     // generate random code of 6 char alpha-numeric for agent
@@ -194,8 +194,8 @@ router.post("/agent/oruMitra/create", async (req, res) => {
 
 router.get("/agent/login", async (req, res) => {
   try {
-    const mobileNumber = req.query.mobileNumber.toString();
-    const countryCode = req.query.countryCode.toString();
+    const mobileNumber = req.query.mobileNumber;
+    const countryCode = req.query.countryCode;
 
     let foundUser = await createAgentModal.findOne({ mobileNumber });
 
@@ -244,17 +244,16 @@ router.get("/agent/login", async (req, res) => {
 
 router.get("/agent/otp/validate", async (req, res) => {
   try {
-    const mobileNumber = req.query.mobileNumber?.toString();
-    const countryCode = req.query.countryCode.toString();
-    const otp = req.query.otp?.toString();
+    const mobileNumber = req.query.mobileNumber;
+    const countryCode = req.query.countryCode;
+    const otp = req.query.otp;
 
     const getOtp = await userModal.findOne({
       mobileNumber: mobileNumber,
       otp: otp,
     });
-    // savedOtp = getOtp[0]?.otp?.toString();
-    let savedOtp = getOtp?.otp?.toString();
-    if (savedOtp.toString() === otp.toString()) {
+
+    if (getOtp && getOtp?.otp?.toString() === otp.toString()) {
       const getUser = await createAgentModal.findOne(
         { mobileNumber },
         { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1, referralCode: 1 }
@@ -301,8 +300,8 @@ router.get("/agent/otp/validate", async (req, res) => {
 
 router.get("/agent/info", async (req, res) => {
   try {
-    let agentUuId = req.query.userUniqueId.toString();
-    let agentId = req.query.agentId.toString();
+    let agentUuId = req.query.userUniqueId;
+    let agentId = req.query.agentId;
 
     console.log("agentUuId", agentUuId);
     console.log("agentId", agentId);
@@ -446,8 +445,8 @@ router.get("/agent/oruMitra/info", async (req, res) => {
 
 router.get("/agent/oruMitra/data", async (req, res) => {
   try {
-    let kioskId = req.query.kioskId.toString();
-    let agentUuId = req.query.userUniqueId.toString();
+    let kioskId = req.query.kioskId;
+    let agentUuId = req.query.userUniqueId;
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne(
@@ -543,8 +542,8 @@ router.get("/agent/oruMitra/data", async (req, res) => {
 
 router.get("/agent/oruMitra/attach", async (req, res) => {
   try {
-    let userUniqueId = req.query.userUniqueId.toString();
-    let referralCode = req.query.referralCode.toString();
+    let userUniqueId = req.query.userUniqueId;
+    let referralCode = req.query.referralCode;
 
     // check referral code
     let oruMitra = await createAgentModal.findOne({
@@ -635,15 +634,29 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
 
 router.get("/agent/oruMitra/detach", async (req, res) => {
   try {
-    let userUniqueId = req.query.userUniqueId.toString();
+    let userUniqueId = req.query.userUniqueId;
 
-    let userData = await createUserModal.findOneAndUpdate({
-      userUniqueId: userUniqueId,
-    });
+    let userData = await createUserModal.findOne(
+      {
+        userUniqueId: userUniqueId,
+      }
+    );
 
     if (userData) {
-      delete userData.associatedWith;
-      await userData.save();
+      console.log("userData", userData);
+      // update the user
+      let updatedUser = await createUserModal.findOneAndUpdate(
+        {
+          _id: userData._id,
+        },
+        {
+          $set: {
+            associatedWith: "",
+          },
+        }
+      );
+
+      console.log("updatedUser", updatedUser);
 
       let listings = await saveListingModal.find({
         userUniqueId: userUniqueId,
@@ -707,7 +720,7 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
 
 router.get("/agent/oruMitra/delink", async (req, res) => {
   try {
-    let mitraUserUniqueId = req.query.userUniqueId.toString();
+    let mitraUserUniqueId = req.query.userUniqueId;
     let listingId = req.query.listingId;
     let status = req.query.status;
     let attachedUsedMob = req.query.attachedUsedMob;
