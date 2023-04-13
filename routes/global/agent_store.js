@@ -97,7 +97,7 @@ router.get("/agent/create", async (req, res) => {
 
 router.post("/agent/oruMitra/create", async (req, res) => {
   try {
-    let kiyoskId = req.body.kiyoskId.toString();
+    let kioskId = req.body.kioskId.toString();
     let name = req.body.name.toString();
     let email = req.body.email.toString();
     let address = req.body.address.toString();
@@ -108,10 +108,10 @@ router.post("/agent/oruMitra/create", async (req, res) => {
     let upiId = req.body.upiId.toString();
     let agentId = req.body.agentId.toString();
 
-    // TODO: check if kiyoaskId is blacklisted or not
+    // TODO: check if kioskId is blacklisted or not
 
     let oruMitra = new createAgentModal({
-      kiyoskId: kiyoskId,
+      kioskId: kioskId,
       name: name,
       email: email,
       address: address,
@@ -129,7 +129,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
       $or: [
         { mobileNumber: mobileNumber },
         { referralCode: referralCode },
-        { kiyoskId: kiyoskId },
+        { kioskId: kioskId },
       ],
     });
 
@@ -327,7 +327,7 @@ router.get("/agent/info", async (req, res) => {
             type: "OruMitra",
           },
           {
-            kiyoskId: 1,
+            kioskId: 1,
             name: 1,
             mobileNumber: 1,
             type: 1,
@@ -372,13 +372,12 @@ router.get("/agent/info", async (req, res) => {
 
 router.get("/agent/oruMitra/info", async (req, res) => {
   try {
-    let kiyoaskId = req.query.kiyoaskId;
+    let kioskId = req.query.kioskId;
     let agentUuId = req.query.userUniqueId;
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne({
-      kiyoaskId: kiyoaskId,
-      userUniqueId: agentUuId,
+      kioskId: kioskId,
     });
 
     if (oruMitra) {
@@ -395,7 +394,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
       });
     } else {
       let oruMitra2 = await scrappedMitrasModal.findOne({
-        kioskId: kiyoaskId,
+        kioskId: kioskId,
       });
       if (oruMitra2) {
         oruMitra2 = oruMitra2._doc;
@@ -449,13 +448,13 @@ router.get("/agent/oruMitra/info", async (req, res) => {
 
 router.get("/agent/oruMitra/data", async (req, res) => {
   try {
-    let kiyoaskId = req.query.kiyoaskId.toString();
+    let kioskId = req.query.kioskId.toString();
     let agentUuId = req.query.userUniqueId.toString();
 
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne(
       {
-        kiyoaskId: kiyoaskId,
+        kioskId: kioskId,
         userUniqueId: agentUuId,
       },
       { referralCode: 1 }

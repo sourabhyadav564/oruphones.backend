@@ -5,15 +5,12 @@ const createAgentSchema = new mongoose.Schema(
   {
     userUniqueId: {
       type: String,
-      default: "",
     },
     name: {
       type: String,
-      default: "",
     },
     email: {
       type: String,
-      default: "",
     },
     status: {
       type: String,
@@ -21,7 +18,6 @@ const createAgentSchema = new mongoose.Schema(
     },
     profilePicPath: {
       type: String,
-      default: "",
     },
     mobileNumber: {
       type: String,
@@ -30,33 +26,26 @@ const createAgentSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      default: "",
     },
     city: {
       type: String,
-      default: "",
     },
     type: {
       type: String,
-      default: "",
     },
     referralCode: {
       type: String,
-      default: "",
       required: true,
       unique: true,
     },
-    kiyoskId: {
+    kioskId: {
       type: String,
-      default: "",
     },
     upiId: {
       type: String,
-      default: "",
     },
     agentId: {
       type: String,
-      default: "",
     },
     images: {
       type: [

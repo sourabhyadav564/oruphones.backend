@@ -4,23 +4,18 @@ const validator = require("validator");
 const scrappedMitrasSchema = new mongoose.Schema({
   kioskId: {
     type: String,
-    default: "",
   },
   name: {
     type: String,
-    default: "",
   },
   address: {
     type: String,
-    default: "",
   },
   district: {
     type: String,
-    default: "",
   },
   status: {
     type: String,
-    default: "",
   },
 });
 
