@@ -56,7 +56,7 @@ router.get("/agent/create", async (req, res) => {
         referralCode = codeStr();
         agent.referralCode = referralCode;
         await agent.save().catch((err) => {
-          res.status(500).json({
+          res.status(200).json({
             reason: "Internal server error",
             statusCode: 500,
             status: "FAILURE",
@@ -84,7 +84,7 @@ router.get("/agent/create", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -151,7 +151,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
         referralCode = codeStr();
         oruMitra.referralCode = referralCode;
         let dataObj = await oruMitra.save().catch((err) => {
-          res.status(500).json({
+          res.status(200).json({
             reason: "Internal server error",
             statusCode: 500,
             status: "FAILURE",
@@ -183,7 +183,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -233,7 +233,7 @@ router.get("/agent/login", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -290,7 +290,7 @@ router.get("/agent/otp/validate", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -359,7 +359,7 @@ router.get("/agent/info", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -372,14 +372,14 @@ router.get("/agent/info", async (req, res) => {
 
 router.get("/agent/oruMitra/info", async (req, res) => {
   try {
-    let kiyoaskId = req.query.kiyoaskId.toString();
-    let agentUuId = req.query.userUniqueId.toString();
+    let kiyoaskId = req.query.kiyoaskId;
+    let agentUuId = req.query.userUniqueId;
 
     // get oru mitra info
-    let oruMitra = await createAgentModal.findOne(
-      { kiyoaskId: kiyoaskId, userUniqueId: agentUuId },
-      { _id: 0, __v: 0 }
-    );
+    let oruMitra = await createAgentModal.findOne({
+      kiyoaskId: kiyoaskId,
+      userUniqueId: agentUuId,
+    });
 
     if (oruMitra) {
       res.status(200).json({
@@ -394,12 +394,12 @@ router.get("/agent/oruMitra/info", async (req, res) => {
         },
       });
     } else {
-      let oruMitra = await scrappedMitrasModal.findOne({
-        kiyoaskId: kiyoaskId,
+      let oruMitra2 = await scrappedMitrasModal.findOne({
+        kioskId: kiyoaskId,
       });
-      if (oruMitra) {
-        oruMitra = oruMitra._doc;
-        let isBlacklisted = oruMitra.status == "Blacklisted" ? true : false;
+      if (oruMitra2) {
+        oruMitra2 = oruMitra2._doc;
+        let isBlacklisted = oruMitra2.status == "Blacklisted" ? true : false;
 
         if (isBlacklisted) {
           res.status(200).json({
@@ -407,7 +407,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {
-              oruMitra: oruMitra,
+              oruMitra: oruMitra2,
               statusCode: "Blacklisted",
             },
           });
@@ -418,7 +418,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {
-              oruMitra: oruMitra,
+              oruMitra: oruMitra2,
               statusCode: "Not registered",
             },
           });
@@ -436,7 +436,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -533,7 +533,7 @@ router.get("/agent/oruMitra/data", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -606,7 +606,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -661,7 +661,7 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
@@ -759,7 +759,7 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
       }
     }
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       reason: "Internal server error",
       statusCode: 500,
       status: "FAILURE",
