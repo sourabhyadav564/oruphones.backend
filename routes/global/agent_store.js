@@ -5,6 +5,7 @@ const createAgentModal = require("../../src/database/modals/global/oru_mitra/age
 const scrappedMitrasModal = require("../../src/database/modals/global/oru_mitra/scrapped_mitras");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
+const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
 const generateOTP = require("../../utils/generate_otp");
 const sendLoginOtp = require("../../utils/send_login_otp");
 
@@ -466,7 +467,7 @@ router.get("/agent/oruMitra/data", async (req, res) => {
         {
           associatedWith: oruMitra.referralCode,
         },
-        { userUniqueId: 1 }
+        { userUniqueId: 1, userName: 1, mobileNumber: 1, createdAt: 1 }
       );
 
       let listings = await saveListingModal.find(
@@ -500,11 +501,21 @@ router.get("/agent/oruMitra/data", async (req, res) => {
 
       let totalEarnings = totalVerified * 5;
 
+      // remove the user unique id from the users array
+      users = users.map((user) => {
+        return {
+          userName: user.userName,
+          mobileNumber: user.mobileNumber,
+          createdAt: user.createdAt,
+        };
+      });
+
       let dataObject = {
         totalListings: totalListings,
         totalVerified: totalVerified,
         totalEarnings: totalEarnings,
         listings: listings,
+        users: users,
       };
 
       res.status(200).json({
@@ -648,6 +659,104 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
         status: "SUCCESS",
         dataObject: {},
       });
+    }
+  } catch (error) {
+    res.status(500).json({
+      reason: "Internal server error",
+      statusCode: 500,
+      status: "FAILURE",
+      dataObject: {
+        error: error,
+      },
+    });
+  }
+});
+
+router.get("/agent/oruMitra/delink", async (req, res) => {
+  try {
+    let mitraUserUniqueId = req.query.userUniqueId.toString();
+    let listingId = req.query.listingId;
+    let status = req.query.status;
+    let attachedUsedMob = req.query.attachedUsedMob;
+
+    let user = await createUserModal.findOne({
+      userUniqueId: mitraUserUniqueId,
+    });
+
+    if (user) {
+      if (listingId) {
+        let listing = await saveListingModal.findOneAndUpdate({
+          _id: listingId,
+        });
+
+        if (listing) {
+          if (status == "Sold_Out") {
+            let deleted = await saveListingModal.deleteOne({
+              _id: listingId,
+            });
+
+            // update status in in best deals
+            let bestDeals = await bestDealsModal.findOne({
+              listingId: listingId,
+            });
+
+            if (bestDeals) {
+              bestDeals.status = "Sold_Out";
+              await bestDeals.save();
+            }
+          } else {
+            delete listing.associatedWith;
+            await listing.save();
+          }
+
+          res.status(200).json({
+            reason: "OruMitra detached from listing",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: {},
+          });
+        }
+      } else if (attachedUsedMob) {
+        let user = await createUserModal.findOneAndUpdate({
+          mobileNumber: attachedUsedMob,
+        });
+
+        if (user) {
+          delete user.associatedWith;
+          await user.save();
+
+          let listings = await saveListingModal.find({
+            userUniqueId: user.userUniqueId,
+          });
+
+          listings.forEach(async (listing) => {
+            await saveListingModal.findOneAndUpdate(
+              {
+                _id: listing._id,
+              },
+              {
+                $set: {
+                  associatedWith: "",
+                },
+              }
+            );
+          });
+
+          res.status(200).json({
+            reason: "OruMitra detached from user",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: {},
+          });
+        }
+      } else {
+        res.status(200).json({
+          reason: "Provide listingId or attachedUsedId",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {},
+        });
+      }
     }
   } catch (error) {
     res.status(500).json({
