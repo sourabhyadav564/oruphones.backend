@@ -97,18 +97,16 @@ router.get("/agent/create", async (req, res) => {
 
 router.post("/agent/oruMitra/create", async (req, res) => {
   try {
-    let kioskId = req.body.kioskId.toString();
-    let name = req.body.name.toString();
-    let email = req.body.email.toString();
-    let address = req.body.address.toString();
-    let city = req.query.city.toString();
+    let kioskId = req.body.kioskId;
+    let name = req.body.name;
+    let email = req.body.email;
+    let address = req.body.address;
+    let city = req.query.city;
     let referralCode = codeStr();
-    let images = req.body.images.toString();
-    let mobileNumber = req.body.mobileNumber.toString();
-    let upiId = req.body.upiId.toString();
-    let agentId = req.body.agentId.toString();
-
-    // TODO: check if kioskId is blacklisted or not
+    let images = req.body.images;
+    let mobileNumber = req.body.mobileNumber;
+    let upiId = req.body.upiId;
+    let agentId = req.body.agentId;
 
     let oruMitra = new createAgentModal({
       kioskId: kioskId,
@@ -551,6 +549,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
     // check referral code
     let oruMitra = await createAgentModal.findOne({
       referralCode: referralCode,
+      type: "OruMitra",
     });
 
     if (oruMitra) {
@@ -582,8 +581,26 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
             }
           );
         });
+
+        let bestListings = await bestDealsModal.find({
+          userUniqueId: userUniqueId,
+        });
+
+        bestListings.forEach(async (listing) => {
+          await bestDealsModal.findOneAndUpdate(
+            {
+              _id: listing._id,
+            },
+            {
+              $set: {
+                associatedWith: referralCode,
+              },
+            }
+          );
+        });
+
         res.status(200).json({
-          reason: "OruMitra attached",
+          reason: "OruMitra attached successfully",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {},
@@ -606,7 +623,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
     }
   } catch (error) {
     res.status(200).json({
-      reason: "Internal server error",
+      reason: "Internal server error\nPlease try again later",
       statusCode: 500,
       status: "FAILURE",
       dataObject: {
@@ -645,8 +662,25 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
         );
       });
 
+      let bestListings = await bestDealsModal.find({
+        userUniqueId: userUniqueId,
+      });
+
+      bestListings.forEach(async (listing) => {
+        await bestDealsModal.findOneAndUpdate(
+          {
+            _id: listing._id,
+          },
+          {
+            $set: {
+              associatedWith: "",
+            },
+          }
+        );
+      });
+
       res.status(200).json({
-        reason: "OruMitra detached",
+        reason: "OruMitra detached successfully",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},
@@ -661,7 +695,7 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
     }
   } catch (error) {
     res.status(200).json({
-      reason: "Internal server error",
+      reason: "Internal server error\nPlease try again later",
       statusCode: 500,
       status: "FAILURE",
       dataObject: {
