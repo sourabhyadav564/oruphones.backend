@@ -132,14 +132,14 @@ router.post("/agent/oruMitra/create", async (req, res) => {
     });
 
     let successMsg =
-      "Congratulations!\n\n\nYou have successfully created OruMitra";
+      "Congratulations!\n\n\nYou have successfully created ORU-Mitra";
 
     if (result) {
       result = result._doc;
       if (result.mobileNumber.toString() == mobileNumber.toString()) {
         // agent already exists
         res.status(200).json({
-          reason: "OruMitra already exists",
+          reason: "ORU-Mitra already exists",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {},
@@ -159,7 +159,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
           });
         });
         res.status(200).json({
-          reason: "OruMitra created successfully",
+          reason: "ORU-Mitra created successfully",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {
@@ -171,7 +171,7 @@ router.post("/agent/oruMitra/create", async (req, res) => {
     } else {
       let dataObj = await oruMitra.save();
       res.status(200).json({
-        reason: "OruMitra created successfully",
+        reason: "ORU-Mitra created successfully",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
@@ -256,7 +256,14 @@ router.get("/agent/otp/validate", async (req, res) => {
     if (getOtp && getOtp?.otp?.toString() === otp.toString()) {
       const getUser = await createAgentModal.findOne(
         { mobileNumber },
-        { type: 1, userUniqueId: 1, name: 1, mobileNumber: 1, referralCode: 1 }
+        {
+          type: 1,
+          userUniqueId: 1,
+          name: 1,
+          mobileNumber: 1,
+          referralCode: 1,
+          kioskId: 1,
+        }
       );
 
       res.status(200).json({
@@ -375,11 +382,12 @@ router.get("/agent/oruMitra/info", async (req, res) => {
     // get oru mitra info
     let oruMitra = await createAgentModal.findOne({
       kioskId: kioskId,
+      userUniqueId: agentUuId,
     });
 
     if (oruMitra) {
       res.status(200).json({
-        reason: "OruMitra info",
+        reason: "ORU-Mitra info",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {
@@ -399,7 +407,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
 
         if (isBlacklisted) {
           res.status(200).json({
-            reason: "OruMitra is blacklisted",
+            reason: "ORU-Mitra is blacklisted",
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {
@@ -421,7 +429,7 @@ router.get("/agent/oruMitra/info", async (req, res) => {
         }
       } else {
         res.status(200).json({
-          reason: "OruMitra not found",
+          reason: "ORU-Mitra not found",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {
@@ -515,14 +523,14 @@ router.get("/agent/oruMitra/data", async (req, res) => {
       };
 
       res.status(200).json({
-        reason: "OruMitra info",
+        reason: "ORU-Mitra info",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: dataObject,
       });
     } else {
       res.status(200).json({
-        reason: "OruMitra not found",
+        reason: "ORU-Mitra not found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},
@@ -599,14 +607,14 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
         });
 
         res.status(200).json({
-          reason: "OruMitra attached successfully",
+          reason: "ORU-Mitra attached successfully",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {},
         });
       } else {
         res.status(200).json({
-          reason: "OruMitra not found",
+          reason: "ORU-Mitra not found",
           statusCode: 200,
           status: "SUCCESS",
           dataObject: {},
@@ -614,7 +622,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
       }
     } else {
       res.status(200).json({
-        reason: "OruMitra not found",
+        reason: "ORU-Mitra not found",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},
@@ -636,13 +644,11 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
   try {
     let userUniqueId = req.query.userUniqueId;
 
-    let userData = await createUserModal.findOne(
-      {
-        userUniqueId: userUniqueId,
-      }
-    );
+    let userData = await createUserModal.findOne({
+      userUniqueId: userUniqueId,
+    });
 
-    if (userData) {
+    if (userData && userData.associatedWith && userData.associatedWith != "") {
       console.log("userData", userData);
       // update the user
       let updatedUser = await createUserModal.findOneAndUpdate(
@@ -693,14 +699,14 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
       });
 
       res.status(200).json({
-        reason: "OruMitra detached successfully",
+        reason: "ORU-Mitra detached successfully",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},
       });
     } else {
       res.status(200).json({
-        reason: "User not found",
+        reason: "User not found or not associated with any ORU-Mitra",
         statusCode: 200,
         status: "SUCCESS",
         dataObject: {},
@@ -756,7 +762,7 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
           }
 
           res.status(200).json({
-            reason: "OruMitra detached from listing",
+            reason: "ORU-Mitra detached from listing",
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {},
@@ -789,7 +795,7 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
           });
 
           res.status(200).json({
-            reason: "OruMitra detached from user",
+            reason: "ORU-Mitra detached from user",
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {},
