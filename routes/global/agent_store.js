@@ -474,9 +474,11 @@ router.get("/agent/oruMitra/data", async (req, res) => {
         { userUniqueId: 1, userName: 1, mobileNumber: 1, createdAt: 1 }
       );
 
+      let allUuIds = users.map((user) => user.userUniqueId);
+
       let listings = await saveListingModal.find(
         {
-          userUniqueId: { $in: users },
+          userUniqueId: { $in: allUuIds },
         },
         {
           listingDate: 1,
