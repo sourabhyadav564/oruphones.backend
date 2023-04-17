@@ -5,14 +5,25 @@ const attachedListingsSchema = new mongoose.Schema({
   listingId: {
     type: String,
   },
-  attachedOn: {
-    type: String,
-  },
   attachedTo: {
     type: String,
   },
-  status: {
-    type: String,
+  attachedOn: {
+    type: Date,
+    // type: String,
+  },
+  previousData: {
+    type: [
+      {
+        attachedOn: {
+          type: Date,
+          //   type: String,
+        },
+        attachedTo: {
+          type: String,
+        },
+      },
+    ],
   },
 });
 

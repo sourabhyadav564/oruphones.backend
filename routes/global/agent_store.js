@@ -475,15 +475,41 @@ router.get("/agent/oruMitra/data", async (req, res) => {
         { userUniqueId: 1, userName: 1, mobileNumber: 1, createdAt: 1 }
       );
 
-      let allUuIds = users.map((user) => user.userUniqueId);
+      // let allUuIds = users.map((user) => user.userUniqueId);
 
-      let allListingsAttached = await attachedListingsModal.find({
-        attachedTo: oruMitra.referralCode,
-      });
+      let allListingsAttachedOrPreviouslyAttached =
+        await attachedListingsModal.aggregate([
+          {
+            $match: {
+              $or: [
+                {
+                  attachedTo: oruMitra.referralCode,
+                },
+                {
+                  "previousData.attachedTo": oruMitra.referralCode,
+                },
+              ],
+            },
+          },
+          {
+            $project: {
+              listingId: 1,
+              attachedTo: 1,
+              attachedOn: 1,
+              previousData: 1,
+            },
+          },
+        ]);
+
+      console.log(
+        "allListingsAttachedOrPreviouslyAttached",
+        allListingsAttachedOrPreviouslyAttached
+      );
 
       let listings = await saveListingModal.find(
         {
-          userUniqueId: { $in: allUuIds },
+          // userUniqueId: { $in: allUuIds },
+          associatedWith: oruMitra.referralCode,
         },
         {
           listingDate: 1,
@@ -586,7 +612,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
         });
 
         listings.forEach(async (listing) => {
-          updateStatus(listing.listingId, referralCode);
+          updateMitraData(listing.listingId, referralCode, false);
           await saveListingModal.findOneAndUpdate(
             {
               _id: listing._id,
@@ -658,6 +684,8 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
       userUniqueId: userUniqueId,
     });
 
+    let referralCode = userData.associatedWith;
+
     if (userData && userData.associatedWith && userData.associatedWith != "") {
       console.log("userData", userData);
       // update the user
@@ -679,6 +707,8 @@ router.get("/agent/oruMitra/detach", async (req, res) => {
       });
 
       listings.forEach(async (listing) => {
+        updateMitraData(listing.listingId, referralCode, true);
+
         await saveListingModal.findOneAndUpdate(
           {
             _id: listing._id,
@@ -768,6 +798,7 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
               await bestDeals.save();
             }
           } else {
+            updateMitraData(listingId, user.referralCode, true);
             delete listing.associatedWith;
             await listing.save();
           }
@@ -847,50 +878,60 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
   }
 });
 
-const updateStatus = async (listingId, referralCode) => {
-  let foundListing = await attachedListingsModal.find({
+const updateMitraData = async (listingId, referralCode, delink) => {
+  let foundListing = await attachedListingsModal.findOne({
     listingId: listingId,
   });
 
-  if (foundListing && foundListing.length > 0) {
-    let foundListing = await attachedListingsModal.findOneAndUpdate(
-      {
-        listingId: listingId,
-      },
-      {
-        $set: {
-          status: "Delinked",
-        },
-      }
-    );
+  if (foundListing) {
+    let lastCode = foundListing.attachedTo;
+    let lastDate = foundListing.attachedOn;
 
-    let newEntry = new attachedListingsModal({
+    foundListing.current = delink ? "" : referralCode;
+    foundListing.attachedOn = new Date();
+
+    let previousData = {
+      attachedOn: lastDate,
+      attachedTo: lastCode,
+    };
+
+    foundListing.previous.push(previousData);
+
+    await foundListing.save();
+  } else if (!delink) {
+    let newListing = new attachedListingsModal({
       listingId: listingId,
       attachedTo: referralCode,
-      status: "Transferred",
       attachedOn: new Date(),
     });
 
-    await newEntry.save();
-  } else {
-    let newEntry = new attachedListingsModal({
-      listingId: listingId,
-      attachedTo: referralCode,
-      status: "Linked",
-      attachedOn: new Date(),
-    });
-
-    await newEntry.save();
+    await newListing.save();
   }
 
-  // delete 60 days old data
-  let date = new Date();
-  date.setDate(date.getDate() - 60);
+  // remove objects from previous array if attachedOn is more than 60 days
+  let listings = await attachedListingsModal.find();
 
-  let deleted = await attachedListingsModal.deleteMany({
-    attachedOn: {
-      $lt: date,
-    },
+  listings.forEach(async (listing) => {
+    let previous = listing.previous;
+
+    let newPrevious = [];
+
+    previous.forEach((prev) => {
+      let currentDate = new Date();
+      let attachedOn = new Date(prev.attachedOn);
+
+      let diff = currentDate.getTime() - attachedOn.getTime();
+
+      let days = diff / (1000 * 3600 * 24);
+
+      if (days < 60) {
+        newPrevious.push(prev);
+      }
+    });
+
+    listing.previous = newPrevious;
+
+    await listing.save();
   });
 };
 
