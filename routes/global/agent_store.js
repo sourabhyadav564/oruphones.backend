@@ -477,6 +477,10 @@ router.get("/agent/oruMitra/data", async (req, res) => {
 
       let allUuIds = users.map((user) => user.userUniqueId);
 
+      let allListingsAttached = await attachedListingsModal.find({
+        attachedTo
+      });
+
       let listings = await saveListingModal.find(
         {
           userUniqueId: { $in: allUuIds },
@@ -737,7 +741,7 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
     let status = req.query.status;
     let attachedUsedMob = req.query.attachedUsedMob;
 
-    let user = await createUserModal.findOne({
+    let user = await createAgentModal.findOne({
       userUniqueId: mitraUserUniqueId,
       type: "OruMitra",
     });
