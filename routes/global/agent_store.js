@@ -2,6 +2,7 @@ const express = require("express");
 const saveListingModal = require("../../src/database/modals/device/save_listing_device");
 const router = express.Router();
 const createAgentModal = require("../../src/database/modals/global/oru_mitra/agent_modal");
+const attachedListingsModal = require("../../src/database/modals/global/oru_mitra/attached_mitras_modal");
 const scrappedMitrasModal = require("../../src/database/modals/global/oru_mitra/scrapped_mitras");
 const createUserModal = require("../../src/database/modals/login/login_create_user");
 const userModal = require("../../src/database/modals/login/login_otp_modal");
@@ -491,6 +492,8 @@ router.get("/agent/oruMitra/data", async (req, res) => {
           verified: 1,
           verifiedDate: 1,
           status: 1,
+          deviceCondition: 1,
+          listedBy: 1,
         }
       );
 
@@ -579,6 +582,7 @@ router.get("/agent/oruMitra/attach", async (req, res) => {
         });
 
         listings.forEach(async (listing) => {
+          updateStatus(listing.listingId, referralCode);
           await saveListingModal.findOneAndUpdate(
             {
               _id: listing._id,
@@ -735,11 +739,12 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
 
     let user = await createUserModal.findOne({
       userUniqueId: mitraUserUniqueId,
+      type: "OruMitra",
     });
 
     if (user) {
       if (listingId) {
-        let listing = await saveListingModal.findOneAndUpdate({
+        let listing = await saveListingModal.findOne({
           _id: listingId,
         });
 
@@ -765,6 +770,13 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
 
           res.status(200).json({
             reason: "ORU-Mitra detached from listing",
+            statusCode: 200,
+            status: "SUCCESS",
+            dataObject: {},
+          });
+        } else {
+          res.status(200).json({
+            reason: "Listing not found",
             statusCode: 200,
             status: "SUCCESS",
             dataObject: {},
@@ -811,6 +823,13 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
           dataObject: {},
         });
       }
+    } else {
+      res.status(200).json({
+        reason: "ORU-Mitra not found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject: {},
+      });
     }
   } catch (error) {
     res.status(200).json({
@@ -823,5 +842,52 @@ router.get("/agent/oruMitra/delink", async (req, res) => {
     });
   }
 });
+
+const updateStatus = async (listingId, referralCode) => {
+  let foundListing = await attachedListingsModal.find({
+    listingId: listingId,
+  });
+
+  if (foundListing && foundListing.length > 0) {
+    let foundListing = await attachedListingsModal.findOneAndUpdate(
+      {
+        listingId: listingId,
+      },
+      {
+        $set: {
+          status: "Delinked",
+        },
+      }
+    );
+
+    let newEntry = new attachedListingsModal({
+      listingId: listingId,
+      attachedTo: referralCode,
+      status: "Transferred",
+      attachedOn: new Date(),
+    });
+
+    await newEntry.save();
+  } else {
+    let newEntry = new attachedListingsModal({
+      listingId: listingId,
+      attachedTo: referralCode,
+      status: "Linked",
+      attachedOn: new Date(),
+    });
+
+    await newEntry.save();
+  }
+
+  // delete 60 days old data
+  let date = new Date();
+  date.setDate(date.getDate() - 60);
+
+  let deleted = await attachedListingsModal.deleteMany({
+    attachedOn: {
+      $lt: date,
+    },
+  });
+};
 
 module.exports = router;
