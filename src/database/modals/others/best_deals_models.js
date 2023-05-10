@@ -133,9 +133,6 @@ const bestDealsSchema = new mongoose.Schema(
       type: String,
       // default: Date.now(),
     },
-    recommendedPriceRange: {
-      type: String,
-    },
     deviceRam: {
       type: String,
     },

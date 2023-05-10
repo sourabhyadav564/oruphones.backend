@@ -6,11 +6,6 @@ dotenv.config();
 
 const validUser = async (req, res, next) => {
   const userUniqueId = req.headers.useruniqueid;
-  const events = req.headers.eventname;
-  const srcFrom = req.headers.srcfrom;
-  const sessionId = req.headers.sessionid;
-  const location = req.headers.location;
-  const devicePlatform = req.headers.devicePlatform;
 
   try {
     if (process.env.EVENT === "Active" && userUniqueId != "Guest" && userUniqueId != "0") {

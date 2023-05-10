@@ -92,9 +92,6 @@ router.post("/batteryTest/mah", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
-    case "tenco":
-      make = "Tenco";
-      break;
     case "intex":
       make = "Intex";
       break;

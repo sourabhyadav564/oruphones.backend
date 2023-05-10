@@ -338,7 +338,7 @@ router.get("/logs/geteventinfo", async (req, res) => {
     let listing_with_recommended_price = [];
     total_listings.forEach(async (listing) => {
       if (
-        listing?.recommendedPriceRange != NaN &&
+        Number.isNaN(listing?.recommendedPriceRange) &&
         listing?.recommendedPriceRange != undefined
       ) {
         if (

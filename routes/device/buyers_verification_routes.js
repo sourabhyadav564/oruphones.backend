@@ -18,52 +18,52 @@ const validUser = require("../../src/middleware/valid_user");
 const generateOTP = require("../../utils/generate_otp");
 
 router.get(
-  "/listing/buyer/verification",
-  validUser,
-  logEvent,
-  async (req, res) => {
-    try {
-      const listingId = req.query.listingId;
-      const mobileNumber = req.query.mobileNumber;
+	'/listing/buyer/verification',
+	validUser,
+	logEvent,
+	async (req, res) => {
+		try {
+			const listingId = req.query.listingId;
+			const mobileNumber = req.query.mobileNumber;
 
-      const getListingObject = await saveRequestModal.findOne({
-        mobileNumber: mobileNumber,
-        listingId: listingId,
-      });
+			const getListingObject = await saveRequestModal.findOne({
+				mobileNumber: mobileNumber,
+				listingId: listingId
+			});
 
-      if (getListingObject) {
-        const userUniqueId = getListingObject.userUniqueId;
-        const userDetails = await createUserModal.findOne({
-          userUniqueId: userUniqueId,
-        });
+			if (getListingObject) {
+				const userUniqueId = getListingObject.userUniqueId;
+				const userDetails = await createUserModal.findOne({
+					userUniqueId: userUniqueId
+				});
 
-        const isMatchFound = userDetails.mobileNumber === mobileNumber;
-        if (!isMatchFound) {
-          res.status(200).json({
-            reason: "Mobile number not found",
-            statusCode: 401,
-            status: "UNAUTHORIZED",
-          });
-          return;
-        } else {
-          res.status(200).json({
-            reason: "Listing found successfully",
-            statusCode: 200,
-            status: "SUCCESS",
-          });
-        }
-      } else {
-        res.status(200).json({
-          reason: "Mobile number not found",
-          statusCode: 401,
-          status: "UNAUTHORIZED",
-        });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json(error);
-    }
-  }
+				const isMatchFound = userDetails.mobileNumber === mobileNumber;
+				if (!isMatchFound) {
+					res.status(200).json({
+						reason: 'Mobile number not found',
+						statusCode: 401,
+						status: 'UNAUTHORIZED'
+					});
+					return;
+				} else {
+					res.status(200).json({
+						reason: 'Listing found successfully',
+						statusCode: 200,
+						status: 'SUCCESS'
+					});
+				}
+			} else {
+				res.status(200).json({
+					reason: 'Mobile number not found',
+					statusCode: 401,
+					status: 'UNAUTHORIZED'
+				});
+			}
+		} catch (error) {
+			console.log(error);
+			res.status(500).json(error);
+		}
+	}
 );
 
 router.get(

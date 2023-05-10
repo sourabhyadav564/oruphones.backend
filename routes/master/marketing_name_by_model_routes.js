@@ -110,9 +110,6 @@ router.post("/marketingNameByModel", validUser, logEvent, async (req, res) => {
     case "gionee":
       make = "Gionee";
       break;
-    case "tenco":
-      make = "Tenco";
-      break;
     case "intex":
       make = "Intex";
       break;
@@ -280,9 +277,6 @@ router.get("/makemodellist", async (req, res) => {
         case "oppo":
           make = "Oppo";
           break;
-        case "google":
-          make = "Google";
-          break;
         case "htc":
           make = "HTC";
           break;
@@ -307,9 +301,6 @@ router.get("/makemodellist", async (req, res) => {
         case "asus":
           make = "Asus";
           break;
-        case "honor":
-          make = "Honor";
-          break;
         case "microsoft":
           make = "Microsoft";
           break;
@@ -321,12 +312,6 @@ router.get("/makemodellist", async (req, res) => {
           break;
         case "blackberry":
           make = "Blackberry";
-          break;
-        case "htc":
-          make = "HTC";
-          break;
-        case "huawei":
-          make = "Huawei";
           break;
         case "panasonic":
           make = "Panasonic";

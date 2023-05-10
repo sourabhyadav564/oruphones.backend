@@ -1,13 +1,10 @@
-var unirest = require("unirest");
 const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require("express");
-const app = express();
 require("dotenv").config();
 
 var AWS = require("aws-sdk");
-const generateOTP = require("./generate_otp");
 
 // const creds = new AWS.SharedIniFileCredentials({ profile: 'default' });
 // const sns = new AWS.SNS({creds, region: 'us-east-1'});
@@ -26,25 +23,6 @@ async function urlShortner(url) {
   // console.log(`Your shortened bitlink is ${response.link}`);
   return response.link;
 }
-
-// const sendLoginOtp = (mobileNumber, clientOTP) => {
-//     var req = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
-
-//     req.headers({
-//       "authorization": process.env.SMS_API_SECRET,
-//     });
-
-//     req.form({
-//       "variables_values": clientOTP,
-//       "route": "otp",
-//       "numbers": mobileNumber.toString(),
-//     });
-
-//     req.end(function (res) {
-//       if (res.error) throw new Error(res.error);
-//       console.log(res.body);
-//     });
-// }
 
 const sendverificationSMS = async (number, message, sellerName, marketingName) => {
   let link_text = "ORUphones";

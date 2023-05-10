@@ -1,4 +1,3 @@
-var unirest = require("unirest");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -16,25 +15,6 @@ AWS.config.update({
   accessKeyId: process.env.AWS_SNS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SNS_SECRET_KEY,
 });
-
-// const sendLoginOtp = (mobileNumber, clientOTP) => {
-//     var req = unirest("POST", "https://www.fast2sms.com/dev/bulkV2");
-
-//     req.headers({
-//       "authorization": process.env.SMS_API_SECRET,
-//     });
-
-//     req.form({
-//       "variables_values": clientOTP,
-//       "route": "otp",
-//       "numbers": mobileNumber.toString(),
-//     });
-
-//     req.end(function (res) {
-//       if (res.error) throw new Error(res.error);
-//       console.log(res.body);
-//     });
-// }
 
 const sendLoginOtp = (number, message) => {
   var params = {
