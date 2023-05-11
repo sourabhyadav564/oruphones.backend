@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const connection = require('@/database/mysql_connection');
 var HTMLParser = require('node-html-parser');
-const logEvent = require('@/middleware/event_logging');
 const NodeCache = require('node-cache');
 
 const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });

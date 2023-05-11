@@ -1,5 +1,5 @@
 const express = require('express');
-// const connection = require("@/database/mysql_connection");
+
 const fs = require('fs');
 const nodemailer = require('nodemailer');
 const moment = require('moment');

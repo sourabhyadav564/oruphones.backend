@@ -9,7 +9,7 @@ const dignosticsConfigModal = require('@/database/modals/diagnostics/diagnostics
 const gsmarenaModal = require('@/database/modals/master/marketing_name_by_model');
 const diagnosticsAllTests = require('@/database/modals/diagnostics/diagnostics_all_tests');
 const saveListingModal = require('@/database/modals/device/save_listing_device');
-// const connection = require("@/database/mysql_connection");
+
 const getRecommendedPrice = require('@/utils/get_recommended_price');
 const questionModal = require('@/database/modals/master/get_question');
 const dignosticsLogsModal = require('@/database/modals/diagnostics/diagnostics_log_transection');

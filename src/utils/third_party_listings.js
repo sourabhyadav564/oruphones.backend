@@ -6,7 +6,6 @@
 require('@/database/connection');
 // const saveListingModal = require("@/database/modals/device/save_listing_device");
 // const createUserModal = require("@/database/modals/login/login_create_user");
-// const connection = require("@/database/mysql_connection");
 
 // const logEvent = require("@/middleware/event_logging");
 // const getDefaultImage = require("@/utils/get_default_image");

@@ -1,5 +1,4 @@
 const express = require('express');
-// const connection = require("@/database/mysql_connection");
 
 const scrappedModal = require('@/database/modals/others/scrapped_models');
 const smartphoneModal = require('@/database/modals/others/smartphone_models');

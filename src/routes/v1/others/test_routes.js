@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 
 require('@/database/connection');
-// const connection = require("@/database/mysql_connection");
+
 const testModal = require('@/database/modals/others/test_modal');
 const gsmarenaModal = require('@/database/modals/master/marketing_name_by_model');
 const testScrappedModal = require('@/database/modals/others/test_scrapped_models');

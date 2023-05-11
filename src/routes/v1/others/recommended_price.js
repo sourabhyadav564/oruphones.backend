@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const connection = require("@/database/mysql_connection");
+
 const fs = require('fs');
 const logEvent = require('@/middleware/event_logging');
 const validUser = require('@/middleware/valid_user');

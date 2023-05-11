@@ -5,14 +5,11 @@ const moment = require('moment');
 require('@/database/connection');
 const saveListingModal = require('@/database/modals/device/save_listing_device');
 const createUserModal = require('@/database/modals/login/login_create_user');
-// const connection = require("@/database/mysql_connection");
 
 const logEvent = require('@/middleware/event_logging');
-const getDefaultImage = require('@/utils/get_default_image');
 const saveRequestModal = require('@/database/modals/device/request_verification_save');
 
 const sendNotification = require('@/utils/push_notification');
-const saveNotificationModel = require('@/database/modals/notification/notification_save_token');
 const favoriteModal = require('@/database/modals/favorite/favorite_add');
 const validUser = require('@/middleware/valid_user');
 const generateOTP = require('@/utils/generate_otp');
