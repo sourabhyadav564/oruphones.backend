@@ -5,7 +5,7 @@ build({
 	minify: true,
 	bundle: true,
 	platform: 'node',
-	outfile: 'dist/build.js'
+	outfile: 'dist/build.js',
 })
 	.then(() => console.log('Build Complete!🎉'))
 	.catch(() => {

@@ -2,9 +2,8 @@ import express, { Express } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
-import startSavingBestDeals from '../utils/best_deals_cron_job';
-import startCalculatingLSPTest from '../utils/new_lsp';
+import startSavingBestDeals from '@/utils/best_deals_cron_job';
+import startCalculatingLSPTest from '@/utils/new_lsp';
 
 require('dotenv').config();
 
@@ -26,8 +25,8 @@ const corsOptions = {
 		'http://localhost:5500',
 		'https://oru-phones-web.vercel.app',
 		'https://oru-phones-mobile-web.vercel.app',
-		'https://oru-phones-mip-portal.vercel.app'
-	]
+		'https://oru-phones-mip-portal.vercel.app',
+	],
 };
 
 const app: Express = express();
@@ -62,46 +61,46 @@ schedule.scheduleJob('00 03 * * *', function () {
 	startSavingBestDeals();
 });
 
-import testRoute from '../routes/others/test_routes';
-import brandRoute from '../routes/master/master_brand_routes';
-import makeModalRoute from '../routes/master/make_modal_routes';
-import saveModalRoute from '../routes/device/save_listing_routes';
-import eventRoute from '../routes/others/event_routes';
-import imageRoute from '../routes/device/image_upload_routes';
-import questionRoute from '../routes/master/get_question_routes';
-import citiesRoute from '../routes/global/cities_route';
-import bestDealHomeRoute from '../routes/home/best_deal_home_routes';
-import bestDealCompletedRoute from '../routes/device/complete_best_deal_routes';
-import loginOtpRoute from '../routes/login/login_otp_routes';
-import createUserRoute from '../routes/login/login_user_routes';
-import saveNotificationTokenRoute from '../routes/notification/notification_save_token_routes';
-import diagnosticsConfigRoute from '../routes/diagnostics/diagnostics_config_routes';
-import searchFilterRoute from '../routes/master/show_search_filters_routes';
-import favoriteRoute from '../routes/favorite/favorite_add';
-import marketingNameByModel from '../routes/master/marketing_name_by_model_routes';
-import listingByMakeRoute from '../routes/home/listings_by_make_routes';
-import recommendedPriceRoute from '../routes/others/recommended_price';
-import topSellingModelRoute from '../routes/home/top_selling_models_routes';
-import buyersVerficationRoutes from '../routes/device/buyers_verification_routes';
-import externalSourcePriceRoutes from '../routes/device/get_external_source_data_routes';
-import searchSuggestionRoute from '../routes/global/search_filter_routes';
-import logEventInfoRoute from '../routes/global/log_event_info_routes';
-import searchListingRoute from '../routes/home/search_listing_routes';
-import shareLinkRoute from '../routes/global/share_link_route';
-import shopByCategoryRoutes from '../routes/home/shop_by_category_routes';
-import shopByPriceRoute from '../routes/home/shop_by_price_routes';
-import getInfoTemplateRoutes from '../routes/global/get_info_template_routes';
-import getMIPLoginRoutes from '../routes/mip/mip_login_routes';
-import getMIPImageVerificationRoutes from '../routes/mip/mip_image_verification_route';
-import getBatteryTestRoutes from '../routes/diagnostics/battery_test_routes';
-import addSubscriptionRoute from '../routes/global/subscription_routes';
-import addContactUsRoute from '../routes/global/contact_us_route';
-import getNewTokenRoute from '../routes/login/get_new_token';
-import wordpressRoute from '../routes/others/wordpress_route';
+import testRoute from '@/routes/v1/others/test_routes';
+import brandRoute from '@/routes/v1/master/master_brand_routes';
+import makeModalRoute from '@/routes/v1/master/make_modal_routes';
+import saveModalRoute from '@/routes/v1/device/save_listing_routes';
+import eventRoute from '@/routes/v1/others/event_routes';
+import imageRoute from '@/routes/v1/device/image_upload_routes';
+import questionRoute from '@/routes/v1/master/get_question_routes';
+import citiesRoute from '@/routes/v1/global/cities_route';
+import bestDealHomeRoute from '@/routes/v1/home/best_deal_home_routes';
+import bestDealCompletedRoute from '@/routes/v1/device/complete_best_deal_routes';
+import loginOtpRoute from '@/routes/v1/login/login_otp_routes';
+import createUserRoute from '@/routes/v1/login/login_user_routes';
+import saveNotificationTokenRoute from '@/routes/v1/notification/notification_save_token_routes';
+import diagnosticsConfigRoute from '@/routes/v1/diagnostics/diagnostics_config_routes';
+import searchFilterRoute from '@/routes/v1/master/show_search_filters_routes';
+import favoriteRoute from '@/routes/v1/favorite/favorite_add';
+import marketingNameByModel from '@/routes/v1/master/marketing_name_by_model_routes';
+import listingByMakeRoute from '@/routes/v1/home/listings_by_make_routes';
+import recommendedPriceRoute from '@/routes/v1/others/recommended_price';
+import topSellingModelRoute from '@/routes/v1/home/top_selling_models_routes';
+import buyersVerficationRoutes from '@/routes/v1/device/buyers_verification_routes';
+import externalSourcePriceRoutes from '@/routes/v1/device/get_external_source_data_routes';
+import searchSuggestionRoute from '@/routes/v1/global/search_filter_routes';
+import logEventInfoRoute from '@/routes/v1/global/log_event_info_routes';
+import searchListingRoute from '@/routes/v1/home/search_listing_routes';
+import shareLinkRoute from '@/routes/v1/global/share_link_route';
+import shopByCategoryRoutes from '@/routes/v1/home/shop_by_category_routes';
+import shopByPriceRoute from '@/routes/v1/home/shop_by_price_routes';
+import getInfoTemplateRoutes from '@/routes/v1/global/get_info_template_routes';
+import getMIPLoginRoutes from '@/routes/v1/mip/mip_login_routes';
+import getMIPImageVerificationRoutes from '@/routes/v1/mip/mip_image_verification_route';
+import getBatteryTestRoutes from '@/routes/v1/diagnostics/battery_test_routes';
+import addSubscriptionRoute from '@/routes/v1/global/subscription_routes';
+import addContactUsRoute from '@/routes/v1/global/contact_us_route';
+import getNewTokenRoute from '@/routes/v1/login/get_new_token';
+import wordpressRoute from '@/routes/v1/others/wordpress_route';
 
 app.get('/', (req, res) => {
 	res.status(200).json({
-		message: 'Backend Testing Server Running Successfully'
+		message: 'Backend Testing Server Running Successfully',
 	});
 });
 
