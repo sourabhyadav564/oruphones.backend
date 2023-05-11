@@ -71,6 +71,7 @@
 		"@types/node": "^20.1.1",
 		"esbuild": "^0.17.18",
 		"nodemon": "^2.0.22",
+		"prisma": "^4.14.0",
 		"ts-node": "^10.9.1",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.0.4"
