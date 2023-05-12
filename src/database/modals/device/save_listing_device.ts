@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
 
 const saveListingSchema = new mongoose.Schema(
 	{
@@ -212,14 +211,16 @@ const saveListingSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-saveListingSchema.pre('save', async function (next) {
-	this.listingId = this._id;
+saveListingSchema.pre('save', function (next) {
+	this.listingId = this._id.toString();
 	next();
 });
 
-const saveListingModal = new mongoose.model(
-	'saved_listings',
-	saveListingSchema
-);
+saveListingSchema.index({ listingLocation: 1, listingPrice: -1 });
 
-module.exports = saveListingModal;
+// const saveListingModal = new mongoose.model(
+// 	'saved_listings',
+// 	saveListingSchema
+// );
+
+export default mongoose.model('saved_listings', saveListingSchema);
