@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const bestDealHomeSchema = new mongoose.Schema(
 	{
@@ -75,6 +76,11 @@ const bestDealHomeSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+bestDealHomeSchema.index({ listingLocation: 1 });
+bestDealHomeSchema.index({ make: 1 });
+bestDealHomeSchema.index({ verified: 1 });
+bestDealHomeSchema.index({ listingPrice: 1 });
 
 const bestDealHomeModel = new mongoose.model(
 	'complete_listings',

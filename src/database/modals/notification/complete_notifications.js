@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-
+const validator = require('validator');
 // const moment = require("moment");
 // const bcrypt = require("bcryptjs");
-// const makeRandomString = require("../../@/utils/generate_random_string");
+// const makeRandomString = require("../../../../utils/generate_random_string");
 
 // const now = new Date();
 // const currentDate = moment(now).format("L");

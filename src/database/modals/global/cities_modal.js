@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const citySchema = new mongoose.Schema(
 	{
@@ -13,19 +14,12 @@ const citySchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		// locationId: {
-		//     type: String,
-		//     required: true,
-		// }
 	},
 	{ timestamps: true }
 );
 
-// citySchema.pre('save', async function (next) {
-//     this.locationId = this._id;
-//     next();
-// });
+citySchema.index({ city: 1 });
 
-const cityModal = new mongoose.model('listed_cities', citySchema);
+const cityModal = mongoose.model('listed_cities', citySchema);
 
 module.exports = cityModal;

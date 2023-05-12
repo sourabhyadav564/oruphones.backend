@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const saveNotificationSchema = new mongoose.Schema(
 	{
@@ -17,6 +18,8 @@ const saveNotificationSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+saveNotificationSchema.index({ userUniqueId: 1 });
 
 const saveNotificationModel = new mongoose.model(
 	'save_notification_tokens',

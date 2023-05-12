@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const searchFilterSchema = new mongoose.Schema(
 	{
@@ -19,6 +20,8 @@ const searchFilterSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+searchFilterSchema.index({ make: 1 });
 
 const searchFilterModal = new mongoose.model(
 	'search_filters',

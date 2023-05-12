@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const favoriteSchema = new mongoose.Schema(
 	{
@@ -19,6 +20,7 @@ const favoriteSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+favoriteSchema.index({ userUniqueId: 1 });
 const favoriteModal = new mongoose.model('favorite_lists', favoriteSchema);
 
 module.exports = favoriteModal;
