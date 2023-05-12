@@ -1,27 +1,8 @@
 import session from 'express-session';
-import { createClient } from 'redis';
 import dotenv from 'dotenv';
 import RedisStore from 'connect-redis';
+import redisClient from '@/database/redis';
 dotenv.config();
-
-const redisClient = createClient({
-	legacyMode: true,
-	url: process.env.REDIS_URL,
-	socket: {
-		reconnectStrategy(retries) {
-			return Math.min(retries * 100, 3000);
-		},
-	},
-});
-
-redisClient
-	.connect()
-	.then(() => console.log('Redis Connected Successfully.'))
-	.catch((err) => console.log('Redis Connection Failed: ', err));
-
-redisClient.on('error', (err) => {
-	console.log('Redis Error: ', err);
-});
 
 const secretKey = process.env.SESSION_SECRET || 'secret';
 
