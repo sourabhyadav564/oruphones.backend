@@ -7,7 +7,7 @@ dotenv.config();
 const secretKey = process.env.SESSION_SECRET || 'secret';
 
 export default session({
-	store: new RedisStore({ client: redisClient }),
+	store: new RedisStore({ client: redisClient, prefix: 'ORUauth:' }),
 	saveUninitialized: false,
 	secret: secretKey,
 	resave: false,

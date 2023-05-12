@@ -1,7 +1,6 @@
 import { createClient } from 'redis';
 
 const redisClient = createClient({
-	legacyMode: true,
 	url: process.env.REDIS_URL,
 	socket: {
 		reconnectStrategy(retries) {

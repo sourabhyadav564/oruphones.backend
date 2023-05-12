@@ -5,3 +5,5 @@ export const index = (req: Request, res: Response) => {
 		message: 'Backend Testing Server v2 Running Successfully',
 	});
 };
+
+export default index;
