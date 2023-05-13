@@ -13,7 +13,22 @@ async function topSellingHome(req: Request, res: Response) {
 	const filter = {
 		...(location === 'India' ? {} : { listingLocation: location }),
 	};
-	const topSelling = await Listing.find(filter).sort({ sold: -1 }).limit(count);
+	const topSelling = await Listing.find(filter, {
+		_id: 1,
+		deviceCondition: 1,
+		deviceStorage: 1,
+		listingLocation: 1,
+		listingDate: 1,
+		listingPrice: 1,
+		name: 1,
+		isOtherVendor: 1,
+		marketingName: 1,
+		listingId: 1,
+		verified: 1,
+		imagePath: 1,
+	})
+		.sort({ sold: -1 })
+		.limit(count);
 	res.status(200).json({ data: topSelling });
 	await redisClient.setEx(location, 60 * 60 * 12, JSON.stringify(topSelling));
 }

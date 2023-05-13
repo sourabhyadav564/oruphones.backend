@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
 
 const bestDealsSchema = new mongoose.Schema(
 	{
@@ -215,16 +214,16 @@ const bestDealsSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-bestDealsSchema.pre('save', async function (next) {
+bestDealsSchema.pre('save', function (next) {
 	if (this.isOtherVendor === 'Y') {
-		this.listingId = this._id;
+		this.listingId = this._id.toString();
 	}
 	next();
 });
 
-const bestDealsModal = new mongoose.model(
+const bestDealsModel = mongoose.model(
 	'complete_best_deals',
 	bestDealsSchema
 );
 
-module.exports = bestDealsModal;
+export default bestDealsModel;
