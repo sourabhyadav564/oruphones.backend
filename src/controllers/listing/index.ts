@@ -15,7 +15,7 @@ async function topSellingHome(req: Request, res: Response) {
 	};
 	const topSelling = await Listing.find(filter).sort({ sold: -1 }).limit(count);
 	res.status(200).json({ data: topSelling });
-	await redisClient.set(location, JSON.stringify(topSelling));
+	await redisClient.setEx(location, 60 * 60 * 12, JSON.stringify(topSelling));
 }
 
 export default {
