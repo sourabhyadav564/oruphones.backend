@@ -1,7 +1,6 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import mongoose from 'mongoose';
 
-const defaultImageSchema = new mongoose.Schema(
+const testDefaultImageSchema = new mongoose.Schema(
 	{
 		id: {
 			type: String,
@@ -31,9 +30,10 @@ const defaultImageSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const defaultImageModal = new mongoose.model(
-	'model_default_images',
-	defaultImageSchema
+const testDefaultImageModal = mongoose.model(
+	'test_default_images',
+	testDefaultImageSchema
 );
 
-module.exports = defaultImageModal;
+export default testDefaultImageModal;
+module.exports = testDefaultImageModal;

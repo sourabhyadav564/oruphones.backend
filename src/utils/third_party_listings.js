@@ -1,19 +1,8 @@
-// const express = require("express");
-// const router = express.Router();
-// const moment = require("moment");
-// const saveRequestModal = require("@/database/modals/device/request_verification_save");
-
 require('@/database/connection');
-// const saveListingModal = require("@/database/modals/device/save_listing_device");
-// const createUserModal = require("@/database/modals/login/login_create_user");
-
-// const logEvent = require("@/middleware/event_logging");
-// const getDefaultImage = require("@/utils/get_default_image");
 
 const scrappedModal = require('@/database/modals/others/scrapped_models');
 const testDefaultImageModal = require('@/database/modals/others/test_model_default_images');
 const testScrappedModal = require('@/database/modals/others/test_scrapped_models');
-const getDefaultImage = require('./get_default_image');
 const allImageUrls = [];
 
 const getThirdPartyVendors = async (model_name, make, page) => {

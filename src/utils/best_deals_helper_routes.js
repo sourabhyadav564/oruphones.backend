@@ -1,9 +1,6 @@
-const getBestDeals = require('./get_best_deals');
 const bestDealsModal = require('@/database/modals/others/best_deals_models');
 const favoriteModal = require('@/database/modals/favorite/favorite_add');
-const saveListingModal = require('@/database/modals/device/save_listing_device');
 const applySortFilter = require('./sort_filter');
-const { async } = require('@firebase/util');
 
 const commonFunc = async (
 	location,

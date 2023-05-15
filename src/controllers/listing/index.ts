@@ -1,9 +1,17 @@
 import { Request, Response } from 'express';
 import Listing from '@/database/modals/others/best_deals_models';
 import redisClient from '@/database/redis';
+import { z } from 'zod';
+import filterController from '@/controllers/listing/filter';
+import models from '@/controllers/listing/models';
+
+const validator = z.object({
+	location: z.string().min(1).max(100),
+	count: z.number().min(1).max(100),
+});
 
 async function topSellingHome(req: Request, res: Response) {
-	const { location, count } = req.body;
+	const { location, count } = validator.parse(req.body);
 	//check redis for location
 	let redisResponse = await redisClient.get(location);
 	if (redisResponse !== null) {
@@ -35,4 +43,6 @@ async function topSellingHome(req: Request, res: Response) {
 
 export default {
 	topSellingHome,
+	filter: filterController,
+	models: models,
 };

@@ -3,18 +3,12 @@ const router = express.Router();
 
 require('@/database/connection');
 // const listingByMakeModal = require("@/database/modals/listing/listing_by_make");
-const saveListingModal = require('@/database/modals/device/save_listing_device');
-const favoriteModal = require('@/database/modals/favorite/favorite_add');
 const logEvent = require('@/middleware/event_logging');
 const validUser = require('@/middleware/valid_user');
 const {
 	bestDealsByMake,
 	bestDealsByMarketingName,
 } = require('@/utils/best_deals_helper_routes');
-const getBestDeals = require('@/utils/get_best_deals');
-// const getBestDeals = require("@/utils/get_best_deals");
-const getRecommendedPrice = require('@/utils/get_recommended_price');
-const getThirdPartyVendors = require('@/utils/third_party_listings');
 
 router.get('/listingsbymake', validUser, logEvent, async (req, res) => {
 	// const initialMake = req.query.make;
