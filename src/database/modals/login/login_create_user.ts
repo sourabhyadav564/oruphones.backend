@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+import { TUser } from '@/types/User';
+import mongoose from 'mongoose';
 
-const createUserSchema = new mongoose.Schema(
+const createUserSchema = new mongoose.Schema<TUser>(
 	{
 		userUniqueId: {
 			type: String,
@@ -75,11 +75,12 @@ const createUserSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-createUserSchema.pre('save', async function (next) {
-	this.userUniqueId = this._id;
+createUserSchema.pre('save', function (next) {
+	this.userUniqueId = this._id.toString();
 	next();
 });
 
-const createUserModal = new mongoose.model('created_user', createUserSchema);
+const createUserModal = mongoose.model('created_user', createUserSchema);
 
+export default createUserModal;
 module.exports = createUserModal;

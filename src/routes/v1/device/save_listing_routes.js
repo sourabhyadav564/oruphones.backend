@@ -16,9 +16,7 @@ const path = require('path');
 // require("@/database/connection");
 const saveListingModal = require('@/database/modals/device/save_listing_device');
 const createUserModal = require('@/database/modals/login/login_create_user');
-const scrappedModal = require('@/database/modals/others/scrapped_models');
 const favoriteModal = require('@/database/modals/favorite/favorite_add');
-const scrappedExternalSourceModal = require('@/database/modals/others/scrapped_for_external_source_models');
 
 const logEvent = require('@/middleware/event_logging');
 const getDefaultImage = require('@/utils/get_default_image');
@@ -131,7 +129,6 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 	const listingPrice = req.body.listingPrice;
 	const make = req.body.make;
 	const marketingName = req.body.marketingName;
-	// const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
 	const model = req.body.model;
 	const originalbox = req.body.originalbox;
 	const platform = req.body.platform;
@@ -139,16 +136,6 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 	const deviceImagesAvailable = images.length > 0 ? true : false;
 	const deviceRam = req.body.deviceRam;
 	let deviceWarranty = req.body.warranty;
-
-	// images.forEach(async (image) => {
-	//   downloadImage(image.fullImage, 'image.png', function(){
-	//     console.log('done');
-	//   });
-	// });
-
-	// let downloadedImage = fs.readFileSync(path.join(__dirname, '../../image.png'), {encoding: 'base64'});
-
-	// console.log(downloadedImage);
 
 	const cosmetic = req.body.cosmetic;
 
@@ -184,10 +171,6 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 	//   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
 
 	const image = await getDefaultImage(marketingName);
-
-	// const defaultImage = {
-	//   fullImage: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toLowerCase().replace(" ", "_")}.png`
-	// }
 
 	const defaultImage = {
 		fullImage: image,
@@ -850,7 +833,7 @@ router.post(
 				}
 			} else {
 				getThirdsListing = await testScrappedModal.findOne({
-					_id: ObjectId(listingid),
+					_id: new ObjectId(listingid),
 					type: 'buy',
 				});
 

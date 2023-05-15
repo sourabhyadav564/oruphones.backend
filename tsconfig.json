@@ -26,6 +26,7 @@
 		"emitDecoratorMetadata": true,
 		"moduleResolution": "Node",
 		"skipLibCheck": true,
+		"incremental": true,
 		"paths": {
 			"@/*": ["./src/*"]
 		}

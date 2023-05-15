@@ -218,9 +218,7 @@ saveListingSchema.pre('save', function (next) {
 
 saveListingSchema.index({ listingLocation: 1, listingPrice: -1 });
 
-// const saveListingModal = new mongoose.model(
-// 	'saved_listings',
-// 	saveListingSchema
-// );
+export const saveListingModal = mongoose.model('saved_listings', saveListingSchema);
 
-export default mongoose.model('saved_listings', saveListingSchema);
+export default saveListingModal;
+module.exports = saveListingModal;

@@ -221,9 +221,7 @@ bestDealsSchema.pre('save', function (next) {
 	next();
 });
 
-const bestDealsModel = mongoose.model(
-	'complete_best_deals',
-	bestDealsSchema
-);
+const bestDealsModel = mongoose.model('complete_best_deals', bestDealsSchema);
 
 export default bestDealsModel;
+module.exports = bestDealsModel;
