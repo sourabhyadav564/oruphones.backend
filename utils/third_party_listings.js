@@ -1,6 +1,6 @@
 // const express = require("express");
 // const router = express.Router();
-// const moment = require("moment");
+const moment = require("moment");
 // const saveRequestModal = require("../../src/database/modals/device/request_verification_save");
 
 require("../src/database/connection");
@@ -15,11 +15,20 @@ const scrappedModal = require("../src/database/modals/others/scrapped_models");
 const testDefaultImageModal = require("../src/database/modals/others/test_model_default_images");
 const testScrappedModal = require("../src/database/modals/others/test_scrapped_models");
 const getDefaultImage = require("./get_default_image");
+const { newModelImages } = require("./models_util");
 const allImageUrls = [];
 
 const getThirdPartyVendors = async (model_name, make, page) => {
   if (allImageUrls.length == 0) {
-    const modalImageData = await testDefaultImageModal.find({}, { _id: 0 });
+    const modalImageData = await testDefaultImageModal.find(
+      {
+        // get only whose updatedAt is greater than 30 days
+        updatedAt: {
+          $gte: moment().subtract(30, "days").toDate(),
+        },
+      },
+      { _id: 0 }
+    );
     modalImageData.forEach((element) => {
       allImageUrls.push(element);
     });
@@ -95,12 +104,15 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     };
   }
 
-  dataLength = await testScrappedModal.find(exper).countDocuments();
   filterd = await testScrappedModal.find(exper);
+  // dataLength = await testScrappedModal.find(exper).countDocuments();
+  dataLength = filterd.length;
 
   let dataObject = {};
   let dataArray = [];
-  filterd.forEach(async (element) => {
+  // filterd.forEach(async (element) => {
+  for (let i = 0; i < filterd.length; i++) {
+    let element = filterd[i];
     element = element._doc;
     let vendorName = VENDORS[element.vendor_id];
     let vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
@@ -109,13 +121,14 @@ const getThirdPartyVendors = async (model_name, make, page) => {
 
     // let imagePath = await getDefaultImage(element.model_name);
     // let imagePath = getImage(element.model_name);
-    let imagePath = "";
+    // let imagePath = "";
     let tempModel = element.model_name.toLowerCase().replace("+", "plus");
-    allImageUrls.find((item) => {
-      if (item.name == tempModel) {
-        imagePath = item.img;
-      }
-    });
+    // allImageUrls.find((item) => {
+    //   if (item.name == tempModel) {
+    //     imagePath = item.img;
+    //   }
+    // });
+    let imagePath = newModelImages[tempModel] || "";
     // let imagePath = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/allModelsImg/${element.model_name
     //   .toString()
     //   .toLowerCase()
@@ -179,7 +192,7 @@ const getThirdPartyVendors = async (model_name, make, page) => {
     };
 
     dataArray.push(dataObject);
-  });
+  }
 
   return { dataArray, dataLength };
 };

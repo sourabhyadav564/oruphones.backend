@@ -28,13 +28,13 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
     if (condition == "Like New") {
       switch (warrantyPeriod) {
         case "four":
-          condition = "Excellent";
+          deviceCondition = "Excellent";
           break;
         case "seven":
-          condition = "Good";
+          deviceCondition = "Excellent";
           break;
         case "more":
-          condition = "Fair";
+          condition = "Good";
           break;
         default:
           condition = condition;
@@ -42,26 +42,24 @@ router.post("/recomanded/price", validUser, logEvent, async (req, res) => {
       }
     } else if (condition == "Excellent") {
       switch (warrantyPeriod) {
-        case "seven":
+        case "more":
           condition = "Good";
-          break;
-        case "more":
-          condition = "Fair";
-          break;
-        default:
-          condition = condition;
-          break;
-      }
-    } else if (condition == "Good") {
-      switch (warrantyPeriod) {
-        case "more":
-          condition = "Fair";
           break;
         default:
           condition = condition;
           break;
       }
     }
+    // else if (condition == "Good") {
+    //   switch (warrantyPeriod) {
+    //     case "more":
+    //       condition = "Fair";
+    //       break;
+    //     default:
+    //       condition = condition;
+    //       break;
+    //   }
+    // }
 
     const recommendedPrice = await getRecommendedPrice(
       make,

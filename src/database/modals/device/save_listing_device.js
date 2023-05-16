@@ -71,7 +71,7 @@ const saveListingSchema = new mongoose.Schema(
     },
     listingLocation: {
       type: String,
-      default: "India",
+      default: "Delhi",
     },
     listingPrice: {
       type: String,
@@ -157,6 +157,19 @@ const saveListingSchema = new mongoose.Schema(
     isOtherVendor: {
       type: String,
       default: "N",
+    },
+    agent: {
+      type: String,
+    },
+    latLong: {
+      type: {
+        latitude: {
+          type: Number,
+        },
+        longitude: {
+          type: Number,
+        },
+      },
     },
     questionnaireResults: {
       type: [

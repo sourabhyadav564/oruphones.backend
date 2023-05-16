@@ -127,7 +127,7 @@ const sendLogMail = async () => {
 
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
     subject: `Sent SMS to ${dataToMail.length} OLX users`,
     html: mailBody,
     attachments: [
@@ -199,7 +199,7 @@ const nonFoundedModelMail = async() =>{
 
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
     subject: `Non Founded Models`,
     html: mailBody,
   };

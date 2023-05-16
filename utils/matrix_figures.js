@@ -87,3 +87,9 @@ const unwantedKeysForTables = {
 };
 
 exports.unwantedKeysForTables = unwantedKeysForTables;
+
+const oruMitraCons = {
+  earningPerListing: 10,
+};
+
+exports.oruMitraCons = oruMitraCons;

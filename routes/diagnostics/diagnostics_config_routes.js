@@ -16,6 +16,7 @@ const questionModal = require("../../src/database/modals/master/get_question");
 const dignosticsLogsModal = require("../../src/database/modals/diagnostics/diagnostics_log_transection");
 const validUser = require("../../src/middleware/valid_user");
 const bestDealsModal = require("../../src/database/modals/others/best_deals_models");
+const deviceIdModal = require("../../src/database/modals/global/device_id_list_modal");
 
 router.post("/diagConfig", async (req, res) => {
   const randomNumber = generateRandomNumber();
@@ -1071,6 +1072,52 @@ router.post("/diagConfigIOS", async (req, res) => {
   }
 });
 
+const severityLow = [
+  "RotationVectorSensorTest",
+  "BarometerTest",
+  "MagneticSensorTest",
+  "LinearAccelerationSensorTest",
+  "GeomagneticRotationSensorTest",
+  "AccelerometerTest",
+  "FingerPrintSensorTest",
+];
+const severityMedium = [
+  "VibrationTest",
+  "BluetoothOffTest",
+  "BluetoothOnTest",
+  "BluetoothToggleTest",
+  "QuickBatteryAutoTest",
+  "WLANOnTest",
+  "GameRotationSensorTest",
+  "GyroscopeSensorTest",
+  "Mic2Test",
+  "LCDTest",
+  "DimmingTest",
+  "ProximityTest",
+  "LightSensorTest",
+  "DeadPixelTest",
+  "DiscolorationTest",
+  "ScreenBurnTest",
+  "EarphoneJackTest",
+  "EarphoneTest",
+  "CameraFlashTest",
+  "FrontFlashTest",
+];
+const severityHigh = [
+  "WallChargingTest",
+  "GenuineOSTest",
+  "SpeakerTest",
+  "FrontCameraPictureTest",
+  "EarpieceTest",
+  "RearCameraPictureTest",
+  "MicTest",
+  "RearCameraVideoTest",
+  "FrontCameraVideoTest",
+  "TouchTest",
+  "HardKeysTest",
+  "USBManualConnectionTest",
+];
+
 router.post("/grade/price", validUser, logEvent, async (req, res) => {
   const functionalTestResults = req.body.functionalTestResults;
   const listingId = req.body.listingId;
@@ -1080,52 +1127,26 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
   const saveData = req.body.saveData;
 
   try {
-    const severityLow = [
-      "RotationVectorSensorTest",
-      "BarometerTest",
-      "MagneticSensorTest",
-      "LinearAccelerationSensorTest",
-      "GeomagneticRotationSensorTest",
-      "AccelerometerTest",
-      "FingerPrintSensorTest",
-    ];
-    const severityMedium = [
-      "VibrationTest",
-      "BluetoothOffTest",
-      "BluetoothOnTest",
-      "BluetoothToggleTest",
-      "QuickBatteryAutoTest",
-      "WLANOnTest",
-      "GameRotationSensorTest",
-      "GyroscopeSensorTest",
-      "Mic2Test",
-      "LCDTest",
-      "DimmingTest",
-      "ProximityTest",
-      "LightSensorTest",
-      "DeadPixelTest",
-      "DiscolorationTest",
-      "ScreenBurnTest",
-      "EarphoneJackTest",
-      "EarphoneTest",
-      "CameraFlashTest",
-      "FrontFlashTest",
-    ];
-    const severityHigh = [
-      "WallChargingTest",
-      "GenuineOSTest",
-      "SpeakerTest",
-      "FrontCameraPictureTest",
-      "EarpieceTest",
-      "RearCameraPictureTest",
-      "MicTest",
-      "RearCameraVideoTest",
-      "FrontCameraVideoTest",
-      "TouchTest",
-      "HardKeysTest",
-      "USBManualConnectionTest",
-    ];
-
+    if (saveData == "Y") {
+      // disableSameListing(deviceUniqueId, req.body.marketingName);
+      let disableListing = await saveListingModal.updateMany(
+        {
+          deviceUniqueId: deviceUniqueId,
+          marketingName: req.body.marketingName,
+          // status: "Active",
+        },
+        { status: "Expired", deviceUniqueId: "", verified: false }
+      );
+      // also change in bestDealModal
+      let disableBestDeal = await bestDealsModal.updateMany(
+        {
+          deviceUniqueId: deviceUniqueId,
+          marketingName: req.body.marketingName,
+          // status: "Active",
+        },
+        { status: "Sold_Out", deviceUniqueId: "", verified: false }
+      );
+    }
     let grade;
     let cosmeticGrade;
     let finalGrade;
@@ -1134,7 +1155,7 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     let lCount = 0;
     let index = 0;
 
-    const getQuestions = await questionModal.find({});
+    // const getQuestions = await questionModal.find({});
 
     for (item of functionalTestResults) {
       if (severityHigh.includes(item.commandName)) {
@@ -1189,6 +1210,24 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
     let warrantyPeriod;
 
     const listing = await saveListingModal.findOne({ listingId: listingId });
+
+    if (saveData == "Y") {
+      let findDevice = await deviceIdModal.findOne({
+        deviceUniqueId: deviceUniqueId,
+      });
+
+      if (!findDevice) {
+        let saveDevice = new deviceIdModal({
+          deviceUniqueId: deviceUniqueId,
+          listingId: listingId,
+          verifiedOn: new Date(),
+          attachedTo: listing.associatedWith || "",
+          payStatus:
+            listing.associatedWith && listing.associatedWith != "" ? "Y" : "N",
+        });
+        await saveDevice.save();
+      }
+    }
     let cosmetic = listing.cosmetic;
     let deviceAge = listing.warranty;
 
@@ -1276,10 +1315,10 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
           condition = "Excellent";
           break;
         case "seven":
-          condition = "Good";
+          condition = "Excellent";
           break;
         case "more":
-          condition = "Fair";
+          condition = "Good";
           break;
         default:
           condition = condition;
@@ -1287,26 +1326,24 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
       }
     } else if (condition == "Excellent") {
       switch (warrantyPeriod) {
-        case "seven":
+        case "more":
           condition = "Good";
-          break;
-        case "more":
-          condition = "Fair";
-          break;
-        default:
-          condition = condition;
-          break;
-      }
-    } else if (condition == "Good") {
-      switch (warrantyPeriod) {
-        case "more":
-          condition = "Fair";
           break;
         default:
           condition = condition;
           break;
       }
     }
+    // else if (condition == "Good") {
+    //   switch (warrantyPeriod) {
+    //     case "more":
+    //       condition = "Fair";
+    //       break;
+    //     default:
+    //       condition = condition;
+    //       break;
+    //   }
+    // }
 
     const now = new Date();
     const dateFormat = moment(now).format("MMM Do");
@@ -1420,6 +1457,168 @@ router.post("/grade/price", validUser, logEvent, async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
+  }
+});
+
+router.post("/grade/recommended/price", async (req, res) => {
+  try {
+    let functionalTestResults = req.body.functionalTestResults;
+    let make = req.body.make;
+    let marketingName = req.body.marketingName;
+    let storage = req.body.storage;
+    let ram = req.body.ram;
+    let deviceCondition = req.body.deviceCondition;
+    let deviceUniqueId = req.body.deviceUniqueId;
+
+    // this api endpoint is similar as above but it only calculate the price, grade and condition and return it to the user without updating the listing
+
+    let grade = "";
+    let cosmeticGrade = "";
+    let finalGrade = "";
+    let condition = "";
+    let count = 0;
+    let lCount = 0;
+    let index = 0;
+
+    for (item of functionalTestResults) {
+      if (severityHigh.includes(item.commandName)) {
+        if (item.testStatus == "FAIL") {
+          //!== "PASS"
+          // grade = "C";
+          grade = "D";
+          // condition = "Fair";
+          condition = "Needs Repair";
+          break;
+        }
+      } else if (severityMedium.includes(item.commandName)) {
+        if (item.testStatus == "FAIL") {
+          if (count <= 3) {
+            // grade = "B";
+            // condition = "Good";
+            grade = "C";
+            condition = "Fair";
+            count++;
+          } else {
+            grade = "D";
+            condition = "Needs Repair";
+            count = 0;
+            break;
+          }
+        }
+      } else if (severityLow.includes(item.commandName)) {
+        if (item.testStatus == "FAIL") {
+          if (lCount <= 3) {
+            grade = "A";
+            condition = "Excellent";
+          } else {
+            grade = "B";
+            condition = "Good";
+            break;
+          }
+          lCount++;
+        }
+      }
+      index++;
+      if (
+        index >= functionalTestResults.length &&
+        count === 0 &&
+        lCount === 0
+      ) {
+        grade = "S";
+        condition = "Like New";
+        break;
+      }
+    }
+
+    switch (deviceCondition) {
+      case "Like New":
+        cosmeticGrade = "S";
+        break;
+      case "Excellent":
+        cosmeticGrade = "A";
+        break;
+      case "Good":
+        cosmeticGrade = "B";
+        break;
+      case "Fair":
+        cosmeticGrade = "C";
+        break;
+      case "Needs Repair":
+        cosmeticGrade = "D";
+        break;
+      default:
+        cosmeticGrade = "B";
+        break;
+    }
+
+    if (grade === "S" && cosmeticGrade === "S") {
+      finalGrade = "S";
+    } else if (grade === "S" && cosmeticGrade !== "S") {
+      finalGrade = cosmeticGrade;
+    } else if (grade !== "S" && cosmeticGrade === "S") {
+      finalGrade = grade;
+    } else {
+      if (grade > cosmeticGrade) {
+        finalGrade = grade;
+      } else if (grade <= cosmeticGrade) {
+        finalGrade = cosmeticGrade;
+      }
+    }
+
+    if (finalGrade === "S") {
+      condition = "Like New";
+    } else if (finalGrade === "A") {
+      condition = "Excellent";
+    } else if (finalGrade === "B") {
+      condition = "Good";
+    } else if (finalGrade === "C") {
+      condition = "Fair";
+    } else if (finalGrade === "D") {
+      condition = "Needs Repair";
+    }
+
+    const price = await getRecommendedPrice(
+      make,
+      marketingName,
+      deviceCondition,
+      storage,
+      ram,
+      true,
+      make === "Apple" ? true : false,
+      true,
+      make === "Apple" ? true : false,
+      true,
+      true,
+      false,
+      "zero"
+    );
+
+    console.log("price", price);
+
+    const dataObject = {
+      grade: finalGrade,
+      condition: condition,
+      price: `₹${price.leastSellingprice ?? "-"} - ₹${
+        price.maxsellingprice ?? "-"
+      }`,
+      message: `The recommended price for this device is: `,
+    };
+
+    res.status(200).json({
+      reason: "Price calculated successfully",
+      statusCode: 201,
+      status: "SUCCESS",
+      dataObject,
+    });
+  } catch (error) {
+    res.status(200).json({
+      reason: "Price calculation failed",
+      statusCode: 200,
+      status: "FAILED",
+      dataObject: {
+        error: error,
+      },
+    });
   }
 });
 

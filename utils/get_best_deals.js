@@ -286,6 +286,11 @@ const getBestDeals = async (
             ((newBasePrice - notionalPrice) / newBasePrice) * 100;
 
           let newDataObject = {};
+
+          // remove , from item.listingPrice
+          let listingPrice = item.listingPrice.toString().replace(",", "");
+          item.listingPrice = listingPrice;
+
           if (item.isOtherVendor == "Y") {
             newDataObject = {
               ...item,
@@ -318,7 +323,7 @@ const getBestDeals = async (
             } else {
               let mdlName = oldItem.marketingName.toString().toLowerCase();
               mdlName = mdlName.replace("+", " plus");
-              oldItem.defaultImage["fullImage"] = newModelImages[mdlName];
+              oldItem.defaultImage["fullImage"] = newModelImages[mdlName] || "";
             }
 
             // count days from updatedAt

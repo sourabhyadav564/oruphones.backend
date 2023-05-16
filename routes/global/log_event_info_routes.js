@@ -63,7 +63,7 @@ router.get("/reportIssue/:key", (req, res) => {
 
 const devMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
 const prodMails =
-  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp";
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp";
 
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
@@ -220,10 +220,16 @@ router.get("/checkReport", upload.single("reportFile"), async (req, res) => {
     let getMine = req.query.getMine || false;
 
     switch (getMine) {
-      case "true" || true:
+      case "true":
         getMine = true;
         break;
-      case "false" || false:
+      case true:
+        getMine = true;
+        break;
+      case "false":
+        getMine = false;
+        break;
+      case false:
         getMine = false;
         break;
       default:

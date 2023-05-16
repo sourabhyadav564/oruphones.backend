@@ -13,35 +13,39 @@ const startSavingBestDeals = async () => {
     if (location === "India") {
       let saveListingLength = await saveListingModal
         .find({
-          status: ["Active", "Sold_Out"],
+          status: ["Active"],
         })
         .countDocuments();
       let defaultDataObject2 = await saveListingModal.find({
-        status: ["Active", "Sold_Out"],
+        status: ["Active"],
       });
       defaultDataObject2.forEach((element) => {
         defaultDataObject.push(element._doc);
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "");
-      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-        defaultDataObject.push(thirdPartyVendor);
-      });
+      // thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+      for (let i = 0; i < thirdPartyVendors?.dataArray?.length; i++) {
+        // let thirdPartyVendor = thirdPartyVendors?.dataArray[i];
+        defaultDataObject.push(thirdPartyVendors?.dataArray[i]);
+      }
       totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
     } else {
       let saveListingLength = await saveListingModal
         .find({
           listingLocation: location,
-          status: ["Active", "Sold_Out"],
+          status: ["Active"],
         })
         .countDocuments();
       let defaultDataObject2 = await saveListingModal.find({
         listingLocation: location,
-        status: ["Active", "Sold_Out"],
+        status: ["Active"],
       });
       const thirdPartyVendors = await getThirdPartyVendors("", "");
-      thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
-        defaultDataObject2.push(thirdPartyVendor);
-      });
+      // thirdPartyVendors?.dataArray?.forEach((thirdPartyVendor) => {
+      for (let i = 0; i < thirdPartyVendors?.dataArray?.length; i++) {
+        // let thirdPartyVendor = thirdPartyVendors?.dataArray[i];
+        defaultDataObject2.push(thirdPartyVendors?.dataArray[i]);
+      }
       totalProducts = saveListingLength + thirdPartyVendors?.dataLength;
       // if (!defaultDataObject2.length) {
       //   res.status(200).json({
@@ -55,7 +59,7 @@ const startSavingBestDeals = async () => {
       //   });
       //   return;
       // } else {
-        defaultDataObject.push(...defaultDataObject2);
+      defaultDataObject.push(...defaultDataObject2);
       // }
     }
 

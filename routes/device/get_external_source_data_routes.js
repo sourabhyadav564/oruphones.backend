@@ -65,10 +65,10 @@ router.post(
           deviceCondition = "Excellent";
           break;
         case "seven":
-          deviceCondition = "Good";
+          deviceCondition = "Excellent";
           break;
         case "more":
-          deviceCondition = "Fair";
+          deviceCondition = "Good";
           break;
         default:
           deviceCondition = deviceCondition;
@@ -77,25 +77,26 @@ router.post(
     } else if (deviceCondition == "Excellent") {
       switch (warrantyPeriod) {
         case "seven":
+          deviceCondition = "Excellent";
+          break;
+        case "more":
           deviceCondition = "Good";
-          break;
-        case "more":
-          deviceCondition = "Fair";
-          break;
-        default:
-          deviceCondition = deviceCondition;
-          break;
-      }
-    } else if (deviceCondition == "Good") {
-      switch (warrantyPeriod) {
-        case "more":
-          deviceCondition = "Fair";
           break;
         default:
           deviceCondition = deviceCondition;
           break;
       }
     }
+    // else if (deviceCondition == "Good") {
+    //   switch (warrantyPeriod) {
+    //     case "more":
+    //       deviceCondition = "Fair";
+    //       break;
+    //     default:
+    //       deviceCondition = deviceCondition;
+    //       break;
+    //   }
+    // }
 
     let totalPercentageToBeReduced = 0;
     totalPercentageToBeReduced += warrantyPeriodPercentage;
@@ -156,7 +157,9 @@ router.post(
             "-- GB",
             `${parseInt(deviceRam)} GB`,
           ],
-          make: make,
+          make: {
+            $regex: new RegExp("^" + make.toLowerCase() + "$", "i"),
+          },
           // model_name: [marketingName, exact_model_name, tempModelName],
           model_name: {
             $regex: new RegExp("^" + marketingName.toLowerCase() + "$", "i"),

@@ -12,10 +12,16 @@ router.get("/topselling/models", async (req, res) => {
     let isLimited = req.query.isLimited || "true";
 
     switch (isLimited) {
-      case "true" || true:
+      case "true":
         isLimited = true;
         break;
-      case "false" || false:
+      case true:
+        isLimited = true;
+        break;
+      case "false":
+        isLimited = false;
+        break;
+      case false:
         isLimited = false;
         break;
       default:

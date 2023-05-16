@@ -20,7 +20,11 @@ router.get("/user/details", logEvent, async (req, res) => {
 
   try {
     let getUser = {};
-    if (mobileNumber !== undefined && mobileNumber !== null && mobileNumber.toString() !== "NaN") {
+    if (
+      mobileNumber !== undefined &&
+      mobileNumber !== null &&
+      mobileNumber.toString() !== "NaN"
+    ) {
       getUser = await createUserModal.findOne({ mobileNumber });
       afterGettingUser(getUser, res);
     } else if (userUniqueId !== undefined && userUniqueId !== null) {
@@ -37,6 +41,16 @@ router.get("/user/details", logEvent, async (req, res) => {
 
 afterGettingUser = async (getUser, res) => {
   if (getUser) {
+    getUser = getUser._doc;
+
+    if (getUser.isaccountexpired == true) {
+      // update user account expired
+      const updateUser = await createUserModal.findOneAndUpdate(
+        { userUniqueId: getUser.userUniqueId },
+        { isaccountexpired: false }
+      );
+    }
+
     res.status(200).json({
       reason: "User found successfully",
       statusCode: 200,
@@ -68,6 +82,25 @@ router.post("/user/create", logEvent, async (req, res) => {
   const userName = req.body.userName;
   const userType = req.body.userType;
   const userUniqueId = req.body.userUniqueId;
+  let forceNew = req.body.forceNew || false;
+
+  switch (forceNew) {
+    case "true":
+      forceNew = true;
+      break;
+    case true:
+      forceNew = true;
+      break;
+    case "false":
+      forceNew = false;
+      break;
+    case false:
+      forceNew = false;
+      break;
+    default:
+      forceNew = false;
+      break;
+  }
 
   const createUserData = {
     email: email,
@@ -84,15 +117,66 @@ router.post("/user/create", logEvent, async (req, res) => {
     const getUser = await createUserModal.findOne({ mobileNumber });
 
     if (getUser) {
-      res.status(200).json({
-        reason: "User Already Available",
-        statusCode: 200,
-        status: "FAIL",
-        dataObject: {
+      if (forceNew) {
+        //  first delete the data related to this user
+        const deleteUserAccount = await createUserModal.deleteOne({
+          mobileNumber,
+        });
+
+        const deleteFavorite = await favoriteModal.deleteMany({
           userUniqueId: getUser.userUniqueId,
-          userdetails: getUser,
-        },
-      });
+        });
+
+        const deleteNotification = await notificationModel.deleteMany({
+          userUniqueId: getUser.userUniqueId,
+        });
+
+        const deleteRequest = await saveRequestModal.deleteMany({
+          userUniqueId: getUser.userUniqueId,
+        });
+
+        const deleteNotificationToken = await saveNotificationModel.deleteMany({
+          userUniqueId: getUser.userUniqueId,
+        });
+
+        // const deleteListing = await saveListingModal.deleteMany({
+        //   userUniqueId: getUser.userUniqueId,
+        // });
+
+        // now create the new user
+        const data = new createUserModal(createUserData);
+        const saveData = await data.save();
+        res.status(201).json({
+          reason: "User Created Successfully",
+          statusCode: 200,
+          status: "SUCCESS",
+          dataObject: {
+            userUniqueId: saveData._id,
+            userdetails: saveData,
+          },
+        });
+      } else {
+        if (getUser.isaccountexpired) {
+          const updateData = await createUserModal.updateOne(
+            { mobileNumber },
+            {
+              $set: {
+                isaccountexpired: false,
+              },
+            }
+          );
+        }
+
+        res.status(200).json({
+          reason: "User Already Available",
+          statusCode: 200,
+          status: "FAIL",
+          dataObject: {
+            userUniqueId: getUser.userUniqueId,
+            userdetails: getUser,
+          },
+        });
+      }
       return;
     } else {
       const data = new createUserModal(createUserData);
@@ -202,9 +286,12 @@ router.post("/user/delete", validUser, logEvent, async (req, res) => {
       userUniqueId: userUniqueId,
     });
     if (userNotificationToken) {
-      delelteUserNotificationToken = await saveNotificationModel.deleteMany({
-        userUniqueId: userUniqueId,
-      });
+      delelteUserNotificationToken = await saveNotificationModel.updateMany(
+        {
+          userUniqueId: userUniqueId,
+        },
+        { status: "Sold_Out" }
+      );
     }
 
     const updatedListings = await bestDealsModal.updateMany(
@@ -217,18 +304,26 @@ router.post("/user/delete", validUser, logEvent, async (req, res) => {
     //   userUniqueId: userUniqueId,
     // });
     // if (userListings) {
-    deleteUserListings = await saveListingModal.deleteMany({
-      userUniqueId: userUniqueId,
-    });
+    deleteUserListings = await saveListingModal.updateMany(
+      {
+        userUniqueId: userUniqueId,
+      },
+      { status: "Sold_Out" }
+    );
     // }
 
     // const userAccount = await createUserModal.find({
     //   userUniqueId: userUniqueId,
     // });
     // if (userAccount) {
-    deleteUserAccount = await createUserModal.findOneAndDelete({
-      userUniqueId: userUniqueId,
-    });
+    deleteUserAccount = await createUserModal.findOneAndUpdate(
+      {
+        userUniqueId: userUniqueId,
+      },
+      {
+        isaccountexpired: true,
+      }
+    );
     // }
 
     if (

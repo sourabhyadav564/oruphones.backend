@@ -41,7 +41,7 @@ const createAgentModal = require("../../src/database/modals/global/oru_mitra/age
 router.get("/listings", validUser, logEvent, async (req, res) => {
   try {
     const userUniqueId = req.query.userUniqueId;
-    const neededKeys = allMatrix.neededKeysForDeals;
+    // const neededKeys = allMatrix.neededKeysForDeals;
     // let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
     // dataObject.reverse();
 
@@ -49,8 +49,26 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
       {
         $match: {
           userUniqueId,
+          // status can not be Sold_Out
+          // status: {
+          //   $ne: "Sold_Out",
+          // },
         },
       },
+      // change the status from Sold_Out to Paused of every listing
+      // {
+      //   $addFields: {
+      //     status: {
+      //       $cond: {
+      //         if: {
+      //           $eq: ["$status", "Sold_Out"],
+      //         },
+      //         then: "Paused",
+      //         else: "$status",
+      //       },
+      //     },
+      //   },
+      // },
       {
         $sort: {
           _id: -1,
@@ -65,6 +83,15 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
       let unVerifiedCount = await saveListingModal.countDocuments({
         userUniqueId,
         verified: false,
+        status: { $nin: ["Sold_Out", "Expired"] },
+      });
+
+      let soldOutListings = dataObject.filter((item) => {
+        return item.status === "Sold_Out" || item.status === "Expired";
+      });
+
+      dataObject = dataObject.filter((item) => {
+        return item.status !== "Sold_Out" && item.status !== "Expired";
       });
 
       // console.log("unVerifiedCount", unVerifiedCount);
@@ -81,6 +108,7 @@ router.get("/listings", validUser, logEvent, async (req, res) => {
         status: "SUCCESS",
         message: msg,
         dataObject,
+        soldOutListings,
       });
     }
   } catch (error) {
@@ -93,6 +121,8 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
   const userUniqueId = req.body.userUniqueId;
   let listedBy = req.body.listedBy;
   let associatedWith = "";
+  let mobileNumber = "";
+
   const userDetails = await createUserModal.findOne(
     {
       userUniqueId: userUniqueId,
@@ -117,217 +147,226 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       listedBy = userDetails?.userName;
     }
 
+    mobileNumber = userDetails?.mobileNumber;
+
     if (userDetails?.associatedWith) {
       associatedWith = userDetails?.associatedWith;
     }
-  }
 
-  const mobileNumber = userDetails?.mobileNumber;
-  const charger = req.body.charger;
-  const color = req.body.color;
-  let deviceCondition = req.body.deviceCondition;
-  const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
-  const deviceFinalGrade = req.body.deviceFinalGrade;
-  const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
-  const deviceStorage = req.body.deviceStorage;
-  const earphone = req.body.earphone;
-  const images = req.body.images;
-  const imei = req.body.imei;
-  let listingLocation = req.body.listingLocation;
-  const listingPrice = req.body.listingPrice;
-  const make = req.body.make;
-  const marketingName = req.body.marketingName;
-  // const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
-  const model = req.body.model;
-  const originalbox = req.body.originalbox;
-  const platform = req.body.platform;
-  const recommendedPriceRange = req.body.recommendedPriceRange;
-  const deviceImagesAvailable = images.length > 0 ? true : false;
-  const deviceRam = req.body.deviceRam;
-  let deviceWarranty = req.body.warranty;
+    const charger = req.body.charger;
+    const color = req.body.color;
+    let deviceCondition = req.body.deviceCondition;
+    const deviceCosmeticGrade = req.body.deviceCosmeticGrade;
+    const deviceFinalGrade = req.body.deviceFinalGrade;
+    const deviceFunctionalGrade = req.body.deviceFunctionalGrade;
+    const deviceStorage = req.body.deviceStorage;
+    const earphone = req.body.earphone;
+    const images = req.body.images;
+    const imei = req.body.imei;
+    let listingLocation = req.body.listingLocation;
+    const listingPrice = req.body.listingPrice;
+    const make = req.body.make;
+    const marketingName = req.body.marketingName;
+    // const mobileNumber = req.body.mobileNumber.toString().slice(2, -1);
+    const model = req.body.model;
+    const originalbox = req.body.originalbox;
+    const platform = req.body.platform;
+    const recommendedPriceRange = req.body.recommendedPriceRange;
+    const deviceImagesAvailable = images.length > 0 ? true : false;
+    const deviceRam = req.body.deviceRam;
+    let deviceWarranty = req.body.warranty;
 
-  const cosmetic = req.body.cosmetic;
+    const cosmetic = req.body.cosmetic;
 
-  let getLocation = await cityModal.findOne({ city: listingLocation });
-  if (getLocation) {
-    listingLocation = getLocation.city;
-  } else {
-    await cityModal.create({ city: listingLocation, displayWithImage: "0" });
-  }
-
-  if (deviceCondition == "Like New") {
-    switch (deviceWarranty) {
-      case "four":
-        deviceCondition = "Excellent";
-        break;
-      case "seven":
-        deviceCondition = "Good";
-        break;
-      case "more":
-        deviceCondition = "Fair";
-        break;
-      default:
-        deviceCondition = deviceCondition;
-        break;
+    let getLocation = await cityModal.findOne({ city: listingLocation });
+    if (getLocation) {
+      listingLocation = getLocation.city;
+    } else {
+      await cityModal.create({ city: listingLocation, displayWithImage: "0" });
     }
-  } else if (deviceCondition == "Excellent") {
-    switch (deviceWarranty) {
-      case "seven":
-        deviceCondition = "Good";
-        break;
-      case "more":
-        deviceCondition = "Fair";
-        break;
-      default:
-        deviceCondition = deviceCondition;
-        break;
-    }
-  } else if (deviceCondition == "Good") {
-    switch (deviceWarranty) {
-      case "more":
-        deviceCondition = "Fair";
-        break;
-      default:
-        deviceCondition = deviceCondition;
-        break;
-    }
-  }
 
-  switch (deviceWarranty) {
-    case "zero":
-      deviceWarranty = "More than 9 months";
-      break;
-    case "four":
-      deviceWarranty = "More than 6 months";
-      break;
-    case "seven":
-      deviceWarranty = "More than 3 months";
-      break;
-    case "more":
-      deviceWarranty = "None";
-      break;
-    default:
-      deviceWarranty = "None";
-      break;
-  }
-
-  const now = new Date();
-  // const dateFormat = moment(now).format("L");
-  const dateFormat = moment(now).format("MMM Do");
-
-  //TODO - Add the exact default image as the model image
-  //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
-
-  const image = await getDefaultImage(marketingName);
-
-  // const defaultImage = {
-  //   fullImage: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toLowerCase().replace(" ", "_")}.png`
-  // }
-
-  const defaultImage = {
-    fullImage: image,
-  };
-
-  // stop user to save activated listing if he/she already has 5 unverified listings
-  let limitExceeded =
-    (await saveListingModal
-      .find()
-      .countDocuments({ userUniqueId, verified: false, status: "Active" })) >=
-    5;
-
-  // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
-  let duplicated = limitExceeded
-    ? limitExceeded
-    : (await saveListingModal.find().countDocuments({
-        userUniqueId,
-        marketingName,
-        deviceStorage,
-        deviceRam,
-        verified: false,
-      })) >= 1;
-
-  const data = {
-    charger,
-    color,
-    deviceCondition,
-    deviceCosmeticGrade,
-    deviceFinalGrade,
-    deviceFunctionalGrade,
-    listedBy,
-    deviceStorage,
-    earphone,
-    images,
-    imei,
-    listingLocation,
-    listingPrice: parseInt(listingPrice.toString()),
-    make,
-    marketingName,
-    mobileNumber,
-    model,
-    originalbox,
-    platform,
-    recommendedPriceRange,
-    userUniqueId,
-    deviceImagesAvailable,
-    defaultImage,
-    deviceRam,
-    listingDate: dateFormat,
-    warranty: deviceWarranty,
-    cosmetic,
-    status: limitExceeded || duplicated ? "Paused" : "Active",
-    associatedWith: associatedWith == "" ? null : associatedWith,
-  };
-
-  try {
-    const modalInfo = new saveListingModal(data);
-    const dataObject = await modalInfo.save();
-
-    if (!limitExceeded && !duplicated) {
-      let newData = {
-        ...data,
-        notionalPercentage: -999999,
-        status: limitExceeded || duplicated ? "Sold_Out" : "Active",
-        imagePath:
-          (images.length > 0
-            ? images[0].thumbImage || images[0].fullImage
-            : "") ||
-          (defaultImage.fullImage != "" ? defaultImage.fullImage : ""),
-        listingId: dataObject.listingId,
-        listingDate: moment(now).format("MMM Do"),
-      };
-
-      const tempModelInfo = new bestDealsModal(newData);
-      if (tempModelInfo.make != null) {
-        const tempDataObject = await tempModelInfo.save();
+    if (deviceCondition == "Like New") {
+      switch (deviceWarranty) {
+        case "four":
+          deviceCondition = "Excellent";
+          break;
+        case "seven":
+          deviceCondition = "Excellent";
+          break;
+        case "more":
+          deviceCondition = "Good";
+          break;
+        default:
+          deviceCondition = deviceCondition;
+          break;
+      }
+    } else if (deviceCondition == "Excellent") {
+      switch (deviceWarranty) {
+        case "seven":
+          deviceCondition = "Excellent";
+          break;
+        case "more":
+          deviceCondition = "Good";
+          break;
+        default:
+          deviceCondition = deviceCondition;
+          break;
       }
     }
+    // else if (deviceCondition == "Good") {
+    //   switch (deviceWarranty) {
+    //     case "more":
+    //       deviceCondition = "Fair";
+    //       break;
+    //     default:
+    //       deviceCondition = deviceCondition;
+    //       break;
+    //   }
+    // }
 
-    // create dynamic string for response message reason on basis of limitExceeded and duplicated value
+    switch (deviceWarranty) {
+      case "zero":
+        deviceWarranty = "More than 9 months";
+        break;
+      case "four":
+        deviceWarranty = "More than 6 months";
+        break;
+      case "seven":
+        deviceWarranty = "More than 3 months";
+        break;
+      case "more":
+        deviceWarranty = "None";
+        break;
+      default:
+        deviceWarranty = "None";
+        break;
+    }
 
-    let message = limitExceeded
-      ? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
-        "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
-      : duplicated
-      ? // ? "Added Successfully but Paused because This exact listing already present!"
-        "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device."
-      : "Listing saved successfully";
+    const now = new Date();
+    // const dateFormat = moment(now).format("L");
+    const dateFormat = moment(now).format("MMM Do");
 
-    res.status(201).json({
-      // reason: "Listing saved successfully",
-      reason: message,
-      statusCode: 201,
-      status: "SUCCESS",
-      type: limitExceeded
-        ? "Unverified Listings Limit Exceeded"
+    //TODO - Add the exact default image as the model image
+    //   const defaultImage = `https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_Apple_iPhone_12_mini.png`
+
+    const image = await getDefaultImage(marketingName);
+
+    // const defaultImage = {
+    //   fullImage: `https://zenrodeviceimages.s3-us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/${make.toString().toLowerCase()}/mbr_${marketingName.toLowerCase().replace(" ", "_")}.png`
+    // }
+
+    const defaultImage = {
+      fullImage: image,
+    };
+
+    // stop user to save activated listing if he/she already has 5 unverified listings
+    let limitExceeded =
+      (await saveListingModal
+        .find()
+        .countDocuments({ userUniqueId, verified: false, status: "Active" })) >=
+      5;
+
+    // stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
+    let duplicated = limitExceeded
+      ? limitExceeded
+      : (await saveListingModal.find().countDocuments({
+          userUniqueId,
+          marketingName,
+          deviceStorage,
+          deviceRam,
+          verified: false,
+        })) >= 1;
+
+    const data = {
+      charger,
+      color,
+      deviceCondition,
+      deviceCosmeticGrade,
+      deviceFinalGrade,
+      deviceFunctionalGrade,
+      listedBy,
+      deviceStorage,
+      earphone,
+      images,
+      imei,
+      listingLocation,
+      listingPrice: parseInt(listingPrice.toString()),
+      make,
+      marketingName,
+      mobileNumber,
+      model,
+      originalbox,
+      platform,
+      recommendedPriceRange,
+      userUniqueId,
+      deviceImagesAvailable,
+      defaultImage,
+      deviceRam,
+      listingDate: dateFormat,
+      warranty: deviceWarranty,
+      cosmetic,
+      status: limitExceeded || duplicated ? "Paused" : "Active",
+      associatedWith: associatedWith == "" ? null : associatedWith,
+    };
+
+    try {
+      const modalInfo = new saveListingModal(data);
+      const dataObject = await modalInfo.save();
+
+      if (!limitExceeded && !duplicated) {
+        let newData = {
+          ...data,
+          notionalPercentage: -999999,
+          status: limitExceeded || duplicated ? "Sold_Out" : "Active",
+          imagePath:
+            (images.length > 0
+              ? images[0].thumbImage || images[0].fullImage
+              : "") ||
+            (defaultImage.fullImage != "" ? defaultImage.fullImage : ""),
+          listingId: dataObject.listingId,
+          listingDate: moment(now).format("MMM Do"),
+        };
+
+        const tempModelInfo = new bestDealsModal(newData);
+        if (tempModelInfo.make != null) {
+          const tempDataObject = await tempModelInfo.save();
+        }
+      }
+
+      // create dynamic string for response message reason on basis of limitExceeded and duplicated value
+
+      let message = limitExceeded
+        ? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
+          "You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device."
         : duplicated
-        ? "Duplicate Listing"
-        : "",
-      dataObject: dataObject,
+        ? // ? "Added Successfully but Paused because This exact listing already present!"
+          "You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device."
+        : "Listing saved successfully";
+
+      res.status(201).json({
+        // reason: "Listing saved successfully",
+        reason: message,
+        statusCode: 201,
+        status: "SUCCESS",
+        type: limitExceeded
+          ? "Unverified Listings Limit Exceeded"
+          : duplicated
+          ? "Duplicate Listing"
+          : "",
+        dataObject: dataObject,
+      });
+      return;
+    } catch (error) {
+      console.log(error);
+      res.status(400).json(error);
+    }
+  } else {
+    res.status(200).json({
+      reason: "Invalid user unique id provided",
+      statusCode: 200,
+      status: "FAILURE",
     });
     return;
-  } catch (error) {
-    console.log(error);
-    res.status(400).json(error);
   }
 });
 
@@ -349,9 +388,14 @@ router.post("/listing/delete", validUser, logEvent, async (req, res) => {
       return;
     } else {
       if (updateListing.userUniqueId === userUniqueId) {
-        const deleletedListing = await saveListingModal.findOneAndDelete({
-          listingId: listingId,
-        });
+        const deleletedListing = await saveListingModal.findOneAndUpdate(
+          {
+            listingId: listingId,
+          },
+          {
+            status: "Sold_Out",
+          }
+        );
         // const updatedListings = await bestDealsModal.findByIdAndUpdate(
         //   updatedListings.listingId,
         //   {
@@ -433,10 +477,10 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
             deviceCondition = "Excellent";
             break;
           case "seven":
-            deviceCondition = "Good";
+            deviceCondition = "Excellent";
             break;
           case "more":
-            deviceCondition = "Fair";
+            deviceCondition = "Good";
             break;
           default:
             deviceCondition = deviceCondition;
@@ -445,25 +489,26 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
       } else if (deviceCondition == "Excellent") {
         switch (deviceWarranty) {
           case "seven":
+            deviceCondition = "Excellent";
+            break;
+          case "more":
             deviceCondition = "Good";
-            break;
-          case "more":
-            deviceCondition = "Fair";
-            break;
-          default:
-            deviceCondition = deviceCondition;
-            break;
-        }
-      } else if (deviceCondition == "Good") {
-        switch (deviceWarranty) {
-          case "more":
-            deviceCondition = "Fair";
             break;
           default:
             deviceCondition = deviceCondition;
             break;
         }
       }
+      // else if (deviceCondition == "Good") {
+      //   switch (deviceWarranty) {
+      //     case "more":
+      //       deviceCondition = "Fair";
+      //       break;
+      //     default:
+      //       deviceCondition = deviceCondition;
+      //       break;
+      //   }
+      // }
 
       switch (warranty) {
         case "zero":
@@ -677,6 +722,12 @@ router.post("/listing/activate", validUser, logEvent, async (req, res) => {
         statusCode: 200,
         status: "SUCCESS",
       });
+    } else if (activateListing[0].status == "Expired") {
+      res.status(200).json({
+        reason: "Expired listing cannot be activated",
+        statusCode: 200,
+        status: "SUCCESS",
+      });
     } else {
       if (activateListing[0].userUniqueId !== userUniqueId) {
         res.status(200).json({
@@ -742,96 +793,154 @@ router.get(
     try {
       const userUniqueId = req.query.userUniqueId;
       const listingId = req.query.listingId;
+      let isOruMitra = req.query.isOruMitra || false;
 
-      const isValidUser = await createUserModal.findOne({
-        userUniqueId: userUniqueId,
-      });
+      switch (isOruMitra) {
+        case "true":
+          isOruMitra = true;
+          break;
+        case true:
+          isOruMitra = true;
+          break;
+        case "false":
+          isOruMitra = false;
+          break;
+        case false:
+          isOruMitra = false;
+          break;
+        default:
+          isOruMitra = false;
+      }
 
-      if (isValidUser) {
-        // find count of saveRequestModal entries for this userUniqueId in last 24 hours
-        const count = await saveRequestModal.countDocuments({
+      if (isOruMitra) {
+        const isValidUser = await createAgentModal.findOne({
           userUniqueId: userUniqueId,
-          createdAt: {
-            $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-          },
+          type: ["OruMitra", "Broker"],
         });
 
-        if (count < 15) {
+        if (isValidUser) {
           const listing = await saveListingModal.findOne(
             {
               listingId: listingId,
             },
             { mobileNumber: 1, associatedWith: 1 }
           );
-          let mobileNumber = listing.mobileNumber;
-          let associatedWith = listing.associatedWith;
-
-          if (associatedWith) {
-            let associateData = await createAgentModal.findOne(
-              {
-                referralCode: associatedWith,
-              },
-              { mobileNumber: 1 }
-            );
-            if (associateData) {
-              mobileNumber = associateData.mobileNumber;
-            }
-          }
-
-          const dataObject = {
-            mobileNumber,
-          };
-
-          res.status(200).json({
-            reason: "Mobile number retrieved successfully",
-            statusCode: 200,
-            status: "SUCCESS",
-            dataObject,
-          });
-
-          const getListingObject = await saveRequestModal.findOne({
-            mobileNumber: mobileNumber,
-            listingId: listingId,
-          });
-
-          if (!getListingObject) {
-            const data = {
-              listingId: listingId,
-              userUniqueId: userUniqueId,
-              mobileNumber: isValidUser.mobileNumber,
+          if (listing) {
+            const dataObject = {
+              mobileNumber: listing.mobileNumber || "",
             };
 
-            const saveRequest = new saveRequestModal(data);
-            let savedData = await saveRequest.save();
+            res.status(200).json({
+              reason: "Mobile number retrieved successfully",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+          } else {
+            res.status(200).json({
+              reason: "Invalid listing id provided",
+              statusCode: 200,
+              status: "SUCCESS",
+            });
+          }
+        } else {
+          res.status(200).json({
+            reason: "You are not authorized to perform this action",
+            statusCode: 200,
+            status: "SUCCESS",
+          });
+        }
+      } else {
+        const isValidUser = await createUserModal.findOne({
+          userUniqueId: userUniqueId,
+        });
+
+        if (isValidUser) {
+          // find count of saveRequestModal entries for this userUniqueId in last 24 hours
+          const count = await saveRequestModal.countDocuments({
+            userUniqueId: userUniqueId,
+            createdAt: {
+              $gte: new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+            },
+          });
+
+          if (count < 15) {
+            const listing = await saveListingModal.findOne(
+              {
+                listingId: listingId,
+              },
+              { mobileNumber: 1, associatedWith: 1 }
+            );
+            let mobileNumber = listing.mobileNumber;
+            let associatedWith = listing.associatedWith;
+
+            if (associatedWith) {
+              let associateData = await createAgentModal.findOne(
+                {
+                  referralCode: associatedWith,
+                },
+                { mobileNumber: 1 }
+              );
+              if (associateData) {
+                mobileNumber = associateData.mobileNumber;
+              }
+            }
 
             const dataObject = {
               mobileNumber,
             };
 
-            // res.status(200).json({
-            //   reason: "Mobile number retrieved successfully",
-            //   statusCode: 200,
-            //   status: "SUCCESS",
-            //   dataObject,
-            // });
+            res.status(200).json({
+              reason: "Mobile number retrieved successfully",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject,
+            });
+
+            const getListingObject = await saveRequestModal.findOne({
+              mobileNumber: mobileNumber,
+              listingId: listingId,
+            });
+
+            if (!getListingObject) {
+              const data = {
+                listingId: listingId,
+                userUniqueId: userUniqueId,
+                mobileNumber: isValidUser.mobileNumber,
+              };
+
+              const saveRequest = new saveRequestModal(data);
+              let savedData = await saveRequest.save();
+
+              const dataObject = {
+                mobileNumber,
+              };
+
+              // res.status(200).json({
+              //   reason: "Mobile number retrieved successfully",
+              //   statusCode: 200,
+              //   status: "SUCCESS",
+              //   dataObject,
+              // });
+            }
+          } else {
+            res.status(200).json({
+              reason:
+                "You have reached maximum limit of 15 requests last in 24 hours",
+              statusCode: 200,
+              status: "SUCCESS",
+              dataObject: {
+                mobileNumber: "Limit Exceeded",
+              },
+            });
           }
         } else {
           res.status(200).json({
-            reason:
-              "You have reached maximum limit of 15 requests last in 24 hours",
+            reason: "Invalid user id provided",
             statusCode: 200,
             status: "SUCCESS",
-            dataObject: {
-              mobileNumber: "Limit Exceeded",
-            },
           });
         }
-      } else {
-        res.status(200).json({
-          reason: "Invalid user id provided",
-          statusCode: 200,
-          status: "SUCCESS",
-        });
       }
     } catch (error) {
       console.log(error);
@@ -1061,10 +1170,16 @@ router.post(
     let isLimited = req.query.isLimited || "false";
 
     switch (isLimited) {
-      case "true" || true:
+      case "true":
         isLimited = true;
         break;
-      case "false" || false:
+      case true:
+        isLimited = true;
+        break;
+      case "false":
+        isLimited = false;
+        break;
+      case false:
         isLimited = false;
         break;
       default:
@@ -1209,7 +1324,12 @@ router.post(
           tempStr = tempStr.replace("GB", "").trim();
 
           let findingData = {
-            model_name: getListing?.marketingName,
+            model_name: {
+              $regex: new RegExp(
+                "^" + getListing?.marketingName.toLowerCase() + "$",
+                "i"
+              ),
+            },
             storage: parseInt(tempStr),
             type: ["buy", "Buy"],
             mobiru_condition: getListing?.deviceCondition,
@@ -1556,6 +1676,8 @@ router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
       deviceUniqueId: deviceId,
       userUniqueId: userUniqueId,
       verified: true,
+      // status can not be "Sold_Out" or "Expired"
+      status: { $nin: ["Sold_Out", "Expired"] },
     });
 
     if (!getListing) {
@@ -1582,14 +1704,14 @@ router.get("/listing/bydeviceid", validUser, logEvent, async (req, res) => {
             dataObject: getListing2,
           });
         }
+      } else {
+        res.status(200).json({
+          reason: "Invalid device id provided",
+          statusCode: 200,
+          status: "INVALID",
+        });
+        return;
       }
-      res.status(200).json({
-        reason: "Invalid device id provided",
-        statusCode: 200,
-        status: "INVALID",
-        dataObject: {},
-      });
-      return;
     } else {
       res.status(200).json({
         reason: "Listing found successfully",

@@ -5,15 +5,51 @@ const eventModal = require("../../src/database/modals/others/event_logs");
 const router = express.Router();
 const moment = require("moment");
 const { sendMailUtil } = require("../../utils/mail_util");
+const adminCredModal = require("../../src/database/modals/login/admin_cred_modal");
 
 const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
 
-router.get("/dashboard/home", async (req, res) => {
+router.get("/dashboard/admin/login", async (req, res) => {
   try {
     let user = req.query.user;
     let passwd = req.query.password;
 
-    if (user == "admin" && passwd == "adminPwd") {
+    let admin = await adminCredModal.findOne({
+      username: user,
+      password: passwd,
+    });
+
+    if (admin) {
+      res.status(200).json({
+        reason: "Admin logged in",
+        statusCode: 200,
+        status: "SUCCESS",
+        data: admin,
+      });
+    } else {
+      res.status(401).json({
+        reason: "Wrong credentials",
+        statusCode: 401,
+        status: "FAILURE",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error);
+  }
+});
+router.get("/dashboard/home", async (req, res) => {
+  try {
+    // let user = req.query.user;
+    // let passwd = req.query.password;
+
+    let accessKey = req.query.accessKey;
+
+    let admin = await adminCredModal.findOne({
+      key: accessKey,
+    });
+
+    if (admin) {
       // const initialTIme = new Date(new Date("2022-08-01T00:00:00.000+00:00"));
       let allTimeUsers = {};
 
@@ -170,8 +206,8 @@ router.get("/dashboard/home", async (req, res) => {
       });
     } else {
       res.status(200).json({
-        reason: "Data Not found",
-        statusCode: 200,
+        reason: "Wrong credentials",
+        statusCode: 401,
         status: "SUCCESS",
         dataObject: {},
       });
@@ -184,52 +220,69 @@ router.get("/dashboard/home", async (req, res) => {
 
 router.get("/dashboard/listingsByCity", async (req, res) => {
   try {
-    let startTime = req.query.startTime
-      ? new Date(req.query.startTime)
-      : initialTIme;
-    let endTime = req.query.endTime ? new Date(req.query.endTime) : new Date();
+    let accessKey = req.query.accessKey;
 
-    let allListings = await saveListingModal.countDocuments({
-      createdAt: {
-        $gte: startTime,
-        $lte: endTime,
-      },
+    let admin = await adminCredModal.findOne({
+      key: accessKey,
     });
 
-    let cityWiseListings = await saveListingModal.aggregate([
-      {
-        $match: {
-          createdAt: {
-            $gte: startTime,
-            $lte: endTime,
+    if (admin) {
+      let startTime = req.query.startTime
+        ? new Date(req.query.startTime)
+        : initialTIme;
+      let endTime = req.query.endTime
+        ? new Date(req.query.endTime)
+        : new Date();
+
+      let allListings = await saveListingModal.countDocuments({
+        createdAt: {
+          $gte: startTime,
+          $lte: endTime,
+        },
+      });
+
+      let cityWiseListings = await saveListingModal.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: startTime,
+              $lte: endTime,
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: "$listingLocation",
-          count: {
-            $sum: 1,
+        {
+          $group: {
+            _id: "$listingLocation",
+            count: {
+              $sum: 1,
+            },
           },
         },
-      },
-      {
-        $sort: {
-          count: -1,
+        {
+          $sort: {
+            count: -1,
+          },
         },
-      },
-    ]);
+      ]);
 
-    const dataObject = {};
-    dataObject.allListings = allListings;
-    dataObject.cityWiseListings = cityWiseListings;
+      const dataObject = {};
+      dataObject.allListings = allListings;
+      dataObject.cityWiseListings = cityWiseListings;
 
-    res.status(200).json({
-      reason: "Listings found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
-    });
+      res.status(200).json({
+        reason: "Listings found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Wrong credentials",
+        statusCode: 401,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -256,61 +309,76 @@ router.get("/dashboard/users", async (req, res) => {
 
 router.get("/dashboard/event", async (req, res) => {
   try {
-    const eventFor = req.query.eventFor;
+    let accessKey = req.query.accessKey;
 
-    const allEvents = await eventModal.aggregate([
-      {
-        $match: {
-          "events.eventName": eventFor,
-        },
-      },
-      {
-        $group: {
-          _id: {
-            // _id will be the year and month like 2021-08
-            $dateToString: {
-              format: "%Y-%m",
-              date: "$createdAt",
-            },
-          },
-          month: {
-            $first: {
-              $month: "$createdAt",
-            },
-          },
-          year: {
-            $first: {
-              $year: "$createdAt",
-            },
-          },
-          eventCount: {
-            $sum: 1,
-          },
-        },
-      },
-      {
-        $sort: {
-          year: 1,
-          month: 1,
-        },
-      },
-    ]);
-
-    // total events for the given eventFor
-    const allEventsCount = allEvents.reduce((acc, curr) => {
-      return acc + curr.eventCount;
-    }, 0);
-
-    const dataObject = {
-      allEventsCount,
-      allEvents,
-    };
-    res.status(200).json({
-      reason: "Events found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
+    let admin = await adminCredModal.findOne({
+      key: accessKey,
     });
+
+    if (admin) {
+      const eventFor = req.query.eventFor;
+
+      const allEvents = await eventModal.aggregate([
+        {
+          $match: {
+            "events.eventName": eventFor,
+          },
+        },
+        {
+          $group: {
+            _id: {
+              // _id will be the year and month like 2021-08
+              $dateToString: {
+                format: "%Y-%m",
+                date: "$createdAt",
+              },
+            },
+            month: {
+              $first: {
+                $month: "$createdAt",
+              },
+            },
+            year: {
+              $first: {
+                $year: "$createdAt",
+              },
+            },
+            eventCount: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $sort: {
+            year: 1,
+            month: 1,
+          },
+        },
+      ]);
+
+      // total events for the given eventFor
+      const allEventsCount = allEvents.reduce((acc, curr) => {
+        return acc + curr.eventCount;
+      }, 0);
+
+      const dataObject = {
+        allEventsCount,
+        allEvents,
+      };
+      res.status(200).json({
+        reason: "Events found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Wrong credentials",
+        statusCode: 401,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -319,95 +387,110 @@ router.get("/dashboard/event", async (req, res) => {
 
 router.get("/dashboard/listingsByAgent", async (req, res) => {
   try {
-    let last24Hours = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-    let startTime = req.query.startTime
-      ? new Date(req.query.startTime)
-      : last24Hours;
-    let endTime = req.query.endTime ? new Date(req.query.endTime) : new Date();
+    let accessKey = req.query.accessKey;
 
-    let agentWiseListings = await saveListingModal.aggregate([
-      {
-        $match: {
-          createdAt: {
-            $gte: startTime,
-            $lte: endTime,
+    let admin = await adminCredModal.findOne({
+      key: accessKey,
+    });
+
+    if (admin) {
+      let last24Hours = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+      let startTime = req.query.startTime
+        ? new Date(req.query.startTime)
+        : last24Hours;
+      let endTime = req.query.endTime
+        ? new Date(req.query.endTime)
+        : new Date();
+
+      // // get data from 1 april 00:00:00 to 30 april 23:59:59 for 2023
+      // let startTime = new Date("2023-04-01T00:00:00.000+00:00");
+      // let endTime = new Date("2023-04-30T23:59:59.000+00:00");
+
+      let agentWiseListings = await saveListingModal.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: startTime,
+              $lte: endTime,
+            },
+            storeId: "001",
           },
-          storeId: "001",
         },
-      },
-      {
-        $group: {
-          _id: "$agent",
-          Listings: {
-            $sum: 1,
-          },
-          Without_Image: {
-            $sum: {
-              $cond: [{ $eq: [{ $size: "$images" }, 0] }, 1, 0],
+        {
+          $group: {
+            _id: "$agent",
+            Listings: {
+              $sum: 1,
+            },
+            Without_Image: {
+              $sum: {
+                $cond: [{ $eq: [{ $size: "$images" }, 0] }, 1, 0],
+              },
             },
           },
         },
-      },
-      {
-        $sort: {
-          Listings: -1,
-        },
-      },
-    ]);
-
-    // now find total users for the given time agentwise
-
-    let agentWiseUsers = await createUserModal.aggregate([
-      {
-        $match: {
-          createdAt: {
-            $gte: startTime,
-            $lte: endTime,
-          },
-          userType: "olxUser",
-        },
-      },
-      {
-        $group: {
-          _id: "$agent",
-          count: {
-            $sum: 1,
+        {
+          $sort: {
+            Listings: -1,
           },
         },
-      },
-      {
-        $sort: {
-          count: -1,
+      ]);
+
+      // now find total users for the given time agentwise
+
+      let agentWiseUsers = await createUserModal.aggregate([
+        {
+          $match: {
+            createdAt: {
+              $gte: startTime,
+              $lte: endTime,
+            },
+            userType: "olxUser",
+          },
         },
-      },
-    ]);
+        {
+          $group: {
+            _id: "$agent",
+            count: {
+              $sum: 1,
+            },
+          },
+        },
+        {
+          $sort: {
+            count: -1,
+          },
+        },
+      ]);
 
-    // merge both the arrays for agents
+      // merge both the arrays for agents
 
-    let agentWiseData = agentWiseListings.map((agent) => {
-      let agentWiseUser = agentWiseUsers.find((user) => user._id === agent._id);
-      return {
-        ...agent,
-        Total_Users: agentWiseUser ? agentWiseUser.count : 0,
+      let agentWiseData = await agentWiseListings.map((agent) => {
+        let agentWiseUser = agentWiseUsers.find(
+          (user) => user._id === agent._id
+        );
+        return {
+          ...agent,
+          Total_Users: agentWiseUser ? agentWiseUser.count : 0,
+        };
+      });
+
+      const dataObject = {
+        // from and to will be in the format of 30 Aug 2021 00:00:00
+        From: moment(startTime).format("DD MMM YYYY HH:mm:ss"),
+        To: moment(endTime).format("DD MMM YYYY HH:mm:ss"),
+        TotalListings: agentWiseListings.reduce((acc, curr) => {
+          return acc + curr.Listings;
+        }, 0),
+        TotalUsers: agentWiseUsers.reduce((acc, curr) => {
+          return acc + curr.count;
+        }, 0),
+        AgentWiseData: agentWiseData,
       };
-    });
 
-    const dataObject = {
-      // from and to will be in the format of 30 Aug 2021 00:00:00
-      From: moment(startTime).format("DD MMM YYYY HH:mm:ss"),
-      To: moment(endTime).format("DD MMM YYYY HH:mm:ss"),
-      TotalListings: agentWiseListings.reduce((acc, curr) => {
-        return acc + curr.Listings;
-      }, 0),
-      TotalUsers: agentWiseUsers.reduce((acc, curr) => {
-        return acc + curr.count;
-      }, 0),
-      AgentWiseData: agentWiseData,
-    };
+      // mail body will be in html format and with appropriate styling
 
-    // mail body will be in html format and with appropriate styling
-
-    let mailBody = `
+      let mailBody = `
     <h1 style="text-align: center;">Agent Wise Data</h1>
     <h3 style="text-align: center;">From: ${dataObject.From}</h3>
     <h3 style="text-align: center;">To: ${dataObject.To}</h3>
@@ -426,7 +509,7 @@ router.get("/dashboard/listingsByAgent", async (req, res) => {
       (agent) => `
     <tr style="border: 1px solid black; border-collapse: collapse;">
     <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${agent._id
-      .toString()
+      ?.toString()
       .toUpperCase()}</td>
     <td style="border: 1px solid black; border-collapse: collapse; text-align: center;">${
       agent.Listings
@@ -446,14 +529,22 @@ router.get("/dashboard/listingsByAgent", async (req, res) => {
     <h4 style="text-align: left;">Team ORUphones</h4>
     `;
 
-    sendMailUtil("Daily Listings by Agents", mailBody);
+      sendMailUtil("Daily Listings by Agents", mailBody);
 
-    res.status(200).json({
-      reason: "Daily by agent found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
-    });
+      res.status(200).json({
+        reason: "Daily by agent found",
+        statusCode: 200,
+        status: "SUCCESS",
+        dataObject,
+      });
+    } else {
+      res.status(200).json({
+        reason: "Wrong credentials",
+        statusCode: 401,
+        status: "SUCCESS",
+        dataObject: {},
+      });
+    }
   } catch (error) {
     console.log(error);
     res.status(400).json(error);

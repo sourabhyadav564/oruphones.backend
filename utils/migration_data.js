@@ -83,7 +83,7 @@ const deleteOldData = async () => {
     },
   };
 
-  let deletedData2 = await scrappedLogModal.deleteMany(expression2);
+  let deletedData2 = await testScrappedModal.deleteMany(expression2);
 };
 
 const startDataMigration = async () => {
@@ -443,7 +443,7 @@ const sendLogMail = async (type) => {
   // send mail
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
     subject: `Scrapped Logs for ${type}`,
     html: mailBody,
   };
@@ -505,7 +505,7 @@ const nonFoundedModelMail = async () => {
 
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, ashish.khandelwal@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
     subject: `Non Founded Models`,
     html: mailBody,
   };
