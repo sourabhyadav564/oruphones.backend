@@ -5,12 +5,14 @@ import { z } from 'zod';
 const validator = z.object({
 	filter: z.object({
 		page: z.number().min(1).max(100).optional(),
-		make: z.string().min(1).max(100).optional(),
-		model: z.string().min(1).max(100).optional(),
-		condition: z.string().min(1).max(100).optional(),
-		storage: z.string().min(1).max(100).optional(),
-		warranty: z.string().min(1).max(100).optional(),
+		make: z.string().min(1).max(100).array().optional(),
+		model: z.string().min(1).max(100).array().optional(),
+		condition: z.string().min(1).max(100).array().optional(),
+		storage: z.string().min(1).max(100).array().optional(),
+		warranty: z.string().min(1).max(100).array().optional(),
 		verified: z.boolean().optional(),
+		priceRange: z.number().min(1).max(100).array().optional(),
+		listingLocation: z.string().min(1).max(100).optional(),
 		limit: z.number().min(1).max(100).optional(),
 	}),
 	returnFilter: z
@@ -29,23 +31,44 @@ const validator = z.object({
 });
 
 const countValidator = z.object({
-	make: z.string().min(1).max(100).optional(),
-	model: z.string().min(1).max(100).optional(),
-	condition: z.string().min(1).max(100).optional(),
-	storage: z.string().min(1).max(100).optional(),
-	warranty: z.string().min(1).max(100).optional(),
+	make: z.string().min(1).max(100).array().optional(),
+	model: z.string().min(1).max(100).array().optional(),
+	condition: z.string().min(1).max(100).array().optional(),
+	storage: z.string().min(1).max(100).array().optional(),
+	warranty: z.string().min(1).max(100).array().optional(),
 	verified: z.boolean().optional(),
+	priceRange: z.number().min(1).max(100).array().optional(),
+	listingLocation: z.string().min(1).max(100).optional(),
 });
 
-async function filter (req: Request, res: Response) {
+// TODO:Implement Sorting filter
+// TODO: Fix price logic
+async function filter(req: Request, res: Response) {
 	try {
 		const { filter, returnFilter } = validator.parse(req.body);
-		const { make, model, condition, storage, warranty, verified } = filter;
+		const {
+			make,
+			model,
+			condition,
+			storage,
+			warranty,
+			verified,
+			priceRange,
+			listingLocation,
+		} = filter;
 		const filterObj = {
-			...(make && { make }),
-			...(model && { model }),
-			...(condition && { deviceCondition: condition }),
-			...(storage && { deviceStorage: storage }),
+			// ...(make && { make }),
+			// ...(model && { model }),
+			// ...(condition && { deviceCondition: condition }), these are arrays
+			// ...(storage && { deviceStorage: storage }),
+			...(make && { make: { $in: make } }),
+			...(model && { model: { $in: model } }),
+			...(condition && { deviceCondition: { $in: condition } }),
+			...(storage && { deviceStorage: { $in: storage } }),
+			...(priceRange && {
+				listingPrice: { $gte: +priceRange[0], $lte: +priceRange[1] },
+			}),
+			...(listingLocation === 'India' ? {} : { listingLocation }),
 			// ...(warranty && { isOtherVendor: !!warranty }),
 			...(verified && { verified }),
 		};
@@ -108,19 +131,31 @@ async function filter (req: Request, res: Response) {
 			res.status(400).json({ error: error });
 		}
 	}
-};
+}
 
 async function filterCount(req: Request, res: Response) {
 	try {
-		const { make, model, condition, storage, warranty, verified } =
-			countValidator.parse(req.body);
+		const {
+			make,
+			model,
+			condition,
+			storage,
+			warranty,
+			verified,
+			priceRange,
+			listingLocation,
+		} = countValidator.parse(req.body);
 		const filterObj = {
-			...(make && { make }),
-			...(model && { model }),
-			...(condition && { deviceCondition: condition }),
-			...(storage && { deviceStorage: storage }),
-			// ...(warranty && { isOtherVendor: !!warranty }),
+			...(make && { make: { $in: make } }),
+			...(model && { model: { $in: model } }),
+			...(condition && { deviceCondition: { $in: condition } }),
+			...(storage && { deviceStorage: { $in: storage } }),
+			...(priceRange && {
+				listingPrice: { $gte: priceRange[0], $lte: priceRange[1] },
+			}),
+			...(warranty && { isOtherVendor: !!warranty }),
 			...(verified && { verified }),
+			...(listingLocation === 'India' ? {} : { listingLocation }),
 		};
 		const count = await Listings.countDocuments(filterObj);
 		res.status(200).json({ count });
@@ -138,4 +173,4 @@ async function filterCount(req: Request, res: Response) {
 export default {
 	filter,
 	filterCount,
-}
+};
