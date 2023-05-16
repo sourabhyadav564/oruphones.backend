@@ -28,7 +28,16 @@ const validator = z.object({
 		.optional(),
 });
 
-export default async (req: Request, res: Response) => {
+const countValidator = z.object({
+	make: z.string().min(1).max(100).optional(),
+	model: z.string().min(1).max(100).optional(),
+	condition: z.string().min(1).max(100).optional(),
+	storage: z.string().min(1).max(100).optional(),
+	warranty: z.string().min(1).max(100).optional(),
+	verified: z.boolean().optional(),
+});
+
+async function filter (req: Request, res: Response) {
 	try {
 		const { filter, returnFilter } = validator.parse(req.body);
 		const { make, model, condition, storage, warranty, verified } = filter;
@@ -100,3 +109,33 @@ export default async (req: Request, res: Response) => {
 		}
 	}
 };
+
+async function filterCount(req: Request, res: Response) {
+	try {
+		const { make, model, condition, storage, warranty, verified } =
+			countValidator.parse(req.body);
+		const filterObj = {
+			...(make && { make }),
+			...(model && { model }),
+			...(condition && { deviceCondition: condition }),
+			...(storage && { deviceStorage: storage }),
+			// ...(warranty && { isOtherVendor: !!warranty }),
+			...(verified && { verified }),
+		};
+		const count = await Listings.countDocuments(filterObj);
+		res.status(200).json({ count });
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			res.status(400).json({ error: error.issues });
+		} else if (error instanceof Error) {
+			res.status(400).json({ error: error.message });
+		} else {
+			res.status(400).json({ error: error });
+		}
+	}
+}
+
+export default {
+	filter,
+	filterCount,
+}
