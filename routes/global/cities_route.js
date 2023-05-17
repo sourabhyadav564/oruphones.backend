@@ -7,9 +7,6 @@ const logEvent = require("../../src/middleware/event_logging");
 
 const NodeCache = require("node-cache");
 const shortLinkModal = require("../../src/database/modals/others/short_link_model");
-const stateAreaModal = require("../../src/database/modals/global/locations/state");
-const cityAreaModal = require("../../src/database/modals/global/locations/city");
-const AreaModal = require("../../src/database/modals/global/locations/area");
 
 // const cache = new NodeCache({ stdTTL: 10, checkperiod: 120 });
 
@@ -40,7 +37,7 @@ router.get("/cities", async (req, res) => {
         .aggregate([
           {
             $match: {
-              city: {
+              city: { 
                 $all: searchText.split(" ").map((word) => {
                   return new RegExp(word, "i");
                 }),
@@ -61,37 +58,10 @@ router.get("/cities", async (req, res) => {
       dataObject,
     });
   } catch (error) {
+    console.log(error);
     res.status(400).json(error);
   }
   // }
-});
-
-router.get("/getLocationList", async (req, res) => {
-  try {
-    let type = req.query.type;
-    let parentId = req.query.parentId;
-
-    let dataObject = [];
-
-    if (type == "state") {
-      dataObject = await stateAreaModal.find();
-    } else if (type == "city") {
-      dataObject = await cityAreaModal.find({ parentId });
-    } else if (type == "area") {
-      dataObject = await AreaModal.find({ parentId });
-    } else {
-      dataObject = [];
-    }
-
-    res.status(200).json({
-      reason: dataObject.length > 0 ? "Locations found" : "Locations not found",
-      statusCode: 200,
-      status: "SUCCESS",
-      dataObject,
-    });
-  } catch (error) {
-    res.status(400).json(error);
-  }
 });
 
 // router.get("/getLocation", logEvent, async (req, res) => {

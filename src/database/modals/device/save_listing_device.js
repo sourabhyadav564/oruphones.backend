@@ -158,19 +158,6 @@ const saveListingSchema = new mongoose.Schema(
       type: String,
       default: "N",
     },
-    agent: {
-      type: String,
-    },
-    latLong: {
-      type: {
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
-      },
-    },
     questionnaireResults: {
       type: [
         {

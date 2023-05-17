@@ -117,7 +117,6 @@ const addSubscriptionRoute = require("../routes/global/subscription_routes");
 const addContactUsRoute = require("../routes/global/contact_us_route");
 const dashboard = require("../routes/global/dashboard");
 const agentDashboard = require("../routes/global/agent_store");
-const agentOlxDashboard = require("../routes/global/agent_olx");
 const getNewTokenRoute = require("../routes/login/get_new_token");
 // const wordpressRoute = require("../routes/others/wordpress_route");
 const collectData = require("../utils/generate_mongo_dump");
@@ -173,7 +172,6 @@ app.use("/api/v1/global", addSubscriptionRoute);
 app.use("/api/v1/global", addContactUsRoute);
 app.use("/api/v1/global", dashboard);
 app.use("/api/v1/global", agentDashboard);
-app.use("/api/v1/global", agentOlxDashboard);
 app.use("/api/v1/auth", getNewTokenRoute);
 // app.use("/api/v1/wordpress", wordpressRoute);
 

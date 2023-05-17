@@ -205,19 +205,6 @@ const bestDealsSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
     },
-    agent: {
-      type: String,
-    },
-    latLong: {
-      type: {
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
-      },
-    },
     cosmetic: {
       type: {
         0: {
