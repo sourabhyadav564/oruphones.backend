@@ -2,16 +2,12 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const moment = require('moment');
-const bcrypt = require('bcryptjs');
 const makeRandomString = require('../utils/generate_random_string');
-const generateHash = require('../utils/generate_hash');
 
-// const FCM = require("fcm-node");
 const fetch = require('node-fetch');
 const saveNotificationModel = require('@/database/modals/notification/notification_save_token');
 const notificationModel = require('@/database/modals/notification/complete_notifications');
 const sendverificationSMS = require('./send_verification_sms');
-const sendLoginOtp = require('./send_login_otp');
 
 const sendNotification = async (
 	sellerUniqueId,

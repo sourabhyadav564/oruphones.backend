@@ -6,14 +6,12 @@ const saveRequestModal = require('@/database/modals/device/request_verification_
 const dotenv = require('dotenv');
 dotenv.config();
 
-// const FCM = require("fcm-node");
 const fetch = require('node-fetch');
 const ObjectId = require('mongodb').ObjectId;
 
 const fs = require('fs');
 const path = require('path');
 
-// require("@/database/connection");
 const saveListingModal = require('@/database/modals/device/save_listing_device');
 const createUserModal = require('@/database/modals/login/login_create_user');
 const favoriteModal = require('@/database/modals/favorite/favorite_add');
