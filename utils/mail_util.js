@@ -8,7 +8,7 @@ const config = nodemailer.createTransport({
 });
 
 const prodMails =
-  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, sg9439117@gmail.com";
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, sg9439117@gmail.com, shubham@oruphones.com";
 const devMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
 
 const sendMailUtil = async (sub, mailBody) => {

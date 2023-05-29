@@ -175,15 +175,16 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
     const deviceImagesAvailable = images.length > 0 ? true : false;
     const deviceRam = req.body.deviceRam;
     let deviceWarranty = req.body.warranty;
+    let latLong = req.body.latLong;
 
     const cosmetic = req.body.cosmetic;
 
-    let getLocation = await cityModal.findOne({ city: listingLocation });
-    if (getLocation) {
-      listingLocation = getLocation.city;
-    } else {
-      await cityModal.create({ city: listingLocation, displayWithImage: "0" });
-    }
+    // let getLocation = await cityModal.findOne({ city: listingLocation });
+    // if (getLocation) {
+    //   listingLocation = getLocation.city;
+    // } else {
+    //   await cityModal.create({ city: listingLocation, displayWithImage: "0" });
+    // }
 
     if (deviceCondition == "Like New") {
       switch (deviceWarranty) {
@@ -288,6 +289,7 @@ router.post("/listing/save", validUser, logEvent, async (req, res) => {
       deviceStorage,
       earphone,
       images,
+      latLong: latLong ? latLong : null,
       imei,
       listingLocation,
       listingPrice: parseInt(listingPrice.toString()),
@@ -457,6 +459,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
   const recommendedPriceRange = req.body.recommendedPriceRange;
   const cosmetic = req.body.cosmetic;
   let warranty = req.body.warranty;
+  let latLong = req.body.latLong;
 
   try {
     const updateListing = await saveListingModal.findOne({
@@ -537,6 +540,7 @@ router.post("/listing/update", validUser, logEvent, async (req, res) => {
           listingLocation,
           listingPrice,
           originalbox,
+          latLong: latLong ? latLong : null,
           recommendedPriceRange,
           deviceStorage,
           deviceRam,

@@ -127,7 +127,7 @@ const sendLogMail = async () => {
 
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, shubham@oruphones.com",
     subject: `Sent SMS to ${dataToMail.length} OLX users`,
     html: mailBody,
     attachments: [
@@ -150,7 +150,7 @@ const sendLogMail = async () => {
   dataToMail = [];
 };
 
-const nonFoundedModelMail = async() =>{
+const nonFoundedModelMail = async () => {
   let allData = await NonFoundedModels.find({}).sort({ createdAt: -1 });
 
   // remove duplicates from allData using model
@@ -178,13 +178,7 @@ const nonFoundedModelMail = async() =>{
   </tr>`;
   for (let i = 0; i < dataLen; i++) {
     const data = allData[i];
-    const {
-      make,
-      model,
-      deviceStorage,
-      ram,
-      createdAt,
-    } = data;
+    const { make, model, deviceStorage, ram, createdAt } = data;
     mailBody += `<tr>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${make}</td>
     <td style="border: 1px solid black; border-collapse: collapse; padding: 5px;">${model}</td>
@@ -196,10 +190,9 @@ const nonFoundedModelMail = async() =>{
 
   mailBody += `</table>`;
 
-
   let mailOptions2 = {
     from: "mobiruindia22@gmail.com",
-    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp",
+    to: "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, shubham@oruphones.com",
     subject: `Non Founded Models`,
     html: mailBody,
   };
@@ -211,7 +204,7 @@ const nonFoundedModelMail = async() =>{
       // console.log("Email sent: " + info.response);
     }
   });
-}
+};
 
 const SendingSmsJob = async (daily) => {
   if (daily) {

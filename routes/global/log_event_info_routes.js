@@ -63,7 +63,7 @@ router.get("/reportIssue/:key", (req, res) => {
 
 const devMails = "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp";
 const prodMails =
-  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp";
+  "nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, shubham@oruphones.com";
 
 router.post("/reportIssue", upload.single("logFile"), async (req, res) => {
   try {
