@@ -42,7 +42,7 @@ const saveListingSchema = new mongoose.Schema(
     images: {
       type: [
         {
-          thumbImage: {
+          thumbnailImage: {
             type: String,
           },
           fullImage: {
@@ -63,7 +63,7 @@ const saveListingSchema = new mongoose.Schema(
       },
       default: {
         fullImage:
-          "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/apple_iphone_se_2022.jpg",
+          "https://zenrodeviceimages.s3.us-west-2.amazonaws.com/mobiru/product/mobiledevices/img/apple/mbr_Apple_iPhone_12_mini.png",
       },
     },
     imei: {
@@ -71,7 +71,7 @@ const saveListingSchema = new mongoose.Schema(
     },
     listingLocation: {
       type: String,
-      default: "Delhi",
+      default: "India",
     },
     listingPrice: {
       type: String,
@@ -136,9 +136,6 @@ const saveListingSchema = new mongoose.Schema(
       type: String,
       // default: Date.now(),
     },
-    recommendedPriceRange: {
-      type: String,
-    },
     deviceRam: {
       type: String,
     },
@@ -146,30 +143,9 @@ const saveListingSchema = new mongoose.Schema(
       type: String,
       default: "None",
     },
-    prodLink: {
-      type: String,
-      default: "",
-    },
-    storeId: {
-      type: String,
-      default: "000",
-    },
     isOtherVendor: {
       type: String,
       default: "N",
-    },
-    agent: {
-      type: String,
-    },
-    latLong: {
-      type: {
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
-      },
     },
     questionnaireResults: {
       type: [
@@ -229,11 +205,8 @@ const saveListingSchema = new mongoose.Schema(
         },
         2: {
           type: String,
-        },
+        }
       },
-    },
-    associatedWith: {
-      type: String,
     },
   },
   { timestamps: true }

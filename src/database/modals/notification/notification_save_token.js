@@ -16,6 +16,8 @@ const saveNotificationSchema = new mongoose.Schema({
     },
 },{ timestamps: true })
 
+saveNotificationSchema.index({ userUniqueId: 1 });
+
 const saveNotificationModel = new mongoose.model('save_notification_tokens', saveNotificationSchema);
 
 module.exports = saveNotificationModel

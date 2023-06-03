@@ -1,0 +1,2 @@
+- [ ] Convert AWS sdk to v3
+- [ ] Remove textlocal-complete (Introduces high risk vulnerabilities/ has 12 weekly downloads).

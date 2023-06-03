@@ -13,13 +13,12 @@ const s3 = new S3({
   secretAccessKey,
 });
 
-// uploads an image to s3
+// uploads a file to s3
 function uploadFile(file) {
   const fileStream = fs.createReadStream(file.path);
-  let additionalPath = file.isThumbnail ? "/thumbnails" : "/originals";
 
   const uploadParams = {
-    Bucket: bucketName + additionalPath,
+    Bucket: bucketName,
     Body: fileStream,
     Key: file.filename,
   };
@@ -27,28 +26,7 @@ function uploadFile(file) {
   return s3.upload(uploadParams).promise();
 }
 
-// uploads a file to s3
-function uploadLogFile(file, fName, forCrash, isReport) {
-  const fileStream = fs.createReadStream(file.path);
-  let monthName = new Date().toLocaleString("default", { month: "long" });
-  let year = new Date().getFullYear();
-  let date = new Date().getDate();
-  let dir = forCrash ? "/crash" : "/logs";
-  let initPath = isReport ? "/reports/" : "/logs/";
-  dir = isReport ? "" : dir;
-  const uploadParams = {
-    Bucket: bucketName + initPath + year + "/" + monthName + "/" + date + dir,
-    Body: fileStream,
-    // Key: file.filename,
-    Key: fName,
-  };
-
-  return s3.upload(uploadParams).promise();
-}
-
 exports.uploadFile = uploadFile;
-
-exports.uploadLogFile = uploadLogFile;
 
 // downloads a file from s3
 function getFileStream(fileKey) {

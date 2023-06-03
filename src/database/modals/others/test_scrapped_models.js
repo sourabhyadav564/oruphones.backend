@@ -7,10 +7,6 @@ const testScrappedSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       // required: true,
     },
-    make: {
-      type: String,
-      // required: true,
-    },
     ram: {
       type: mongoose.Schema.Types.Mixed,
       // required: true,
@@ -55,10 +51,10 @@ const testScrappedSchema = new mongoose.Schema(
       type: String,
       // required: true,
     },
-    // created_at: {
-    //   type: Date,
-    //   // required: true,
-    // }
+    created_at: {
+      type: Date,
+      // required: true,
+    }
   },
   { timestamps: true }
 );

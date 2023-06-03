@@ -1,0 +1,188 @@
+const express = require("express");
+const router = express.Router();
+const logEvent = require("../../../middleware/event_logging");
+const saveNotificationModel = require("../../../database/modals/notification/notification_save_token");
+const sendNotification = require("../../../utils/push_notification");
+const notificationModel = require("../../../database/modals/notification/complete_notifications");
+const validUser = require("../../../middleware/valid_user");
+
+
+router.post("/save/token" , async (req, res) => {
+
+  const sessionId = req.sessionID; // Retrieve the session ID from the cookie
+  const User = req.session.User; // Retrieve the user ID from the session
+  const userUniqueId = User.userUniqueId;
+  const deviceId = req.body.deviceId;
+  const tokenId = req.body.tokenId;
+
+  try {
+    const findDevice = await saveNotificationModel.find({
+      deviceId: deviceId,
+      userUniqueId: userUniqueId,
+    });
+    if (findDevice.length > 0) {
+      const updateDocument = await saveNotificationModel.findByIdAndUpdate(
+        findDevice._id,
+        { tokenId: tokenId },
+        {
+          new: true,
+        }
+      );
+      res.status(201).json({
+        reason: "Notification token updated successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject: updateDocument,
+      });
+    } else {
+      const notification_data = {
+        userUniqueId: userUniqueId,
+        deviceId: deviceId,
+        tokenId: tokenId,
+      };
+      const notificationInfo = new saveNotificationModel(notification_data);
+      const dataObject = await notificationInfo.save();
+      res.status(201).json({
+        reason: "Notification token saved successfully",
+        statusCode: 201,
+        status: "SUCCESS",
+        dataObject,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.post("/delete/token" , async (req, res) => {
+
+  const sessionId = req.sessionID; // Retrieve the session ID from the cookie
+  const User = req.session.User; // Retrieve the user ID from the session
+  const userUniqueId = User.userUniqueId;
+  const tokenId = req.body.tokenId;
+  const deviceId = req.body.deviceId;
+
+  try {
+    const deleteNotification = await saveNotificationModel.findOneAndDelete(
+      tokenId
+    );
+
+    if (!deleteNotification) {
+      res.status(202).json({
+        reason: "Notification not found",
+        statusCode: 202,
+        status: "ACCEPTED",
+      });
+      return;
+    } else {
+      res.status(200).json({
+        reason: "Notification deleted successfully",
+        statusCode: 200,
+        status: "SUCCESS",
+        deletedNotification: deleteNotification,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/byUserId" , async (req, res) => {
+    
+  if(req.session){
+    const sessionId = req.sessionID; // Retrieve the session ID from the cookie
+    const User = req.session.User; // Retrieve the user ID from the session
+    const userUniqueId = User.userUniqueId;
+   
+    try {
+      let notificationArray = await notificationModel.findOne({
+        userUniqueId: userUniqueId,
+      });
+  
+      let dataToBeSend = {};
+      let unReadCount = 0;
+      if (notificationArray) {
+        notificationArray.notification.reverse();
+        notificationArray?.notification?.forEach((element, index) => {
+          if (element.isUnRead === 0) {
+            unReadCount++;
+          }
+        });
+        dataToBeSend = {
+          unReadCount,
+          notifications: notificationArray?.notification,
+        };
+        res.status(201).json({
+          reason: "Notification fetched successfully",
+          statusCode: 201,
+          status: "SUCCESS",
+          dataObject: dataToBeSend,
+        });
+      } else {
+        dataToBeSend = {
+          unReadCount: 0,
+          notifications: [],
+        };
+        res.status(202).json({
+          reason: "No notification found",
+          statusCode: 202,
+          status: "SUCCESS",
+          dataObject: dataToBeSend,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+  else{
+    res.status(500).json("Session Invalid");
+
+  }
+ 
+});
+
+router.get("/read", async (req, res) => {
+  const sessionId = req.sessionID; // Retrieve the session ID from the cookie
+  const User = req.session.User; // Retrieve the user ID from the session
+  const userUniqueId = User.userUniqueId;
+  const notificationId = req.query.id;
+
+
+  try {
+    const notification = await notificationModel.findOne({
+      userUniqueId: userUniqueId,
+      notification: {
+        $elemMatch: {
+          notificationId: notificationId,
+        },
+      },
+    });
+    if (!notification) {
+      res.status(202).json({
+        reason: "Notification not found",
+        statusCode: 202,
+        status: "ACCEPTED",
+      });
+      return;
+    }
+    const notificationIndex = notification.notification.findIndex(
+      (element) => element.notificationId === notificationId
+    );
+    notification.notification[notificationIndex].isUnRead = 1;
+    const updatedNotification = await notification.save();
+    res.status(200).json({
+      reason: "Notification read successfully",
+      statusCode: 200,
+      status: "SUCCESS",
+      dataObject: updatedNotification,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+module.exports = router;
