@@ -21,6 +21,12 @@ const citySchema = new mongoose.Schema(
     parentId: {
       type: Number,
     },
+    displayWithImage: {
+      type: String,
+    },
+    imgpath: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

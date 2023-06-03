@@ -52,6 +52,7 @@ const filterSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+filterSchema.index({ Brand: 1 });
 const filterModal = new mongoose.model("filter_datas", filterSchema);
 
 module.exports = filterModal;

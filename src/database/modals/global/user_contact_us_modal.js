@@ -20,6 +20,8 @@ const contactUsSchema = new mongoose.Schema({
     }
 },{ timestamps: true })
 
+contactUsSchema.index({ mobile: 1 });
+
 const contactUsModal = new mongoose.model('user_contact_us', contactUsSchema);
 
 module.exports = contactUsModal
