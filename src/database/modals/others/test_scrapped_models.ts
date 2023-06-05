@@ -68,5 +68,4 @@ const testScrappedModal = mongoose.model(
   testScrappedSchema
 );
 
-export default testScrappedModal;
 module.exports = testScrappedModal;
