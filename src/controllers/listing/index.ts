@@ -6,6 +6,7 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
+
 const validator = z.object({
 	location: z.string().min(1).max(100),
 	count: z.number().min(1).max(100),
@@ -23,7 +24,9 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			return;
 		}
 		const filter = {
-			...(location === 'India' ? {} : { listingLocation: location }),
+			...(location === 'India'
+				? {}
+				: { listingLocation: { $in: [location, 'India'] } }),
 		};
 		const returnFilter = {
 			_id: 1,
