@@ -4,6 +4,7 @@ import Listings from '@/database/modals/others/best_deals_models';
 import rankedListings from '@/database/modals/others/test_scrapped_models';
 import { Request, Response, NextFunction } from 'express';
 
+
 async function getSimilarWithExternalVendors(
 	req: Request,
 	res: Response,
@@ -17,13 +18,19 @@ async function getSimilarWithExternalVendors(
 		if (!listing) throw new Error('Listing not found');
 		let filterObj = {
 			status: 'Active',
+			notionalPercentage: {
+				$exists: true,
+				$type: 'number',
+				$gt: 0,
+				$lt: 40,
+			},
 			...(listing.make && { make: listing.make }),
 			...(listing.model && { model: listing.model }),
 			...(listing.deviceCondition && {
 				deviceCondition: listing.deviceCondition,
 			}),
 			...(listing.deviceStorage && { deviceStorage: listing.deviceStorage }),
-			...(listing.deviceRam && { deviceRam: listing.deviceRam }),
+			...(listing.make!=='Apple' && listing.deviceRam && { deviceRam: listing.deviceRam }),
 		};
 		let rankedFilterObj = {
 			model_name: {
@@ -73,11 +80,9 @@ async function getSimilarWithExternalVendors(
 		let bestDeals3 = await Listings.find({
 			isOtherVendor: 'Y',
 			// listingId not in bestDeals6 but in rankedBestDeals
-			_id: { $nin: bestDeals6.map((bestDeal) => bestDeal._id) },
 			listingId: {
-				$in: rankedBestDeals.map(
-					(rankedBestDeal: { listingId: any }) => rankedBestDeal.listingId
-				),
+				$in: rankedBestDeals.map((rankedBestDeal) => rankedBestDeal.listingId),
+				$nin: bestDeals6.map((bestDeal) => bestDeal.listingId),
 			},
 		})
 			.limit(3)
@@ -115,8 +120,7 @@ async function getSimilarWithExternalVendors(
 				};
 			}
 			let vendorEntry = vendorDetails.find(
-				(vendorDetail: { listingId: string | undefined }) =>
-					vendorDetail.listingId === bestDeal.listingId
+				(vendorDetail) => vendorDetail.listingId === bestDeal.listingId
 			);
 			let vendorName = vendorEntry?.vendor_id!
 				? VENDORS[vendorEntry?.vendor_id!]
@@ -131,7 +135,7 @@ async function getSimilarWithExternalVendors(
 					.toLowerCase()}_logo.png`,
 			};
 		});
-		// Remove entreis with duplicate vendorNames
+		// Remove entries with duplicate vendorNames
 		bestDeals6Mapped = bestDeals6Mapped.filter((bestDeal, index, self) => {
 			if (bestDeal.vendorName === 'Oru') return true;
 			return (

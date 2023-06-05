@@ -1,17 +1,19 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
-const appVerSchema = new mongoose.Schema({
-    apk: {
-        type: Number,
-        required: true,
-    }, 
-    ios: {
-        type: Number,
-        required: true,
-    },
-},{ timestamps: true })
+const appVerSchema = new mongoose.Schema(
+	{
+		apk: {
+			type: Number,
+			required: true,
+		},
+		ios: {
+			type: Number,
+			required: true,
+		},
+	},
+	{ timestamps: true }
+);
 
 const appVersionsModal = new mongoose.model('app_version', appVerSchema);
 
-module.exports = appVersionsModal
+module.exports = appVersionsModal;
