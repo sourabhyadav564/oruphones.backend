@@ -6,6 +6,7 @@
 				"@/*": ["./src/*"]
 			}
 		},
+		"swc": true,
 		"files": true
 	},
 	"compilerOptions": {
