@@ -5,38 +5,20 @@ const saveRequestModal = require('@/database/modals/device/request_verification_
 
 const dotenv = require('dotenv');
 dotenv.config();
-
-// const FCM = require("fcm-node");
 const fetch = require('node-fetch');
-// const ObjectId = require("mongodb").ObjectId;
-
-// const fs = require("fs");
-// const path = require("path");
-
-// require("@/database/connection");
 const saveListingModal = require('@/database/modals/device/save_listing_device');
 const createUserModal = require('@/database/modals/login/login_create_user');
-// const scrappedModal = require("@/database/modals/others/scrapped_models");
 const favoriteModal = require('@/database/modals/favorite/favorite_add');
-// const scrappedExternalSourceModal = require("@/database/modals/others/scrapped_for_external_source_models");
-// const connection = require("@/database/mysql_connection");
-
 const logEvent = require('@/middleware/event_logging');
 const getDefaultImage = require('@/utils/get_default_image');
-const getRecommendedPrice = require('@/utils/get_recommended_price');
 const saveNotificationModel = require('@/database/modals/notification/notification_save_token');
 const notificationModel = require('@/database/modals/notification/complete_notifications');
 const makeRandomString = require('@/utils/generate_random_string');
-// const lspModal = require("@/database/modals/others/new_scrapped_models");
 const testScrappedModal = require('@/database/modals/others/test_scrapped_models');
-
-const cityModal = require('@/database/modals/global/cities_modal');
-
 const allMatrix = require('@/utils/matrix_figures');
 const bestDealsModal = require('@/database/modals/others/best_deals_models');
 const validUser = require('@/middleware/valid_user');
 const createAgentModal = require('@/database/modals/global/oru_mitra/agent_modal');
-// const downloadImage = require("@/utils/download_image_from_url");
 
 router.get('/listings', validUser, logEvent, async (req, res) => {
 	try {
@@ -1385,11 +1367,8 @@ router.post(
 						// ) {
 						//   item.vendor.forEach((vendor) => {
 						// console.log("vendor", vendor);
-						vendorName = vendor.vendorId ? VENDORS[vendor.vendorId] : '';
-						// console.log("vendorName", vendorName);
-						// console.log("vendor", vendor);
-						// vendorName = VENDORS[vendor.vendor_id];
-						vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
+						let vendorName = vendor.vendorId ? VENDORS[vendor.vendorId] : '';
+						let vendorImage = `https://d1tl44nezj10jx.cloudfront.net/devImg/vendors/${vendorName
 							.toString()
 							.toLowerCase()}_logo.png`;
 

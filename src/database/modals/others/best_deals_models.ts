@@ -242,5 +242,4 @@ bestDealsSchema.pre('save', async function (next) {
 });
 
 const bestDealsModal = mongoose.model('complete_best_deals', bestDealsSchema);
-export default bestDealsModal;
 module.exports = bestDealsModal;
