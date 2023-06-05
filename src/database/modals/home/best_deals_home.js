@@ -1,86 +1,89 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
-const bestDealHomeSchema = new mongoose.Schema({
-    listingId: {
-        type: Number,
-        required: true,
-    }, 
-    make: {
-        type: String,
-        required: true,
-    },
-    deviceStorage: {
-        type: String,
-        required: true,
-    }, 
-    deviceRam: {
-        type: String,
-    }, 
-    marketingName: {
-        type: String,
-        required: true,
-    }, 
-    color: {
-        type: String,
-    }, 
-    deviceCondition: {
-        type: String,
-        required: true,
-    }, 
-    listingPrice: {
-        type: String,
-        required: true,
-    }, 
-    listingLocation: {
-        type: String,
-        required: true,
-    }, 
-    deviceFinalGrade: {
-        type: String,
-
-    },
-    listingDate: {
-        type: String,
-    }, 
-    verifiedDate: {
-        type: String,
-    }, 
-    modifiedDate: {
-        type: String,
-    }, 
-    vendorId: {
-        type: String,
-    },
-    vendorLink: {
-        type: String,
-    },
-    vendorLogo: {
-        type: String,
-    },
-    imagePath: {
-        type: String,
-    },
-    isOtherVendor: {
-        type: String,
-    },
-    displayOrder: {
-        type: Number,
-    },
-    verified: {
-        type: Boolean,
-    },
-    favourite: {
-        type: Boolean,
-    }
-
-},{ timestamps: true })
+const bestDealHomeSchema = new mongoose.Schema(
+	{
+		listingId: {
+			type: Number,
+			required: true,
+		},
+		make: {
+			type: String,
+			required: true,
+		},
+		deviceStorage: {
+			type: String,
+			required: true,
+		},
+		deviceRam: {
+			type: String,
+		},
+		marketingName: {
+			type: String,
+			required: true,
+		},
+		color: {
+			type: String,
+		},
+		deviceCondition: {
+			type: String,
+			required: true,
+		},
+		listingPrice: {
+			type: String,
+			required: true,
+		},
+		listingLocation: {
+			type: String,
+			required: true,
+		},
+		deviceFinalGrade: {
+			type: String,
+		},
+		listingDate: {
+			type: String,
+		},
+		verifiedDate: {
+			type: String,
+		},
+		modifiedDate: {
+			type: String,
+		},
+		vendorId: {
+			type: String,
+		},
+		vendorLink: {
+			type: String,
+		},
+		vendorLogo: {
+			type: String,
+		},
+		imagePath: {
+			type: String,
+		},
+		isOtherVendor: {
+			type: String,
+		},
+		displayOrder: {
+			type: Number,
+		},
+		verified: {
+			type: Boolean,
+		},
+		favourite: {
+			type: Boolean,
+		},
+	},
+	{ timestamps: true }
+);
 
 bestDealHomeSchema.index({ listingLocation: 1 });
 bestDealHomeSchema.index({ make: 1 });
 bestDealHomeSchema.index({ verified: 1 });
-bestDealHomeSchema.index({ listingPrice : 1 });
+bestDealHomeSchema.index({ listingPrice: 1 });
 
-const bestDealHomeModel = new mongoose.model('complete_listings', bestDealHomeSchema);
+const bestDealHomeModel = new mongoose.model(
+	'complete_listings',
+	bestDealHomeSchema
+);
 
-module.exports = bestDealHomeModel  
+module.exports = bestDealHomeModel;

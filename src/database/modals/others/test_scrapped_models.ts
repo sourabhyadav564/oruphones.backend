@@ -1,5 +1,4 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+import mongoose from "mongoose";
 
 const testScrappedSchema = new mongoose.Schema(
   {
@@ -60,13 +59,14 @@ const testScrappedSchema = new mongoose.Schema(
 );
 
 testScrappedSchema.pre("save", async function (next) {
-  this.listingId = this._id;
+  this.listingId = this._id.toString();
   next();
 });
 
-const testScrappedModal = new mongoose.model(
+const testScrappedModal = mongoose.model(
   "testing_scrapped_datas",
   testScrappedSchema
 );
 
+export default testScrappedModal;
 module.exports = testScrappedModal;

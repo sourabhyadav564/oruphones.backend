@@ -112,7 +112,9 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			...(condition && { deviceCondition: { $in: condition } }),
 			...(storage && { deviceStorage: { $in: storage } }),
 			...(ram && { deviceRam: { $in: ram } }),
-			...(listingLocation === 'India' ? {} : { listingLocation }),
+			...(listingLocation === 'India'
+				? {}
+				: { listingLocation: { $in: [listingLocation, 'India'] } }),
 			...(warranty && {
 				warranty:
 					warranty.length > 1
@@ -162,20 +164,6 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 				.limit(5)
 				.select(returnFilter)
 				.lean();
-			// retry for India if no best deals found
-			if (bestDealsForCarousal.length === 0 && listingLocation !== 'India') {
-				console.log('Retrying(BestDeals) for location: India');
-				bestDealsForCarousal = await Listings.find({
-					...filterObj,
-					listingLocation: 'India',
-					notionalPercentage: {
-						$exists: true,
-						$type: 'number',
-						$gt: 0,
-						$lt: 40,
-					},
-				});
-			}
 		}
 		const notionalBestDealListingIds = bestDealsForCarousal?.map(
 			(listing) => listing.listingId as string
@@ -211,25 +199,6 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		);
 		// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
-
-		if (!result[0]?.data && listingLocation !== 'India') {
-			console.log('Retrying for location: India');
-			// modify location to India and try again
-			filterObj = {
-				...filterObj,
-				listingLocation: 'India',
-			};
-			pipeline = constructPipeline(
-				filterObj,
-				returnFilter,
-				sortObj,
-				priceRangeObj,
-				page,
-				limit,
-				notionalBestDealListingIds
-			);
-			result = await Listings.aggregate(pipeline);
-		}
 		const data = {
 			...result[0], // result[0] has the data and totalCount
 			...(page === 1 && bestDealsForCarousal && bestDealsForCarousal.length > 0
