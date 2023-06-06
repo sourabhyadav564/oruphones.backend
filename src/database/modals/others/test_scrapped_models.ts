@@ -68,4 +68,4 @@ const testScrappedModal = mongoose.model(
   testScrappedSchema
 );
 
-module.exports = testScrappedModal;
+export = testScrappedModal;
