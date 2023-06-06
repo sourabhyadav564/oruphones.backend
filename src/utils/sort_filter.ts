@@ -68,5 +68,4 @@ const applySortFilter = async (
 	};
 };
 
-export default applySortFilter;
-module.exports = applySortFilter;
+export = applySortFilter;
