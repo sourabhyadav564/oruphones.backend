@@ -28,7 +28,7 @@ const corsOptions = {
 		'https://oru-phones-mobile-web.vercel.app',
 		'https://oru-phones-mip-portal.vercel.app',
 		'https://oruphones-desk-web-orpin.vercel.app',
-		'https://oruphones-mobile-web.vercel.app/',
+		'https://oruphones-mobile-web.vercel.app',
 	],
 };
 
