@@ -7,7 +7,6 @@ import express, { Express } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-
 require('dotenv').config();
 
 const corsOptions = {
@@ -30,6 +29,7 @@ const corsOptions = {
 		'https://oru-phones-mobile-web.vercel.app',
 		'https://oru-phones-mip-portal.vercel.app',
 		'https://oruphones-desk-web-orpin.vercel.app',
+		'https://oruphones-mobile-web.vercel.app/',
 	],
 };
 
@@ -43,7 +43,6 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
 app.use(session);
-
 
 let schedule = require('node-schedule');
 schedule.scheduleJob('00 02 * * *', function () {
