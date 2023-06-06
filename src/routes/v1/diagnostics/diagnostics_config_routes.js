@@ -1157,7 +1157,7 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 
 		// const getQuestions = await questionModal.find({});
 
-		for (item of functionalTestResults) {
+		for (let item of functionalTestResults) {
 			if (severityHigh.includes(item.commandName)) {
 				if (item.testStatus == 'FAIL') {
 					//!== "PASS"
@@ -1211,157 +1211,6 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 
 		const listing = await saveListingModal.findOne({ listingId: listingId });
 
-		if (saveData == 'Y') {
-			let findDevice = await deviceIdModal.findOne({
-				deviceUniqueId: deviceUniqueId,
-			});
-
-			if (!findDevice) {
-				let saveDevice = new deviceIdModal({
-					deviceUniqueId: deviceUniqueId,
-					listingId: listingId,
-					verifiedOn: new Date(),
-					attachedTo: listing.associatedWith || '',
-					payStatus:
-						listing.associatedWith && listing.associatedWith != '' ? 'Y' : 'N',
-				});
-				await saveDevice.save();
-			}
-		}
-		let cosmetic = listing.cosmetic;
-		let deviceAge = listing.warranty;
-
-		if (deviceAge === 'More than 9 months') {
-			warrantyPeriod = 'zero';
-		} else if (deviceAge === 'More than 6 months') {
-			warrantyPeriod = 'four';
-		} else if (deviceAge === 'More than 3 months') {
-			warrantyPeriod = 'seven';
-		} else if (deviceAge === 'None') {
-			warrantyPeriod = 'more';
-		}
-
-		if (!cosmetic || cosmetic[0].toString().includes('No')) {
-			cosmeticGrade = 'D';
-		} else {
-			if (
-				cosmetic[1].toString().includes('Has significant') ||
-				cosmetic[2].toString().includes('Has significant')
-			) {
-				cosmeticGrade = 'C';
-			} else if (
-				cosmetic[1].toString().includes('Up to 5') ||
-				cosmetic[2].toString().includes('Up to 5')
-			) {
-				cosmeticGrade = 'B';
-			} else if (
-				cosmetic[1].toString().includes('Up to 2') ||
-				cosmetic[2].toString().includes('Up to 2')
-			) {
-				cosmeticGrade = 'A';
-			} else if (
-				cosmetic[1].toString().includes('No scratch') &&
-				cosmetic[2].toString().includes('No scratch')
-			) {
-				cosmeticGrade = 'S';
-			}
-		}
-
-		if (grade === 'S' && cosmeticGrade === 'S') {
-			finalGrade = 'S';
-		} else if (grade === 'S' && cosmeticGrade !== 'S') {
-			finalGrade = cosmeticGrade;
-		} else if (grade !== 'S' && cosmeticGrade === 'S') {
-			finalGrade = grade;
-		} else {
-			if (grade > cosmeticGrade) {
-				finalGrade = grade;
-			} else if (grade <= cosmeticGrade) {
-				finalGrade = cosmeticGrade;
-			}
-		}
-
-		if (finalGrade === 'S') {
-			condition = 'Like New';
-		} else if (finalGrade === 'A') {
-			condition = 'Excellent';
-		} else if (finalGrade === 'B') {
-			condition = 'Good';
-		} else if (finalGrade === 'C') {
-			condition = 'Fair';
-		} else if (finalGrade === 'D') {
-			condition = 'Needs Repair';
-		}
-
-		if (saveData == 'N' && buyerCondition != null) {
-			if (condition != buyerCondition) {
-				if (buyerCondition == 'Needs Repair' || grade == 'D') {
-					condition = 'Needs Repair';
-				} else if (buyerCondition == 'Fair' || grade == 'C') {
-					condition = 'Fair';
-				} else if (buyerCondition == 'Good' || grade == 'B') {
-					condition = 'Good';
-				} else if (buyerCondition == 'Excellent' || grade == 'A') {
-					condition = 'Excellent';
-				} else if (buyerCondition == 'Like New' || grade == 'S') {
-					condition = 'Like New';
-				}
-			}
-		}
-
-		if (condition == 'Like New') {
-			switch (warrantyPeriod) {
-				case 'four':
-					condition = 'Excellent';
-					break;
-				case 'seven':
-					condition = 'Excellent';
-					break;
-				case 'more':
-					condition = 'Good';
-					break;
-				default:
-					condition = condition;
-					break;
-			}
-		} else if (condition == 'Excellent') {
-			switch (warrantyPeriod) {
-				case 'more':
-					condition = 'Good';
-					break;
-				default:
-					condition = condition;
-					break;
-			}
-		}
-		// else if (condition == "Good") {
-		//   switch (warrantyPeriod) {
-		//     case "more":
-		//       condition = "Fair";
-		//       break;
-		//     default:
-		//       condition = condition;
-		//       break;
-		//   }
-		// }
-
-		const now = new Date();
-		const dateFormat = moment(now).format('MMM Do');
-
-		const dataToBeUpdate = {
-			deviceFunctionalGrade: grade,
-			functionalTestResults: req.body.functionalTestResults,
-			questionnaireResults: [],
-			deviceCosmeticGrade: cosmeticGrade,
-			deviceFinalGrade: finalGrade,
-			verified: true,
-			status: 'Active',
-			verifiedDate: dateFormat,
-			deviceCondition: condition,
-			deviceUniqueId: deviceUniqueId,
-			deviceStorage: req.body.storage,
-		};
-
 		if (!listing) {
 			res.status(200).json({
 				reason: 'Listing not found',
@@ -1386,74 +1235,227 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 					}
 				);
 			}
+
+			if (saveData == 'Y') {
+				let findDevice = await deviceIdModal.findOne({
+					deviceUniqueId: deviceUniqueId,
+				});
+
+				if (!findDevice) {
+					let saveDevice = new deviceIdModal({
+						deviceUniqueId: deviceUniqueId,
+						listingId: listingId,
+						verifiedOn: new Date(),
+						attachedTo: listing?.associatedWith || '',
+						payStatus:
+							listing?.associatedWith && listing?.associatedWith != ''
+								? 'Y'
+								: 'N',
+					});
+					await saveDevice.save();
+				}
+			}
+			let cosmetic = listing?.cosmetic;
+			let deviceAge = listing?.warranty;
+
+			if (deviceAge === 'More than 9 months') {
+				warrantyPeriod = 'zero';
+			} else if (deviceAge === 'More than 6 months') {
+				warrantyPeriod = 'four';
+			} else if (deviceAge === 'More than 3 months') {
+				warrantyPeriod = 'seven';
+			} else if (deviceAge === 'None') {
+				warrantyPeriod = 'more';
+			}
+
+			if (!cosmetic || cosmetic[0].toString().includes('No')) {
+				cosmeticGrade = 'D';
+			} else {
+				if (
+					cosmetic[1].toString().includes('Has significant') ||
+					cosmetic[2].toString().includes('Has significant')
+				) {
+					cosmeticGrade = 'C';
+				} else if (
+					cosmetic[1].toString().includes('Up to 5') ||
+					cosmetic[2].toString().includes('Up to 5')
+				) {
+					cosmeticGrade = 'B';
+				} else if (
+					cosmetic[1].toString().includes('Up to 2') ||
+					cosmetic[2].toString().includes('Up to 2')
+				) {
+					cosmeticGrade = 'A';
+				} else if (
+					cosmetic[1].toString().includes('No scratch') &&
+					cosmetic[2].toString().includes('No scratch')
+				) {
+					cosmeticGrade = 'S';
+				}
+			}
+
+			if (grade === 'S' && cosmeticGrade === 'S') {
+				finalGrade = 'S';
+			} else if (grade === 'S' && cosmeticGrade !== 'S') {
+				finalGrade = cosmeticGrade;
+			} else if (grade !== 'S' && cosmeticGrade === 'S') {
+				finalGrade = grade;
+			} else {
+				if (grade > cosmeticGrade) {
+					finalGrade = grade;
+				} else if (grade <= cosmeticGrade) {
+					finalGrade = cosmeticGrade;
+				}
+			}
+
+			if (finalGrade === 'S') {
+				condition = 'Like New';
+			} else if (finalGrade === 'A') {
+				condition = 'Excellent';
+			} else if (finalGrade === 'B') {
+				condition = 'Good';
+			} else if (finalGrade === 'C') {
+				condition = 'Fair';
+			} else if (finalGrade === 'D') {
+				condition = 'Needs Repair';
+			}
+
+			if (saveData == 'N' && buyerCondition != null) {
+				if (condition != buyerCondition) {
+					if (buyerCondition == 'Needs Repair' || grade == 'D') {
+						condition = 'Needs Repair';
+					} else if (buyerCondition == 'Fair' || grade == 'C') {
+						condition = 'Fair';
+					} else if (buyerCondition == 'Good' || grade == 'B') {
+						condition = 'Good';
+					} else if (buyerCondition == 'Excellent' || grade == 'A') {
+						condition = 'Excellent';
+					} else if (buyerCondition == 'Like New' || grade == 'S') {
+						condition = 'Like New';
+					}
+				}
+			}
+
+			if (condition == 'Like New') {
+				switch (warrantyPeriod) {
+					case 'four':
+						condition = 'Excellent';
+						break;
+					case 'seven':
+						condition = 'Excellent';
+						break;
+					case 'more':
+						condition = 'Good';
+						break;
+					default:
+						condition = condition;
+						break;
+				}
+			} else if (condition == 'Excellent') {
+				switch (warrantyPeriod) {
+					case 'more':
+						condition = 'Good';
+						break;
+					default:
+						condition = condition;
+						break;
+				}
+			}
+			// else if (condition == "Good") {
+			//   switch (warrantyPeriod) {
+			//     case "more":
+			//       condition = "Fair";
+			//       break;
+			//     default:
+			//       condition = condition;
+			//       break;
+			//   }
+			// }
+
+			const now = new Date();
+			const dateFormat = moment(now).format('MMM Do');
+
+			const dataToBeUpdate = {
+				deviceFunctionalGrade: grade,
+				functionalTestResults: req.body.functionalTestResults,
+				questionnaireResults: [],
+				deviceCosmeticGrade: cosmeticGrade,
+				deviceFinalGrade: finalGrade,
+				verified: true,
+				status: 'Active',
+				verifiedDate: dateFormat,
+				deviceCondition: condition,
+				deviceUniqueId: deviceUniqueId,
+				deviceStorage: req.body.storage,
+			};
+
+			const make = req.body.make;
+			const marketingname = req.body.marketingName;
+			const storage = req.body.storage;
+			const hasCharger = listing?.charger === 'Y' ? true : false;
+			const isAppleChargerIncluded = make === 'Apple' ? hasCharger : false;
+			const hasEarphone = listing?.earphone === 'Y' ? true : false;
+			const isAppleEarphoneIncluded = make === 'Apple' ? hasEarphone : false;
+			const hasOrignalBox = listing?.originalbox === 'Y' ? true : false;
+			const isVarified = true;
+
+			const oldPrice = await getRecommendedPrice(
+				listing?.make,
+				listing?.marketingName,
+				listing?.deviceCondition,
+				listing?.deviceStorage,
+				listing?.deviceRam,
+				listing?.charger === 'Y' ? true : false,
+				listing?.make === 'Apple'
+					? listing?.charger === 'Y'
+						? true
+						: false
+					: false,
+				listing?.earphone === 'Y' ? true : false,
+				listing?.make === 'Apple'
+					? listing.earphone === 'Y'
+						? true
+						: false
+					: false,
+				listing?.originalbox === 'Y' ? true : false,
+				listing?.verified,
+				false,
+				warrantyPeriod
+			);
+
+			const price = await getRecommendedPrice(
+				make,
+				marketingname,
+				condition,
+				storage,
+				ram,
+				hasCharger,
+				isAppleChargerIncluded,
+				hasEarphone,
+				isAppleEarphoneIncluded,
+				hasOrignalBox,
+				isVarified,
+				false,
+				warrantyPeriod
+			);
+
+			const dataObject = {};
+			dataObject['minPrice'] = price.leastSellingprice ?? '-';
+			dataObject['maxPrice'] = price.maxsellingprice ?? '-';
+			dataObject['oldMinPrice'] = oldPrice.leastSellingprice ?? '-';
+			dataObject['oldMaxPrice'] = oldPrice.maxsellingprice ?? '-';
+			dataObject['grade'] = finalGrade;
+			dataObject['functionalGrade'] = grade;
+			dataObject['cosmaticGrade'] = cosmeticGrade;
+			dataObject['condition'] = condition;
+			// dataObject["finalQuestionArray"] = finalQuestionArray;
+			res.status(200).json({
+				reason: 'Listing updated successfully',
+				statusCode: 201,
+				status: 'SUCCESS',
+				dataObject,
+			});
 		}
-
-		const make = req.body.make;
-		const marketingname = req.body.marketingName;
-		const storage = req.body.storage;
-		const hasCharger = listing.charger === 'Y' ? true : false;
-		const isAppleChargerIncluded = make === 'Apple' ? hasCharger : false;
-		const hasEarphone = listing.earphone === 'Y' ? true : false;
-		const isAppleEarphoneIncluded = make === 'Apple' ? hasEarphone : false;
-		const hasOrignalBox = listing.originalbox === 'Y' ? true : false;
-		const isVarified = true;
-
-		const oldPrice = await getRecommendedPrice(
-			listing.make,
-			listing.marketingName,
-			listing.deviceCondition,
-			listing.deviceStorage,
-			listing.deviceRam,
-			listing.charger === 'Y' ? true : false,
-			listing.make === 'Apple'
-				? listing.charger === 'Y'
-					? true
-					: false
-				: false,
-			listing.earphone === 'Y' ? true : false,
-			listing.make === 'Apple'
-				? listing.earphone === 'Y'
-					? true
-					: false
-				: false,
-			listing.originalbox === 'Y' ? true : false,
-			listing.verified,
-			false,
-			warrantyPeriod
-		);
-
-		const price = await getRecommendedPrice(
-			make,
-			marketingname,
-			condition,
-			storage,
-			ram,
-			hasCharger,
-			isAppleChargerIncluded,
-			hasEarphone,
-			isAppleEarphoneIncluded,
-			hasOrignalBox,
-			isVarified,
-			false,
-			warrantyPeriod
-		);
-
-		const dataObject = {};
-		dataObject['minPrice'] = price.leastSellingprice ?? '-';
-		dataObject['maxPrice'] = price.maxsellingprice ?? '-';
-		dataObject['oldMinPrice'] = oldPrice.leastSellingprice ?? '-';
-		dataObject['oldMaxPrice'] = oldPrice.maxsellingprice ?? '-';
-		dataObject['grade'] = finalGrade;
-		dataObject['functionalGrade'] = grade;
-		dataObject['cosmaticGrade'] = cosmeticGrade;
-		dataObject['condition'] = condition;
-		// dataObject["finalQuestionArray"] = finalQuestionArray;
-		res.status(200).json({
-			reason: 'Listing updated successfully',
-			statusCode: 201,
-			status: 'SUCCESS',
-			dataObject,
-		});
 	} catch (error) {
 		console.log(error);
 		res.status(400).json(error);
@@ -1480,7 +1482,7 @@ router.post('/grade/recommended/price', async (req, res) => {
 		let lCount = 0;
 		let index = 0;
 
-		for (item of functionalTestResults) {
+		for (let item of functionalTestResults) {
 			if (severityHigh.includes(item.commandName)) {
 				if (item.testStatus == 'FAIL') {
 					//!== "PASS"

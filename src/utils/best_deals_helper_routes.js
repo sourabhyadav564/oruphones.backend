@@ -1,39 +1,24 @@
-import favoriteModal from '../../src/database/modals/favorite/favorite_add';
-import { neededKeysForDeals } from './matrix_figures';
-import applySortFilter from './sort_filter';
-import bestDealsModal from '@/database/modals/others/best_deals_models';
+// const getBestDeals = require("./get_best_deals");
+const bestDealsModal = require('@/database/modals/others/best_deals_models');
+const favoriteModal = require('@/database/modals/favorite/favorite_add');
+// const saveListingModal = require("../src/database/modals/device/save_listing_device");
+const applySortFilter = require('./sort_filter');
+const { async } = require('@firebase/util');
+const { neededKeysForDeals } = require('./matrix_figures');
 
 const commonFunc = async (
-	location: string,
-	term: string | any[],
-	page: number,
-	userUniqueId: string,
-	sortBy: any,
-	res: {
-		status: (arg0: number) => {
-			(): any;
-			new (): any;
-			json: {
-				(arg0: {
-					reason: string;
-					statusCode: number;
-					status: string;
-					dataObject: {
-						bestDeals: any;
-						otherListings: any;
-						totalProducts: number;
-					};
-				}): void;
-				new (): any;
-			};
-		};
-	},
-	type: string
+	location,
+	term,
+	page,
+	userUniqueId,
+	sortBy,
+	res,
+	type
 ) => {
 	let updatedBestDeals = [];
-	let otherListings: any[] = [];
+	let otherListings = [];
 
-	let favList: string | any[] = [];
+	let favList = [];
 	if (userUniqueId !== 'Guest') {
 		// const getFavObject = await favoriteModal.findOne({
 		//   userUniqueId: userUniqueId,
@@ -194,25 +179,23 @@ const commonFunc = async (
 	const fitlerResults = await applySortFilter(
 		sortBy,
 		// term,
-		page.toString(),
+		page,
 		// location,
 		findingData
 	);
 
 	if (userUniqueId !== 'Guest') {
 		// add favorite listings to the final list
-		fitlerResults.completeDeals.forEach(
-			(item: any, index: number) => {
-				if (favList.includes(item.listingId)) {
-					item.favourite = true;
-				} else {
-					item.favourite = false;
-				}
+		fitlerResults.completeDeals.forEach((item, index) => {
+			if (favList.includes(item.listingId)) {
+				fitlerResults.completeDeals[index].favourite = true;
+			} else {
+				fitlerResults.completeDeals[index].favourite = false;
 			}
-		);
+		});
 	}
 
-	let completeDeals:any[] = [];
+	let completeDeals = [];
 	// let isFromZero = sortBy === "NA" ? false : true;
 
 	if (type != 'nearme') {
@@ -258,7 +241,7 @@ const commonFunc = async (
 		//   isFromZero ? 0 : 5,
 		//   fitlerResults.completeDeals.length
 		// );
-		updatedBestDeals.forEach((item: { listingId: any }, index: any) => {
+		updatedBestDeals.forEach((item, index) => {
 			otherListings.splice(
 				otherListings.findIndex((x) => x.listingId === item.listingId),
 				1
@@ -289,72 +272,48 @@ const commonFunc = async (
 	});
 };
 
-const sortOtherListings = async (otherListings: any[], sortBy: any) => {
+const sortOtherListings = async (otherListings, sortBy) => {
 	switch (sortBy) {
 		case 'NA':
-			otherListings.sort(
-				(
-					a: { notionalPercentage: number },
-					b: { notionalPercentage: number }
-				) => {
-					return b.notionalPercentage - a.notionalPercentage;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return b.notionalPercentage - a.notionalPercentage;
+			});
 			break;
 		case 'Price - High to Low':
-			otherListings.sort(
-				(a: { listingPrice: number }, b: { listingPrice: number }) => {
-					return b.listingPrice - a.listingPrice;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return b.listingPrice - a.listingPrice;
+			});
 			// otherListings.sort({ listingPrice: -1 });
 			break;
 		case 'Price - Low to High':
-			otherListings.sort(
-				(a: { listingPrice: number }, b: { listingPrice: number }) => {
-					return a.listingPrice - b.listingPrice;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return a.listingPrice - b.listingPrice;
+			});
 			// otherListings.sort({ listingPrice: 1 });
 			break;
 		case 'Newest First':
-			otherListings.sort(
-				(a: { createdAt: number }, b: { createdAt: number }) => {
-					return b.createdAt - a.createdAt;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return b.createdAt - a.createdAt;
+			});
 			// otherListings.sort({ createdAt: -1 });
 			break;
 		case 'Oldest First':
-			otherListings.sort(
-				(a: { createdAt: number }, b: { createdAt: number }) => {
-					return a.createdAt - b.createdAt;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return a.createdAt - b.createdAt;
+			});
 			// otherListings.sort({ createdAt: 1 });
 			break;
 		default:
-			otherListings.sort(
-				(
-					a: { notionalPercentage: number },
-					b: { notionalPercentage: number }
-				) => {
-					return b.notionalPercentage - a.notionalPercentage;
-				}
-			);
+			otherListings.sort((a, b) => {
+				return b.notionalPercentage - a.notionalPercentage;
+			});
 			break;
 	}
 
 	return otherListings;
 };
 
-const bestDealsNearMe = async (
-	location: any,
-	page: any,
-	userUniqueId: any,
-	sortBy: any,
-	res: any
-) => {
+const bestDealsNearMe = async (location, page, userUniqueId, sortBy, res) => {
 	try {
 		commonFunc(location, 'all', page, userUniqueId, sortBy, res, 'nearme');
 	} catch (error) {
@@ -365,13 +324,7 @@ const bestDealsNearMe = async (
 
 exports.bestDealsNearMe = bestDealsNearMe;
 
-const bestDealsNearAll = async (
-	location: any,
-	page: any,
-	userUniqueId: any,
-	sortBy: any,
-	res: any
-) => {
+const bestDealsNearAll = async (location, page, userUniqueId, sortBy, res) => {
 	try {
 		commonFunc(location, 'all', page, userUniqueId, sortBy, res, 'nearall');
 		// let updatedBestDeals = [];
@@ -554,12 +507,12 @@ const bestDealsNearAll = async (
 exports.bestDealsNearAll = bestDealsNearAll;
 
 const bestDealsByMake = async (
-	location: any,
-	make: any,
-	page: any,
-	userUniqueId: any,
-	sortBy: any,
-	res: any
+	location,
+	make,
+	page,
+	userUniqueId,
+	sortBy,
+	res
 ) => {
 	try {
 		commonFunc(location, make, page, userUniqueId, sortBy, res, 'make');
@@ -572,12 +525,12 @@ const bestDealsByMake = async (
 exports.bestDealsByMake = bestDealsByMake;
 
 const bestDealsByMarketingName = async (
-	location: any,
-	marketingName: any,
-	page: any,
-	userUniqueId: any,
-	sortBy: any,
-	res: any
+	location,
+	marketingName,
+	page,
+	userUniqueId,
+	sortBy,
+	res
 ) => {
 	try {
 		commonFunc(
@@ -598,14 +551,14 @@ const bestDealsByMarketingName = async (
 exports.bestDealsByMarketingName = bestDealsByMarketingName;
 
 const bestDealsForSearchListing = async (
-	location: any,
-	page: any,
-	userUniqueId: any,
+	location,
+	page,
+	userUniqueId,
 	// deals,
 	// totalProducts,
-	res: any,
-	findData: any,
-	sortBy: any
+	res,
+	findData,
+	sortBy
 ) => {
 	try {
 		commonFunc(location, findData, page, userUniqueId, sortBy, res, 'filter');
@@ -696,14 +649,14 @@ const bestDealsForSearchListing = async (
 exports.bestDealsForSearchListing = bestDealsForSearchListing;
 
 const bestDealsForShopByCategory = async (
-	page: any,
-	userUniqueId: any,
+	page,
+	userUniqueId,
 	// deals,
 	// totalProducts,
-	sortBy: any,
-	res: any,
-	location: any,
-	category: any
+	sortBy,
+	res,
+	location,
+	category
 ) => {
 	try {
 		commonFunc(location, category, page, userUniqueId, sortBy, res, 'category');
@@ -778,15 +731,15 @@ const bestDealsForShopByCategory = async (
 exports.bestDealsForShopByCategory = bestDealsForShopByCategory;
 
 const bestDealsForShopByPrice = async (
-	page: any,
-	userUniqueId: any,
+	page,
+	userUniqueId,
 	// deals,
 	// totalProducts,
-	sortBy: any,
-	res: any,
-	location: any,
-	startPrice: any,
-	endPrice: any
+	sortBy,
+	res,
+	location,
+	startPrice,
+	endPrice
 ) => {
 	try {
 		// todo: add location

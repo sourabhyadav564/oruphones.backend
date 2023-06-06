@@ -1156,7 +1156,7 @@ router.post('/grade/price', is_Session, logEvent, async (req, res) => {
 
 		// const getQuestions = await questionModal.find({});
 
-		for (item of functionalTestResults) {
+		for (let item of functionalTestResults) {
 			if (severityHigh.includes(item.commandName)) {
 				if (item.testStatus == 'FAIL') {
 					//!== "PASS"
@@ -1479,7 +1479,7 @@ router.post('/grade/recommended/price', async (req, res) => {
 		let lCount = 0;
 		let index = 0;
 
-		for (item of functionalTestResults) {
+		for (let item of functionalTestResults) {
 			if (severityHigh.includes(item.commandName)) {
 				if (item.testStatus == 'FAIL') {
 					//!== "PASS"

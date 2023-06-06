@@ -21,5 +21,4 @@ const favoriteSchema = new mongoose.Schema(
 
 favoriteSchema.index({ userUniqueId: 1 });
 const favoriteModal = mongoose.model('favorite_lists', favoriteSchema);
-
-module.exports = favoriteModal;
+export = favoriteModal;
