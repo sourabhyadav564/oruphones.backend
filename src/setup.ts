@@ -10,7 +10,6 @@ import morgan from 'morgan';
 require('dotenv').config();
 
 const corsOptions = {
-	// origin: "https://userregisrationfrontend.herokuapp.com",
 	origin: [
 		'https://www.oruphones.com',
 		'https://dev.oruphones.com',
