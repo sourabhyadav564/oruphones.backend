@@ -24,15 +24,20 @@ const applySortFilter = async (
 	// rewrite the above code using switch case and for faster response
 
 	let sortingData = {};
-	let collationData = { locale: 'en_US' };
+	let collationData: {
+		locale: string;
+		numericOrdering?: boolean;
+	} = { locale: 'en_US' };
 	switch (sortBy) {
 		case 'Price - High to Low':
+			console.log('Price - High to Low');
 			sortingData = { listingPrice: -1 };
-			collationData = { locale: 'en_US' };
+			collationData = { locale: 'en_US', numericOrdering: true };
 			break;
 		case 'Price - Low to High':
+			console.log('Price - Low to High');
 			sortingData = { listingPrice: 1 };
-			collationData = { locale: 'en_US' };
+			collationData = { locale: 'en_US', numericOrdering: true };
 			break;
 		case 'Newest First':
 			sortingData = { createdAt: -1 };
