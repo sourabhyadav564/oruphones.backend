@@ -11,7 +11,7 @@
 	},
 	"compilerOptions": {
 		"target": "esnext",
-		"module": "esnext",
+		"module": "CommonJS",
 		"allowJs": true,
 		"removeComments": true,
 		"resolveJsonModule": true,
