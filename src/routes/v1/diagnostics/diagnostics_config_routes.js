@@ -1440,10 +1440,10 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 			);
 
 			const dataObject = {};
-			dataObject['minPrice'] = price.leastSellingprice ?? '-';
-			dataObject['maxPrice'] = price.maxsellingprice ?? '-';
-			dataObject['oldMinPrice'] = oldPrice.leastSellingprice ?? '-';
-			dataObject['oldMaxPrice'] = oldPrice.maxsellingprice ?? '-';
+			dataObject['minPrice'] = price.leastSellingprice || '-';
+			dataObject['maxPrice'] = price.maxsellingprice || '-';
+			dataObject['oldMinPrice'] = oldPrice.leastSellingprice || '-';
+			dataObject['oldMaxPrice'] = oldPrice.maxsellingprice || '-';
 			dataObject['grade'] = finalGrade;
 			dataObject['functionalGrade'] = grade;
 			dataObject['cosmaticGrade'] = cosmeticGrade;
@@ -1600,8 +1600,8 @@ router.post('/grade/recommended/price', async (req, res) => {
 		const dataObject = {
 			grade: finalGrade,
 			condition: condition,
-			price: `₹${price.leastSellingprice ?? '-'} - ₹${
-				price.maxsellingprice ?? '-'
+			price: `₹${price.leastSellingprice || '-'} - ₹${
+				price.maxsellingprice || '-'
 			}`,
 			message: `The recommended price for this device is: `,
 		};

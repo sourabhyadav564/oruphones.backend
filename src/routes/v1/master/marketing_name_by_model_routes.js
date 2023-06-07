@@ -282,7 +282,8 @@ router.get('/makemodellist', async (req, res) => {
 			},
 			{
 				$group: {
-					_id: '$make',
+					// _id: "$make",
+					_id: { $toLower: '$make' },
 					make: { $first: '$make' },
 					models: {
 						$push: {
@@ -347,7 +348,7 @@ router.get('/modellist', async (req, res) => {
 			},
 			{
 				$group: {
-					_id: '$make',
+					_id: { $toLower: '$make' },
 					make: { $first: '$make' },
 					models: {
 						$push: {

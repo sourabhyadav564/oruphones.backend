@@ -170,10 +170,10 @@ const getRecommendedPrice = async (
 
 			const dataObject = {};
 			dataObject['leastSellingprice'] =
-				Math.ceil(recommendedPriceRangeLowerLimit) ?? '-';
+				Math.ceil(recommendedPriceRangeLowerLimit) || '-';
 			dataObject['maxsellingprice'] =
-				Math.ceil(recommendedPriceRangeUpperLimit) ?? '-';
-			dataObject['actualLSP'] = Math.ceil(leastSellingPrice) ?? '-';
+				Math.ceil(recommendedPriceRangeUpperLimit) || '-';
+			dataObject['actualLSP'] = Math.ceil(leastSellingPrice) || '-';
 
 			return dataObject;
 		} else {

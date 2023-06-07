@@ -175,6 +175,10 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 
 		const cosmetic = req.body.cosmetic;
 
+		if (listingLocation.toString().toLowerCase().includes(',')) {
+			listingLocation = listingLocation.split(',')[0].trim();
+		}
+
 		// let getLocation = await cityModal.findOne({ city: listingLocation });
 		// if (getLocation) {
 		//   listingLocation = getLocation.city;
@@ -449,7 +453,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 	const deviceRam = req.body.deviceRam;
 	const earphone = req.body.earphone;
 	const images = req.body.images;
-	const listingLocation = req.body.listingLocation;
+	let listingLocation = req.body.listingLocation;
 	const listingPrice = req.body.listingPrice;
 	const originalbox = req.body.originalbox;
 	const recommendedPriceRange = req.body.recommendedPriceRange;
@@ -458,6 +462,9 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 	let latLong = req.body.latLong;
 
 	try {
+		if (listingLocation.toString().toLowerCase().includes(',')) {
+			listingLocation = listingLocation.split(',')[0].trim();
+		}
 		const updateListing = await saveListingModal.findOne({
 			listingId: listingId,
 		});
