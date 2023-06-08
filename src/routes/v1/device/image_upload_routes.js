@@ -55,10 +55,10 @@ router.post(
 
 		let origPath = `${dirPath}/${fileName}_org.webp`;
 		let tempPath = `${dirPath}/${fileName}.webp`;
-		pathLength = req.file?.path.toString().split('/');
-		const pyProg = spawn('python3', [
-			`${dirPath}/` + `image_handler.py`,
-			`${dirPath}/` +
+		let pathLength = req.file?.path.toString().split('/');
+		const pyProg = spawn('python', [
+			`${dirPath.toString().split('dist')[0]}src/routes/v1/device/` +
+				`image_handler.py`,
 				req.file?.path.toString().split('/')[pathLength.length - 1],
 		]);
 

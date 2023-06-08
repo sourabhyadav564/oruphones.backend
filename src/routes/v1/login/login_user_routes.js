@@ -367,7 +367,7 @@ router.post(
 		const locationId = req.body.locationId;
 
 		try {
-			if (city.toString().toLowerCase().includes(',')) {
+			if (city?.toString()?.toLowerCase()?.includes(',')) {
 				city = city.split(',')[0].trim();
 			}
 			if (userUniqueId === 'Guest') {

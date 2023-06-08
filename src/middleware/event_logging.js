@@ -12,8 +12,8 @@ const logEvent = async (req, res, next) => {
 	let location = req.headers.location;
 	const devicePlatform = req.headers.deviceplatform;
 
-	if (location.toString().toLowerCase().includes(',')) {
-		location = location.split(',')[0].trim();
+	if (location?.toString()?.toLowerCase()?.includes(',')) {
+		location = location?.split(',')[0]?.trim();
 	}
 
 	const getEvent = await eventModal.findOne({ sessionId: sessionId });

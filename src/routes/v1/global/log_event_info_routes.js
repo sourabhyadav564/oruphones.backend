@@ -317,7 +317,7 @@ router.get('/checkReport', upload.single('reportFile'), async (req, res) => {
 router.get('/logs/geteventinfo', async (req, res) => {
 	let location = req.query.location;
 	try {
-		if (location.toString().toLowerCase().includes(',')) {
+		if (location?.toString()?.toLowerCase()?.includes(',')) {
 			location = location.split(',')[0].trim();
 		}
 		const currentDate = new Date();

@@ -108,7 +108,6 @@ router.get('/listing/agent/login', async (req, res) => {
 		const countryCode = req.query.countryCode;
 
 		let foundUser = await olxAgentModal.findOne({ mobileNumber });
-
 		if (foundUser && foundUser.status == 'Active') {
 			const clientOTP = generateOTP();
 
@@ -957,7 +956,7 @@ router.get('/listing/agent/addToContacted', async (req, res) => {
 
 		let updateListing = await olxScrappedModal.findOneAndUpdate(
 			{
-				_id: mongoose.Types.ObjectId(listingId),
+				_id: new mongoose.Types.ObjectId(listingId),
 				assignedTo: uuid,
 			},
 			{ $set: { status: 'Contacted' } }
@@ -1061,7 +1060,7 @@ router.get('/listing/agent/validateNumber', async (req, res) => {
 						} else {
 							// find the listing
 							let listing = await olxScrappedModal.findOne({
-								_id: mongoose.Types.ObjectId(listingId),
+								_id: new mongoose.Types.ObjectId(listingId),
 								assignedTo: uuid,
 							});
 
@@ -1113,7 +1112,7 @@ router.get('/listing/agent/validateNumber', async (req, res) => {
 			} else {
 				// find the listing
 				let listing = await olxScrappedModal.findOne({
-					_id: mongoose.Types.ObjectId(listingId),
+					_id: new mongoose.Types.ObjectId(listingId),
 					assignedTo: uuid,
 				});
 
@@ -1195,7 +1194,7 @@ router.get('/listing/agent/release', async (req, res) => {
 
 		let updateListing = await olxScrappedModal.findOneAndUpdate(
 			{
-				_id: mongoose.Types.ObjectId(listingId),
+				_id: new mongoose.Types.ObjectId(listingId),
 				assignedTo: uuid,
 			},
 			{ $set: { assignedTo: null, status: 'Live' } }
@@ -1505,7 +1504,7 @@ router.post('/listing/agent/submit', async (req, res) => {
 					let listingId = req.body.objId;
 
 					let deleted = await olxScrappedModal.deleteOne({
-						_id: mongoose.Types.ObjectId(listingId),
+						_id: new mongoose.Types.ObjectId(listingId),
 					});
 				}
 

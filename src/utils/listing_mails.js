@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const saveListingModal = require('../database/modals/device/save_listing_device');
-const olxAgentModal = require('../database/modals/global/oru_mitra/agent_olx_modal');
+const olxAgentModal = require('../database/modals/global/oru_mitra/agent_olx_modals');
 const olxScrappedModal = require('../database/modals/global/oru_mitra/scrapped_olx_listings');
 const NonFoundedModels = require('../database/modals/others/non_founded_models');
 const { sendMailUtil } = require('./mail_util');

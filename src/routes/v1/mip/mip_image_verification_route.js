@@ -53,7 +53,7 @@ router.post('/verifyImage', async (req, res) => {
 			images: { $exists: true, $ne: [] },
 			images: {
 				$elemMatch: {
-					_id: mongoose.Types.ObjectId(listingId),
+					_id: new mongoose.Types.ObjectId(listingId),
 				},
 			},
 		});

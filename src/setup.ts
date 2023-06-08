@@ -1,5 +1,7 @@
 import startSavingBestDeals from '@/utils/best_deals_cron_job';
 import startCalculatingLSPTest from '@/utils/new_lsp';
+import startDataMigrationJob from '@/utils/migration_data';
+import sendListingsMail from '@/utils/listing_mails';
 import session from '@/utils/sessionStore';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -44,14 +46,25 @@ app.use(cors(corsOptions));
 app.use(session);
 
 let schedule = require('node-schedule');
-schedule.scheduleJob('00 02 * * *', function () {
-	console.log('The answer to life, the universe, and everything!');
+
+schedule.scheduleJob("06 14 * * *", function () {
+	// schedule.scheduleJob("59 13 * * *", function () {
+	console.log("The answer to life, the universe, and everything!");
+	startDataMigrationJob();
+  });
+  
+  schedule.scheduleJob("30 16 * * *", function () {
 	startCalculatingLSPTest();
-});
-
-schedule.scheduleJob('00 03 * * *', function () {
-	console.log('The answer to life, the universe, and everything!');
+  });
+  
+  schedule.scheduleJob("30 20 * * *", function () {
+	console.log("The answer to life, the universe, and everything!");
 	startSavingBestDeals();
-});
-
+  });
+  
+  schedule.scheduleJob("53 15 * * *", function () {
+	// console.log("Daily Listing Cron Job Started");
+	// SendingSmsJob(true);
+	sendListingsMail();
+  });
 export default app;

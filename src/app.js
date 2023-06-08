@@ -65,15 +65,15 @@ app.use(cors(corsOptions))
 
 let schedule = require('node-schedule')
 
-schedule.scheduleJob('00 02 * * *', function () {
-  console.log('The answer to life, the universe, and everything!')
-  startCalculatingLSPTest()
-})
+// schedule.scheduleJob('00 02 * * *', function () {
+//   console.log('The answer to life, the universe, and everything!')
+//   startCalculatingLSPTest()
+// })
 
-schedule.scheduleJob('00 03 * * *', function () {
-  console.log('The answer to life, the universe, and everything!')
-  startSavingBestDeals()
-})
+// schedule.scheduleJob('00 03 * * *', function () {
+//   console.log('The answer to life, the universe, and everything!')
+//   startSavingBestDeals()
+// })
 
 app.get('/', (req, res) => {
   res.status(200).json({

@@ -151,7 +151,7 @@ const commonFunc = async (
 
 	let newLocation = location;
 
-	if (location.toString().toLowerCase().includes(',')) {
+	if (location?.toString()?.toLowerCase()?.includes(',')) {
 		newLocation = location.split(',')[0].trim();
 	}
 
