@@ -208,7 +208,7 @@ router.post('/user/update', validUser, logEvent, async (req, res) => {
 		userUniqueId: req.body.userUniqueId,
 	};
 
-	if (city.toString().toLowerCase().includes(',')) {
+	if (city && city.toString().toLowerCase().includes(',')) {
 		city = city.split(',')[0].trim();
 	}
 

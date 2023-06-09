@@ -1155,6 +1155,23 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 		let lCount = 0;
 		let index = 0;
 
+		const now = new Date();
+		const dateFormat = moment(now).format('MMM Do');
+
+		const dataToBeUpdate = {
+			deviceFunctionalGrade: grade,
+			functionalTestResults: req.body.functionalTestResults,
+			questionnaireResults: [],
+			deviceCosmeticGrade: cosmeticGrade,
+			deviceFinalGrade: finalGrade,
+			verified: true,
+			status: 'Active',
+			verifiedDate: dateFormat,
+			deviceCondition: condition,
+			deviceUniqueId: deviceUniqueId,
+			deviceStorage: req.body.storage,
+		};
+
 		// const getQuestions = await questionModal.find({});
 
 		for (let item of functionalTestResults) {
@@ -1371,23 +1388,6 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 			//       break;
 			//   }
 			// }
-
-			const now = new Date();
-			const dateFormat = moment(now).format('MMM Do');
-
-			const dataToBeUpdate = {
-				deviceFunctionalGrade: grade,
-				functionalTestResults: req.body.functionalTestResults,
-				questionnaireResults: [],
-				deviceCosmeticGrade: cosmeticGrade,
-				deviceFinalGrade: finalGrade,
-				verified: true,
-				status: 'Active',
-				verifiedDate: dateFormat,
-				deviceCondition: condition,
-				deviceUniqueId: deviceUniqueId,
-				deviceStorage: req.body.storage,
-			};
 
 			const make = req.body.make;
 			const marketingname = req.body.marketingName;

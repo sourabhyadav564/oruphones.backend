@@ -31,6 +31,8 @@ const corsOptions = {
 		'https://oru-phones-mip-portal.vercel.app',
 		'https://oruphones-desk-web-orpin.vercel.app',
 		'https://oruphones-mobile-web.vercel.app',
+		'https://devmitra.oruphones.com',
+		'https://mitra.oruphones.com',
 	],
 };
 
@@ -47,24 +49,24 @@ app.use(session);
 
 let schedule = require('node-schedule');
 
-schedule.scheduleJob("06 14 * * *", function () {
+schedule.scheduleJob("18 16 * * *", function () {
 	// schedule.scheduleJob("59 13 * * *", function () {
 	console.log("The answer to life, the universe, and everything!");
 	startDataMigrationJob();
   });
   
-  schedule.scheduleJob("30 16 * * *", function () {
-	startCalculatingLSPTest();
-  });
+//   schedule.scheduleJob("30 16 * * *", function () {
+// 	startCalculatingLSPTest();
+//   });
   
-  schedule.scheduleJob("30 20 * * *", function () {
-	console.log("The answer to life, the universe, and everything!");
-	startSavingBestDeals();
-  });
+//   schedule.scheduleJob("30 20 * * *", function () {
+// 	console.log("The answer to life, the universe, and everything!");
+// 	startSavingBestDeals();
+//   });
   
-  schedule.scheduleJob("53 15 * * *", function () {
-	// console.log("Daily Listing Cron Job Started");
-	// SendingSmsJob(true);
-	sendListingsMail();
-  });
+//   schedule.scheduleJob("53 15 * * *", function () {
+// 	// console.log("Daily Listing Cron Job Started");
+// 	// SendingSmsJob(true);
+// 	sendListingsMail();
+//   });
 export default app;
