@@ -234,6 +234,10 @@ router.get('/listing/agent/details', async (req, res) => {
 		// set time to 00:00:00
 		thisMonthStart.setHours(0, 0, 0, 0);
 
+		let todayStart = new Date();
+		// set time to 00:00:00
+		todayStart.setHours(0, 0, 0, 0);
+
 		let agent = await olxAgentModal.findOne(
 			{ userUniqueId: uuid },
 			{
@@ -274,10 +278,7 @@ router.get('/listing/agent/details', async (req, res) => {
 									{
 										$and: [
 											{
-												$gte: [
-													'$createdAt',
-													new Date(new Date().setHours(00, 00, 00)),
-												],
+												$gte: ['$createdAt', todayStart],
 											},
 										],
 									},
@@ -389,7 +390,7 @@ router.get('/listing/agent/getAgentsList', async (req, res) => {
 										{
 											$gte: [
 												'$createdAt',
-												new Date(new Date().setHours(00, 00, 00)),
+												new Date(new Date().setHours(0, 0, 0)),
 											],
 										},
 										{
@@ -644,7 +645,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 					.limit(maxLimit);
 
 				// shuffle the array
-				newListings = shuffle(newListings);
+				// newListings = shuffle(newListings);
 
 				if (newListings.length < minLimit) {
 					let assignedlistings = await olxScrappedModal.find(
@@ -1332,11 +1333,12 @@ router.post('/listing/agent/submit', async (req, res) => {
 					}
 				);
 			}
+			let newModal = cityId ? AreaModal : cityAreaModal;
 
-			let latLong = await AreaModal.findOne(
+			let latLong = await newModal.findOne(
 				{
 					name: area,
-					parentId: cityId.id,
+					parentId: cityId ? cityId.id : stateId.id,
 				},
 				{
 					latitude: 1,
@@ -1512,10 +1514,10 @@ router.post('/listing/agent/submit', async (req, res) => {
 
 				let message = limitExceeded
 					? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
-					  'You have already exceeded your quota of unverified listings at ORU !\nYou can go to my listing page and delete your old unvarified listings or you can convert them into verified listings\n\nOR\n\nYou can download the app and verify this device.'
+					  'This user have already exceeded your quota of unverified listings at ORU !'
 					: duplicated
 					? // ? "Added Successfully but Paused because This exact listing already present!"
-					  'You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device.'
+					  'This user have already listed same device at ORU for sell !'
 					: 'Listing saved successfully';
 
 				res.status(201).json({

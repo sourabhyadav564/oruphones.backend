@@ -19,13 +19,17 @@ def rotate_image_with_orientation(image_path):
                         image = image.rotate(90, expand=True)
     except Exception as e:
         print("Error rotating image: " + str(e))
-        pass  # Handle any errors gracefully
+        image = image.convert('RGB')
+        image.save(image_path+".jpg", quality=100)
+        return image_path+".jpg"
+        #pass  # Handle any errors gracefully
+    image = image.convert('RGB')
     image.save(image_path+".jpg", quality=100)
     return image_path+".jpg"
 
 
 def convertImagesToWebp(obj):
-    print("convertImage:",obj)
+    #print("convertImage:",obj)
     img = Image.open(f"{obj}")
     imgName = obj.split("/")[-1]
     if "." in imgName:
@@ -33,7 +37,7 @@ def convertImagesToWebp(obj):
     path = str(obj).replace(imgName, "")
     imgName = rotate_image_with_orientation(obj)
     imgName = imgName.split("/")[-1]
-    img = Image.open(f"{imgName}")
+    img = Image.open(f"{path + imgName}")
     img.save(f"{path + str(imgName).replace('.jpg','')}_org.webp", "webp", quality=10)
     height = img.height
     width = img.width
@@ -44,8 +48,7 @@ def convertImagesToWebp(obj):
 
     img = img.resize((int(width), int(height)), Image.LANCZOS)
     img.save(f"{path + str(imgName).replace('.jpg','')}.webp", "webp", quality=10)
-    os.remove(f"{imgName}")
+    os.remove(f"{path+imgName}")
     os.remove(f"{obj}")
 
 convertImagesToWebp(sys.argv[1])
-
