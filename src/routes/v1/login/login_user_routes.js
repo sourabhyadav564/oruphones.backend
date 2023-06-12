@@ -198,7 +198,7 @@ router.post('/user/create', logEvent, async (req, res) => {
 });
 
 router.post('/user/update', validUser, logEvent, async (req, res) => {
-	const city = req.body.city;
+	let city = req.body.city;
 	const email = req.body.email;
 	const mobileNumber = req.body.mobileNumber;
 	const profilePicPath = req.body.profilePicPath;
@@ -207,6 +207,10 @@ router.post('/user/update', validUser, logEvent, async (req, res) => {
 	const userUniqueId = {
 		userUniqueId: req.body.userUniqueId,
 	};
+
+	if (city && city.toString().toLowerCase().includes(',')) {
+		city = city.split(',')[0].trim();
+	}
 
 	const createUserData = {
 		email: email,
@@ -359,10 +363,13 @@ router.post(
 	logEvent,
 	async (req, res) => {
 		const userUniqueId = req.body.userUniqueId;
-		const city = req.body.city;
+		let city = req.body.city;
 		const locationId = req.body.locationId;
 
 		try {
+			if (city?.toString()?.toLowerCase()?.includes(',')) {
+				city = city.split(',')[0].trim();
+			}
 			if (userUniqueId === 'Guest') {
 				res.status(200).json({
 					reason: 'Profile location added successfully',
@@ -433,9 +440,12 @@ router.post(
 	logEvent,
 	async (req, res) => {
 		const userUniqueId = req.body.userUniqueId;
-		const city = req.body.city;
+		let city = req.body.city;
 
 		try {
+			if (city.toString().toLowerCase().includes(',')) {
+				city = city.split(',')[0].trim();
+			}
 			const getUser = await createUserModal.findOne({ userUniqueId });
 			if (getUser) {
 				const userAddress = getUser.address;

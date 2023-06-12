@@ -1155,6 +1155,23 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 		let lCount = 0;
 		let index = 0;
 
+		const now = new Date();
+		const dateFormat = moment(now).format('MMM Do');
+
+		const dataToBeUpdate = {
+			deviceFunctionalGrade: grade,
+			functionalTestResults: req.body.functionalTestResults,
+			questionnaireResults: [],
+			deviceCosmeticGrade: cosmeticGrade,
+			deviceFinalGrade: finalGrade,
+			verified: true,
+			status: 'Active',
+			verifiedDate: dateFormat,
+			deviceCondition: condition,
+			deviceUniqueId: deviceUniqueId,
+			deviceStorage: req.body.storage,
+		};
+
 		// const getQuestions = await questionModal.find({});
 
 		for (let item of functionalTestResults) {
@@ -1372,23 +1389,6 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 			//   }
 			// }
 
-			const now = new Date();
-			const dateFormat = moment(now).format('MMM Do');
-
-			const dataToBeUpdate = {
-				deviceFunctionalGrade: grade,
-				functionalTestResults: req.body.functionalTestResults,
-				questionnaireResults: [],
-				deviceCosmeticGrade: cosmeticGrade,
-				deviceFinalGrade: finalGrade,
-				verified: true,
-				status: 'Active',
-				verifiedDate: dateFormat,
-				deviceCondition: condition,
-				deviceUniqueId: deviceUniqueId,
-				deviceStorage: req.body.storage,
-			};
-
 			const make = req.body.make;
 			const marketingname = req.body.marketingName;
 			const storage = req.body.storage;
@@ -1440,10 +1440,10 @@ router.post('/grade/price', validUser, logEvent, async (req, res) => {
 			);
 
 			const dataObject = {};
-			dataObject['minPrice'] = price.leastSellingprice ?? '-';
-			dataObject['maxPrice'] = price.maxsellingprice ?? '-';
-			dataObject['oldMinPrice'] = oldPrice.leastSellingprice ?? '-';
-			dataObject['oldMaxPrice'] = oldPrice.maxsellingprice ?? '-';
+			dataObject['minPrice'] = price.leastSellingprice || '-';
+			dataObject['maxPrice'] = price.maxsellingprice || '-';
+			dataObject['oldMinPrice'] = oldPrice.leastSellingprice || '-';
+			dataObject['oldMaxPrice'] = oldPrice.maxsellingprice || '-';
 			dataObject['grade'] = finalGrade;
 			dataObject['functionalGrade'] = grade;
 			dataObject['cosmaticGrade'] = cosmeticGrade;
@@ -1600,8 +1600,8 @@ router.post('/grade/recommended/price', async (req, res) => {
 		const dataObject = {
 			grade: finalGrade,
 			condition: condition,
-			price: `₹${price.leastSellingprice ?? '-'} - ₹${
-				price.maxsellingprice ?? '-'
+			price: `₹${price.leastSellingprice || '-'} - ₹${
+				price.maxsellingprice || '-'
 			}`,
 			message: `The recommended price for this device is: `,
 		};

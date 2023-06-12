@@ -1,19 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const sharp = require('sharp');
-
-const imageUploadModal = require('../../../database/modals/device/image_upload');
+const { spawn } = require('node:child_process');
+require('../../../database/connection');
 const logEvent = require('../../../middleware/event_logging');
-
 const fs = require('fs');
-// const resizeImg = require("resize-img");
-const util = require('util');
-const unlinkFile = util.promisify(fs.unlink);
-
 const multer = require('multer');
 const { uploadFile, getFileStream } = require('../../../s3');
 const validUser = require('../../../middleware/valid_user');
-// const sharp = require("sharp");
 
 const dirPath = __dirname.toString();
 
@@ -50,84 +43,74 @@ router.get('/uploadimage/:key', (req, res) => {
 	const readStream = getFileStream(key);
 	readStream.pipe(res);
 });
+
 router.post(
 	'/uploadimage',
 	upload.single('image'),
 	validUser,
 	logEvent,
 	async (req, res) => {
-		try {
-			const file = req.file;
-			let fileName = file?.filename ? file?.filename.split('.')[0] : '';
-			// sendMail("uploadimage", file?.filename ? file?.filename : "no file");
+		const file = req.file;
+		let fileName = file?.filename ? file?.filename.split('.')[0] : '';
 
-			// get the actual height and width of the image
-			let ch = 150;
-			let cw = 80;
-			let { width, height } = await sharp(req.file?.path.toString()).metadata();
+		let origPath = `${dirPath}/${fileName}_org.webp`;
+		let tempPath = `${dirPath}/${fileName}.webp`;
+		let pathLength = req.file?.path.toString().split('/');
+		console.log(
+			'1',
+			pathLength.length,
+			`${dirPath.toString().split('dist')[0]}src/routes/v1/device/` +
+				`image_handler.py`,
+			// `${dirPath.toString()}` +
+				req.file?.path.toString().split('/')[pathLength.length - 1]
+		);
+		const pyProg = spawn('python', [
+			`${dirPath.toString().split('dist')[0]}src/routes/v1/device/` +
+				`image_handler.py`,
+			// `${dirPath.toString()}/` +
+				req.file?.path.toString().split('/')[pathLength.length - 1],
+		]);
 
-			let ratio = height / width;
+		pyProg.stdout.on('data', async (data) => {
+			let origFile = {
+				path: origPath,
+				filename: `${fileName}_org.webp`,
+				mimetype: 'image/webp',
+			};
 
-			height = 300;
-			width = height / ratio;
+			let thumb = {
+				path: tempPath,
+				filename: `${fileName}.webp`,
+				mimetype: 'image/webp',
+				isThumbnail: true,
+			};
 
-			ch = parseInt(height);
-			cw = parseInt(width);
+			const [result, result2] = await Promise.all([
+				uploadFile(origFile),
+				uploadFile(thumb),
+			]);
+			await Promise.all([
+				fs.promises.unlink(origPath),
+				fs.promises.unlink(tempPath),
+			]);
 
-			let origPath = dirPath + `/${fileName}_org.webp`;
-			let tempPath = dirPath + `/${fileName}.webp`;
-			let result = {};
-			let result2 = {};
-			await sharp(req.file?.path.toString()).toFile(
-				origPath,
-				async (err, info) => {
-					await sharp(req.file?.path.toString())
-						.resize(cw, ch)
-						.toFile(tempPath, async (err, info) => {
-							// })
-							// .then(async () => {
+			const dataObject = {
+				imagePath: `${result.Location}`,
+				thumbnailImagePath: `${result2.Location}`,
+				imageKey: `${result.Key}`,
+			};
 
-							let origFile = {
-								path: origPath,
-								filename: `${fileName}_org.webp`,
-								mimetype: 'image/webp',
-							};
+			res.status(200).json({
+				reason: 'Image uploaded successfully',
+				statusCode: 201,
+				status: 'SUCCESS',
+				dataObject,
+			});
+		});
 
-							let thumb = {
-								path: tempPath,
-								filename: `${fileName}.webp`,
-								mimetype: 'image/webp',
-								isThumbnail: true,
-							};
-
-							result = await uploadFile(origFile);
-							result2 = await uploadFile(thumb);
-
-							await unlinkFile(origFile?.path);
-							await unlinkFile(thumb?.path);
-							await unlinkFile(file?.path);
-
-							const dataObject = {
-								imagePath: `${result.Location}`,
-								thumbnailImagePath: `${result2.Location || result.Location}`,
-								imageKey: `${result.Key}`,
-							};
-
-							res.status(200).json({
-								reason: 'Image uploaded successfully',
-								statusCode: 201,
-								status: 'SUCCESS',
-								dataObject,
-							});
-						});
-				}
-			);
-		} catch (error) {
-			console.log(error);
-			res
-				.status(400)
-				.json({ reason: error.message, statusCode: 400, status: 'FAILED' });
-		}
+		pyProg.stderr.on('data', (data) => {
+			console.error(`error: ${data}`);
+		});
 	}
 );
 

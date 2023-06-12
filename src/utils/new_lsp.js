@@ -115,7 +115,7 @@ let allModelNotFound = [];
 const firstFunction = async () => {
 	sendMailWithAttachment('First function started');
 	try {
-		let path = __dirname.toString().split('utils')[0];
+		let path = __dirname.toString().split('dist')[0];
 		fileData = await testScrappedModal.find({}, { _id: 0 });
 		// Map all data with GSM arena data sets
 		let foundObjects = [];
