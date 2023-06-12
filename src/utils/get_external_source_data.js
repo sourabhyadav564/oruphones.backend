@@ -75,7 +75,7 @@ const get_external_source_buy = async () => {
 						lspObject['model_name'] = matchedModel.name;
 						lspObject['price'] = item.price;
 						lspObject['mobiru_condition'] =
-							item.mobiru_condition ?? 'Excellent';
+							item.mobiru_condition || 'Excellent';
 						lspObject['storage'] = item.storage ? `${item.storage} GB` : '0 GB';
 						lspObject['ram'] = item.ram;
 						lspObject['link'] = item.link;

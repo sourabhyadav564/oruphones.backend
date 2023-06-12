@@ -51,11 +51,12 @@ router.post(
 			
 
 				const file = req.file;
-				if (!file || !file.originalname.match(/\.(jpeg|jpg)$/i)) {
+				if (!file || !file.originalname.match(/\.(jpeg|jpg|png|heic|heif|tiff|eps|gif|svg)$/i)) {
 					return res.status(400).json({
-					  message: 'File type not supported. Only JPEG/JPG files are allowed.',
+					  message: 'File type not supported. Only JPEG, JPG, PNG, HEIC, and HEIF files are allowed.',
 					});
 				  }
+				  
 				const fileName = file?.originalname
 					? file?.originalname.split('.')[0]
 					: '';

@@ -3,7 +3,8 @@ import express from 'express';
 
 const router = express.Router();
 router.get('/makes', listingController.makes);
-router.post('/models', listingController.models);
+router.post('/models', listingController.models.makes);
+router.post('/models/filtered', listingController.models.filteredMakes);
 router.post('/filter/getSimilarLeaderboard', listingController.filter.getSimilarWithExternalVendors);
 router.post('/filter/getSimilarPriceRange', listingController.filter.getSimilarPriceRange);
 router.post('/filter/getSimilar', listingController.filter.getSimilarListings);

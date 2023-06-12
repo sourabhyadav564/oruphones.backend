@@ -25,9 +25,9 @@
 		"start": "node dist/build.js"
 	},
 	"keywords": [
-		"mobiru"
+		"ORU"
 	],
-	"author": "Aman Khandelwal",
+	"author": "Nishant Sharma",
 	"license": "ISC",
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.338.0",

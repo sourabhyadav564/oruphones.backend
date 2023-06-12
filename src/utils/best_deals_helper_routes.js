@@ -149,11 +149,17 @@ const commonFunc = async (
 		findingData = term;
 	}
 
+	let newLocation = location;
+
+	if (location?.toString()?.toLowerCase()?.includes(',')) {
+		newLocation = location.split(',')[0].trim();
+	}
+
 	// update findingData with location if location is not India
-	if (location !== 'India') {
+	if (newLocation !== 'India') {
 		findingData = {
 			...findingData,
-			$or: [{ listingLocation: location }, { listingLocation: 'India' }],
+			$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
 		};
 	}
 

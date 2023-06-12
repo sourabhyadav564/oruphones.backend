@@ -16,7 +16,7 @@ async function getSimilarPriceRange(
 		if (!listing) throw new Error('Listing not found');
 		if (!filter.limit) filter.limit = 20;
 		if (!returnFilter) {
-			returnFilter = RETURN_FILTER;
+			returnFilter = {...RETURN_FILTER, warranty: 1};
 		}
 		// if listing's make is apple, then add apple to filter
 		if (listing.make === 'Apple') {

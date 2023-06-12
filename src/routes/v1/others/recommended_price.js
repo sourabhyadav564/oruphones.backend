@@ -78,8 +78,8 @@ router.post('/recomanded/price', validUser, logEvent, async (req, res) => {
 		);
 
 		const dataObject = {};
-		dataObject['leastSellingprice'] = recommendedPrice.leastSellingprice ?? '-';
-		dataObject['maxsellingprice'] = recommendedPrice.maxsellingprice ?? '-';
+		dataObject['leastSellingprice'] = recommendedPrice.leastSellingprice || '-';
+		dataObject['maxsellingprice'] = recommendedPrice.maxsellingprice || '-';
 
 		res.status(200).json({
 			reason: 'Models Found Successfully',

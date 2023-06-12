@@ -50,6 +50,8 @@ import recommendedPrice from '@/routes/v2/global/recommended_price';
 
 
 import bestDealHomeRoutes2 from '@/routes/v2/home/best_deal_home_routes';
+import brandRoute2 from '@/routes/v2/master/master_brand_routes';
+
 import listingsByMakeRoutes2 from '@/routes/v2/home/listings_by_make';
 import searchListingRoute2 from '@/routes/v2/home/search_listing_route';
 import shopByCategoryRoutes2 from '@/routes/v2/home/shop_by_category_routes';
@@ -116,6 +118,7 @@ app.use('/api/v1/wordpress', wordpressRoute);
 //v2
 
 app.use('/api', testRoutes2);
+app.use('/api/v2/master', brandRoute2);
 app.use('/api/v2/login', loginOtpRoutes2);
 app.use('/api/v2/login', loginUserRoutes2);
 app.use('/api/v2/notification', notificationRoutes2);
