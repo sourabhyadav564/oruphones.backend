@@ -7,6 +7,8 @@ const fs = require('fs');
 const multer = require('multer');
 const { uploadFile, getFileStream } = require('../../../s3');
 const validUser = require('../../../middleware/valid_user');
+const redis = require('../../../../config/redis');
+
 
 const dirPath = __dirname.toString();
 
@@ -51,6 +53,15 @@ router.post(
 	logEvent,
 	async (req, res) => {
 		const file = req.file;
+		
+
+		if (!file || !file.originalname.match(/\.(jpeg|jpg|png|heic|heif|tiff|eps|svg)$/i)) {
+			return res.status(400).json({
+			  message: 'File type not supported. Only JPEG, JPG, PNG, HEIC, TIFF, EPS ,SVG and HEIF files are allowed.',
+			});
+		  }
+		  
+		
 		let fileName = file?.filename ? file?.filename.split('.')[0] : '';
 
 		let origPath = `${dirPath}/${fileName}_org.webp`;
