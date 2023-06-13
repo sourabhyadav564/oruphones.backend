@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const testScrappedSchema = new mongoose.Schema(
   {
+    make: { 
+      type: String,
+      // required: true,
+    },
     storage: {
       type: mongoose.Schema.Types.Mixed,
       // required: true,
@@ -50,10 +54,10 @@ const testScrappedSchema = new mongoose.Schema(
       type: String,
       // required: true,
     },
-    created_at: {
-      type: Date,
-      // required: true,
-    }
+    // created_at: {
+    //   type: Date,
+    //   // required: true,
+    // }
   },
   { timestamps: true }
 );
