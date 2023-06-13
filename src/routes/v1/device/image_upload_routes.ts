@@ -44,12 +44,7 @@ const options = {
 			transform: (req: Request, file: Express.Multer.File, cb: any) => {
 				cb(
 					null,
-					sharp().resize(1200).webp({
-						quality: 80,
-						alphaQuality: 80,
-						nearLossless: true,
-						force: true,
-					})
+					sharp().resize(1200).webp()
 				);
 			},
 		},
@@ -61,11 +56,7 @@ const options = {
 			transform: (req: Request, file: Express.Multer.File, cb: any) => {
 				cb(
 					null,
-					sharp().resize(200).webp({
-						quality: 80,
-						alphaQuality: 80,
-						force: true,
-					})
+					sharp().resize(200).webp()
 				);
 			},
 		},
