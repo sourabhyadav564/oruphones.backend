@@ -6,7 +6,6 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
-
 const validator = z.object({
 	location: z.string().min(1).max(100),
 	count: z.number().min(1).max(100),
@@ -14,7 +13,7 @@ const validator = z.object({
 
 async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 	try {
-		const { location, count } = validator.parse(req.body);
+		let { location, count } = validator.parse(req.body);
 		const key = `listing/topSellingHome/${location}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
@@ -22,6 +21,9 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			console.log('This response was powered by redis');
 			res.status(200).json({ data: JSON.parse(redisResponse) });
 			return;
+		}
+		if (location && location !== 'India' && location.includes(',')) {
+			location = location.split(',')[0];
 		}
 		const filter = {
 			...(location === 'India'
