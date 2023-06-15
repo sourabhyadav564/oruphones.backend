@@ -81,7 +81,7 @@ const bestDealsSchema = new mongoose.Schema(
 		},
 		listingLocation: {
 			type: String,
-			default: 'India',
+			default: 'Delhi',
 		},
 		listingLocality: {
 			type: String,
@@ -264,6 +264,6 @@ bestDealsSchema.pre('save', async function (next) {
 	next();
 });
 
-bestDealsSchema.index({ latLong: '2dsphere' });
+bestDealsSchema.index({ location: '2dsphere' });
 const bestDealsModal = mongoose.model('complete_best_deals', bestDealsSchema);
 export = bestDealsModal;
