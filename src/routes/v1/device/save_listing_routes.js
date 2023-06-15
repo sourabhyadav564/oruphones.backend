@@ -114,9 +114,6 @@ router.get('/listings', validUser, logEvent, async (req, res) => {
 });
 
 router.post('/listing/save', validUser, logEvent, async (req, res) => {
-
-	console.log(req.body)
-
 	
 	const userUniqueId = req.body.userUniqueId;
 	let listedBy = req.body.listedBy;
@@ -176,6 +173,10 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 		const deviceRam = req.body.deviceRam;
 		let deviceWarranty = req.body.warranty;
 		let latLong = req.body.latLong;
+		let listingState = req.body.state;
+		let listingLocality = req.body.locality;
+		const listingNumPrice = parseInt(req.body.listingPrice);
+
 
 		const cosmetic = req.body.cosmetic;
 
@@ -313,11 +314,22 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 			cosmetic,
 			status: limitExceeded || duplicated ? 'Paused' : 'Active',
 			associatedWith: associatedWith == '' ? null : associatedWith,
+			listingLocality : listingLocality ? listingLocality :null,
+			listingState,
+			listingNumPrice
+
 		};
+		console.log(req.body.latLong.longitude)
+			data.location = {
+			  coordinates: [req.body.latLong.longitude, req.body.latLong.latitude]
+			};
+		  
+		  
 
 		try {
 			const modalInfo = new saveListingModal(data);
 			const dataObject = await modalInfo.save();
+
 
 			if (!limitExceeded && !duplicated) {
 				let newData = {
