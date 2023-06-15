@@ -90,7 +90,7 @@ const bestDealsSchema = new mongoose.Schema(
 			type: String,
 			// required: true,
 		},
-		numericListingPrice: {
+		listingNumPrice: {
 			type: Number,
 		},
 		make: {
@@ -224,9 +224,19 @@ const bestDealsSchema = new mongoose.Schema(
 		agent: {
 			type: String,
 		},
-		latLong: {
+		location: {
 			type: latLongSchema,
 		},
+		latLong: {
+			type: {
+			  latitude: {
+				type: Number,
+			  },
+			  longitude: {
+				type: Number,
+			  },
+			},
+		  },
 		cosmetic: {
 			type: {
 				0: {

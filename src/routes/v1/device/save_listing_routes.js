@@ -114,6 +114,10 @@ router.get('/listings', validUser, logEvent, async (req, res) => {
 });
 
 router.post('/listing/save', validUser, logEvent, async (req, res) => {
+
+	console.log(req.body)
+
+	
 	const userUniqueId = req.body.userUniqueId;
 	let listedBy = req.body.listedBy;
 	let associatedWith = '';
