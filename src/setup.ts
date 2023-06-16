@@ -1,7 +1,7 @@
 import startSavingBestDeals from '@/utils/best_deals_cron_job';
-import startCalculatingLSPTest from '@/utils/new_lsp';
-import startDataMigrationJob from '@/utils/migration_data';
 import sendListingsMail from '@/utils/listing_mails';
+import startDataMigrationJob from '@/utils/migration_data';
+import startCalculatingLSPTest from '@/utils/new_lsp';
 import session from '@/utils/sessionStore';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -48,25 +48,23 @@ app.use(cors(corsOptions));
 app.use(session);
 
 let schedule = require('node-schedule');
+if (process.env.SERVER_URL === 'https://oruphones.com') {
+	schedule.scheduleJob('00 13 * * *', function () {
+		// console.log('The answer to life, the universe, and everything!');
+		startDataMigrationJob();
+	});
 
-schedule.scheduleJob("57 10 * * *", function () {
-	// schedule.scheduleJob("59 13 * * *", function () {
-	console.log("The answer to life, the universe, and everything!");
-	startDataMigrationJob();
-  });
-  
-  schedule.scheduleJob("30 16 * * *", function () {
-	startCalculatingLSPTest();
-  });
-  
-  schedule.scheduleJob("59 11 * * *", function () {
-	console.log("The answer to life, the universe, and everything!");
-	startSavingBestDeals();
-  });
-  
-  schedule.scheduleJob("53 15 * * *", function () {
-	// console.log("Daily Listing Cron Job Started");
-	// SendingSmsJob(true);
-	sendListingsMail();
-  });
+	schedule.scheduleJob('30 16 * * *', function () {
+		startCalculatingLSPTest();
+	});
+
+	schedule.scheduleJob('30 19 * * *', function () {
+		// console.log('The answer to life, the universe, and everything!');
+		startSavingBestDeals();
+	});
+
+	schedule.scheduleJob('00 18 * * *', function () {
+		sendListingsMail();
+	});
+}
 export default app;

@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+// const router = express.Router();
 
 // const saveListingModal = require("@/database/modals/device/save_listing_device");
 const favoriteModal = require('../../src/database/modals/favorite/favorite_add');
@@ -9,65 +9,53 @@ const getRecommendedPrice = require('../../src/utils/get_recommended_price');
 const allMatrix = require('../../src/utils/matrix_figures');
 // const fs = require("fs");
 
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');
 const moment = require('moment');
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv');
 const testScrappedModal = require('../../src/database/modals/others/test_scrapped_models');
 const { newModelImages } = require('./models_util');
-dotenv.config();
+const bestDealsModal = require('@/database/modals/others/best_deals_models');
+const { sendMailUtil } = require('./mail_util');
+// dotenv.config();
 
-const config = nodemailer.createTransport({
-	service: 'gmail',
-	auth: {
-		user: 'mobiruindia22@gmail.com',
-		pass: 'rtrmntzuzwzisajb',
-	},
-});
+// var MongoClient = require('mongodb').MongoClient;
+// var url = process.env.MONGO;
 
-var MongoClient = require('mongodb').MongoClient;
-var url = process.env.MONGO;
-
-let currentDate = new Date();
-let dateFormat = moment(currentDate).add(10, 'days').calendar();
+// let currentDate = new Date();
+// let dateFormat = moment(currentDate).add(10, 'days').calendar();
 
 const collectData = async (data) => {
 	try {
-		MongoClient.connect(url, function (err, db) {
-			if (err) throw err;
-			var dbo = db.db(process.env.Collection);
-			dbo
-				.collection('complete_best_deals')
-				.deleteMany({})
-				.then(() => {
-					dbo
-						.collection('complete_best_deals')
-						.insertMany(data, function (err, res) {
-							if (err) throw err;
-							console.log(
-								`${data.length} documents inserted successfully on ${dateFormat})}`
-							);
-							db.close();
-						});
-				});
-		});
+		// MongoClient.connect(url, function (err, db) {
+		// 	if (err) throw err;
+		// 	var dbo = db.db(process.env.Collection);
+		// 	dbo
+		// 		.collection('complete_best_deals')
+		// 		.deleteMany({})
+		// 		.then(() => {
+		// 			dbo
+		// 				.collection('complete_best_deals')
+		// 				.insertMany(data, function (err, res) {
+		// 					if (err) throw err;
+		// 					console.log(
+		// 						`${data.length} documents inserted successfully on ${dateFormat})}`
+		// 					);
+		// 					db.close();
+		// 				});
+		// 		});
+		// });
 
-		let mailOptions = {
-			from: 'mobiruindia22@gmail.com',
-			to: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp',
-			// to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-			subject: 'Best Deals data has successfully been migrated to MongoDB',
-			text:
-				'Best Deals data has been successfully migrated to MongoDB in the master best deals collection and the number of deals are: ' +
-				data.length +
-				'. The data is not ready to use for other business logics',
-		};
-
-		config.sendMail(mailOptions, function (err, result) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log('Email sent: ' + result.response);
-			}
+		bestDealsModal.deleteMany({}).then(() => {
+			bestDealsModal.insertMany(data).then((res) => {
+				let text =
+					'Best Deals data has been successfully migrated to MongoDB in the master best deals collection and the number of deals are: ' +
+					data.length +
+					'. The data is not ready to use for other business logics';
+				sendMailUtil(
+					'Best Deals data has successfully been migrated to MongoDB',
+					text
+				);
+			});
 		});
 	} catch (error) {
 		console.log(error);
