@@ -190,6 +190,9 @@ const saveListingSchema = new mongoose.Schema(
 				},
 			},
 		},
+		location: {
+			type: latLongSchema,
+		},
 		questionnaireResults: {
 			type: [
 				{
