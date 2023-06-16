@@ -2,8 +2,6 @@ import startSavingBestDeals from '@/utils/best_deals_cron_job';
 import sendListingsMail from '@/utils/listing_mails';
 import startDataMigrationJob from '@/utils/migration_data';
 import startCalculatingLSPTest from '@/utils/new_lsp';
-import startDataMigrationJob from '@/utils/migration_data';
-import sendListingsMail from '@/utils/listing_mails';
 import session from '@/utils/sessionStore';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
