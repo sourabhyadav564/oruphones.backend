@@ -125,17 +125,21 @@ const commonFunc = async (
 			state = location.split(',').slice(-1)[0].trim();
 		}
 
-		// update findingData with location if location is not India
 		if (newLocation !== 'India') {
-			findingData = {
-				...findingData,
-				$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
-			};
-
 			if (state !== '') {
 				findingData = {
 					...findingData,
-					listingState: state,
+					$or: [
+						{
+							$and: [{ listingLocation: newLocation }, { listingState: state }],
+						},
+						{ listingLocation: 'India' },
+					],
+				};
+			} else {
+				findingData = {
+					...findingData,
+					$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
 				};
 			}
 		}
