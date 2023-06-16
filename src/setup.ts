@@ -51,7 +51,7 @@ app.use(session);
 
 let schedule = require('node-schedule');
 if (process.env.SERVER_URL === 'https://oruphones.com') {
-	schedule.scheduleJob('57 10 * * *', function () {
+	schedule.scheduleJob('00 13 * * *', function () {
 		// console.log('The answer to life, the universe, and everything!');
 		startDataMigrationJob();
 	});
@@ -60,12 +60,12 @@ if (process.env.SERVER_URL === 'https://oruphones.com') {
 		startCalculatingLSPTest();
 	});
 
-	schedule.scheduleJob('59 11 * * *', function () {
+	schedule.scheduleJob('30 19 * * *', function () {
 		// console.log('The answer to life, the universe, and everything!');
 		startSavingBestDeals();
 	});
 
-	schedule.scheduleJob('53 15 * * *', function () {
+	schedule.scheduleJob('00 18 * * *', function () {
 		sendListingsMail();
 	});
 }

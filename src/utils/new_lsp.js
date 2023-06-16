@@ -23,47 +23,59 @@ let dateFormat = moment(currentDate).calendar();
 
 const newMakeAndModal = require('../../src/database/modals/others/new_make_and_model');
 const testScrappedModal = require('../../src/database/modals/others/test_scrapped_models');
+const lspModal = require('@/database/modals/others/new_scrapped_models');
+const { sendMailUtil } = require('./mail_util');
 // const fileData = JSON.parse(fs.readFileSync("testing_scrapped_datas.json"));
 let fileData = [];
 
 const collectData = async (data, collection) => {
 	sendMailWithAttachment('Collecting data');
-	let mailOptions = {
-		from: 'mobiruindia22@gmail.com',
-		// to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
-		to: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp',
-		subject: 'Data has successfully been migrated to MongoDB',
-		text:
-			'Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: ' +
-			data.length +
-			'.',
-	};
+	// let mailOptions = {
+	// 	from: 'mobiruindia22@gmail.com',
+	// 	// to: "aman@zenro.co.jp, nishant.sharma@zenro.co.jp",
+	// 	to: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp',
+	// 	subject: 'Data has successfully been migrated to MongoDB',
+	// 	text:
+	// 		'Scrapped data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: ' +
+	// 		data.length +
+	// 		'.',
+	// };
 	try {
-		MongoClient.connect(url, function (err, db) {
-			if (err) throw err;
-			var dbo = db.db(process.env.Collection);
-			dbo
-				.collection(collection)
-				.deleteMany({})
-				.then(() => {
-					dbo.collection(collection).insertMany(data, function (err, res) {
-						if (err) {
-							mailOptions['subject'] = 'Error in migrating data to MongoDB';
-							throw err;
-						}
-						console.log(
-							`${data.length} documents inserted successfully in ${collection} on ${dateFormat})}`
-						);
-						db.close();
-						config.sendMail(mailOptions, function (err, result) {
-							if (err) {
-								console.log(err);
-							} else {
-								// console.log("Email sent: " + result.response);
-							}
-						});
-					});
-				});
+		// MongoClient.connect(url, function (err, db) {
+		// 	if (err) throw err;
+		// 	var dbo = db.db(process.env.Collection);
+		// 	dbo
+		// 		.collection(collection)
+		// 		.deleteMany({})
+		// 		.then(() => {
+		// 			dbo.collection(collection).insertMany(data, function (err, res) {
+		// 				if (err) {
+		// 					mailOptions['subject'] = 'Error in migrating data to MongoDB';
+		// 					throw err;
+		// 				}
+		// 				console.log(
+		// 					`${data.length} documents inserted successfully in ${collection} on ${dateFormat})}`
+		// 				);
+		// 				db.close();
+		// 				config.sendMail(mailOptions, function (err, result) {
+		// 					if (err) {
+		// 						console.log(err);
+		// 					} else {
+		// 						// console.log("Email sent: " + result.response);
+		// 					}
+		// 				});
+		// 			});
+		// 		});
+		// });
+
+		lspModal.deleteMany({}).then(() => {
+			lspModal.insertMany(data).then((res) => {
+				let text =
+					'LSP data has been successfully migrated to MongoDB in the master LSP table and the number of scrapped models are: ' +
+					data.length +
+					'.';
+				sendMailUtil('LSP Calculated Successfully', text);
+			});
 		});
 	} catch (error) {
 		// console.log(error);
