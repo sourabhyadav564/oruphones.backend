@@ -135,7 +135,7 @@ const commonFunc = async (
 			if (state !== '') {
 				findingData = {
 					...findingData,
-					$or: [{ listingState: state }, { listingState: 'India' }],
+					listingState: state,
 				};
 			}
 		}
