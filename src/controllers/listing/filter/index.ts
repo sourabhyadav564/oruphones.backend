@@ -65,13 +65,6 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		if (!returnFilter) {
 			returnFilter = RETURN_FILTER;
 		}
-		if (
-			filter.listingLocation &&
-			filter.listingLocation !== 'India' &&
-			filter.listingLocation.includes(',')
-		) {
-			filter.listingLocation = filter.listingLocation.split(',')[0];
-		}
 		let { sort } = filter;
 		// if ID is provided, just return by ID
 		if (filter.listingId) {
@@ -121,7 +114,17 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			...(ram && { deviceRam: { $in: ram } }),
 			...(listingLocation === 'India'
 				? {}
-				: { listingLocation: { $in: [listingLocation, 'India'] } }),
+				: {
+						$or: [
+							{
+								listingLocation: 'India',
+							},
+							{
+								listingLocation: listingLocation?.split(',')[0],
+								listingState: listingLocation?.split(',')[1],
+							},
+						],
+				  }),
 			...(warranty && {
 				warranty:
 					warranty.length > 1

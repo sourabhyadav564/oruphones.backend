@@ -49,6 +49,7 @@ async function getSimilarWithExternalVendors(
 			deviceCondition: 1,
 			defaultImage: 1,
 			listingLocation: 1,
+			listingState: 1,
 			listingPrice: 1,
 			marketingName: 1,
 			model: 1,

@@ -22,19 +22,27 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			res.status(200).json({ data: JSON.parse(redisResponse) });
 			return;
 		}
-		if (location && location !== 'India' && location.includes(',')) {
-			location = location.split(',')[0];
-		}
 		const filter = {
 			...(location === 'India'
 				? {}
-				: { listingLocation: { $in: [location, 'India'] } }),
+				: {
+						$or: [
+							{
+								listingLocation: 'India',
+							},
+							{
+								listingLocation: location.split(',')[0],
+								listingState: location.split(',')[1],
+							},
+						],
+				  }),
 		};
 		const returnFilter = {
 			_id: 1,
 			deviceCondition: 1,
 			deviceStorage: 1,
 			listingLocation: 1,
+			listingState: 1,
 			listingDate: 1,
 			listingPrice: 1,
 			name: 1,
