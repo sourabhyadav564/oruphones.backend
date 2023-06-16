@@ -67,6 +67,7 @@ async function getSimilarWithExternalVendors(
 			cosmetic: 1,
 			isOtherVendor: 1,
 			make: 1,
+			listingLocality : 1
 		};
 		// Find top 3 bestDeals
 		let bestDeals6 = await Listings.find(filterObj)
