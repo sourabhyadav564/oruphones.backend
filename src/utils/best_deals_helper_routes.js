@@ -150,17 +150,31 @@ const commonFunc = async (
 	}
 
 	let newLocation = location;
+	let state = '';
 
 	if (location?.toString()?.toLowerCase()?.includes(',')) {
 		newLocation = location.split(',')[0].trim();
+		state = location.split(',').pop().trim();
 	}
 
 	// update findingData with location if location is not India
 	if (newLocation !== 'India') {
-		findingData = {
-			...findingData,
-			$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
-		};
+		if (state !== '') {
+			findingData = {
+				...findingData,
+				$or: [
+					{
+						$and: [{ listingLocation: newLocation }, { listingState: state }],
+					},
+					{ listingLocation: 'India' },
+				],
+			};
+		} else {
+			findingData = {
+				...findingData,
+				$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
+			};
+		}
 	}
 
 	const fitlerResults = await applySortFilter(
