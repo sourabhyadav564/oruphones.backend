@@ -107,8 +107,8 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 								listingLocation: 'India',
 							},
 							{
-								listingLocation: listingLocation?.split(',')[0],
-								listingState: listingLocation?.split(',')[1],
+								listingLocation: listingLocation?.split(',')[0].trim(),
+								listingState: listingLocation?.split(',')[1].trim(),
 							},
 						],
 				  }),
