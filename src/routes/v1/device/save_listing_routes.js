@@ -172,6 +172,9 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 		const deviceRam = req.body.deviceRam;
 		let deviceWarranty = req.body.warranty;
 		let latLong = req.body.latLong;
+		let listingState = req.body.state;
+		let listingLocality = req.body.locality;
+		const listingNumPrice = parseInt(req.body.listingPrice);
 
 		const cosmetic = req.body.cosmetic;
 
@@ -309,6 +312,12 @@ router.post('/listing/save', validUser, logEvent, async (req, res) => {
 			cosmetic,
 			status: limitExceeded || duplicated ? 'Paused' : 'Active',
 			associatedWith: associatedWith == '' ? null : associatedWith,
+			listingLocality: listingLocality ? listingLocality : null,
+			listingState,
+			listingNumPrice,
+		};
+		data.location = {
+			coordinates: [req.body.latLong.longitude, req.body.latLong.latitude],
 		};
 
 		try {
@@ -460,6 +469,9 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 	const cosmetic = req.body.cosmetic;
 	let warranty = req.body.warranty;
 	let latLong = req.body.latLong;
+	let listingState = req.body.state;
+	let listingLocality = req.body.locality;
+	const listingNumPrice = parseInt(req.body.listingPrice);
 
 	try {
 		if (listingLocation.toString().toLowerCase().includes(',')) {
@@ -552,7 +564,14 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 							? updateListing.cosmetic
 							: cosmetic,
 					warranty,
+					listingLocality,
+					listingState,
+					listingNumPrice,
 				};
+				dataToBeUpdate.location = {
+					coordinates: [req.body.latLong.longitude, req.body.latLong.latitude],
+				};
+
 				if (updateListing?.deviceCondition === deviceCondition) {
 					dataToBeUpdate = { ...dataToBeUpdate };
 				} else {
@@ -604,6 +623,15 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 					if (updatedListings.make != null) {
 						updatedListings.save();
 					}
+					updatedListings.listingLocality = listingLocality;
+					updatedListings.listingState = listingLocality;
+					updatedListings.listingNumPrice = listingNumPrice;
+					updatedListings.location = {
+						coordinates: [
+							req.body.latLong.longitude,
+							req.body.latLong.latitude,
+						],
+					};
 				}
 				res.status(200).json({
 					reason: 'Listing updated successfully',

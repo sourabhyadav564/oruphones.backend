@@ -9,7 +9,6 @@ const { uploadFile, getFileStream } = require('../../../s3');
 const validUser = require('../../../middleware/valid_user');
 const redis = require('../../../../config/redis');
 
-
 const dirPath = __dirname.toString();
 
 const storage = multer.diskStorage({
@@ -53,15 +52,17 @@ router.post(
 	logEvent,
 	async (req, res) => {
 		const file = req.file;
-		
 
-		if (!file || !file.originalname.match(/\.(jpeg|jpg|png|heic|heif|tiff|eps|svg)$/i)) {
+		if (
+			!file ||
+			!file.originalname.match(/\.(jpeg|jpg|png|heic|heif|tiff|eps|svg)$/i)
+		) {
 			return res.status(400).json({
-			  message: 'File type not supported. Only JPEG, JPG, PNG, HEIC, TIFF, EPS ,SVG and HEIF files are allowed.',
+				message:
+					'File type not supported. Only JPEG, JPG, PNG, HEIC, TIFF, EPS ,SVG and HEIF files are allowed.',
 			});
-		  }
-		  
-		
+		}
+
 		let fileName = file?.filename ? file?.filename.split('.')[0] : '';
 
 		let origPath = `${dirPath}/${fileName}_org.webp`;
@@ -73,13 +74,13 @@ router.post(
 			`${dirPath.toString().split('dist')[0]}src/routes/v1/device/` +
 				`image_handler.py`,
 			// `${dirPath.toString()}` +
-				req.file?.path.toString().split('/')[pathLength.length - 1]
+			req.file?.path.toString().split('/')[pathLength.length - 1]
 		);
 		const pyProg = spawn('python', [
 			`${dirPath.toString().split('dist')[0]}src/routes/v1/device/` +
 				`image_handler.py`,
 			// `${dirPath.toString()}/` +
-				req.file?.path.toString().split('/')[pathLength.length - 1],
+			req.file?.path.toString().split('/')[pathLength.length - 1],
 		]);
 
 		pyProg.stdout.on('data', async (data) => {
