@@ -165,7 +165,7 @@ const newModelImages = {
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/nokia_2780_flip.jpg",
   "nokia c12":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/nokia_c12.jpg",
-  "nothing phone 1":
+  "nothing phone (1)":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/nothing_phone_1.jpg",
   "oneplus 10t 5g":
     "https://d1tl44nezj10jx.cloudfront.net/devImg/allModelsImg/oneplus_10t_5g.jpg",

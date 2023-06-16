@@ -110,11 +110,34 @@ const commonFunc = async (
 				status: ['Active', 'Sold_Out'],
 			};
 		}
-		if (location !== 'India') {
+		// if (location !== 'India') {
+		// 	findingData = {
+		// 		...findingData,
+		// 		$or: [{ listingLocation: location }, { listingLocation: 'India' }],
+		// 	};
+		// }
+
+		let newLocation = location;
+		let state = '';
+
+		if (location?.toString()?.toLowerCase()?.includes(',')) {
+			newLocation = location.split(',')[0].trim();
+			state = location.split(',').slice(-1)[0].trim();
+		}
+
+		// update findingData with location if location is not India
+		if (newLocation !== 'India') {
 			findingData = {
 				...findingData,
-				$or: [{ listingLocation: location }, { listingLocation: 'India' }],
+				$or: [{ listingLocation: newLocation }, { listingLocation: 'India' }],
 			};
+
+			if (state !== '') {
+				findingData = {
+					...findingData,
+					$or: [{ listingState: state }, { listingState: 'India' }],
+				};
+			}
 		}
 
 		const fitlerResults = await applySortFilter(sortBy, page, findingData);

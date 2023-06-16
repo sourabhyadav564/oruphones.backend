@@ -65,6 +65,13 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		if (!returnFilter) {
 			returnFilter = RETURN_FILTER;
 		}
+		if (
+			filter.listingLocation &&
+			filter.listingLocation !== 'India' &&
+			filter.listingLocation.includes(',')
+		) {
+			filter.listingLocation = filter.listingLocation.split(',')[0];
+		}
 		let { sort } = filter;
 		// if ID is provided, just return by ID
 		if (filter.listingId) {

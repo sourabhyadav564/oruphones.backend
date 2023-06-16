@@ -14,6 +14,7 @@ export const RETURN_FILTER = {
 	deviceRam: 1,
 	status: 1,
 	isOtherVendor: 1,
+	imagePath: 1,
 };
 
 export const VENDORS: { [key: number]: string } = {

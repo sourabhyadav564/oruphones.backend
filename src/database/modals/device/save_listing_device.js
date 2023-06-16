@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 
+const latLongSchema = new mongoose.Schema({
+	type: {
+		type: String,
+		default: 'Point',
+	},
+	coordinates: {
+		type: [Number],
+		index: '2dsphere',
+	},
+});
+
 const saveListingSchema = new mongoose.Schema(
 	{
 		charger: {
@@ -68,13 +79,22 @@ const saveListingSchema = new mongoose.Schema(
 		imei: {
 			type: String,
 		},
+		listingState: {
+			type: String,
+		},
 		listingLocation: {
 			type: String,
 			default: 'Delhi',
 		},
+		listingLocality: {
+			type: String,
+		},
 		listingPrice: {
 			type: String,
-			required: true,
+			// required: true,
+		},
+		listingNumPrice: {
+			type: Number,
 		},
 		make: {
 			type: String,
@@ -242,6 +262,8 @@ saveListingSchema.pre('save', async function (next) {
 	this.listingId = this._id;
 	next();
 });
+
+saveListingSchema.index({ location: '2dsphere' });
 
 const saveListingModal = new mongoose.model(
 	'saved_listings',

@@ -28,17 +28,7 @@ router.get('/sessionid', async (req, res) => {
 			sessionId: sessionId,
 			userUniqueId: userUniqueId,
 		});
-
-		// get app versions by app_versions modal
 		const appVersions = await appVersionsModal.findOne();
-		// console.log("appVersions", appVersions);
-
-		// const payload = {
-		//   srcFrom: srcFrom,
-		// };
-		// const accessToken = generateAccessToken(payload);
-		// const refreshToken = generateRefreshToken(payload);
-
 		if (getEventDocs) {
 			res.status(200).json({
 				reason: 'Session already exist',
@@ -53,15 +43,11 @@ router.get('/sessionid', async (req, res) => {
 				},
 				srcFrom: srcFrom,
 				sessionId: sessionId,
-				// accessToken: accessToken,
-				// refreshToken: refreshToken,
 				devicePlatform: devicePlatform,
 				location: location,
 			};
 			const eventModalObject = new eventModal(headerInfo);
 			let dataObject = await eventModalObject.save();
-
-			// add appVersions in dataObject
 			dataObject = { ...dataObject._doc, appVersions };
 
 			res.status(201).json({
