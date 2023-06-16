@@ -1,5 +1,16 @@
 import mongoose from 'mongoose';
 
+const latLongSchema = new mongoose.Schema({
+	type: {
+		type: String,
+		default: 'Point',
+	},
+	coordinates: {
+		type: [Number],
+		index: '2dsphere',
+	},
+});
+
 const bestDealsSchema = new mongoose.Schema(
 	{
 		charger: {
@@ -65,13 +76,22 @@ const bestDealsSchema = new mongoose.Schema(
 		imei: {
 			type: String,
 		},
+		listingState: {
+			type: String,
+		},
 		listingLocation: {
 			type: String,
-			default: 'India',
+			default: 'Delhi',
+		},
+		listingLocality: {
+			type: String,
 		},
 		listingPrice: {
 			type: String,
 			// required: true,
+		},
+		listingNumPrice: {
+			type: Number,
 		},
 		make: {
 			type: String,
@@ -203,8 +223,11 @@ const bestDealsSchema = new mongoose.Schema(
 		},
 		agent: {
 			type: String,
-		  },
-		  latLong: {
+		},
+		location: {
+			type: latLongSchema,
+		},
+		latLong: {
 			type: {
 			  latitude: {
 				type: Number,
@@ -241,5 +264,6 @@ bestDealsSchema.pre('save', async function (next) {
 	next();
 });
 
+bestDealsSchema.index({ location: '2dsphere' });
 const bestDealsModal = mongoose.model('complete_best_deals', bestDealsSchema);
 export = bestDealsModal;
