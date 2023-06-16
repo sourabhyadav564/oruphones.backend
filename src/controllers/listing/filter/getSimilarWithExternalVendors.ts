@@ -49,6 +49,7 @@ async function getSimilarWithExternalVendors(
 			deviceCondition: 1,
 			defaultImage: 1,
 			listingLocation: 1,
+			listingState: 1,
 			listingPrice: 1,
 			marketingName: 1,
 			model: 1,
@@ -66,6 +67,7 @@ async function getSimilarWithExternalVendors(
 			cosmetic: 1,
 			isOtherVendor: 1,
 			make: 1,
+			listingLocality : 1
 		};
 		// Find top 3 bestDeals
 		let bestDeals6 = await Listings.find(filterObj)

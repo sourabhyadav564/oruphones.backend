@@ -26,21 +26,8 @@ function constructPipeline(
 				}),
 			},
 		},
-		{
-			$addFields: {
-				numericListingPrice: {
-					$convert: {
-						input: '$listingPrice',
-						to: 'int',
-						onError: 0,
-						onNull: 0,
-					},
-				},
-			},
-		},
 		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
-		...(priceRangeObj &&
-		Object.keys(priceRangeObj.numericListingPrice).length > 0
+		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
 			? [{ $match: priceRangeObj }]
 			: []),
 		{ $project: returnFilter },
@@ -64,13 +51,6 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		//optional return filter lets us choose what we want to return
 		if (!returnFilter) {
 			returnFilter = RETURN_FILTER;
-		}
-		if (
-			filter.listingLocation &&
-			filter.listingLocation !== 'India' &&
-			filter.listingLocation.includes(',')
-		) {
-			filter.listingLocation = filter.listingLocation.split(',')[0];
 		}
 		let { sort } = filter;
 		// if ID is provided, just return by ID
@@ -121,7 +101,17 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			...(ram && { deviceRam: { $in: ram } }),
 			...(listingLocation === 'India'
 				? {}
-				: { listingLocation: { $in: [listingLocation, 'India'] } }),
+				: {
+						$or: [
+							{
+								listingLocation: 'India',
+							},
+							{
+								listingLocation: listingLocation?.split(',')[0].trim(),
+								listingState: listingLocation?.split(',')[1].trim(),
+							},
+						],
+				  }),
 			...(warranty && {
 				warranty:
 					warranty.length > 1
@@ -181,18 +171,17 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 
 		//sort object
 		const sortObj = sort && {
-			...(sort.price && { numericListingPrice: sort.price }),
+			...(sort.price && { listingNumPrice: sort.price }),
 			...(sort.date && { createdAt: sort.date }),
 		};
 
 		// priceRange object
 		const priceRangeObj = priceRange && {
-			numericListingPrice: {
+			listingNumPrice: {
 				...(priceRange[0] && priceRange[0] !== null && { $gte: priceRange[0] }),
 				...(priceRange[1] && priceRange[1] !== null && { $lte: priceRange[1] }),
 			},
 		};
-
 		// pipeline into two faucets to calculate total count and data
 		// This prevents 2 DB calls
 		let pipeline = constructPipeline(

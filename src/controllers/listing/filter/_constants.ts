@@ -3,6 +3,7 @@ export const RETURN_FILTER = {
 	deviceCondition: 1,
 	defaultImage: 1,
 	listingLocation: 1,
+	listingLocality :1,
 	listingPrice: 1,
 	marketingName: 1,
 	model: 1,

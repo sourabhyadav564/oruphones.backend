@@ -229,14 +229,14 @@ const bestDealsSchema = new mongoose.Schema(
 		},
 		latLong: {
 			type: {
-			  latitude: {
-				type: Number,
-			  },
-			  longitude: {
-				type: Number,
-			  },
+				latitude: {
+					type: Number,
+				},
+				longitude: {
+					type: Number,
+				},
 			},
-		  },
+		},
 		cosmetic: {
 			type: {
 				0: {
@@ -265,5 +265,6 @@ bestDealsSchema.pre('save', async function (next) {
 });
 
 bestDealsSchema.index({ location: '2dsphere' });
+bestDealsSchema.index({ listingNumPrice: 1 });
 const bestDealsModal = mongoose.model('complete_best_deals', bestDealsSchema);
 export = bestDealsModal;

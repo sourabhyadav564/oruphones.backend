@@ -71,25 +71,20 @@ const filteredMakes = async (
 			return;
 		}
 		//get	{unique list of models, their starting price} for a given make, along with its display image
-		const models = await Listings.aggregate(
-			[
-				...(makes && makes.length > 0
-					? [{ $match: { make: { $in: makes } } }]
-					: []),
-				{
-					$group: {
-						_id: '$model',
-						count: { $sum: 1 },
-						minPrice: { $min: '$listingPrice' },
-					},
-				}, // sortByCount stage
-				{ $sort: { count: -1 } },
-				{ $limit: count },
-			],
+		const models = await Listings.aggregate([
+			...(makes && makes.length > 0
+				? [{ $match: { make: { $in: makes } } }]
+				: []),
 			{
-				collation: { locale: 'en_US', numericOrdering: true },
-			}
-		);
+				$group: {
+					_id: '$model',
+					count: { $sum: 1 },
+					minPrice: { $min: '$listingNumPrice' },
+				},
+			}, // sortByCount stage
+			{ $sort: { count: -1 } },
+			{ $limit: count },
+		]);
 		// for each model, use get_default_image to get the display image and append it to the model object using promise.all
 		const modelsWithImages = await Promise.all(
 			models.map(async (model) => {
