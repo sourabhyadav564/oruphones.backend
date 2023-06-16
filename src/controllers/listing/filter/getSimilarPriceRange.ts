@@ -23,10 +23,10 @@ async function getSimilarPriceRange(
 			filter.make = ['Apple'];
 		}
 		// filter such that price is within 20% of listing price
-		const priceRangeObj = listing.listingPrice && {
-			listingPrice: {
-				$gt: parseInt(listing.listingPrice) * 0.8,
-				$lt: parseInt(listing.listingPrice) * 1.2,
+		const priceRangeObj = listing.listingNumPrice && {
+			listingNumPrice: {
+				$gt: listing.listingNumPrice * 0.8,
+				$lt: listing.listingNumPrice * 1.2,
 			},
 		};
 		// construct filterObj
