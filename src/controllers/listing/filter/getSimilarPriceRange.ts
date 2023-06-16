@@ -16,7 +16,7 @@ async function getSimilarPriceRange(
 		if (!listing) throw new Error('Listing not found');
 		if (!filter.limit) filter.limit = 20;
 		if (!returnFilter) {
-			returnFilter = {...RETURN_FILTER, warranty: 1};
+			returnFilter = { ...RETURN_FILTER, warranty: 1 };
 		}
 		// if listing's make is apple, then add apple to filter
 		if (listing.make === 'Apple') {
@@ -24,7 +24,7 @@ async function getSimilarPriceRange(
 		}
 		// filter such that price is within 20% of listing price
 		const priceRangeObj = listing.listingPrice && {
-			numericListingPrice: {
+			listingPrice: {
 				$gt: parseInt(listing.listingPrice) * 0.8,
 				$lt: parseInt(listing.listingPrice) * 1.2,
 			},
@@ -37,18 +37,6 @@ async function getSimilarPriceRange(
 		//  construct pipeline
 		const pipeline = [
 			...(Object.keys(filterObj).length > 0 ? [{ $match: filterObj }] : []),
-			{
-				$addFields: {
-					numericListingPrice: {
-						$convert: {
-							input: '$listingPrice',
-							to: 'int',
-							onError: 0,
-							onNull: 0,
-						},
-					},
-				},
-			},
 			...(priceRangeObj && Object.keys(priceRangeObj).length > 0
 				? [{ $match: priceRangeObj }]
 				: []),

@@ -26,21 +26,8 @@ function constructPipeline(
 				}),
 			},
 		},
-		{
-			$addFields: {
-				numericListingPrice: {
-					$convert: {
-						input: '$listingPrice',
-						to: 'int',
-						onError: 0,
-						onNull: 0,
-					},
-				},
-			},
-		},
 		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
-		...(priceRangeObj &&
-		Object.keys(priceRangeObj.numericListingPrice).length > 0
+		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
 			? [{ $match: priceRangeObj }]
 			: []),
 		{ $project: returnFilter },
@@ -184,18 +171,17 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 
 		//sort object
 		const sortObj = sort && {
-			...(sort.price && { numericListingPrice: sort.price }),
+			...(sort.price && { listingNumPrice: sort.price }),
 			...(sort.date && { createdAt: sort.date }),
 		};
 
 		// priceRange object
 		const priceRangeObj = priceRange && {
-			numericListingPrice: {
+			listingNumPrice: {
 				...(priceRange[0] && priceRange[0] !== null && { $gte: priceRange[0] }),
 				...(priceRange[1] && priceRange[1] !== null && { $lte: priceRange[1] }),
 			},
 		};
-
 		// pipeline into two faucets to calculate total count and data
 		// This prevents 2 DB calls
 		let pipeline = constructPipeline(
