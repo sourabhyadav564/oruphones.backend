@@ -36,7 +36,7 @@ const options = {
 		{
 			id: 'original',
 			key: (req: Request, file: Express.Multer.File, cb: any) => {
-				cb(null, 'image-original.webp');
+				cb(null, `OG-${Date.now()}.webp`);
 			},
 			transform: (req: Request, file: Express.Multer.File, cb: any) => {
 				cb(null, sharp().resize(1200).webp());
@@ -45,7 +45,7 @@ const options = {
 		{
 			id: 'thumbnail',
 			key: (req: Request, file: Express.Multer.File, cb: any) => {
-				cb(null, 'image-thumbnail.webp');
+				cb(null, `Thumb-${Date.now()}.webp`);
 			},
 			transform: (req: Request, file: Express.Multer.File, cb: any) => {
 				cb(null, sharp().resize(200).webp());
