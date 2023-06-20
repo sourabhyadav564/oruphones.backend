@@ -64,6 +64,7 @@ import marketingNameByModelRoutes from '@/routes/v2/master/marketing_name_by_mod
 import notificationRoutes2 from '@/routes/v2/notification/notification_save_token_routes';
 import predictimage from '@/routes/v2/predict_image';
 import s3images from '@/routes/v2/s3images';
+import session from '@/routes/v2/session/createsession'
 //v2-import routes
 import testRoutes2 from '@/routes/v2/test_routes';
 import app from '@/setup';
@@ -118,6 +119,7 @@ app.use('/api/v1/wordpress', wordpressRoute);
 //v2
 
 app.use('/api', testRoutes2);
+app.use('/api/v2',session)
 app.use('/api/v2/master', brandRoute2);
 app.use('/api/v2/login', loginOtpRoutes2);
 app.use('/api/v2/login', loginUserRoutes2);
