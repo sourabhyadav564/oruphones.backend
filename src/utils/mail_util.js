@@ -12,7 +12,7 @@ const sendMailUtil = async (sub, mailBody) => {
 	let mailOptions2 = {
 		from: 'mobiruindia22@gmail.com',
 		to:
-			process.env.SERVER_URL !== 'https://oruphones.com'
+			process.env.SERVER_URL === 'https://oruphones.com'
 				? mailIds.prod
 				: mailIds.dev,
 		subject: sub,

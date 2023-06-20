@@ -25,9 +25,17 @@ const { sendMailUtil } = require('@/utils/mail_util');
 // };
 
 const maxLimit = 100;
-const minLimit = 70;
+const minLimit = 100;
 
-let devNum = ['9660398594', '6375197371', '9772557936', '9649493568'];
+let devNum = [
+	'9660398594',
+	'6375197371',
+	'9772557936',
+	'9649493568',
+	'6378932535',
+	'8209049370',
+	'7976271392',
+];
 let otpNum = ['9261', '4126'];
 
 router.get('/listing/agent/create', async (req, res) => {
@@ -867,7 +875,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 						.sort({ createdAt: -1 })
 						.limit(maxLimit);
 
-					console.log('In Last, time: ', new Date().toLocaleString('en-IN'));
+					// console.log('In Last, time: ', new Date().toLocaleString('en-IN'));
 				} else if (newListings.length > 0) {
 					let allUpdatableListings = [];
 
@@ -910,6 +918,24 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 					(item) => item.status == 'Contacted'
 				);
 
+				// remove duplicate listings from the newListings and remove the listings which are already contacted
+				newListings = newListings.filter(
+					(val, index, self) =>
+						self.findIndex((item) => item._id == val._id) === index
+				);
+
+				contactedListings = contactedListings.filter(
+					(val, index, self) =>
+						self.findIndex((item) => item._id == val._id) === index
+				);
+
+				newListings = newListings.filter(
+					(item) =>
+						!contactedListings.find((contactedItem) => {
+							return contactedItem._id == item._id;
+						})
+				);
+
 				res.status(200).json({
 					reason: 'Listings fetched successfully',
 					statusCode: 200,
@@ -925,6 +951,23 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 				);
 				let contactedListings = await totalListings.filter(
 					(item) => item.status == 'Contacted'
+				);
+
+				liveListings = liveListings.filter(
+					(val, index, self) =>
+						self.findIndex((item) => item._id == val._id) === index
+				);
+
+				contactedListings = contactedListings.filter(
+					(val, index, self) =>
+						self.findIndex((item) => item._id == val._id) === index
+				);
+
+				liveListings = liveListings.filter(
+					(item) =>
+						!contactedListings.find((contactedItem) => {
+							return contactedItem._id == item._id;
+						})
 				);
 
 				res.status(200).json({
