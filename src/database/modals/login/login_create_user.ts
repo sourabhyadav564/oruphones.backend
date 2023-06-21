@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const createUserSchema = new mongoose.Schema(
 	{
@@ -85,10 +85,12 @@ const createUserSchema = new mongoose.Schema(
 );
 
 createUserSchema.pre('save', async function (next) {
-	this.userUniqueId = this._id;
+	this.userUniqueId = this._id.toString();
 	next();
 });
 
-const createUserModal = new mongoose.model('created_user', createUserSchema);
-
-module.exports = createUserModal;
+createUserSchema.index({
+	mobileNumber: 1,
+});
+const createUserModal = mongoose.model('created_user', createUserSchema);
+export = createUserModal;

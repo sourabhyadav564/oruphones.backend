@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
 	{
@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const userModal = new mongoose.model('user_datas', userSchema);
-
-module.exports = userModal;
+userSchema.index({
+	mobileNumber: 1,
+	otp: 1,
+});
+const userModal = mongoose.model('user_datas', userSchema);
+export = userModal;
