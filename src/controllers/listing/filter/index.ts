@@ -193,7 +193,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			limit,
 			notionalBestDealListingIds
 		);
-		// Execute the aggregation pipeline
+				// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
 		const data = {
 			...result[0], // result[0] has the data and totalCount
