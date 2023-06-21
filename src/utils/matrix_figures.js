@@ -1,6 +1,8 @@
 const mailIds = {
 	dev: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp',
-	prod: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, piyush@zenro.co.jp, anish@zenro.co.jp, shubham@oruphones.com',
+	prod: 'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, anish@zenro.co.jp, shubham@oruphones.com',
+	listings:
+		'nishant.sharma@zenro.co.jp, sourabh@zenro.co.jp, nakul.khandelwal007@gmail.com, anish@zenro.co.jp, shubham@oruphones.com',
 };
 
 exports.mailIds = mailIds;
