@@ -4,9 +4,9 @@ const eventModal = require('@/database/modals/others/event_logs');
 
 require('@/database/connection');
 
-router.get('/session', async (req, res) => {
+router.post('/session', async (req, res) => {
   try {
-    const userUniqueId = req.session.user.userUniqueId;
+    const userUniqueId = req.session.User.userUniqueId;
     const sessionId = req.sessionID;
     const eventName = req.headers.eventname;
     const srcFrom = req.headers.srcfrom;
@@ -109,6 +109,11 @@ router.get('/session', async (req, res) => {
     console.log(error);
     res.status(400).json(error);
   }
+});
+
+router.get('/getsession', (req, res) => {
+  console.log(req.session)
+res.send('Session details ' + req.session);
 });
 
 module.exports = router;

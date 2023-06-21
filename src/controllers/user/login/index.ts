@@ -16,7 +16,7 @@ export default async function login(req: Request, res: Response) {
 		if (user) {
 			if (user.password == password) {
 				//set session
-				req.session.user = user;
+				req.session.User = user;
 				res.status(200).json({ message: 'Login Successful' });
 			} else {
 				res.status(400).json({ message: 'Invalid Credentials' });

@@ -5,7 +5,7 @@ export default function isAuth(
 	res: Response,
 	next: NextFunction
 ) {
-	if (req.session.user) {
+	if (req.session.User) {
 		next();
 	} else {
 		res.status(401).json({ message: 'Unauthorized' });

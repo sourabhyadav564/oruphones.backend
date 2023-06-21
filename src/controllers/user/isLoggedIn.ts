@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 export default async function isLoggedIn(req: Request, res: Response) {
-	if (req.session.user) {
+	if (req.session.User) {
 		res
 			.header('Cache-Control', 'no-cache, no-store, must-revalidate')
 			.status(200)
