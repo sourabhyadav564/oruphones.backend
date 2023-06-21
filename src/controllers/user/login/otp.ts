@@ -1,11 +1,34 @@
 import validator, { withOTP } from '@/controllers/user/login/_validator';
 import createUserModal from '@/database/modals/login/login_create_user';
 import userModal from '@/database/modals/login/login_otp_modal';
+import sns from '@/sns';
+import sendLoginOtp from '@/utils/send_login_otp';
+import { PublishCommand } from '@aws-sdk/client-sns';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
 
 function generateOtp() {
 	return Math.floor(1000 + Math.random() * 9000);
+}
+
+async function sendOTP(mobileNumber: number, otp: number) {
+	let params = {
+		Message: `${otp} is your login OTP for your registration process. Please enter the OTP to Proceed. Team ORUphones`,
+		Subject: 'ORU Phones',
+		PhoneNumber: '91' + mobileNumber,
+		MessageAttributes: {
+			'AWS.SNS.SMS.SenderID': {
+				DataType: 'String',
+				StringValue: `${otp}`,
+			},
+		},
+	};
+	try {
+		const data = await sns.send(new PublishCommand(params));
+		console.log('MessageID: ' + JSON.stringify({ MessageID: data.MessageId }));
+	} catch (err) {
+		throw err;
+	}
 }
 
 async function otpCreate(req: Request, res: Response, next: NextFunction) {
@@ -18,6 +41,8 @@ async function otpCreate(req: Request, res: Response, next: NextFunction) {
 		});
 		// save entry to db
 		await otpEntry.save();
+		// send OTP
+		await sendOTP(mobileNumber, otpEntry.otp);
 		res.status(200).json({
 			reason: 'OTP generated successfully',
 			status: 'SUCCESS',
@@ -80,6 +105,6 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 }
 
 export default {
-  otpCreate,
-  otpValidate
-}
+	otpCreate,
+	otpValidate,
+};

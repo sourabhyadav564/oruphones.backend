@@ -1,7 +1,8 @@
-import session from 'express-session';
-import dotenv from 'dotenv';
-import RedisStore from 'connect-redis';
 import redisClient from '@/database/redis';
+import RedisStore from 'connect-redis';
+import dotenv from 'dotenv';
+import session from 'express-session';
+
 dotenv.config();
 
 const secretKey = process.env.SESSION_SECRET || 'secret';
@@ -9,7 +10,7 @@ const secretKey = process.env.SESSION_SECRET || 'secret';
 export default session({
 	store: new RedisStore({ client: redisClient, prefix: 'ORUauth:' }),
 	resave: false,
-    saveUninitialized: true,
+	saveUninitialized: true,
 	secret: secretKey,
 	proxy: true,
 	name: 'ORUauth',
@@ -19,7 +20,7 @@ export default session({
 		// sameSite: 'none',
 		sameSite: 'lax',
 		secure: process.env.NODE_ENV === 'production',
-		maxAge: 1000 * 60 * 60 * 8, // 8 hours
+		maxAge: 1000 * 60 * 60 * 12, // 12 hours
 		httpOnly: true,
 	},
 });
