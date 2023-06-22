@@ -1,7 +1,6 @@
 import validator, { withOTP } from '@/controllers/user/login/_validator';
 import createUserModal from '@/database/modals/login/login_create_user';
 import userModal from '@/database/modals/login/login_otp_modal';
-import { PublishCommand } from '@aws-sdk/client-sns';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
 import fetch from 'node-fetch';
@@ -84,7 +83,7 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 			user.save();
 		}
 		// set session user
-		req.session.User = {
+		req.session.user = {
 			userUniqueId: user.userUniqueId!,
 			mobileNumber: user.mobileNumber,
 		};
