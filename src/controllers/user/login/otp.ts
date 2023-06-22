@@ -84,7 +84,12 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 		}
 		// set session user
 		req.session.user = {
-			userUniqueId: user.userUniqueId!,
+			userUniqueId: user.userUniqueId,
+			userName: user.userName,
+			email: user.email,
+			profilePicPath: user.profilePicPath,
+			city: user.city,
+			state: user.state,
 			mobileNumber: user.mobileNumber,
 		};
 		console.log(req.sessionID, 'req.sessionID');
@@ -94,7 +99,14 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 			dataObject: {
 				submitCountIncrement: 0,
 				maxRetryCount: '3',
-				mobileNumber: mobileNumber,
+			},
+			user: {
+				userName: user.userName,
+				email: user.email,
+				profilePicPath: user.profilePicPath,
+				city: user.city,
+				state: user.state,
+				mobileNumber: user.mobileNumber,
 			},
 		});
 	} catch (err) {
