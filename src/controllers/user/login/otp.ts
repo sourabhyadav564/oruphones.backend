@@ -84,7 +84,7 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 			user.save();
 		}
 		// set session user
-		req.session.user = {
+		req.session.User = {
 			userUniqueId: user.userUniqueId!,
 			mobileNumber: user.mobileNumber,
 		};

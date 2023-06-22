@@ -1,18 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const eventModal = require('@/database/modals/others/event_logs');
 
-router.get('/session', (req, res) => {
-	if (!req.session.isLoggedIn) {
-		req.session.isLoggedIn = false;
-	}
-	const sessionId = req.sessionID;
+require('@/database/connection');
 
-	res.send('Session created with ID: ' + sessionId);
-});
 
 router.get('/getsession', (req, res) => {
-    console.log(req.session)
-	res.send('Session details ' + req.session);
+  console.log(req.session)
+res.send('Session details ' + req.session);
 });
 
 module.exports = router;
