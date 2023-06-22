@@ -15,6 +15,7 @@ export default z.object({
 		listingLocation: z.string().min(1).max(100).optional(),
 		limit: z.number().min(1).max(100).optional(),
 		includeSelf: z.boolean().optional(),
+		notionalIDs: z.string().min(1).max(100).array().optional(),
 		sort: z
 			.object({
 				price: z.number().min(-1).max(1).optional(),

@@ -17,29 +17,58 @@ function constructPipeline(
 	limit: number,
 	notionalBestDealListingIds: string[] | undefined = undefined
 ) {
-	const pipeline = [
-		{
-			$match: {
-				...filterObj,
-				...(notionalBestDealListingIds && {
-					listingId: { $nin: notionalBestDealListingIds },
-				}),
-			},
-		},
-		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
-		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
-			? [{ $match: priceRangeObj }]
-			: []),
-		{ $project: returnFilter },
-		{
-			$facet: {
-				totalCount: [{ $count: 'total' }],
-				data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-			},
-		},
-		{ $unwind: '$totalCount' },
-		{ $project: { data: 1, totalCount: '$totalCount.total' } },
-	];
+	const pipeline =
+		page === 1
+			? [
+					{
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
+						},
+					},
+					...(sortObj && Object.keys(sortObj).length > 0
+						? [{ $sort: sortObj }]
+						: []),
+					...(priceRangeObj &&
+					Object.keys(priceRangeObj?.listingNumPrice).length > 0
+						? [{ $match: priceRangeObj }]
+						: []),
+					{ $project: returnFilter },
+					{
+						$facet: {
+							totalCount: [{ $count: 'total' }],
+							data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+						},
+					},
+					{ $unwind: '$totalCount' },
+					{ $project: { data: 1, totalCount: '$totalCount.total' } },
+			  ]
+			: [
+					{
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
+						},
+					},
+					...(sortObj && Object.keys(sortObj).length > 0
+						? [{ $sort: sortObj }]
+						: []),
+					...(priceRangeObj &&
+					Object.keys(priceRangeObj?.listingNumPrice).length > 0
+						? [{ $match: priceRangeObj }]
+						: []),
+					{ $project: returnFilter },
+					{
+						$skip: (page - 1) * limit,
+					},
+					{
+						$limit: limit,
+					},
+			  ];
 	return pipeline;
 }
 
@@ -92,6 +121,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			ram,
 			priceRange,
 			listingLocation,
+			notionalIDs,
 		} = filter;
 		let filterObj = {
 			...(make && { make: { $in: make } }),
@@ -146,9 +176,12 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			}),
 			...(verified && { verified }),
 		};
+		//calculate pagination
+		const page = req.body.filter.page || 1;
+		const limit = req.body.filter.limit || 20;
 		// if notionalFilter is provided, return an extra field with bestDeals
 		let bestDealsForCarousal = undefined;
-		if (notionalFilter) {
+		if (notionalFilter && page === 1 && !notionalIDs) {
 			bestDealsForCarousal = await Listings.find({
 				...filterObj,
 				notionalPercentage: {
@@ -162,12 +195,10 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 				.select(returnFilter)
 				.lean();
 		}
-		const notionalBestDealListingIds = bestDealsForCarousal?.map(
-			(listing) => listing.listingId as string
-		);
-		//calculate pagination
-		const page = req.body.filter.page || 1;
-		const limit = req.body.filter.limit || 20;
+		const notionalBestDealListingIds =
+			page === 1
+				? bestDealsForCarousal?.map((listing) => listing.listingId as string)
+				: notionalIDs;
 
 		//sort object
 		const sortObj = sort && {
@@ -193,10 +224,10 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			limit,
 			notionalBestDealListingIds
 		);
-				// Execute the aggregation pipeline
+		// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
 		const data = {
-			...result[0], // result[0] has the data and totalCount
+			...(page === 1 ? result[0] : { data: result }), // result[0] has the data and totalCount
 			...(page === 1 && bestDealsForCarousal && bestDealsForCarousal.length > 0
 				? { bestDeals: bestDealsForCarousal }
 				: {}),
