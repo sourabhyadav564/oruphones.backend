@@ -34,6 +34,7 @@ const corsOptions = {
 		'https://devmitra.oruphones.com',
 		'https://mitra.oruphones.com',
 	],
+	credentials: true,
 };
 
 const app: Express = express();

@@ -1,15 +1,6 @@
 import { Request, Response } from 'express';
 
 export default async function isLoggedIn(req: Request, res: Response) {
-	if (req.session.user) {
-		res
-			.header('Cache-Control', 'no-cache, no-store, must-revalidate')
-			.status(200)
-			.json({ isLoggedIn: true });
-	} else {
-		res
-			.header('Cache-Control', 'no-cache, no-store, must-revalidate')
-			.status(200)
-			.json({ isLoggedIn: false });
-	}
+	console.log(req.sessionID, 'req.sessionID');
+	res.status(200).json({ isLoggedIn: req.session.user ? true : false });
 }

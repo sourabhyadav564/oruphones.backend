@@ -1,31 +1,29 @@
 import validator, { withOTP } from '@/controllers/user/login/_validator';
 import createUserModal from '@/database/modals/login/login_create_user';
 import userModal from '@/database/modals/login/login_otp_modal';
-import sns from '@/sns';
-import sendLoginOtp from '@/utils/send_login_otp';
 import { PublishCommand } from '@aws-sdk/client-sns';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
+import fetch from 'node-fetch';
 
 function generateOtp() {
 	return Math.floor(1000 + Math.random() * 9000);
 }
 
 async function sendOTP(mobileNumber: number, otp: number) {
-	let params = {
-		Message: `${otp} is your login OTP for your registration process. Please enter the OTP to Proceed. Team ORUphones`,
-		Subject: 'ORU Phones',
-		PhoneNumber: '91' + mobileNumber,
-		MessageAttributes: {
-			'AWS.SNS.SMS.SenderID': {
-				DataType: 'String',
-				StringValue: `${otp}`,
-			},
-		},
-	};
+	// send OTP using textlocal API
+	const apiKey = process.env.TEXTLOCAL_API_KEY;
+	const sender = 'ORUPHN';
+	const message = `${otp} is the OTP for your login. Please enter the OTP to Proceed. Team ORUphones`;
+	const numbers = `91${mobileNumber}`;
+	const url = `https://api.textlocal.in/send/?apiKey=${apiKey}&sender=${sender}&message=${message}&numbers=${numbers}`;
 	try {
-		const data = await sns.send(new PublishCommand(params));
-		console.log('MessageID: ' + JSON.stringify({ MessageID: data.MessageId }));
+		const response = await fetch(url);
+		const data = await response.json();
+		console.log(data);
+		if (data.status !== 'success') {
+			throw new Error('OTP could not be sent');
+		}
 	} catch (err) {
 		throw err;
 	}
@@ -41,6 +39,7 @@ async function otpCreate(req: Request, res: Response, next: NextFunction) {
 		});
 		// save entry to db
 		await otpEntry.save();
+		console.log('OTP generated: ', otpEntry.otp);
 		// send OTP
 		await sendOTP(mobileNumber, otpEntry.otp);
 		res.status(200).json({
@@ -87,7 +86,9 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 		// set session user
 		req.session.user = {
 			userUniqueId: user.userUniqueId!,
+			mobileNumber: user.mobileNumber,
 		};
+		console.log(req.sessionID, 'req.sessionID');
 		res.status(200).json({
 			reason: 'OTP validated',
 			status: 'SUCCESS',
@@ -95,8 +96,6 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 				submitCountIncrement: 0,
 				maxRetryCount: '3',
 				mobileNumber: mobileNumber,
-				userUniqueId: user.userUniqueId,
-				sessionID: req.sessionID,
 			},
 		});
 	} catch (err) {
