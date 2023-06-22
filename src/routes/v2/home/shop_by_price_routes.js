@@ -16,7 +16,7 @@ router.get("/shopbyprice/listmodel", logEvent, async (req, res) => {
   const startPrice = req.query.start;
   const endPrice = req.query.end;
   const location = req.query.listingLocation;
-  const User = req.session.User;
+  const User = req.session.user;
 
   let userUniqueId = "Guest";
   if(User){

@@ -5,25 +5,9 @@ const useragent = require('useragent');
 dotenv.config();
 
 const logEvent = async (req, res, next) => {
-	const userUniqueId = req.session.User.userUniqueId;
-	const events = req.headers.eventname;
-	const sessionId = req.sessionID;
-	const location = req.headers.location;
-	const devicePlatform = req.headers.deviceplatform;
-
-	const userAgentString = req.headers['user-agent'];
-	const userAgent = useragent.parse(userAgentString);
-
-	const srcFrom = userAgent.source;
-
-	const getEvent = await eventModal.findOne({ userUniqueId: userUniqueId });
-	const currentTime = moment(Date.now()).format('LTS');
-	const expirationTime = moment(
-		getEvent?.createdAt?.setHours(getEvent?.createdAt.getHours() + 4)
-	).format('LTS');
 
 	try {
-		const userUniqueId = req.session.User.userUniqueId;
+		const userUniqueId = req.session.user.userUniqueId;
 		const sessionId = req.sessionID;
 		const eventName = req.headers.eventname;
 		const srcFrom = req.headers.srcfrom;
