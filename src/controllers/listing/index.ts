@@ -7,15 +7,69 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
+const stateAreaModal = require('@/database/modals/global/locations/state');
+const cityAreaModal = require('@/database/modals/global/locations/city');
+const AreaModal = require('@/database/modals/global/locations/area');
+
 const validator = z.object({
-	location: z.string().min(1).max(100),
+	locationId: z.number().min(1).max(100000000),
+	locationType: z.string().min(1).max(100),
 	count: z.number().min(1).max(100),
 });
 
+// async function fetchLocationIds(locationType: String, locationId: Number) {
+// 	let LocationIds = [];
+
+// 	if (locationType === 'city') {
+// 		LocationIds.push(locationId);
+// 		const parentDataFromArea = await AreaModal.find({
+// 			parentId: locationId,
+// 		}).exec();
+// 		parentDataFromArea.map((element: any) => LocationIds.push(element.id));
+// 	} else if (locationType === 'area') {
+// 		const parentDataFromArea = await AreaModal.findOne({
+// 			id: locationId,
+// 		}).exec();
+
+// 		const otherListingsFromArea = await AreaModal.find({
+// 			parentId: parentDataFromArea.parentId,
+// 		}).exec();
+// 		otherListingsFromArea.map((element: any) => LocationIds.push(element.id));
+// 	}
+
+// 	return LocationIds;
+// }
+async function fetchLatLong(
+	locationType: string,
+	locationId: number
+): Promise<{ lat: string; long: string }> {
+	let location = { lat: '', long: '' };
+
+	if (locationType === 'City') {
+		const dataFromCity = await cityAreaModal.findOne({ id: locationId }).exec();
+
+		if (dataFromCity) {
+			location.lat = dataFromCity.latitude;
+			location.long = dataFromCity.longitude;
+		}
+	} else if (locationType === 'Area') {
+		const dataFromArea = await AreaModal.findOne({ id: locationId }).exec();
+		if (dataFromArea) {
+			location.lat = dataFromArea.latitude;
+			location.long = dataFromArea.longitude;
+		}
+	}
+
+	return location;
+}
+
 async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 	try {
-		let { location, count } = validator.parse(req.body);
-		const key = `listing/topSellingHome/${location}}`;
+		let { locationId, locationType, count } = validator.parse(req.body);
+        console.log(locationId, locationType, count )
+		let { lat, long } = await fetchLatLong(locationType, locationId);
+
+		const key = `listing/TopSellingHome/${locationId}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
 		if (redisResponse !== null) {
@@ -23,21 +77,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			res.status(200).json({ data: JSON.parse(redisResponse) });
 			return;
 		}
-		const filter = {
-			...(location === 'India'
-				? {}
-				: {
-						$or: [
-							{
-								listingLocation: 'India',
-							},
-							{
-								listingLocation: location.split(',')[0].trim(),
-								listingState: location.split(',')[1].trim(),
-							},
-						],
-				  }),
-		};
+
 		const returnFilter = {
 			_id: 1,
 			deviceCondition: 1,
@@ -50,12 +90,23 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			name: 1,
 			isOtherVendor: 1,
 			marketingName: 1,
-			listingId: 1,
+			locationId: 1,
 			verified: 1,
 			imagePath: 1,
 			status: 1,
 		};
-		let topSelling = await Listing.find(filter, returnFilter)
+
+		let topSelling = await Listing.find(
+			{
+				location: {
+					$near: {
+						$geometry: { type: 'Point', coordinates: [long, lat] },
+						$maxDistance: 500000,
+					},
+				},
+			},
+			returnFilter
+		)
 			.limit(count)
 			.lean();
 		// check if top selling is empty
@@ -66,6 +117,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 		await redisClient.setEx(key, 60 * 60 * 12, JSON.stringify(topSelling));
 	} catch (error) {
 		next(error);
+		console.log(error)
 	}
 }
 

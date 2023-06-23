@@ -10,15 +10,21 @@ const cityAreaModal = require('@/database/modals/global/locations/city');
 const AreaModal = require('@/database/modals/global/locations/area');
 
 router.get('/cities', async (req, res) => {
+	let allStates = await stateAreaModal.find({}, { name: 1, id: 1 });
 	try {
 		let limited = req.query.limited || false;
 		let searchText = req.query.searchText || '';
+
 		let dataObject = [];
+
+		let cityDataObject = [];
+		let areaDataObject = [];
 		dataObject.push({
 			_id: '627ff0daad80a210af722de4675f8f8f',
 			displayWithImage: '0',
 			city: 'India',
 		});
+		let finalDataObject = [];
 		let dataObject2 = [];
 		if (!searchText || searchText == '') {
 			dataObject2 = await cityAreaModal.aggregate([
@@ -37,15 +43,33 @@ router.get('/cities', async (req, res) => {
 					},
 				},
 			]);
+
+			let areaDataObject = await AreaModal.aggregate([
+				{
+					$match: limited ? { displayWithImage: '1' } : {},
+				},
+				{
+					$project: {
+						area: '$name',
+						displayWithImage: {
+							$ifNull: ['$displayWithImage', '0'],
+						},
+						imgpath: '$imgpath' || null,
+						id: '$id',
+						parentId: '$parentId',
+					},
+				},
+			]);
+
+			cityDataObject = dataObject2.concat(areaDataObject);
 		} else {
-			let dataObject3 = await cityAreaModal
+			cityDataObject = await cityAreaModal
 				.aggregate([
 					{
 						$match: {
 							name: {
-								$all: searchText.split(' ').map((word) => {
-									return new RegExp(word, 'i');
-								}),
+								$regex: `^${searchText}`,
+								$options: 'i',
 							},
 						},
 					},
@@ -63,48 +87,71 @@ router.get('/cities', async (req, res) => {
 				])
 				.limit(10);
 
-			dataObject2 = dataObject3;
+			areaDataObject = await AreaModal.aggregate([
+				{
+					$match: {
+						name: {
+							$regex: `^${searchText}`,
+							$options: 'i',
+						},
+					},
+				},
+				{
+					$project: {
+						area: '$name',
+						displayWithImage: {
+							$ifNull: ['$displayWithImage', '0'],
+						},
+						imgpath: '$imgpath' || null,
+						id: '$id',
+						parentId: '$parentId',
+					},
+				},
+			]).limit(10);
 		}
 
-		let allStates = await stateAreaModal.find({}, { name: 1, id: 1 });
-
-		dataObject = dataObject.concat(dataObject2);
-
-		let newDataObj = [];
-
-		for (let i = 0; i < dataObject.length; i++) {
-			let city = dataObject[i].city;
-
-			let state = allStates.find((state) => {
-				return state.id == dataObject[i].parentId;
-			});
-
+		for (const cityData of cityDataObject) {
+			const state = allStates.find((state) => state.id === cityData.parentId);
 			if (state) {
-				city += ', ' + state.name;
+				const cityState = cityData.city + ', ' + state.name;
+				finalDataObject.push({
+					id: cityData.id,
+					city: cityState,
+					type: 'City',
+					displayWithImage: cityData.displayWithImage,
+					imgpath: cityData.imgpath || null,
+				});
 			}
-
-			newDataObj.push({
-				id: dataObject[i].id,
-				city: city,
-				displayWithImage: dataObject[i].displayWithImage,
-				imgpath: dataObject[i].imgpath || null,
-			});
 		}
 
+		for (const areaData of areaDataObject) {
+			const city = await cityAreaModal.findOne({ id: areaData.parentId });
+			if (city) {
+				const areaCity = areaData.area + ', ' + city.name;
+
+				finalDataObject.push({
+					id: areaData.id,
+					city: areaCity,
+					type: 'Area',
+					displayWithImage: areaData.displayWithImage,
+					imgpath: areaData.imgpath || null,
+				});
+			}
+		}
 		res.status(200).json({
 			reason: 'Cities found',
 			statusCode: 200,
 			status: 'SUCCESS',
-			dataObject: newDataObj,
+			dataObject: finalDataObject,
 		});
 	} catch (error) {
 		res.status(400).json(error);
+		console.log(error);
 	}
 });
 
 router.get('/getLocationList', async (req, res) => {
 	try {
-
 		let type = req.query.type;
 		let parentId = req.query.parentId;
 		let latLong = req.query.latLong;
