@@ -3,7 +3,6 @@ export type TUser = {
 	userName: string;
 	userType: string;
 	email: string;
-	password: string;
 	isaccountexpired: boolean;
 	profilePicPath: string;
 	mobileNumber: string;
@@ -18,4 +17,5 @@ export type TUser = {
 	createdDate: string;
 	favListings: string[];
 	userListings: string[];
+	associatedWith: string;
 };

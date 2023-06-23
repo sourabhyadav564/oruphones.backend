@@ -122,6 +122,7 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 			city: user.city,
 			state: user.state,
 			mobileNumber: user.mobileNumber,
+			associatedWith: user.associatedWith,
 			favListings,
 			userListings,
 		};
@@ -139,6 +140,7 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 				city: user.city,
 				state: user.state,
 				mobileNumber: user.mobileNumber,
+				associatedWith: user.associatedWith,
 				...(favListings && { favListings }),
 				...(userListings && { userListings }),
 			},
