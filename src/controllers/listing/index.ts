@@ -45,14 +45,15 @@ async function fetchLatLong(
 ): Promise<{ lat: string; long: string }> {
 	let location = { lat: '', long: '' };
 
-	if (locationType === 'City') {
+	if (locationType === 'City' || locationType === 'city') {
 		const dataFromCity = await cityAreaModal.findOne({ id: locationId }).exec();
 
 		if (dataFromCity) {
+			console.log(dataFromCity)
 			location.lat = dataFromCity.latitude;
 			location.long = dataFromCity.longitude;
 		}
-	} else if (locationType === 'Area') {
+	} else if (locationType === 'Area' || locationType === 'area') {
 		const dataFromArea = await AreaModal.findOne({ id: locationId }).exec();
 		if (dataFromArea) {
 			location.lat = dataFromArea.latitude;
@@ -69,7 +70,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
         console.log(locationId, locationType, count )
 		let { lat, long } = await fetchLatLong(locationType, locationId);
 
-		const key = `listing/TopSellingHome/${locationId}}`;
+		const key = `listing/topsellingHome/${locationId}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
 		if (redisResponse !== null) {
