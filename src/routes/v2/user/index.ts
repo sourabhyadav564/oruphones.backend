@@ -1,3 +1,4 @@
+import favs from '@/controllers/user/favs';
 import isLoggedIn from '@/controllers/user/isLoggedIn';
 import loginController from '@/controllers/user/login';
 import otp from '@/controllers/user/login/otp';
@@ -9,7 +10,8 @@ import express from 'express';
 const router = express.Router();
 
 router.get('/isloggedin', isLoggedIn);
-router.get('/logout', logout);
+router.get('/logout', isAuth, logout);
+router.post('/favs', isAuth, favs);
 router.post('/update', isAuth, update);
 router.post('/login/otpCreate', otp.otpCreate);
 router.post('/login/otpValidate', otp.otpValidate);

@@ -1,4 +1,6 @@
 import validator, { withOTP } from '@/controllers/user/login/_validator';
+import saveListingModal from '@/database/modals/device/save_listing_device';
+import favouriteModal from '@/database/modals/favorite/favorite_add';
 import createUserModal from '@/database/modals/login/login_create_user';
 import userModal from '@/database/modals/login/login_otp_modal';
 import { NextFunction, Request, Response } from 'express';
@@ -73,6 +75,8 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 		let user = await createUserModal.findOne({
 			mobileNumber,
 		});
+		let favListings: string[] = [];
+		let userListings: string[] = [];
 		// if no such user exists, create one
 		if (!user || user === undefined || user === null) {
 			user = new createUserModal({
@@ -81,6 +85,33 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 				createdDate: moment(new Date()).format('L'),
 			});
 			user.save();
+		} else {
+			// else populate their favListings and userListings
+			[favListings, userListings] = await Promise.all([
+				favouriteModal
+					.findOne({
+						userUniqueId: user.userUniqueId,
+					})
+					.sort({
+						_id: -1,
+					})
+					.lean()
+					.then((favListings) => favListings?.fav_listings as string[]),
+				saveListingModal
+					.find({
+						userUniqueId: user.userUniqueId,
+					})
+					.sort({
+						_id: -1,
+					})
+					.lean()
+					.then(
+						(userListings) =>
+							userListings?.map(
+								(userListing) => userListing.listingId
+							) as string[]
+					),
+			]);
 		}
 		// set session user
 		req.session.user = {
@@ -91,8 +122,9 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 			city: user.city,
 			state: user.state,
 			mobileNumber: user.mobileNumber,
+			favListings,
+			userListings,
 		};
-		console.log(req.sessionID, 'req.sessionID');
 		res.status(200).json({
 			reason: 'OTP validated',
 			status: 'SUCCESS',
@@ -107,6 +139,8 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 				city: user.city,
 				state: user.state,
 				mobileNumber: user.mobileNumber,
+				...(favListings && { favListings }),
+				...(userListings && { userListings }),
 			},
 		});
 	} catch (err) {

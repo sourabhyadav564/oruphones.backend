@@ -16,4 +16,6 @@ export type TUser = {
 	city: string;
 	state: string;
 	createdDate: string;
+	favListings: string[];
+	userListings: string[];
 };

@@ -1,3 +1,4 @@
+import listings from './listings';
 import filterController from '@/controllers/listing/filter';
 import makes from '@/controllers/listing/makes';
 import models from '@/controllers/listing/models';
@@ -42,7 +43,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			deviceCondition: 1,
 			deviceStorage: 1,
 			listingLocation: 1,
-			listingLocality : 1,
+			listingLocality: 1,
 			listingState: 1,
 			listingDate: 1,
 			listingPrice: 1,
@@ -73,4 +74,5 @@ export default {
 	filter: filterController,
 	models,
 	makes,
+	listings,
 };
