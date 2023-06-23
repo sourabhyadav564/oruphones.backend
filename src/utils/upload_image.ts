@@ -1,7 +1,5 @@
-import express, { Request } from 'express';
-import logEvent from '../../../middleware/event_logging';
-import validUser from '../../../middleware/valid_user';
-import { getFileStream, s3 } from '../../../s3_2';
+import { s3 } from '@/s3_2';
+import { Request } from 'express';
 import multer from 'multer';
 import multerS3 from 'multer-s3-transform';
 import sharp from 'sharp';
@@ -59,26 +57,41 @@ const options = {
 	],
 };
 
-const router = express.Router();
-const storage = multerS3(options);
-const upload = multer({ fileFilter: fileFilter as any, storage });
+const singleOptions = {
+	s3,
+	bucket: bucketName,
+	contentType: multerS3.AUTO_CONTENT_TYPE,
+	acl: 'public-read',
+	cacheControl: 'max-age=31536000',
+	limits: {
+		fileSize: 5 * 1000 * 1000, // 5 MB
+	},
+	shouldTransform: function (req: Request, file: Express.Multer.File, cb: any) {
+		if (regexWithoutTransform.test(file.mimetype)) {
+			return cb(null, false);
+		}
+		return cb(null, /^image/i.test(file.mimetype));
+	},
+	transforms: [
+		{
+			id: 'thumbnail',
+			key: (req: Request, file: Express.Multer.File, cb: any) => {
+				cb(null, `Thumb-${Date.now()}.webp`);
+			},
+			transform: (req: Request, file: Express.Multer.File, cb: any) => {
+				cb(null, sharp().resize(200).webp());
+			},
+		},
+	],
+};
 
-router.get('/uploadimage/:key', (req, res) => {
-	const key = req.params.key;
-	const readStream = getFileStream(key);
-	readStream.pipe(res);
+const storage = multerS3(options);
+const singleStorage = multerS3(singleOptions);
+
+const upload = multer({ fileFilter: fileFilter as any, storage });
+export const singleUpload = multer({
+	fileFilter: fileFilter as any,
+	storage: singleStorage,
 });
 
-router.post(
-	'/uploadimage',
-	validUser,
-	logEvent,
-	upload.single('image'),
-	(req, res, next) => {
-		res
-			.status(201)
-			.json({ message: 'Image uploaded successfully', file: req.file });
-	}
-);
-
-export default router;
+export default upload;

@@ -25,7 +25,13 @@ export default async function update(
 			},
 			{ new: true }
 		);
-		console.log('Updated user is: ', response);
+		// update user in req.session.user
+		req.session.user = {
+			...req.session.user,
+			...(userName && { userName }),
+			...(email && { email }),
+			...(mobileNumber && { mobileNumber }),
+		};
 		res.status(200).json({
 			reason: 'User details updated successfully',
 			status: 'SUCCESS',
