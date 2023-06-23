@@ -479,7 +479,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 			return;
 		} else {
 			if (deviceCondition == 'Like New') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'four':
 						deviceCondition = 'Excellent';
 						break;
@@ -494,7 +494,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 						break;
 				}
 			} else if (deviceCondition == 'Excellent') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'seven':
 						deviceCondition = 'Excellent';
 						break;
