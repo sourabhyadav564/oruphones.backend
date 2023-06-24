@@ -7,25 +7,27 @@ export default async function imageUpload(
 	next: NextFunction
 ) {
 	try {
-		const { profilePic } = req.query;
-		if (profilePic) {
-			const response = await Users.findOneAndUpdate(
-				{ userUniqueId: req.session.user!.userUniqueId },
-				{
+		const { type } = req.query;
+		switch (type) {
+			case 'profilePic': {
+				await Users.findOneAndUpdate(
+					{ userUniqueId: req.session.user!.userUniqueId },
+					{
+						profilePicPath: (req.file as any)?.transforms[0].location,
+					},
+					{ new: true }
+				);
+				// Update user in req.session.user
+				req.session.user = {
+					...req.session.user,
 					profilePicPath: (req.file as any)?.transforms[0].location,
-				},
-				{ new: true }
-			);
-			// Update user in req.session.user
-			req.session.user = {
-				...req.session.user,
-				profilePicPath: (req.file as any)?.transforms[0].location,
-			};
-			return res.status(200).json({
-				reason: 'User details updated successfully',
-				status: 'SUCCESS',
-				profilePicPath: (req.file as any)?.transforms[0].location,
-			});
+				};
+				return res.status(200).json({
+					reason: 'User details updated successfully',
+					status: 'SUCCESS',
+					profilePicPath: (req.file as any)?.transforms[0].location,
+				});
+			}
 		}
 	} catch (err) {
 		next(err);
