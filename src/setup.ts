@@ -8,6 +8,8 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import useragent from 'express-useragent';
+
 
 require('dotenv').config();
 
@@ -46,6 +48,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
+app.use(useragent.express());
 app.use(session);
 
 let schedule = require('node-schedule');

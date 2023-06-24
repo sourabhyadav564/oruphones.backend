@@ -68,6 +68,7 @@ import session from '@/routes/v2/session/createsession'
 //v2-import routes
 import testRoutes2 from '@/routes/v2/test_routes';
 import app from '@/setup';
+import eventLogger from '@/middleware/eventLogger';
 
 const port = process.env.PORT || 5000;
 
@@ -144,6 +145,7 @@ app.use('/api/v2/api', diagnosticsConfigRoute2);
 app.use('/api/v2/api', getBatteryTestRoutes2);
 // app.use('/api/v2/images', predictimage);
 
+app.use(eventLogger)
 app.use(router);
 app.use(errorHandler);
 app.listen(port, () => {

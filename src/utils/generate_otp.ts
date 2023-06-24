@@ -3,4 +3,4 @@ function generateOTP() {
   return OTP;
 }
 
-module.exports = generateOTP;
+export = generateOTP;

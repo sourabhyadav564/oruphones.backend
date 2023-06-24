@@ -3,13 +3,10 @@ import saveListingModal from '@/database/modals/device/save_listing_device';
 import favouriteModal from '@/database/modals/favorite/favorite_add';
 import createUserModal from '@/database/modals/login/login_create_user';
 import userModal from '@/database/modals/login/login_otp_modal';
+import generateOtp from '@/utils/generate_otp';
 import { NextFunction, Request, Response } from 'express';
 import moment from 'moment';
 import fetch from 'node-fetch';
-
-function generateOtp() {
-	return Math.floor(1000 + Math.random() * 9000);
-}
 
 async function sendOTP(mobileNumber: number, otp: number) {
 	// send OTP using textlocal API

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const eventSchema = new mongoose.Schema(
 	{
@@ -30,6 +30,9 @@ const eventSchema = new mongoose.Schema(
 			type: String || Number,
 			// required: true,
 		},
+		sessionID: {
+			type: String,
+		},
 		accessToken: {
 			type: String,
 			// required: true,
@@ -51,10 +54,9 @@ const eventSchema = new mongoose.Schema(
 );
 
 eventSchema.pre('save', async function (next) {
-	this.sessionId = this._id;
+	this.sessionId = this._id.toString();
 	next();
 });
-
-const eventModal = new mongoose.model('event_loggings', eventSchema);
-
-module.exports = eventModal;
+eventSchema.index({ sessionId: 1 });
+const eventModal = mongoose.model('event_loggings', eventSchema);
+export = eventModal;
