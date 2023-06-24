@@ -7,70 +7,18 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
-const stateAreaModal = require('@/database/modals/global/locations/state');
-const cityAreaModal = require('@/database/modals/global/locations/city');
-const AreaModal = require('@/database/modals/global/locations/area');
-
 const validator = z.object({
-	locationId: z.number().min(1).max(100000000),
-	locationType: z.string().min(1).max(100),
+	latitude: z.number().min(-90).max(90),
+	longitude: z.number().min(-180).max(180),
 	count: z.number().min(1).max(100),
 });
 
-// async function fetchLocationIds(locationType: String, locationId: Number) {
-// 	let LocationIds = [];
-
-// 	if (locationType === 'city') {
-// 		LocationIds.push(locationId);
-// 		const parentDataFromArea = await AreaModal.find({
-// 			parentId: locationId,
-// 		}).exec();
-// 		parentDataFromArea.map((element: any) => LocationIds.push(element.id));
-// 	} else if (locationType === 'area') {
-// 		const parentDataFromArea = await AreaModal.findOne({
-// 			id: locationId,
-// 		}).exec();
-
-// 		const otherListingsFromArea = await AreaModal.find({
-// 			parentId: parentDataFromArea.parentId,
-// 		}).exec();
-// 		otherListingsFromArea.map((element: any) => LocationIds.push(element.id));
-// 	}
-
-// 	return LocationIds;
-// }
-async function fetchLatLong(
-	locationType: string,
-	locationId: number
-): Promise<{ lat: string; long: string }> {
-	let location = { lat: '', long: '' };
-
-	if (locationType === 'City' || locationType === 'city') {
-		const dataFromCity = await cityAreaModal.findOne({ id: locationId }).exec();
-
-		if (dataFromCity) {
-			console.log(dataFromCity)
-			location.lat = dataFromCity.latitude;
-			location.long = dataFromCity.longitude;
-		}
-	} else if (locationType === 'Area' || locationType === 'area') {
-		const dataFromArea = await AreaModal.findOne({ id: locationId }).exec();
-		if (dataFromArea) {
-			location.lat = dataFromArea.latitude;
-			location.long = dataFromArea.longitude;
-		}
-	}
-
-	return location;
-}
-
 async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 	try {
-		let { locationId, locationType, count } = validator.parse(req.body);
-        console.log(locationId, locationType, count )
-		let { lat, long } = await fetchLatLong(locationType, locationId);
+		console.log(req.body)
+		let { longitude, latitude, count } = validator.parse(req.body);
 
-		const key = `listing/topsellingHome/${locationId}}`;
+		const key = `listing/topsellingHome/${longitude}/${latitude}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
 		if (redisResponse !== null) {
@@ -101,7 +49,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			{
 				location: {
 					$near: {
-						$geometry: { type: 'Point', coordinates: [long, lat] },
+						$geometry: { type: 'Point', coordinates: [longitude, latitude] },
 						$maxDistance: 500000,
 					},
 				},
@@ -118,7 +66,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 		await redisClient.setEx(key, 60 * 60 * 12, JSON.stringify(topSelling));
 	} catch (error) {
 		next(error);
-		console.log(error)
+		console.log(error);
 	}
 }
 

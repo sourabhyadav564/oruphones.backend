@@ -38,8 +38,9 @@ router.get('/cities', async (req, res) => {
 							$ifNull: ['$displayWithImage', '0'],
 						},
 						imgpath: '$imgpath' || null,
-						id: '$id',
 						parentId: '$parentId',
+						longitude : '$longitude',
+						latitude : '$latitude',
 					},
 				},
 			]);
@@ -55,8 +56,9 @@ router.get('/cities', async (req, res) => {
 							$ifNull: ['$displayWithImage', '0'],
 						},
 						imgpath: '$imgpath' || null,
-						id: '$id',
 						parentId: '$parentId',
+						longitude : '$longitude',
+						latitude : '$latitude',
 					},
 				},
 			]);
@@ -82,6 +84,8 @@ router.get('/cities', async (req, res) => {
 							imgpath: '$imgpath' || null,
 							id: '$id',
 							parentId: '$parentId',
+							longitude : '$longitude',
+							latitude : '$latitude',
 						},
 					},
 				])
@@ -105,19 +109,23 @@ router.get('/cities', async (req, res) => {
 						imgpath: '$imgpath' || null,
 						id: '$id',
 						parentId: '$parentId',
+						longitude : '$longitude',
+						latitude : '$latitude',
 					},
 				},
-			]).limit(10);
+			]).limit(15);
 		}
 
 		for (const cityData of cityDataObject) {
 			const state = allStates.find((state) => state.id === cityData.parentId);
 			if (state) {
 				const cityState = cityData.city + ', ' + state.name;
+
 				finalDataObject.push({
-					id: cityData.id,
+					latitude: cityData.latitude,
+					longitude: cityData.longitude,
 					city: cityState,
-					type: 'City',
+					type : "City",
 					displayWithImage: cityData.displayWithImage,
 					imgpath: cityData.imgpath || null,
 				});
@@ -128,11 +136,11 @@ router.get('/cities', async (req, res) => {
 			const city = await cityAreaModal.findOne({ id: areaData.parentId });
 			if (city) {
 				const areaCity = areaData.area + ', ' + city.name;
-
 				finalDataObject.push({
-					id: areaData.id,
 					city: areaCity,
-					type: 'Area',
+					type : "Area",
+					latitude: areaData.latitude,
+					longitude: areaData.longitude,
 					displayWithImage: areaData.displayWithImage,
 					imgpath: areaData.imgpath || null,
 				});
