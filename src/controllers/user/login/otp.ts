@@ -33,14 +33,22 @@ async function sendOTP(mobileNumber: number, otp: number) {
 async function otpCreate(req: Request, res: Response, next: NextFunction) {
 	try {
 		const { countryCode, mobileNumber } = validator.parse(req.body);
-		const otpEntry = new userModal({
+		// check if userModal exists
+		let otpEntry = await userModal.findOne({
 			mobileNumber,
 			countryCode,
-			otp: generateOtp(),
 		});
-		// save entry to db
-		await otpEntry.save();
-		console.log('OTP generated: ', otpEntry.otp);
+		if (!otpEntry || otpEntry === undefined || otpEntry === null) {
+			console.log(`OTP not found, generating new OTP`);
+			otpEntry = new userModal({
+				mobileNumber,
+				countryCode,
+				otp: generateOtp(),
+			});
+			// save entry to db
+			await otpEntry.save();
+		}
+		console.log(`OTP found/gen: `, otpEntry.otp);
 		// send OTP
 		await sendOTP(mobileNumber, otpEntry.otp);
 		res.status(200).json({
