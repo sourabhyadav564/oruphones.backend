@@ -1,4 +1,5 @@
 import listings from './listings';
+import sendVerification from './sendVerification';
 import filterController from '@/controllers/listing/filter';
 import makes from '@/controllers/listing/makes';
 import models from '@/controllers/listing/models';
@@ -15,7 +16,7 @@ const validator = z.object({
 
 async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 	try {
-		console.log(req.body)
+		console.log(req.body);
 		let { longitude, latitude, count } = validator.parse(req.body);
 
 		const key = `listing/topsellingHome/${longitude}/${latitude}}`;
@@ -76,4 +77,5 @@ export default {
 	models,
 	makes,
 	listings,
+	sendVerification,
 };
