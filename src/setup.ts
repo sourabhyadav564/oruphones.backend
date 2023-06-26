@@ -1,4 +1,3 @@
-import conditionalSession from '@/middleware/conditionalSession';
 import startSavingBestDeals from '@/utils/best_deals_cron_job';
 import sendListingsMail from '@/utils/listing_mails';
 import startDataMigrationJob from '@/utils/migration_data';
@@ -48,7 +47,6 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
 app.use(useragent.express());
-app.use(conditionalSession);
 
 let schedule = require('node-schedule');
 if (process.env.SERVER_URL === 'https://oruphones.com') {

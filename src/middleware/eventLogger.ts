@@ -6,7 +6,11 @@ export default async function eventLogger(
 	res: Response,
 	next: NextFunction
 ) {
-	if (!req.cookies.session || req.useragent!.browser === 'unknown') {
+	if (
+		!req.cookies.session ||
+		req.useragent!.browser === 'unknown' ||
+		req.headers['x-ssr'] === '1'
+	) {
 		// api calls not from browser
 		return next();
 	}
