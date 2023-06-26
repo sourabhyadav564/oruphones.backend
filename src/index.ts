@@ -70,12 +70,6 @@ import session from '@/utils/sessionStore';
 
 const port = process.env.PORT || 5000;
 
-app.get('/', (req, res) => {
-	res.status(200).json({
-		message: 'Backend Testing Server Running Successfully',
-	});
-});
-
 app.use('/api/v1', testRoute);
 app.use('/api/v1/master', brandRoute);
 app.use('/api/v1/master', questionRoute);
