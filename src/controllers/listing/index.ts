@@ -44,6 +44,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			verified: 1,
 			imagePath: 1,
 			status: 1,
+			listingId: 1,
 		};
 
 		let topSelling = await Listing.find(
