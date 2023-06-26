@@ -138,7 +138,7 @@ app.use('/api/v2/api', getBatteryTestRoutes2);
 // app.use('/api/v2/images', predictimage);
 
 app.use(session);
-app.use(eventLogger);
+// app.use(eventLogger);
 app.use(router);
 app.use(errorHandler);
 app.listen(port, () => {

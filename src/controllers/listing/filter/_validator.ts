@@ -13,6 +13,8 @@ export default z.object({
 		ram: z.string().min(1).max(100).array().optional(),
 		priceRange: z.number().min(0).max(999999).nullable().array().optional(),
 		listingLocation: z.string().min(1).max(100).optional(),
+		latitude: z.number().min(-90).max(90),
+		longitude: z.number().min(-180).max(180),
 		limit: z.number().min(1).max(100).optional(),
 		includeSelf: z.boolean().optional(),
 		notionalIDs: z.string().min(1).max(100).array().optional(),
@@ -20,6 +22,7 @@ export default z.object({
 			.object({
 				price: z.number().min(-1).max(1).optional(),
 				date: z.number().min(-1).max(1).optional(),
+				latlong: z.number().min(-1).max(1).optional(),
 			})
 			.optional(),
 	}),

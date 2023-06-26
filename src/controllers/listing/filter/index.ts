@@ -6,69 +6,57 @@ import getSimilarWithExternalVendors from './getSimilarWithExternalVendors';
 import Listings from '@/database/modals/others/best_deals_models';
 import rankedListings from '@/database/modals/others/test_scrapped_models';
 import { NextFunction, Request, Response } from 'express';
+import {  PipelineStage } from 'mongoose';
 
 // function that constructs the pipeline for aggregation
 function constructPipeline(
 	filterObj: any,
 	returnFilter: any,
 	sortObj: any,
+	latlongObj: any,
 	priceRangeObj: any,
 	page: number,
 	limit: number,
 	notionalBestDealListingIds: string[] | undefined = undefined
 ) {
-	const pipeline =
-		page === 1
-			? [
-					{
-						$match: {
-							...filterObj,
-							...(notionalBestDealListingIds && {
-								listingId: { $nin: notionalBestDealListingIds },
-							}),
-						},
+	const pipeline: PipelineStage[] = [
+		{
+			$match: {
+				...filterObj,
+				...(notionalBestDealListingIds && {
+					listingId: { $nin: notionalBestDealListingIds },
+				}),
+			},
+		},
+		...(latlongObj && Object.keys(latlongObj).length > 0
+			?  [
+				{
+				  $geoNear: {
+					near: {
+					  type: 'Point',
+					  coordinates: [latlongObj.longitude, latlongObj.latitude],
 					},
-					...(sortObj && Object.keys(sortObj).length > 0
-						? [{ $sort: sortObj }]
-						: []),
-					...(priceRangeObj &&
-					Object.keys(priceRangeObj?.listingNumPrice).length > 0
-						? [{ $match: priceRangeObj }]
-						: []),
-					{ $project: returnFilter },
-					{
-						$facet: {
-							totalCount: [{ $count: 'total' }],
-							data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-						},
-					},
-					{ $unwind: '$totalCount' },
-					{ $project: { data: 1, totalCount: '$totalCount.total' } },
+					distanceField: 'distance',
+					maxDistance: 775437,
+					spherical: true,
+				  },
+				},
 			  ]
-			: [
-					{
-						$match: {
-							...filterObj,
-							...(notionalBestDealListingIds && {
-								listingId: { $nin: notionalBestDealListingIds },
-							}),
-						},
-					},
-					...(sortObj && Object.keys(sortObj).length > 0
-						? [{ $sort: sortObj }]
-						: []),
-					...(priceRangeObj &&
-					Object.keys(priceRangeObj?.listingNumPrice).length > 0
-						? [{ $match: priceRangeObj }]
-						: []),
-					{ $project: returnFilter },
-					{
-						$skip: (page - 1) * limit,
-					},
-					{
-						$limit: limit,
-					},
-			  ];
+			: []),
+		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
+		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
+			? [{ $match: priceRangeObj }]
+			: []),
+		{ $project: returnFilter },
+		{
+			$facet: {
+				totalCount: [{ $count: 'total' }],
+				data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+			},
+		},
+		{ $unwind: '$totalCount' },
+		{ $project: { data: 1, totalCount: '$totalCount.total' } },
+	] as PipelineStage[];
 	return pipeline;
 }
 
@@ -121,6 +109,8 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			ram,
 			priceRange,
 			listingLocation,
+			latitude,
+			longitude,
 			notionalIDs,
 		} = filter;
 		let filterObj = {
@@ -174,14 +164,12 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 									: {}),
 						  },
 			}),
+
 			...(verified && { verified }),
 		};
-		//calculate pagination
-		const page = req.body.filter.page || 1;
-		const limit = req.body.filter.limit || 20;
 		// if notionalFilter is provided, return an extra field with bestDeals
 		let bestDealsForCarousal = undefined;
-		if (notionalFilter && page === 1 && !notionalIDs) {
+		if (notionalFilter) {
 			bestDealsForCarousal = await Listings.find({
 				...filterObj,
 				notionalPercentage: {
@@ -195,15 +183,21 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 				.select(returnFilter)
 				.lean();
 		}
-		const notionalBestDealListingIds =
-			page === 1
-				? bestDealsForCarousal?.map((listing) => listing.listingId as string)
-				: notionalIDs;
+		const notionalBestDealListingIds = bestDealsForCarousal?.map(
+			(listing) => listing.listingId as string
+		);
+		//calculate pagination
+		const page = req.body.filter.page || 1;
+		const limit = req.body.filter.limit || 20;
 
 		//sort object
 		const sortObj = sort && {
 			...(sort.price && { listingNumPrice: sort.price }),
 			...(sort.date && { createdAt: sort.date }),
+		};
+
+		const latlongObj = sort && {
+			...(sort.latlong && { latitude: latitude, longitude: longitude }),
 		};
 
 		// priceRange object
@@ -219,6 +213,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			filterObj,
 			returnFilter,
 			sortObj,
+			latlongObj,
 			priceRangeObj,
 			page,
 			limit,
@@ -227,7 +222,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
 		const data = {
-			...(page === 1 ? result[0] : { data: result }), // result[0] has the data and totalCount
+			...result[0], // result[0] has the data and totalCount
 			...(page === 1 && bestDealsForCarousal && bestDealsForCarousal.length > 0
 				? { bestDeals: bestDealsForCarousal }
 				: {}),
