@@ -609,6 +609,13 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 		});
 
 		if (user) {
+			let otherLiveListings = await olxScrappedModal.find({
+				status: {
+					$in: ['Live', 'Contacted'],
+				},
+				previouslyAssignedTo: { $nin: [uuid] },
+			});
+
 			let liveListings = await olxScrappedModal.find({
 				assignedTo: uuid,
 				status: 'Live',
@@ -627,13 +634,12 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 				// 	{
 				// 		$match: {
 				// 			assignedTo: null,
-				// 			previouslyAssignedTo: { $nin: [uuid] },
 				// 			status: 'Live',
 				// 		},
 				// 	},
 				// 	{
 				// 		$group: {
-				// 			_id: '$city',
+				// 			_id: '$location',
 				// 			count: { $sum: 1 },
 				// 		},
 				// 	},
@@ -642,30 +648,22 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 				// 			count: -1,
 				// 		},
 				// 	},
-				// 	{
-				// 		$limit: 1,
-				// 	},
 				// ]);
 				
 				let newLiveListings = await olxScrappedModal
 					.find({
-						assignedTo: null,
 						previouslyAssignedTo: { $nin: [uuid] },
 						status: 'Live',
+						assignedTo: null,
+						// location: cityWithMostListings[0]._id,
 					})
 					.limit(listingLimit);
 
 				if (newLiveListings.length <= listingLimit) {
-					let otherLiveListings = await olxScrappedModal.find({
-						status: {
-							$in: ['Live', 'Contacted'],
-						},
-						previouslyAssignedTo: { $nin: [uuid] },
-					});
 
 					let agents = await olxScrappedModal.distinct('assignedTo', {
-						assignedTo: { $ne: null },
 						status: 'Live',
+						assignedTo: { $ne: null },
 					});
 
 					if (!agents.includes(uuid)) {
@@ -677,72 +675,47 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 							? limit
 							: Math.floor(otherLiveListings.length / agents.length);
 
-					let agent = await olxScrappedModal.find({
-						assignedTo: uuid,
-						status: 'Live',
-					});
-
-					if (agent.length < listingPerAgent) {
-						let agentLiveListings = await olxScrappedModal.find({
-							assignedTo: uuid,
-							status: 'Live',
-						});
-
-						let agentContactedListings = await olxScrappedModal.find({
-							assignedTo: uuid,
-							status: 'Contacted',
-						});
-
+					if (liveListings.length < listingPerAgent) {
 						let agentTotalListings =
-							agentLiveListings.length + agentContactedListings.length;
+							liveListings.length + contactedListings.length;
 
 						let agentLimit = listingPerAgent - agentTotalListings;
+
 						if (agentLimit > 0) {
-							let agentNewLiveListings = await olxScrappedModal
+							let agentAssignedLiveListings = await olxScrappedModal
 								.find({
-									assignedTo: null,
-									status: 'Live',
 									previouslyAssignedTo: { $nin: [uuid] },
+									status: 'Live',
+									assignedTo: {
+										$nin: [uuid, null],
+									},
+									// location: cityWithMostListings[0]._id,
 								})
-								.limit(agentLimit);
+								.limit(agentLimit - newLiveListings.length);
 
-							if (agentNewLiveListings.length < agentLimit) {
-								let agentAssignedLiveListings = await olxScrappedModal
-									.find({
-										assignedTo: {
-											$ne: uuid,
-										},
+							newLiveListings = [
+								...newLiveListings,
+								...agentAssignedLiveListings,
+							];
+							
+							newLiveListings.map(async (listing) => {
+								await olxScrappedModal.updateOne(
+									{ _id: listing._id },
+
+									{
+										assignedTo: uuid,
 										status: 'Live',
-										previouslyAssignedTo: { $nin: [uuid] },
-									})
-									.limit(agentLimit - agentNewLiveListings.length);
+									}
+								);
+							});
 
-								agentNewLiveListings = [
-									...agentNewLiveListings,
-									...agentAssignedLiveListings,
-								];
-							}
-
-							let bulkwrite = await olxScrappedModal.bulkWrite(
-								agentNewLiveListings.map((listing) => {
-									return {
-										updateOne: {
-											filter: { _id: listing._id },
-											update: {
-												assignedTo: uuid,
-												status: 'Live',
-											},
-										},
-									};
-								})
-							);
-							liveListings = [...agentNewLiveListings, ...liveListings];
+							liveListings = [...newLiveListings, ...liveListings];
 						}
 
-						contactedListings = await olxScrappedModal.find({
-							assignedTo: uuid,
-							status: 'Contacted',
-						});
+						// contactedListings = await olxScrappedModal.find({
+						// 	assignedTo: uuid,
+						// 	status: 'Contacted',
+						// });
 					}
 					res.status(200).json({
 						reason: 'Listings fetched successfully2',
@@ -958,80 +931,13 @@ router.get('/listing/agent/validateNumber', async (req, res) => {
 				} else {
 					let limitExceeded =
 						(await saveListingModal.find().countDocuments({
-							userUniqueId,
+							uuid,
 							verified: false,
 							status: 'Active',
 						})) >= 5;
 
-					// stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
-					let duplicated = limitExceeded
-						? limitExceeded
-						: (await saveListingModal.find().countDocuments({
-								userUniqueId,
-								marketingName,
-								deviceStorage,
-								deviceRam,
-								verified: false,
-						  })) >= 1;
-
-					if (limitExceeded || duplicated) {
+					if (limitExceeded) {
 						try {
-							if (!limitExceeded && !duplicated) {
-								const modalInfo = new saveListingModal(data);
-								dataObject = await modalInfo.save();
-
-								let ssdata = {
-									userUniqueId: req.body.agentUuId,
-									image: req.body.ssImage,
-									model: marketingName,
-									mobileNumber: mobileNumber,
-								};
-
-								const imgData = new imageMapModal({
-									originalId: originalId,
-									listingId: dataObject.listingId,
-								});
-								const imgDataObject = await imgData.save();
-
-								const ssModalInfo = new olxSSModal(ssdata);
-								const ssDataObject = await ssModalInfo.save();
-
-								let newData = {
-									...data,
-									notionalPercentage: -999999,
-									status: limitExceeded || duplicated ? 'Sold_Out' : 'Active',
-									imagePath:
-										(images.length > 0
-											? images[0].thumbImage || images[0].fullImage
-											: '') ||
-										(defaultImage.fullImage != ''
-											? defaultImage.fullImage
-											: ''),
-									listingId: dataObject.listingId,
-									listingDate: moment(now).format('MMM Do'),
-								};
-
-								const tempModelInfo = new bestDealsModal(newData);
-								if (tempModelInfo.make != null) {
-									const tempDataObject = await tempModelInfo.save();
-								}
-
-								await sendingSms(
-									'daily',
-									mobileNumber,
-									userUniqueId,
-									listedBy,
-									marketingName
-								);
-
-								// delete the listing
-								let listingId = req.body.objId;
-
-								let deleted = await olxScrappedModal.deleteOne({
-									_id: new mongoose.Types.ObjectId(listingId),
-								});
-							}
-
 							// create dynamic string for response message reason on basis of limitExceeded and duplicated value
 
 							let message = limitExceeded
@@ -1376,6 +1282,15 @@ router.post('/listing/agent/submit', async (req, res) => {
 				fullImage: image,
 			};
 
+			let duplicated =
+				(await saveListingModal.find().countDocuments({
+					userUniqueId,
+					marketingName,
+					deviceStorage,
+					deviceRam,
+					verified: false,
+				})) >= 1;
+
 			const data = {
 				charger,
 				color,
@@ -1405,13 +1320,84 @@ router.post('/listing/agent/submit', async (req, res) => {
 				listingDate: dateFormat,
 				warranty: deviceWarranty,
 				cosmetic,
-				status: limitExceeded || duplicated ? 'Paused' : 'Active',
+				status: duplicated ? 'Paused' : 'Active',
 				agent: agentId,
 				latLong: latLong,
 				storeId: '001',
+				listingState: state,
+				listingLocality: area ? area : null,
 			};
 
+			data.location = {
+				coordinates: [latLong.longitude, latLong.latitude],
+			};
+
+			// stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
+
+			let message = duplicated
+				? 'You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device.'
+				: 'Listing saved successfully';
 			let dataObject = {};
+			if (!duplicated) {
+				const modalInfo = new saveListingModal(data);
+				dataObject = await modalInfo.save();
+
+				let ssdata = {
+					userUniqueId: req.body.agentUuId,
+					image: req.body.ssImage,
+					model: marketingName,
+					mobileNumber: mobileNumber,
+				};
+
+				const imgData = new imageMapModal({
+					originalId: originalId,
+					listingId: dataObject.listingId,
+				});
+				const imgDataObject = await imgData.save();
+
+				const ssModalInfo = new olxSSModal(ssdata);
+				const ssDataObject = await ssModalInfo.save();
+
+				let newData = {
+					...data,
+					notionalPercentage: -999999,
+					status: duplicated ? 'Sold_Out' : 'Active',
+					imagePath:
+						(images.length > 0
+							? images[0].thumbImage || images[0].fullImage
+							: '') ||
+						(defaultImage.fullImage != '' ? defaultImage.fullImage : ''),
+					listingId: dataObject.listingId,
+					listingDate: moment(now).format('MMM Do'),
+				};
+
+				const tempModelInfo = new bestDealsModal(newData);
+				if (tempModelInfo.make != null) {
+					const tempDataObject = await tempModelInfo.save();
+				}
+
+				await sendingSms(
+					'daily',
+					mobileNumber,
+					userUniqueId,
+					listedBy,
+					marketingName
+				);
+
+				// delete the listing
+				let listingId = req.body.objId;
+
+				let deleted = await olxScrappedModal.deleteOne({
+					_id: new mongoose.Types.ObjectId(listingId),
+				});
+			}
+			res.status(201).json({
+				reason: message,
+				statusCode: 201,
+				status: 'SUCCESS',
+				type: duplicated ? 'Duplicate Listing' : '',
+				dataObject: dataObject,
+			});
 		} else {
 			olxScrappedModal.deleteOne({
 				_id: req.body.id,
