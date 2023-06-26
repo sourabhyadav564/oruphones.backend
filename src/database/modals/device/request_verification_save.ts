@@ -19,6 +19,7 @@ const saveRequestSchema = new mongoose.Schema(
 );
 
 saveRequestSchema.index({ userUniqueId: 1, listingId: 1 }, { unique: true });
+saveRequestSchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 const saveRequestModal = mongoose.model(
 	'requested_listings',
 	saveRequestSchema

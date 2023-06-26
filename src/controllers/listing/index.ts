@@ -1,3 +1,4 @@
+import getSellerNumber from './getSellerNumber';
 import listings from './listings';
 import sendVerification from './sendVerification';
 import filterController from '@/controllers/listing/filter';
@@ -79,4 +80,5 @@ export default {
 	makes,
 	listings,
 	sendVerification,
+	getSellerNumber,
 };

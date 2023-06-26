@@ -5,6 +5,7 @@ import express from 'express';
 const router = express.Router();
 router.get('/makes', listingController.makes);
 router.post('/sendVerification', isAuth, listingController.sendVerification);
+router.post('/getSellerNumber', isAuth, listingController.getSellerNumber);
 router.post('/models', listingController.models.makes);
 router.post('/models/filtered', listingController.models.filteredMakes);
 router.post('/listings', isAuth, listingController.listings);
