@@ -7,7 +7,7 @@ export default async function eventLogger(
 	next: NextFunction
 ) {
 	if (!req.cookies.session || req.useragent!.browser === 'unknown') {
-		// api calls not from browser nor SSR
+		// api calls not from browser
 		return next();
 	}
 	try {
@@ -30,7 +30,7 @@ export default async function eventLogger(
 			eventName: `${req.method} ${req.originalUrl} ${res.statusCode}}`,
 		});
 		await sessionEvent.save();
-		console.log(sessionEvent, 'sessionEvent');
+		// console.log(sessionEvent, 'sessionEvent');
 		next();
 	} catch (err) {
 		next(err);

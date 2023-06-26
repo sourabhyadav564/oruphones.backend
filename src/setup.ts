@@ -1,15 +1,14 @@
+import conditionalSession from '@/middleware/conditionalSession';
 import startSavingBestDeals from '@/utils/best_deals_cron_job';
 import sendListingsMail from '@/utils/listing_mails';
 import startDataMigrationJob from '@/utils/migration_data';
 import startCalculatingLSPTest from '@/utils/new_lsp';
-import session from '@/utils/sessionStore';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
+import useragent from 'express-useragent';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import useragent from 'express-useragent';
-
 
 require('dotenv').config();
 
@@ -49,7 +48,7 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(cors(corsOptions));
 app.use(useragent.express());
-app.use(session);
+app.use(conditionalSession);
 
 let schedule = require('node-schedule');
 if (process.env.SERVER_URL === 'https://oruphones.com') {
