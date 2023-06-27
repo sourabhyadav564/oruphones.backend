@@ -53,7 +53,6 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 				location: {
 					$near: {
 						$geometry: { type: 'Point', coordinates: [longitude, latitude] },
-						$maxDistance: 500000,
 					},
 				},
 			},

@@ -18,46 +18,83 @@ function constructPipeline(
 	page: number,
 	limit: number,
 	notionalBestDealListingIds: string[] | undefined = undefined
-) {
-	const pipeline: PipelineStage[] = [
-		...(latlongObj && Object.keys(latlongObj).length > 0
+): PipelineStage[] {
+	console.log('latlongobj: ', latlongObj);
+	const pipeline: PipelineStage[] =
+		page === 1
 			? [
+					...(latlongObj && Object.keys(latlongObj).length > 0
+						? [
+								{
+									$geoNear: {
+										near: {
+											type: 'Point',
+											coordinates: [latlongObj.longitude, latlongObj.latitude],
+										} as {
+											type: 'Point';
+											coordinates: [number, number];
+										},
+										distanceField: 'distance',
+										key: 'location',
+										spherical: true,
+									},
+								},
+						  ]
+						: []),
 					{
-						$geoNear: {
-							near: {
-								type: 'Point',
-								coordinates: [latlongObj.longitude, latlongObj.latitude],
-							},
-							distanceField: 'distance',
-							maxDistance: 775437,
-							spherical: true,
-							key: 'location',
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
 						},
 					},
+					...(sortObj && Object.keys(sortObj).length > 0
+						? [{ $sort: sortObj }]
+						: []),
+					...(priceRangeObj &&
+					Object.keys(priceRangeObj?.listingNumPrice).length > 0
+						? [{ $match: priceRangeObj }]
+						: []),
+					{ $project: returnFilter },
+					{
+						$facet: {
+							totalCount: [{ $count: 'total' }],
+							data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+						},
+					},
+					{
+						$unwind: {
+							path: '$totalCount',
+							preserveNullAndEmptyArrays: true,
+						},
+					},
+					{ $project: { data: 1, totalCount: '$totalCount.total' } },
 			  ]
-			: []),
-		{
-			$match: {
-				...filterObj,
-				...(notionalBestDealListingIds && {
-					listingId: { $nin: notionalBestDealListingIds },
-				}),
-			},
-		},
-		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
-		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
-			? [{ $match: priceRangeObj }]
-			: []),
-		{ $project: returnFilter },
-		{
-			$facet: {
-				totalCount: [{ $count: 'total' }],
-				data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-			},
-		},
-		{ $unwind: '$totalCount' },
-		{ $project: { data: 1, totalCount: '$totalCount.total' } },
-	] as PipelineStage[];
+			: [
+					{
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
+						},
+					},
+					...(sortObj && Object.keys(sortObj).length > 0
+						? [{ $sort: sortObj }]
+						: []),
+					...(priceRangeObj &&
+					Object.keys(priceRangeObj?.listingNumPrice).length > 0
+						? [{ $match: priceRangeObj }]
+						: []),
+					{ $project: returnFilter },
+					{
+						$skip: (page - 1) * limit,
+					},
+					{
+						$limit: limit,
+					},
+			  ];
 	return pipeline;
 }
 
@@ -168,9 +205,13 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 
 			...(verified && { verified }),
 		};
+		//calculate pagination
+		const page = req.body.filter.page || 1;
+		const limit = req.body.filter.limit || 20;
 		// if notionalFilter is provided, return an extra field with bestDeals
 		let bestDealsForCarousal = undefined;
-		if (notionalFilter) {
+		if (notionalFilter && page === 1 && !notionalIDs) {
+			console.log('Finding bestdeals for carousal');
 			bestDealsForCarousal = await Listings.find({
 				...filterObj,
 				notionalPercentage: {
@@ -187,9 +228,6 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		const notionalBestDealListingIds = bestDealsForCarousal?.map(
 			(listing) => listing.listingId as string
 		);
-		//calculate pagination
-		const page = req.body.filter.page || 1;
-		const limit = req.body.filter.limit || 20;
 
 		//sort object
 		const sortObj = sort && {
@@ -223,7 +261,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 		// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
 		const data = {
-			...result[0], // result[0] has the data and totalCount
+			...(page === 1 ? result[0] : { data: result }), // result[0] has the data and totalCount
 			...(page === 1 && bestDealsForCarousal && bestDealsForCarousal.length > 0
 				? { bestDeals: bestDealsForCarousal }
 				: {}),
