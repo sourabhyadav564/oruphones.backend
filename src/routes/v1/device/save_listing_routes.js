@@ -465,6 +465,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 	let listingLocation = req.body.listingLocation;
 	const listingPrice = req.body.listingPrice;
 	const originalbox = req.body.originalbox;
+	const imei = req.body.imei;
 	const recommendedPriceRange = req.body.recommendedPriceRange;
 	const cosmetic = req.body.cosmetic;
 	let warranty = req.body.warranty;
@@ -555,6 +556,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 					listingLocation,
 					listingPrice,
 					originalbox,
+					imei,
 					latLong: latLong ? latLong : null,
 					recommendedPriceRange,
 					deviceStorage,

@@ -179,7 +179,6 @@ router.post('/listing/save', is_Session, logEvent, async (req, res) => {
 		let deviceWarranty = req.body.warranty;
 		let latLong = req.body.latLong;
 
-
 		const cosmetic = req.body.cosmetic;
 
 		// let getLocation = await cityModal.findOne({ city: listingLocation });
@@ -456,6 +455,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 	const deviceRam = req.body.deviceRam;
 	const earphone = req.body.earphone;
 	const images = req.body.images;
+	const imei = req.body.imei;
 	const listingLocation = req.body.listingLocation;
 	const listingPrice = req.body.listingPrice;
 	const originalbox = req.body.originalbox;
@@ -463,7 +463,6 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 	const cosmetic = req.body.cosmetic;
 	let warranty = req.body.warranty;
 	let latLong = req.body.latLong;
-
 
 	try {
 		const updateListing = await saveListingModal.findOne({
@@ -544,6 +543,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 					listingLocation,
 					listingPrice,
 					originalbox,
+					imei,
 					latLong: latLong ? latLong : null,
 					recommendedPriceRange,
 					deviceStorage,
@@ -686,7 +686,6 @@ router.post('/listing/activate', is_Session, logEvent, async (req, res) => {
 	const userUniqueId = req.session.User.userUniqueId;
 	const listingId = req.query.listingId;
 
-
 	try {
 		const activateListing = await saveListingModal.find({
 			listingId: listingId,
@@ -801,7 +800,7 @@ router.get(
 	async (req, res) => {
 		try {
 			const userUniqueId = req.session.User.userUniqueId;
-	const listingId = req.query.listingId;
+			const listingId = req.query.listingId;
 
 			let isOruMitra = req.query.isOruMitra || false;
 
@@ -1002,173 +1001,177 @@ router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 	}
 });
 
-router.post('/listing/updatefordiag', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
-	const listingId = req.body.listingId;
+router.post(
+	'/listing/updatefordiag',
+	is_Session,
+	logEvent,
+	async (req, res) => {
+		const userUniqueId = req.session.User.userUniqueId;
+		const listingId = req.body.listingId;
 
+		const recommendedPriceRange = req.body.recommendedPriceRange;
+		const deviceRam = req.body.deviceRam;
+		const listingPrice = req.body.listingPrice;
+		const deviceCondition = req.body.deviceCondition;
+		const images = req.body.images;
 
-	const recommendedPriceRange = req.body.recommendedPriceRange;
-	const deviceRam = req.body.deviceRam;
-	const listingPrice = req.body.listingPrice;
-	const deviceCondition = req.body.deviceCondition;
-	const images = req.body.images;
+		const now = new Date();
+		const dateFormat = moment(now).format('MMM Do');
 
-	const now = new Date();
-	const dateFormat = moment(now).format('MMM Do');
+		const dataToBeUpdate = {
+			// ...req.body,
+			// verified: true,
+			// status: "Active",
+			// listingDate: dateFormat,
+			// verifiedDate: dateFormat,
+			recommendedPriceRange: recommendedPriceRange,
+			deviceRam: deviceRam,
+			listingPrice: listingPrice,
+			// deviceCondition: deviceCondition,
+			images: images,
+		};
 
-	const dataToBeUpdate = {
-		// ...req.body,
-		// verified: true,
-		// status: "Active",
-		// listingDate: dateFormat,
-		// verifiedDate: dateFormat,
-		recommendedPriceRange: recommendedPriceRange,
-		deviceRam: deviceRam,
-		listingPrice: listingPrice,
-		// deviceCondition: deviceCondition,
-		images: images,
-	};
-
-	try {
-		const updateListing = await saveListingModal.findOne({
-			listingId: listingId,
-		});
-
-		if (!updateListing) {
-			res.status(200).json({
-				reason: 'Invalid listing id provided',
-				statusCode: 200,
-				status: 'SUCCESS',
+		try {
+			const updateListing = await saveListingModal.findOne({
+				listingId: listingId,
 			});
-			return;
-		} else {
-			if (updateListing.userUniqueId === userUniqueId) {
-				let dataObject = await saveListingModal.findByIdAndUpdate(
-					updateListing._id,
-					dataToBeUpdate,
-					{
-						new: true,
-					}
-				);
 
-				let dataObject2 = await bestDealsModal.findOneAndUpdate(
-					{ listingId: updateListing.listingId },
-					dataToBeUpdate,
-					{
-						new: true,
-					}
-				);
-
-				const userFromFavorite = await favoriteModal.find({
-					fav_listings: listingId,
+			if (!updateListing) {
+				res.status(200).json({
+					reason: 'Invalid listing id provided',
+					statusCode: 200,
+					status: 'SUCCESS',
 				});
+				return;
+			} else {
+				if (updateListing.userUniqueId === userUniqueId) {
+					let dataObject = await saveListingModal.findByIdAndUpdate(
+						updateListing._id,
+						dataToBeUpdate,
+						{
+							new: true,
+						}
+					);
 
-				const sendNotificationToUser = [];
-				userFromFavorite.forEach((item, index) => {
-					sendNotificationToUser.push(item.userUniqueId);
-				});
+					let dataObject2 = await bestDealsModal.findOneAndUpdate(
+						{ listingId: updateListing.listingId },
+						dataToBeUpdate,
+						{
+							new: true,
+						}
+					);
 
-				const now = new Date();
-				const currentDate = moment(now).format('MMM Do');
-
-				const string = await makeRandomString(25);
-
-				let tokenObject = await saveNotificationModel.find({
-					userUniqueId: sendNotificationToUser,
-				});
-
-				let notificationTokens = [];
-				tokenObject.forEach((item, index) => {
-					notificationTokens.push(item.tokenId);
-				});
-
-				var notification_body = {
-					registration_ids: notificationTokens,
-					notification: {
-						title: `Congratulations!!!`,
-						body: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-						sound: 'default',
-						//   click_action: "FCM_PLUGIN_ACTIVITY",
-						icon: 'fcm_push_icon',
-					},
-					data: {
-						title: `Congratulations!!!`,
-						body: {
-							source: 'ORU Phones',
-							messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-						},
-						appEventAction: 'MY_FAVORITES',
-						webEventAction: 'MY_FAVORITES',
-					},
-				};
-
-				fetch('https://fcm.googleapis.com/fcm/send', {
-					method: 'POST',
-					headers: {
-						// replace authorization key with your key
-						Authorization: 'key=' + process.env.FCM_KEY,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(notification_body),
-				})
-					.then(function (response) {
-						// console.log(response);
-					})
-					.catch(function (error) {
-						console.error(error);
+					const userFromFavorite = await favoriteModal.find({
+						fav_listings: listingId,
 					});
 
-				//Save notification to database
-				let notificationData = {
-					appEventAction: 'MY_FAVORITES',
-					webEventAction: 'MY_FAVORITES',
-					messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-					notificationId: string,
-					createdDate: currentDate,
-				};
+					const sendNotificationToUser = [];
+					userFromFavorite.forEach((item, index) => {
+						sendNotificationToUser.push(item.userUniqueId);
+					});
 
-				sendNotificationToUser.forEach(async (user, index) => {
-					let dataToBeSave = {
-						userUniqueId: user,
-						notification: [notificationData],
+					const now = new Date();
+					const currentDate = moment(now).format('MMM Do');
+
+					const string = await makeRandomString(25);
+
+					let tokenObject = await saveNotificationModel.find({
+						userUniqueId: sendNotificationToUser,
+					});
+
+					let notificationTokens = [];
+					tokenObject.forEach((item, index) => {
+						notificationTokens.push(item.tokenId);
+					});
+
+					var notification_body = {
+						registration_ids: notificationTokens,
+						notification: {
+							title: `Congratulations!!!`,
+							body: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+							sound: 'default',
+							//   click_action: "FCM_PLUGIN_ACTIVITY",
+							icon: 'fcm_push_icon',
+						},
+						data: {
+							title: `Congratulations!!!`,
+							body: {
+								source: 'ORU Phones',
+								messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+							},
+							appEventAction: 'MY_FAVORITES',
+							webEventAction: 'MY_FAVORITES',
+						},
 					};
 
-					const notificationObject = await notificationModel.findOne({
-						userUniqueId: user,
+					fetch('https://fcm.googleapis.com/fcm/send', {
+						method: 'POST',
+						headers: {
+							// replace authorization key with your key
+							Authorization: 'key=' + process.env.FCM_KEY,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(notification_body),
+					})
+						.then(function (response) {
+							// console.log(response);
+						})
+						.catch(function (error) {
+							console.error(error);
+						});
+
+					//Save notification to database
+					let notificationData = {
+						appEventAction: 'MY_FAVORITES',
+						webEventAction: 'MY_FAVORITES',
+						messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+						notificationId: string,
+						createdDate: currentDate,
+					};
+
+					sendNotificationToUser.forEach(async (user, index) => {
+						let dataToBeSave = {
+							userUniqueId: user,
+							notification: [notificationData],
+						};
+
+						const notificationObject = await notificationModel.findOne({
+							userUniqueId: user,
+						});
+
+						if (!notificationObject) {
+							const saveNotification = new notificationModel(dataToBeSave);
+							let dataObject = await saveNotification.save();
+						} else {
+							const updateNotification =
+								await notificationModel.findByIdAndUpdate(
+									notificationObject._id,
+									{ $push: { notification: notificationData } },
+									{ new: true }
+								);
+						}
 					});
 
-					if (!notificationObject) {
-						const saveNotification = new notificationModel(dataToBeSave);
-						let dataObject = await saveNotification.save();
-					} else {
-						const updateNotification =
-							await notificationModel.findByIdAndUpdate(
-								notificationObject._id,
-								{ $push: { notification: notificationData } },
-								{ new: true }
-							);
-					}
-				});
-
-				res.status(200).json({
-					reason: 'Listing updated successfully',
-					statusCode: 200,
-					status: 'SUCCESS',
-					dataObject,
-				});
-			} else {
-				res.status(200).json({
-					reason: 'You are not authorized to update this listing',
-					statusCode: 200,
-					status: 'SUCCESS',
-				});
+					res.status(200).json({
+						reason: 'Listing updated successfully',
+						statusCode: 200,
+						status: 'SUCCESS',
+						dataObject,
+					});
+				} else {
+					res.status(200).json({
+						reason: 'You are not authorized to update this listing',
+						statusCode: 200,
+						status: 'SUCCESS',
+					});
+				}
 			}
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error);
 		}
-	} catch (error) {
-		console.log(error);
-		res.status(400).json(error);
 	}
-});
+);
 
 router.post(
 	'/listing/detailwithuserinfo',
