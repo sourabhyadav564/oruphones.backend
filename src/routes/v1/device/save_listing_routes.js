@@ -32,6 +32,7 @@ const allMatrix = require('@/utils/matrix_figures');
 const bestDealsModal = require('@/database/modals/others/best_deals_models');
 const validUser = require('@/middleware/valid_user');
 const createAgentModal = require('@/database/modals/global/oru_mitra/agent_modal');
+const ImeiDataModal = require('@/database/modals/device/imei_data');
 // const downloadImage = require("@/utils/download_image_from_url");
 
 router.get('/listings', validUser, logEvent, async (req, res) => {
@@ -1757,6 +1758,45 @@ router.get('/listing/bydeviceid', validUser, logEvent, async (req, res) => {
 		}
 	} catch (error) {
 		console.log(error);
+		res.status(400).json(error);
+	}
+});
+
+router.post('/listing/imeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const {
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		} = req.body;
+
+		// save this data in ImeiDataModal
+		const saveImeiData = new ImeiDataModal({
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		});
+
+		const saveImeiDataResult = await saveImeiData.save();
+
+		res.status(200).json({
+			reason: 'Imei data saved successfully',
+			statusCode: 200,
+			status: 'SUCCESS',
+		});
+	} catch (error) {
 		res.status(400).json(error);
 	}
 });

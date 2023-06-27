@@ -962,7 +962,7 @@ router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 	try {
 		const userUniqueId = req.session.User.userUniqueId;
 		const listingId = req.query.listingId;
-	
+
 		// const isValidUser = await createUserModal.find({
 		//   userUniqueId: userUniqueId,
 		// });
@@ -1736,6 +1736,45 @@ router.get('/listing/bydeviceid', is_Session, logEvent, async (req, res) => {
 		}
 	} catch (error) {
 		console.log(error);
+		res.status(400).json(error);
+	}
+});
+
+router.post('/listing/imeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const {
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		} = req.body;
+
+		// save this data in ImeiDataModal
+		const saveImeiData = new ImeiDataModal({
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		});
+
+		const saveImeiDataResult = await saveImeiData.save();
+
+		res.status(200).json({
+			reason: 'Imei data saved successfully',
+			statusCode: 200,
+			status: 'SUCCESS',
+		});
+	} catch (error) {
 		res.status(400).json(error);
 	}
 });
