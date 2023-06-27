@@ -6,7 +6,7 @@ import getSimilarWithExternalVendors from './getSimilarWithExternalVendors';
 import Listings from '@/database/modals/others/best_deals_models';
 import rankedListings from '@/database/modals/others/test_scrapped_models';
 import { NextFunction, Request, Response } from 'express';
-import {  PipelineStage } from 'mongoose';
+import { PipelineStage } from 'mongoose';
 
 // function that constructs the pipeline for aggregation
 function constructPipeline(
@@ -20,6 +20,22 @@ function constructPipeline(
 	notionalBestDealListingIds: string[] | undefined = undefined
 ) {
 	const pipeline: PipelineStage[] = [
+		...(latlongObj && Object.keys(latlongObj).length > 0
+			? [
+					{
+						$geoNear: {
+							near: {
+								type: 'Point',
+								coordinates: [latlongObj.longitude, latlongObj.latitude],
+							},
+							distanceField: 'distance',
+							maxDistance: 775437,
+							spherical: true,
+							key: 'location',
+						},
+					},
+			  ]
+			: []),
 		{
 			$match: {
 				...filterObj,
@@ -28,21 +44,6 @@ function constructPipeline(
 				}),
 			},
 		},
-		...(latlongObj && Object.keys(latlongObj).length > 0
-			?  [
-				{
-				  $geoNear: {
-					near: {
-					  type: 'Point',
-					  coordinates: [latlongObj.longitude, latlongObj.latitude],
-					},
-					distanceField: 'distance',
-					maxDistance: 775437,
-					spherical: true,
-				  },
-				},
-			  ]
-			: []),
 		...(sortObj && Object.keys(sortObj).length > 0 ? [{ $sort: sortObj }] : []),
 		...(priceRangeObj && Object.keys(priceRangeObj?.listingNumPrice).length > 0
 			? [{ $match: priceRangeObj }]
