@@ -9,78 +9,82 @@ const validator = z.object({
 
 export default async function Search(req: Request, res: Response) {
 	try {
-		console.log(req.body);
 		const { searchText } = validator.parse(req.body);
-		const [cities, localities] = await Promise.all([
-			Location.aggregate([
-				{
-					// using indexed
-					$match: {
-						$text: {
-							$search: searchText,
-							$caseSensitive: false,
-							$diacriticSensitive: false,
-							$language: 'en',
-						},
+		// try word level matches
+		let response = await Location.aggregate([
+			{
+				// using indexed
+				$match: {
+					$text: {
+						$search: searchText,
 					},
 				},
-				{
-					$group: {
-						_id: '$city',
-						state: { $first: '$state' },
-						latitude: { $first: '$latitude' },
-						longitude: { $first: '$longitude' },
-					},
-				},
-				{
-					$limit: 5,
-				},
-			]),
-			Location.aggregate([
-				{
-					$match: {
-						$text: {
-							$search: searchText,
-							$caseSensitive: false,
-							$diacriticSensitive: false,
-							$language: 'en',
-						},
-					},
-				},
-				{
-					$group: {
-						_id: '$city',
-						name: { $first: '$name' },
-						state: { $first: '$state' },
-						latitude: { $first: '$latitude' },
-						longitude: { $first: '$longitude' },
-					},
-				},
-				{
-					$limit: 10,
-				},
-			]),
+			},
+			{
+				$limit: 5,
+			},
 		]);
 
-		const response = [
-			...cities.map((location) => ({
-				type: 'City',
-				location: `${location._id}, ${location.state}`,
-				city: location._id,
-				state: location.state,
-				latitude: location.latitude,
-				longitude: location.longitude,
-			})),
-			...localities.map((location) => ({
-				type: 'Area',
-				location: `${location.name}, ${location._id}`,
+		// if no word level matches found, try text level matches using regex
+		if (response.length === 0) {
+			const [cities, localities] = await Promise.all([
+				Location.aggregate([
+					{
+						$match: {
+							city: {
+								$regex: `^${searchText}`,
+								$options: 'i',
+							},
+						},
+					},
+					{
+						$limit: 5,
+					},
+				]),
+				Location.aggregate([
+					{
+						$match: {
+							name: {
+								$regex: `^${searchText}`,
+								$options: 'i',
+							},
+						},
+					},
+					{
+						$limit: 10,
+					},
+				]),
+			]);
+			response = [
+				...cities.map((location) => ({
+					type: 'City',
+					location: `${location._id}, ${location.state}`,
+					city: location._id,
+					state: location.state,
+					latitude: location.latitude,
+					longitude: location.longitude,
+				})),
+				...localities.map((location) => ({
+					type: 'Area',
+					location: `${location.name}, ${location._id}`,
+					locality: location.name,
+					city: location._id,
+					state: location.state,
+					latitude: location.latitude,
+					longitude: location.longitude,
+				})),
+			]
+		}else{
+			response = response.map((location) => ({
+				type: location.type,
+				location: `${location.name}, ${location.city}`,
 				locality: location.name,
-				city: location._id,
+				city: location.city,
 				state: location.state,
 				latitude: location.latitude,
 				longitude: location.longitude,
-			})),
-		];
+			}));
+		}
 
 		res.json(response);
 	} catch (error) {
