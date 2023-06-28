@@ -2,7 +2,6 @@ import Location from '@/database/modals/global/locations/location';
 import { Request, Response } from 'express';
 import { z } from 'zod';
 
-
 const validator = z.object({
 	searchText: z.string().min(0).max(50),
 });
@@ -10,14 +9,38 @@ const validator = z.object({
 export default async function Search(req: Request, res: Response) {
 	try {
 		const { searchText } = validator.parse(req.body);
-		// try word level matches
-		let response = await Location.aggregate([
+		const localitiesQuery = Location.aggregate([
 			{
-				// using indexed
 				$match: {
-					$text: {
-						$search: searchText,
-					},
+					name: { $regex: `^${searchText}`, $options: 'i' }, // Case-insensitive search for matching locality from the beginning
+				},
+			},
+			{
+				$group: {
+					_id: '$city',
+					name: { $first: '$name' },
+					state: { $first: '$state' },
+					latitude: { $first: '$latitude' },
+					longitude: { $first: '$longitude' },
+				},
+			},
+			{
+				$limit: 10,
+			},
+		]);
+
+		const citiesQuery = Location.aggregate([
+			{
+				$match: {
+					city: { $regex: `^${searchText}`, $options: 'i' },
+				},
+			},
+			{
+				$group: {
+					_id: '$city',
+					state: { $first: '$state' },
+					latitude: { $first: '$latitude' },
+					longitude: { $first: '$longitude' },
 				},
 			},
 			{
@@ -25,66 +48,30 @@ export default async function Search(req: Request, res: Response) {
 			},
 		]);
 
-		// if no word level matches found, try text level matches using regex
-		if (response.length === 0) {
-			const [cities, localities] = await Promise.all([
-				Location.aggregate([
-					{
-						$match: {
-							city: {
-								$regex: `^${searchText}`,
-								$options: 'i',
-							},
-						},
-					},
-					{
-						$limit: 5,
-					},
-				]),
-				Location.aggregate([
-					{
-						$match: {
-							name: {
-								$regex: `^${searchText}`,
-								$options: 'i',
-							},
-						},
-					},
-					{
-						$limit: 10,
-					},
-				]),
-			]);
-			response = [
-				...cities.map((location) => ({
-					type: 'City',
-					location: `${location._id}, ${location.state}`,
-					city: location._id,
-					state: location.state,
-					latitude: location.latitude,
-					longitude: location.longitude,
-				})),
-				...localities.map((location) => ({
-					type: 'Area',
-					location: `${location.name}, ${location._id}`,
-					locality: location.name,
-					city: location._id,
-					state: location.state,
-					latitude: location.latitude,
-					longitude: location.longitude,
-				})),
-			]
-		}else{
-			response = response.map((location) => ({
-				type: location.type,
-				location: `${location.name}, ${location.city}`,
-				locality: location.name,
-				city: location.city,
+		const [cities, localities] = await Promise.all([
+			citiesQuery,
+			localitiesQuery,
+		]);
+
+		const response = [
+			...cities.map((location) => ({
+				type: 'City',
+				location: `${location._id}, ${location.state}`,
+				city: location._id,
 				state: location.state,
 				latitude: location.latitude,
 				longitude: location.longitude,
-			}));
-		}
+			})),
+			...localities.map((location) => ({
+				type: 'Area',
+				location: `${location.name}, ${location._id}`,
+				locality: location.name,
+				city: location._id,
+				state: location.state,
+				latitude: location.latitude,
+				longitude: location.longitude,
+			})),
+		];
 
 		res.json(response);
 	} catch (error) {

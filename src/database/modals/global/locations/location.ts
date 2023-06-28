@@ -30,7 +30,6 @@ const area_localities = new Schema(
 	{ timestamps: true }
 );
 
-area_localities.index({ name: 'text', city: 'text' });
 const areaLocalities = model('area_localities', area_localities);
 
 export = areaLocalities;
