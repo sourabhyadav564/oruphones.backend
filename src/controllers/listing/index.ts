@@ -22,7 +22,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 		console.log(req.body);
 		const { locality, state, city, count } = validator.parse(req.body);
 		// Check Redis for cached response
-		const key = `topSellingHome::${locality}::${state}:${city}}`;
+		const key = `topSelling:${locality}:${state}:${city}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
 		if (redisResponse !== null) {
@@ -142,15 +142,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 					notionalPercentage: -1,
 				},
 			},
-			{
-				$match: {
-					$or: [
-						{ notionalPercentage: { $gte: 0, $lt: 40 } },
-						{ notionalPercentage: { $lt: 0 } },
-						{ notionalPercentage: { $gte: 40, $lte: 2000 } },
-					],
-				},
-			},
+	
 			{ $project: returnFilter },
 		];
 
