@@ -79,12 +79,12 @@ const saveListingSchema = new mongoose.Schema(
 		imei: {
 			type: String,
 		},
+		listingState: {
+			type: String,
+		},
 		listingLocation: {
 			type: String,
 			default: 'Delhi',
-		},
-		listingState: {
-			type: String,
 		},
 		listingLocality: {
 			type: String,
@@ -180,9 +180,6 @@ const saveListingSchema = new mongoose.Schema(
 		agent: {
 			type: String,
 		},
-		location: {
-			type: latLongSchema,
-		},
 		latLong: {
 			type: {
 				latitude: {
@@ -192,6 +189,9 @@ const saveListingSchema = new mongoose.Schema(
 					type: Number,
 				},
 			},
+		},
+		location: {
+			type: latLongSchema,
 		},
 		questionnaireResults: {
 			type: [

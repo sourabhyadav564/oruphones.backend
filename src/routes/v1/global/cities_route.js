@@ -104,7 +104,6 @@ router.get('/cities', async (req, res) => {
 
 router.get('/getLocationList', async (req, res) => {
 	try {
-
 		let type = req.query.type;
 		let parentId = req.query.parentId;
 		let latLong = req.query.latLong;

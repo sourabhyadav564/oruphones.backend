@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 const validator = z.object({
 	make: z.string().min(1).max(100),
-	count: z.number().min(1).max(25).optional(),
+	count: z.number().min(1).max(50).optional(),
 });
 const makes = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -50,7 +50,7 @@ const makes = async (req: Request, res: Response, next: NextFunction) => {
 
 const allValidator = z.object({
 	makes: z.array(z.string().min(1).max(100)).min(1).max(25).optional(),
-	count: z.number().min(1).max(25).optional(),
+	count: z.number().min(1).max(50).optional(),
 });
 
 const filteredMakes = async (

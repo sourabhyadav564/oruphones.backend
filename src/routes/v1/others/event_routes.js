@@ -42,7 +42,8 @@ router.get('/sessionid', async (req, res) => {
 					eventName: eventName,
 				},
 				srcFrom: srcFrom,
-				sessionId: sessionId,				devicePlatform: devicePlatform,
+				sessionId: sessionId,
+				devicePlatform: devicePlatform,
 				location: location,
 			};
 			const eventModalObject = new eventModal(headerInfo);

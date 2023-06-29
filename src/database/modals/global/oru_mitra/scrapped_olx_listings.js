@@ -45,6 +45,9 @@ const olxScrappedSchema = new mongoose.Schema(
 		assignedTo: {
 			type: String,
 		},
+		previouslyAssignedTo: {
+			type: Array,
+		},
 		status: {
 			type: String,
 			default: 'Live',

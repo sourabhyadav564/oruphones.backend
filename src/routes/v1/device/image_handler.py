@@ -37,11 +37,8 @@ def convertImagesToWebp(obj):
     path = str(obj).replace(imgName, "")
     imgName = rotate_image_with_orientation(obj)
     imgName = imgName.split("/")[-1]
-    # img = Image.open(f"{path + imgName}")
-    img = Image.open(f"{imgName}")
-    # img.save(f"{path + str(imgName).replace('.jpg','')}_org.webp", "webp", quality=10)
-    img.save(f"{str(imgName).replace('.jpg','')}_org.webp", "webp", quality=10)
-
+    img = Image.open(f"{path + imgName}")
+    img.save(f"{path + str(imgName).replace('.jpg','')}_org.webp", "webp", quality=10)
     height = img.height
     width = img.width
 
@@ -50,10 +47,8 @@ def convertImagesToWebp(obj):
     width = height / ratio
 
     img = img.resize((int(width), int(height)), Image.LANCZOS)
-    # img.save(f"{path + str(imgName).replace('.jpg','')}.webp", "webp", quality=10)
-    # os.remove(f"{path+imgName}")
-    img.save(f"{str(imgName).replace('.jpg','')}.webp", "webp", quality=10)
-    os.remove(f"{imgName}")
+    img.save(f"{path + str(imgName).replace('.jpg','')}.webp", "webp", quality=10)
+    os.remove(f"{path+imgName}")
     os.remove(f"{obj}")
 
 convertImagesToWebp(sys.argv[1])
