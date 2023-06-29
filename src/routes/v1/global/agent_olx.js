@@ -609,27 +609,43 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 		});
 
 		if (user) {
-			let otherLiveListings = await olxScrappedModal.find({
-				status: {
-					$in: ['Live', 'Contacted'],
-				},
-				previouslyAssignedTo: { $nin: [uuid] },
+			let otherLiveListings = await olxScrappedModal.countDocuments({
+				$or: [
+					{
+						status: {
+							$in: ['Live', 'Contacted', null],
+						},
+					},
+					{
+						status: {
+							$exists: false,
+						},
+					},
+				],
 			});
 
-			let liveListings = await olxScrappedModal.find({
-				assignedTo: uuid,
-				status: 'Live',
-			});
+			let liveListings = await olxScrappedModal
+				.find({
+					assignedTo: uuid,
+					status: 'Live',
+				})
+				.sort({ location: 1 });
 
-			let contactedListings = await olxScrappedModal.find({
-				assignedTo: uuid,
-				status: 'Contacted',
-			});
-
+			let contactedListings = await olxScrappedModal
+				.find({
+					assignedTo: uuid,
+					status: 'Contacted',
+				})
+				.sort({ location: 1 });
+			console.log(
+				'liveListings',
+				liveListings.length,
+				contactedListings.length
+			);
 			if (liveListings.length + contactedListings.length < limit) {
 				let listingLimit =
 					limit - (liveListings.length + contactedListings.length);
-
+				console.log('listingLimit', listingLimit);
 				// let cityWithMostListings = await olxScrappedModal.aggregate([
 				// 	{
 				// 		$match: {
@@ -649,104 +665,248 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 				// 		},
 				// 	},
 				// ]);
-				
-				let newLiveListings = await olxScrappedModal
-					.find({
-						previouslyAssignedTo: { $nin: [uuid] },
-						status: 'Live',
-						assignedTo: null,
-						// location: cityWithMostListings[0]._id,
-					})
-					.limit(listingLimit);
-
-				if (newLiveListings.length <= listingLimit) {
-
-					let agents = await olxScrappedModal.distinct('assignedTo', {
-						status: 'Live',
-						assignedTo: { $ne: null },
-					});
-
-					if (!agents.includes(uuid)) {
-						agents.push(uuid);
-					}
-
-					let listingPerAgent =
-						Math.floor(otherLiveListings.length / agents.length) > limit
-							? limit
-							: Math.floor(otherLiveListings.length / agents.length);
-
-					if (liveListings.length < listingPerAgent) {
-						let agentTotalListings =
-							liveListings.length + contactedListings.length;
-
-						let agentLimit = listingPerAgent - agentTotalListings;
-
-						if (agentLimit > 0) {
-							let agentAssignedLiveListings = await olxScrappedModal
-								.find({
-									previouslyAssignedTo: { $nin: [uuid] },
-									status: 'Live',
-									assignedTo: {
-										$nin: [uuid, null],
-									},
-									// location: cityWithMostListings[0]._id,
-								})
-								.limit(agentLimit - newLiveListings.length);
-
-							newLiveListings = [
-								...newLiveListings,
-								...agentAssignedLiveListings,
-							];
-							
-							newLiveListings.map(async (listing) => {
-								await olxScrappedModal.updateOne(
-									{ _id: listing._id },
-
+				if (listingLimit > 0) {
+					let newLiveListings = await olxScrappedModal
+						.find(
+							{
+								$and: [
 									{
-										assignedTo: uuid,
-										status: 'Live',
-									}
-								);
-							});
+										$or: [
+											{
+												status: 'Live',
+											},
+											{
+												status: {
+													$exists: false,
+												},
+											},
+											{
+												status: null,
+											},
+										],
+									},
+									{
+										$or: [
+											{
+												assignedTo: null,
+											},
+											{
+												assignedTo: {
+													$exists: false,
+												},
+											},
+										],
+									},
+									// {
+									// 	$or: [
+									// 		{
+									// 			previouslyAssignedTo: { $nin: [uuid] },
+									// 		},
+									// 		{
+									// 			previouslyAssignedTo: {
+									// 				$exists: false,
+									// 			},
+									// 		},
+									// 	],
+									// },
+								],
+								// location: cityWithMostListings[0]._id,
+							},
+							{
+								_id: 1,
+								price: 1,
+								make: 1,
+								chatLink: 1,
+								status: 1,
+								link: 1,
+								userName: 1,
+								location: 1,
+							}
+						)
+						.limit(listingLimit);
+					console.log('newLiveListings', newLiveListings.length);
+					if (newLiveListings.length < listingLimit) {
+						let agents = await olxScrappedModal.distinct('assignedTo', {
+							status: 'Live',
+							assignedTo: { $ne: null },
+						});
 
-							liveListings = [...newLiveListings, ...liveListings];
+						if (!agents.includes(uuid)) {
+							agents.push(uuid);
 						}
 
-						// contactedListings = await olxScrappedModal.find({
-						// 	assignedTo: uuid,
-						// 	status: 'Contacted',
-						// });
-					}
-					res.status(200).json({
-						reason: 'Listings fetched successfully2',
-						statusCode: 200,
-						status: 'SUCCESS',
-						dataObject: {
-							liveListings: liveListings,
-							contactedListings: contactedListings,
-						},
-					});
-					return;
-				} else {
-					let bulkwrite = await olxScrappedModal.bulkWrite(
-						newLiveListings.map((listing) => {
-							return {
-								updateOne: {
-									filter: { _id: listing._id },
-									update: {
-										assignedTo: uuid,
-										status: 'Live',
+						let listingPerAgent =
+							Math.floor(otherLiveListings / agents.length) > limit
+								? limit
+								: Math.floor(otherLiveListings / agents.length);
+
+						if (
+							liveListings.length +
+								newLiveListings.length +
+								contactedListings.length <
+							listingPerAgent
+						) {
+							let agentTotalListings =
+								liveListings.length + contactedListings.length;
+
+							let agentLimit = listingPerAgent - agentTotalListings;
+
+							if (agentLimit > 0) {
+								let agentAssignedLiveListings = await olxScrappedModal
+									.find(
+										{
+											previouslyAssignedTo: { $nin: [uuid] },
+											$and: [
+												{
+													assignedTo: {
+														$ne: null,
+													},
+												},
+												{
+													assignedTo: {
+														$ne: uuid,
+													},
+												},
+												{
+													$or: [
+														{
+															status: 'Live',
+														},
+														{
+															status: null,
+														},
+														{
+															status: {
+																$exists: false,
+															},
+														},
+													],
+												},
+												{
+													$or: [
+														{
+															previouslyAssignedTo: { $nin: [uuid] },
+														},
+														{
+															previouslyAssignedTo: {
+																$exists: false,
+															},
+														},
+													],
+												},
+											],
+											// location: cityWithMostListings[0]._id,
+										},
+										{
+											_id: 1,
+											price: 1,
+											make: 1,
+											chatLink: 1,
+											status: 1,
+											link: 1,
+											userName: 1,
+											location: 1,
+										}
+									)
+									.limit(agentLimit - newLiveListings.length);
+								console.log(
+									'agentAssignedLiveListings',
+									agentAssignedLiveListings.length
+								);
+								newLiveListings = [
+									...newLiveListings,
+									...agentAssignedLiveListings,
+								];
+
+								// newLiveListings = newLiveListings.sort({ location: 1 });
+								// newLiveListings = newLiveListings.sort((a, b) => {
+								// 	if (a.location < b.location) {
+								// 		return -1;
+								// 	}
+								// 	if (a.location > b.location) {
+								// 		return 1;
+								// 	}
+								// 	return 0;
+								// });
+							}
+						}
+
+						let abc = await newLiveListings.map(async (listing) => {
+							await olxScrappedModal.updateOne(
+								{ _id: listing._id },
+
+								{
+									assignedTo: uuid,
+									status: 'Live',
+								}
+							);
+						});
+
+						liveListings = [...newLiveListings, ...liveListings];
+
+						// liveListings = liveListings.sort({ location: 1 });
+
+						// above code is not working it is giving error The comparison function must be either a function or undefined
+						liveListings = liveListings.sort((a, b) => {
+							if (a.location < b.location) {
+								return -1;
+							}
+							if (a.location > b.location) {
+								return 1;
+							}
+							return 0;
+						});
+
+						res.status(200).json({
+							reason: 'Listings fetched successfully2',
+							statusCode: 200,
+							status: 'SUCCESS',
+							dataObject: {
+								liveListings: liveListings,
+								contactedListings: contactedListings,
+							},
+						});
+						return;
+					} else {
+						let bulkwrite = await olxScrappedModal.bulkWrite(
+							newLiveListings.map((listing) => {
+								return {
+									updateOne: {
+										filter: { _id: listing._id },
+										update: {
+											assignedTo: uuid,
+											status: 'Live',
+										},
 									},
-								},
-							};
-						})
-					);
+								};
+							})
+						);
 
-					// merge both old and new listings
-					liveListings = [...liveListings, ...newLiveListings];
-
+						// merge both old and new listings
+						liveListings = [...liveListings, ...newLiveListings];
+						// liveListings = liveListings.sort({ location: 1 });
+						liveListings = liveListings.sort((a, b) => {
+							if (a.location < b.location) {
+								return -1;
+							}
+							if (a.location > b.location) {
+								return 1;
+							}
+							return 0;
+						});
+						res.status(200).json({
+							reason: 'Listings fetched successfully1',
+							statusCode: 200,
+							status: 'SUCCESS',
+							dataObject: {
+								liveListings: liveListings,
+								contactedListings: contactedListings,
+							},
+						});
+					}
+				} else {
 					res.status(200).json({
-						reason: 'Listings fetched successfully1',
+						reason: 'Listings fetched successfully',
 						statusCode: 200,
 						status: 'SUCCESS',
 						dataObject: {
@@ -755,6 +915,40 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 						},
 					});
 				}
+			} else if (liveListings.length > limit - contactedListings.length) {
+				let removedListings = await liveListings.map(async (listing, index) => {
+					if (index >= limit - contactedListings.length) {
+						liveListings.splice(index, 1);
+						await olxScrappedModal.updateOne(
+							{ _id: listing._id },
+							{
+								assignedTo: null,
+								status: 'Live',
+							}
+						);
+					}
+				});
+
+				// liveListings = liveListings.sort({ location: 1 });
+				liveListings = liveListings.sort((a, b) => {
+					if (a.location < b.location) {
+						return -1;
+					}
+					if (a.location > b.location) {
+						return 1;
+					}
+					return 0;
+				});
+
+				res.status(200).json({
+					reason: 'Listings fetched successfully3',
+					statusCode: 200,
+					status: 'SUCCESS',
+					dataObject: {
+						liveListings: liveListings,
+						contactedListings: contactedListings,
+					},
+				});
 			} else {
 				res.status(200).json({
 					reason: 'Listings fetched successfully0',
@@ -768,6 +962,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 			}
 		}
 	} catch (error) {
+		console.log(error);
 		res.status(200).json({
 			reason: 'Internal server error',
 			statusCode: 500,

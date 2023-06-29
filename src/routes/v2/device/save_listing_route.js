@@ -37,6 +37,7 @@ const allMatrix = require('../../../utils/matrix_figures');
 const bestDealsModal = require('../../../database/modals/others/best_deals_models');
 const validUser = require('../../../middleware/valid_user');
 const createAgentModal = require('../../../database/modals/global/oru_mitra/agent_modal');
+const ImeiDataModal = require('../../../database/modals/device/imei_data');
 // const downloadImage = require("../../../utils/download_image_from_url");
 
 router.get('/listings', is_Session, async (req, res) => {
@@ -1774,6 +1775,58 @@ router.post('/listing/imeiData', validUser, logEvent, async (req, res) => {
 			statusCode: 200,
 			status: 'SUCCESS',
 		});
+	} catch (error) {
+		res.status(400).json(error);
+	}
+});
+
+router.get('/listing/getImeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const { userUniqueId } = req.query;
+
+		const isValidUser = await createUserModal.find({
+			userUniqueId: userUniqueId,
+		});
+
+		if (!isValidUser) {
+			res.status(200).json({
+				reason: 'Invalid user unique id provided',
+				statusCode: 200,
+				status: 'INVALID',
+			});
+			return;
+		} else {
+			const getImeiData = await ImeiDataModal.find(
+				{
+					userUniqueId: userUniqueId,
+				},
+				{
+					imei: 1,
+					status: 1,
+					manufacturer: 1,
+					model: 1,
+					deviceType: 1,
+					brand: 1,
+					listingId: 1,
+					deviceUniqueId: 1,
+				}
+			);
+
+			// remove duplicate imei data
+			let dataObject = [];
+			getImeiData.forEach((item) => {
+				if (!dataObject.some((item2) => item2.imei === item.imei)) {
+					dataObject.push(item);
+				}
+			});
+
+			res.status(200).json({
+				reason: 'Imei data fetched successfully',
+				statusCode: 200,
+				status: 'SUCCESS',
+				dataObject: dataObject,
+			});
+		}
 	} catch (error) {
 		res.status(400).json(error);
 	}
