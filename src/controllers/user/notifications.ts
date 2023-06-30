@@ -8,8 +8,7 @@ export async function getNotifications(
 ) {
 	try {
 		const notifs = await notificationModel
-			.find({ user: req.session.user?.userUniqueId! })
-			.sort({ createdAt: -1 });
+			.findOne({ user: req.session.user?.userUniqueId! })
 		res.json({
 			json: notifs,
 		});

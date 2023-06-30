@@ -4,6 +4,7 @@ import express from 'express';
 
 const router = express.Router();
 router.get('/makes', listingController.makes);
+router.post('/activate', isAuth, listingController.activate);
 router.post('/sendVerification', isAuth, listingController.sendVerification);
 router.post('/getSellerNumber', isAuth, listingController.getSellerNumber);
 router.post('/models', listingController.models.makes);
