@@ -10,7 +10,7 @@ export async function getNotifications(
 		const notifs = await notificationModel
 			.findOne({ user: req.session.user?.userUniqueId! })
 		res.json({
-			json: notifs,
+			notifs,
 		});
 	} catch (err) {
 		next(err);
