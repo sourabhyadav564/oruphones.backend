@@ -146,6 +146,7 @@ async function otpValidate(req: Request, res: Response, next: NextFunction) {
 				state: user.state,
 				mobileNumber: user.mobileNumber,
 				associatedWith: user.associatedWith,
+				isAccountExpired: user.isaccountexpired,
 				...(favListings && { favListings }),
 				...(userListings && { userListings }),
 			},

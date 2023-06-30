@@ -9,6 +9,7 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { PipelineStage } from 'mongoose';
 import { z } from 'zod';
+import activate from './activate';
 
 const validator = z.object({
 	locality: z.string().min(0).max(100).optional(),
@@ -166,4 +167,5 @@ export default {
 	listings,
 	sendVerification,
 	getSellerNumber,
+	activate
 };
