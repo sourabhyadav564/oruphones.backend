@@ -26,7 +26,7 @@ export default async function Search(req: Request, res: Response) {
 				},
 			},
 			{
-				$limit: 10,
+				$limit: 20,
 			},
 		]);
 
@@ -50,6 +50,14 @@ export default async function Search(req: Request, res: Response) {
 		]);
 
 		const response = [
+			{
+				type: 'Country',
+				location: 'India',
+				city: 'India',
+				state: '',
+				latitude: 0,
+				longitude: 0,
+			  },
 			...cities.map((location) => ({
 				type: 'City',
 				location: `${location._id}, ${location.state}`,

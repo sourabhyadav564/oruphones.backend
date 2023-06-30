@@ -101,6 +101,7 @@ function constructPipeline(
 async function filter(req: Request, res: Response, next: NextFunction) {
 	try {
 		let { filter, returnFilter } = validator.parse(req.body);
+		console.log(filter);
 		let { notionalFilter } = req.query;
 		// construct return shape filter if not provided
 		//optional return filter lets us choose what we want to return
@@ -150,6 +151,9 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			latitude,
 			longitude,
 			notionalIDs,
+			locality,
+			state,
+			city
 		} = filter;
 		let filterObj = {
 			...(make && { make: { $in: make } }),
@@ -161,12 +165,26 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 				? {}
 				: {
 						$or: [
+							...(locality
+								? [
+										{
+											listingLocality: locality,
+											listingState: state,
+											listingLocation: city,
+										},
+										{
+											listingLocation: city,
+											listingState: state,
+										},
+								  ]
+								: [
+										{
+											listingLocation: city,
+											listingState: state,
+										},
+								  ]),
 							{
 								listingLocation: 'India',
-							},
-							{
-								listingLocation: listingLocation?.split(',')[0].trim(),
-								listingState: listingLocation?.split(',')[1].trim(),
 							},
 						],
 				  }),
