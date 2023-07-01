@@ -276,6 +276,35 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			limit,
 			notionalBestDealListingIds
 		);
+
+		pipeline.push({
+			$addFields: {
+				sortPriority: {
+					$switch: {
+						branches: [
+							{
+								case: {
+									$and: [
+										{ $gte: ['$notionalPercentage', 0] },
+										{ $lt: ['$notionalPercentage', 40] },
+									],
+								},
+								then: 0,
+							},
+							{
+								case: { $lt: ['$notionalPercentage', 0] },
+								then: 1,
+							},
+							{
+								case: { $gte: ['$notionalPercentage', 40] },
+								then: 2,
+							},
+						],
+						default: 3,
+					},
+				},
+			},
+		});
 		// Execute the aggregation pipeline
 		let result = await Listings.aggregate(pipeline);
 		const data = {
