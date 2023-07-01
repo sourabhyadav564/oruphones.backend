@@ -623,7 +623,6 @@ router.get('/agent/oruMitra/data', async (req, res) => {
 					verifiedDate: 1,
 					status: 1,
 					deviceCondition: 1,
-					listedBy: 1,
 					listingId: 1,
 				}
 			);
@@ -647,7 +646,6 @@ router.get('/agent/oruMitra/data', async (req, res) => {
 					verifiedDate: 1,
 					status: 1,
 					deviceCondition: 1,
-					listedBy: 1,
 					listingId: 1,
 				}
 			);
@@ -1318,7 +1316,6 @@ router.get('/agent/oruMitra/list', async (req, res) => {
 						email: mitra.email,
 						address: mitra.address,
 						city: mitra.city,
-						type: mitra.type,
 						userUniqueId: mitra.userUniqueId,
 						upiId: mitra.upiId,
 						createdAt: mitra.createdAt,

@@ -418,7 +418,7 @@ router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
 					updatedListings.status = 'Sold_Out';
 					updatedListings.notionalPercentage =
 						!updatedListings.notionalPercentage ||
-						updatedListings.notionalPercentage == NaN ||
+						Number.isNaN(updatedListings.notionalPercentage) ||
 						updatedListings.notionalPercentage.toString() == 'NaN' ||
 						updatedListings.notionalPercentage == undefined ||
 						updatedListings.notionalPercentage.toString() == 'undefined'

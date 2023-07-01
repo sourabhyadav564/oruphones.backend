@@ -605,8 +605,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 				{
 					assignedTo: uuid,
 					locality: {
-						$ne: null,
-						$ne: '',
+						$nin: [null, ''],
 					},
 				},
 				{
@@ -627,8 +626,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 						{
 							assignedTo: null,
 							locality: {
-								$ne: null,
-								$ne: '',
+								$nin: [null, ''],
 							},
 						},
 						{
@@ -664,8 +662,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 								},
 							],
 							locality: {
-								$ne: null,
-								$ne: '',
+								$nin: [null, ''],
 							},
 						},
 						{
@@ -850,8 +847,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 							{
 								assignedTo: uuid,
 								locality: {
-									$ne: null,
-									$ne: '',
+									$nin: [null, ''],
 								},
 							},
 							{
