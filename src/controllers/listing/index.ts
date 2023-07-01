@@ -1,5 +1,8 @@
+import activate from './activate';
+import deleteListing from './delete';
 import getSellerNumber from './getSellerNumber';
 import listings from './listings';
+import pause from './pause';
 import sendVerification from './sendVerification';
 import filterController from '@/controllers/listing/filter';
 import makes from '@/controllers/listing/makes';
@@ -9,7 +12,6 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { PipelineStage } from 'mongoose';
 import { z } from 'zod';
-import activate from './activate';
 
 const validator = z.object({
 	locality: z.string().min(0).max(100).optional(),
@@ -143,7 +145,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 					notionalPercentage: -1,
 				},
 			},
-	
+
 			{ $project: returnFilter },
 		];
 
@@ -167,5 +169,7 @@ export default {
 	listings,
 	sendVerification,
 	getSellerNumber,
-	activate
+	activate,
+	deleteListing,
+	pause,
 };
