@@ -16,8 +16,7 @@ function constructPipeline(
 	latlongObj: any,
 	priceRangeObj: any,
 	page: number,
-	limit: number,
-	notionalBestDealListingIds: string[] | undefined = undefined
+	limit: number
 ): PipelineStage[] {
 	console.log('latlongobj: ', latlongObj);
 	const pipeline: PipelineStage[] =
@@ -42,12 +41,7 @@ function constructPipeline(
 						  ]
 						: []),
 					{
-						$match: {
-							...filterObj,
-							...(notionalBestDealListingIds && {
-								listingId: { $nin: notionalBestDealListingIds },
-							}),
-						},
+						$match: filterObj,
 					},
 					...(sortObj && Object.keys(sortObj).length > 0
 						? [{ $sort: sortObj }]
@@ -73,12 +67,7 @@ function constructPipeline(
 			  ]
 			: [
 					{
-						$match: {
-							...filterObj,
-							...(notionalBestDealListingIds && {
-								listingId: { $nin: notionalBestDealListingIds },
-							}),
-						},
+						$match: filterObj,
 					},
 					...(sortObj && Object.keys(sortObj).length > 0
 						? [{ $sort: sortObj }]
@@ -153,7 +142,7 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			notionalIDs,
 			locality,
 			state,
-			city
+			city,
 		} = filter;
 		let filterObj = {
 			...(make && { make: { $in: make } }),
@@ -273,36 +262,12 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			latlongObj,
 			priceRangeObj,
 			page,
-			limit,
-			notionalBestDealListingIds
+			limit
 		);
 
 		pipeline.push({
-			$addFields: {
-				sortPriority: {
-					$switch: {
-						branches: [
-							{
-								case: {
-									$and: [
-										{ $gte: ['$notionalPercentage', 0] },
-										{ $lt: ['$notionalPercentage', 40] },
-									],
-								},
-								then: 0,
-							},
-							{
-								case: { $lt: ['$notionalPercentage', 0] },
-								then: 1,
-							},
-							{
-								case: { $gte: ['$notionalPercentage', 40] },
-								then: 2,
-							},
-						],
-						default: 3,
-					},
-				},
+			$sort: {
+				rank: 1,
 			},
 		});
 		// Execute the aggregation pipeline
