@@ -25,7 +25,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 		console.log(req.body);
 		const { locality, state, city, count } = validator.parse(req.body);
 		// Check Redis for cached response
-		const key = `topSelling::${locality}:${state}:${city}}`;
+		const key = `topSelling::${locality}::${state}::${city}}`;
 		//check redis for location
 		let redisResponse = await redisClient.get(key);
 		if (redisResponse !== null) {
@@ -93,30 +93,6 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			{ $match: filter },
 			{
 				$addFields: {
-					sortPriority: {
-						$switch: {
-							branches: [
-								{
-									case: {
-										$and: [
-											{ $gte: ['$notionalPercentage', 0] },
-											{ $lt: ['$notionalPercentage', 40] },
-										],
-									},
-									then: 0,
-								},
-								{
-									case: { $lt: ['$notionalPercentage', 0] },
-									then: 1,
-								},
-								{
-									case: { $gte: ['$notionalPercentage', 40] },
-									then: 2,
-								},
-							],
-							default: 3,
-						},
-					},
 					matchPriority: {
 						$switch: {
 							branches: [
@@ -141,8 +117,7 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			{
 				$sort: {
 					matchPriority: 1,
-					sortPriority: 1,
-					notionalPercentage: -1,
+					rank: 1,
 				},
 			},
 
