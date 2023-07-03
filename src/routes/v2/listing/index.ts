@@ -11,6 +11,8 @@ router.post('/sendVerification', isAuth, listingController.sendVerification);
 router.post('/getSellerNumber', isAuth, listingController.getSellerNumber);
 router.post('/models', listingController.models.makes);
 router.post('/models/filtered', listingController.models.filteredMakes);
+router.post('/models/variants', listingController.models.modelVariants);
+router.post('/models/getLSP', listingController.models.getLSP);
 router.post('/listings', isAuth, listingController.listings);
 router.post(
 	'/filter/getSimilarLeaderboard',
