@@ -16,7 +16,8 @@ function constructPipeline(
 	latlongObj: any,
 	priceRangeObj: any,
 	page: number,
-	limit: number
+	limit: number,
+	notionalBestDealListingIds: string[] | undefined = undefined
 ): PipelineStage[] {
 	console.log('latlongobj: ', latlongObj);
 	const pipeline: PipelineStage[] =
@@ -41,7 +42,12 @@ function constructPipeline(
 						  ]
 						: []),
 					{
-						$match: filterObj,
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
+						},
 					},
 					...(sortObj && Object.keys(sortObj).length > 0
 						? [{ $sort: sortObj }]
@@ -67,7 +73,12 @@ function constructPipeline(
 			  ]
 			: [
 					{
-						$match: filterObj,
+						$match: {
+							...filterObj,
+							...(notionalBestDealListingIds && {
+								listingId: { $nin: notionalBestDealListingIds },
+							}),
+						},
 					},
 					...(sortObj && Object.keys(sortObj).length > 0
 						? [{ $sort: sortObj }]
@@ -262,7 +273,8 @@ async function filter(req: Request, res: Response, next: NextFunction) {
 			latlongObj,
 			priceRangeObj,
 			page,
-			limit
+			limit,
+			notionalBestDealListingIds
 		);
 
 		pipeline.push({
