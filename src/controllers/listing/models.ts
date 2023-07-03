@@ -175,7 +175,8 @@ const getLSP = async (req: Request, res: Response, next: NextFunction) => {
 			make,
 			marketingName: model,
 		});
-		let result = undefined;
+		let result = undefined,
+			image = undefined;
 		if (Array.isArray(matches) && matches.length > 0) {
 			const marketingname = model;
 			const condition = 'Like New';
@@ -187,23 +188,28 @@ const getLSP = async (req: Request, res: Response, next: NextFunction) => {
 			const hasOrignalBox = true;
 			const isVarified = true;
 			const warranty = 'zero';
-			result = await getRecommendedPrice(
-				make,
-				marketingname,
-				condition,
-				storage,
-				ram,
-				hasCharger,
-				isAppleChargerIncluded,
-				hasEarphone,
-				isAppleEarphoneIncluded,
-				hasOrignalBox,
-				isVarified,
-				true,
-				warranty
-			);
+			[result, image] = await Promise.all([
+				getRecommendedPrice(
+					make,
+					marketingname,
+					condition,
+					storage,
+					ram,
+					hasCharger,
+					isAppleChargerIncluded,
+					hasEarphone,
+					isAppleEarphoneIncluded,
+					hasOrignalBox,
+					isVarified,
+					true,
+					warranty
+				),
+				getDefaultImage(model),
+			]);
 		}
-		res.status(200).send({ data: result });
+		res
+			.status(200)
+			.send({ ...(result && { data: { ...result, imagePath: image } }) });
 	} catch (error) {
 		next(error);
 	}
