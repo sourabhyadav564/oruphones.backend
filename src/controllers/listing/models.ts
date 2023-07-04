@@ -187,7 +187,6 @@ const getLSP = async (req: Request, res: Response, next: NextFunction) => {
 			const isAppleEarphoneIncluded = make === 'Apple' ? hasEarphone : false;
 			const hasOrignalBox = true;
 			const isVarified = true;
-			const warranty = 'zero';
 			[result, image] = await Promise.all([
 				getRecommendedPrice(
 					make,
@@ -201,8 +200,8 @@ const getLSP = async (req: Request, res: Response, next: NextFunction) => {
 					isAppleEarphoneIncluded,
 					hasOrignalBox,
 					isVarified,
-					true,
-					warranty
+					false,
+					'more'
 				),
 				getDefaultImage(model),
 			]);
@@ -214,6 +213,39 @@ const getLSP = async (req: Request, res: Response, next: NextFunction) => {
 		next(error);
 	}
 };
+
+// const externalSourcesValidator = z.object({
+// 	make: z.string().min(1).max(100),
+// 	model: z.string().min(1).max(100),
+// 	storage: z.string().min(1).max(100),
+// 	ram: z.string().min(1).max(100).optional(),
+// 	hasCharger: z.boolean().optional(),
+// 	hasEarphone: z.boolean().optional(),
+// 	hasOrignalBox: z.boolean().optional(),
+// 	warrantyPeriod: z.string().min(1).max(100).optional(),
+// });
+
+// const getExternalSources = async (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction
+// ) => {
+// 	const {
+// 		make,
+// 		model,
+// 		storage,
+// 		ram,
+// 		hasCharger,
+// 		hasEarphone,
+// 		hasOrignalBox,
+// 		warrantyPeriod,
+// 	} = externalSourcesValidator.parse(req.body);
+
+// 	try {
+// 	} catch (error) {
+// 		next(error);
+// 	}
+// };
 
 export default {
 	makes,
