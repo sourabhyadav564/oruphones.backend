@@ -9,6 +9,15 @@ export default async function imageUpload(
 	try {
 		const { type } = req.query;
 		switch (type) {
+			case 'listingImage': {
+				return res.status(200).json({
+					reason: 'Image uploaded successfully',
+					status: 'SUCCESS',
+					imageOriginalPath: (req.file as any)?.transforms[0].location,
+					imageThumbPath: (req.file as any)?.transforms[1].location,
+				});
+			}
+			break;
 			case 'profilePic': {
 				await Users.findOneAndUpdate(
 					{ userUniqueId: req.session.user!.userUniqueId },
