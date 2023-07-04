@@ -91,6 +91,12 @@ export default async function updateListing(
 									: 'None',
 						  }
 						: {}),
+					listing: {
+						...(body.listingPrice && {
+							notionalPercentage: -9999,
+							rank: Number.MAX_SAFE_INTEGER,
+						}),
+					},
 				}
 			),
 		]);
