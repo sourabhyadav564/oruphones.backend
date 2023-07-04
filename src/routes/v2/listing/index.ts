@@ -6,6 +6,8 @@ const router = express.Router();
 router.get('/makes', listingController.makes);
 router.post('/activate', isAuth, listingController.activate);
 router.post('/delete', isAuth, listingController.deleteListing);
+router.post('/add', isAuth, listingController.add);
+router.post('/update', isAuth, listingController.update);
 router.post('/pause', isAuth, listingController.pause);
 router.post('/sendVerification', isAuth, listingController.sendVerification);
 router.post('/getSellerNumber', isAuth, listingController.getSellerNumber);

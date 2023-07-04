@@ -12,6 +12,8 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { PipelineStage } from 'mongoose';
 import { z } from 'zod';
+import update from './update';
+import add from './add';
 
 const validator = z.object({
 	locality: z.string().min(0).max(100).optional(),
@@ -147,4 +149,6 @@ export default {
 	activate,
 	deleteListing,
 	pause,
+	update,
+	add
 };
