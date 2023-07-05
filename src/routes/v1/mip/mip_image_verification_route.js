@@ -50,8 +50,9 @@ router.post('/verifyImage', async (req, res) => {
 		const imageStatus = req.body.imageStatus;
 
 		const images = await saveListingModal.find({
-			images: { $exists: true, $ne: [] },
 			images: {
+				$exists: true,
+				$ne: [],
 				$elemMatch: {
 					_id: new mongoose.Types.ObjectId(listingId),
 				},

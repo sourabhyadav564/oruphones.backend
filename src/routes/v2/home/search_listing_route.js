@@ -14,7 +14,7 @@ const {
 const validUser = require("../../../middleware/valid_user");
 
 router.post("/listings/search", logEvent, async (req, res) => {
-    const User = req.session.User;
+    const User = req.session.user;
 
     let userUniqueId = "Guest";
     if(User){

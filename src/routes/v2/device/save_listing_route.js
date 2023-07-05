@@ -41,7 +41,7 @@ const createAgentModal = require('../../../database/modals/global/oru_mitra/agen
 
 router.get('/listings', is_Session, async (req, res) => {
 	try {
-		const User = req.session.User;
+		const User = req.session.user;
 		const userUniqueId = User.userUniqueId; // const neededKeys = allMatrix.neededKeysForDeals;
 		// let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
 		// dataObject.reverse();
@@ -119,7 +119,7 @@ router.get('/listings', is_Session, async (req, res) => {
 });
 
 router.post('/listing/save', is_Session, logEvent, async (req, res) => {
-	const User = req.session.User;
+	const User = req.session.user;
 	const userUniqueId = User.userUniqueId;
 	let listedBy = req.body.listedBy;
 	let associatedWith = '';
@@ -376,7 +376,7 @@ router.post('/listing/save', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.query.listingId;
 
 	try {
@@ -418,7 +418,7 @@ router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
 					updatedListings.status = 'Sold_Out';
 					updatedListings.notionalPercentage =
 						!updatedListings.notionalPercentage ||
-						updatedListings.notionalPercentage == NaN ||
+						Number.isNaN(updatedListings.notionalPercentage) ||
 						updatedListings.notionalPercentage.toString() == 'NaN' ||
 						updatedListings.notionalPercentage == undefined ||
 						updatedListings.notionalPercentage.toString() == 'undefined'
@@ -447,7 +447,7 @@ router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/update', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.body.listingId;
 	const charger = req.body.charger;
 	const color = req.body.color;
@@ -627,7 +627,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/pause', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.query.listingId;
 
 	try {
@@ -683,7 +683,7 @@ router.post('/listing/pause', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/activate', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.query.listingId;
 
 
@@ -800,7 +800,7 @@ router.get(
 	logEvent,
 	async (req, res) => {
 		try {
-			const userUniqueId = req.session.User.userUniqueId;
+			const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.query.listingId;
 
 			let isOruMitra = req.query.isOruMitra || false;
@@ -961,7 +961,7 @@ router.get(
 
 router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 	try {
-		const userUniqueId = req.session.User.userUniqueId;
+		const userUniqueId = req.session.user.userUniqueId;
 		const listingId = req.query.listingId;
 	
 		// const isValidUser = await createUserModal.find({
@@ -1003,7 +1003,7 @@ router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/updatefordiag', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const listingId = req.body.listingId;
 
 
@@ -1177,7 +1177,7 @@ router.post(
 	async (req, res) => {
 		const listingid = req.query.listingid;
 		const isOtherVendor = req.query.isOtherVendor;
-		const userUniqueId = req.session.User.userUniqueId;
+		const userUniqueId = req.session.user.userUniqueId;
 		let isLimited = req.query.isLimited || 'false';
 
 		switch (isLimited) {
@@ -1675,7 +1675,7 @@ router.post(
 
 router.get('/listing/bydeviceid', is_Session, logEvent, async (req, res) => {
 	const deviceId = req.query.deviceId;
-	const userUniqueId = req.session.User.userUniqueId;
+	const userUniqueId = req.session.user.userUniqueId;
 	const modelData = req.query.modelData;
 
 	try {

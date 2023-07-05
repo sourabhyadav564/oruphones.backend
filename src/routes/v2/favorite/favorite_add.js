@@ -9,7 +9,7 @@ const is_Session = require('../../../middleware/is_Session')
 
 router.post("/add",is_Session,logEvent, async (req, res) => {
     const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId;
 
   const listingId = req.query.listingId;
@@ -80,7 +80,7 @@ router.post("/add",is_Session,logEvent, async (req, res) => {
 
 router.post("/deactivate",is_Session,logEvent, async (req, res) => {
     const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId;
   const listingId = req.query.listingId;
 
@@ -141,7 +141,7 @@ router.post("/deactivate",is_Session,logEvent, async (req, res) => {
 
 router.post("/fetch", is_Session,logEvent, async (req, res) => {
     
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId;
   try {
     const getFavObject = await favoriteModal.findOne({

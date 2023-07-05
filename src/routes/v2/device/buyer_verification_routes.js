@@ -24,7 +24,7 @@ router.get(
 	logEvent,
 	async (req, res) => {
 		try {
-			const User = req.session.User;
+			const User = req.session.user;
 			const listingId = req.query.listingId;
 			const mobileNumber = User.mobileNumber;
 
@@ -114,7 +114,7 @@ router.get(
 	logEvent,
 	async (req, res) => {
 		const listingId = req.query.listingId;
-		const userUniqueId = req.session.User.userUniqueId;
+		const userUniqueId = req.session.user.userUniqueId;
 
 		const clientOTP = generateOTP();
 

@@ -15,7 +15,7 @@ const is_Session = require('../../../middleware/is_Session')
 
 router.get('/user/details',is_Session,logEvent, async (req, res) => {
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
 
   if(sessionId && User) {
 
@@ -111,7 +111,7 @@ router.post('/user/create', is_Session,logEvent, async (req, res) => {
 })
 router.post('/user/update',is_Session,logEvent, async (req, res) => {
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
 
   if(sessionId && User) {
     const city = req.body.city
@@ -169,7 +169,7 @@ router.post('/user/update',is_Session,logEvent, async (req, res) => {
 
 
 router.post('/user/delete', is_Session, logEvent, async (req, res) => {
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
   const userUniqueId = User.userUniqueId
 
   let deleteUserAccount
@@ -261,7 +261,7 @@ router.post(
   is_Session,
   logEvent,
   async (req, res) => {
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId
       const city = req.body.city
     const locationId = req.body.locationId
@@ -336,7 +336,7 @@ router.post(
   is_Session,
   logEvent,
   async (req, res) => {
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId
       const city = req.body.city
 

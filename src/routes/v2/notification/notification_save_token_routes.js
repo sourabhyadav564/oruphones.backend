@@ -10,7 +10,7 @@ const validUser = require("../../../middleware/valid_user");
 router.post("/save/token" , async (req, res) => {
 
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
   const userUniqueId = User.userUniqueId;
   const deviceId = req.body.deviceId;
   const tokenId = req.body.tokenId;
@@ -58,7 +58,7 @@ router.post("/save/token" , async (req, res) => {
 router.post("/delete/token" , async (req, res) => {
 
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
   const userUniqueId = User.userUniqueId;
   const tokenId = req.body.tokenId;
   const deviceId = req.body.deviceId;
@@ -93,7 +93,7 @@ router.get("/byUserId" , async (req, res) => {
     
   if(req.session){
     const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-    const User = req.session.User; // Retrieve the user ID from the session
+    const User = req.session.user; // Retrieve the user ID from the session
     const userUniqueId = User.userUniqueId;
    
     try {
@@ -146,7 +146,7 @@ router.get("/byUserId" , async (req, res) => {
 
 router.get("/read", async (req, res) => {
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
   const userUniqueId = User.userUniqueId;
   const notificationId = req.query.id;
 

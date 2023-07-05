@@ -19,7 +19,7 @@ router.get("/listings/best/nearall",logEvent, async (req, res) => {
   const location = req.query.userLocation;
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
-  const User = req.session.User;
+  const User = req.session.user;
   let userUniqueId = "Guest";
   if(User){
      userUniqueId = User.userUniqueId;

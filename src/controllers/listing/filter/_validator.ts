@@ -13,12 +13,19 @@ export default z.object({
 		ram: z.string().min(1).max(100).array().optional(),
 		priceRange: z.number().min(0).max(999999).nullable().array().optional(),
 		listingLocation: z.string().min(1).max(100).optional(),
+		latitude: z.number().min(-90).max(90).optional(),
+		longitude: z.number().min(-180).max(180).optional(),
+		state : z.string().min(1).max(100).optional(),
+		city: z.string().min(1).max(100).optional(),
+		locality: z.string().min(0).max(100).optional(),
 		limit: z.number().min(1).max(100).optional(),
 		includeSelf: z.boolean().optional(),
+		notionalIDs: z.string().min(1).max(100).array().optional(),
 		sort: z
 			.object({
 				price: z.number().min(-1).max(1).optional(),
 				date: z.number().min(-1).max(1).optional(),
+				latlong: z.number().min(-1).max(1).optional(),
 			})
 			.optional(),
 	}),

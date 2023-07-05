@@ -15,7 +15,7 @@ const createUserModal = require("../../../database/modals/login/login_create_use
 
 router.get("/get-session", (req, res) => {
   const sessionId = req.sessionID; // Retrieve the session ID from the cookie
-  const User = req.session.User; // Retrieve the user ID from the session
+  const User = req.session.user; // Retrieve the user ID from the session
 
   console.log(User);
   res.send(`Session ID: ${sessionId}\nUser ID: ${User}`);
@@ -87,7 +87,7 @@ router.post("/otp/validate", async (req, res) => {
           const getUser = await createUserModal.findOne({ mobileNumber });
 
           if (getUser) {
-            req.session.User = {
+            req.session.user = {
               mobileNumber: mobileNumber,
               countryCode: countryCode,
               userUniqueId: getUser.userUniqueId,
@@ -111,7 +111,7 @@ router.post("/otp/validate", async (req, res) => {
             const saveData = await data.save();
 
             // Store user details in the session
-            req.session.User = {
+            req.session.user = {
               mobileNumber: mobileNumber,
               countryCode: countryCode,
               userUniqueId: saveData.userUniqueId,

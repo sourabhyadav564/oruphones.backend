@@ -19,7 +19,7 @@ const getThirdPartyVendors = require("../../../utils/third_party_listings");
 router.get("/listingsbymake", async (req, res) => {
   // const initialMake = req.query.make;
   let make = req.query.make;
-  const User = req.session.User;
+  const User = req.session.user;
   let userUniqueId = "Guest";
   if(User){
      userUniqueId = User.userUniqueId;
@@ -138,7 +138,7 @@ router.get("/listingsbymake", async (req, res) => {
 
 router.get("/listbymarketingname", is_Session , logEvent, async (req, res) => {
   const marketingname = req.query.marketingName;
-  const userUniqueId = req.session.User.userUniqueId;
+  const userUniqueId = req.session.user.userUniqueId;
   const location = req.query.location;
   let page = req.query.pageNumber;
   page = parseInt(page.toString());

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const saveRequestSchema = new mongoose.Schema(
 	{
@@ -18,9 +18,11 @@ const saveRequestSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const saveRequestModal = new mongoose.model(
+saveRequestSchema.index({ userUniqueId: 1, listingId: 1 }, { unique: true });
+saveRequestSchema.index({ createdAt: 1 }, { expireAfterSeconds: 86400 });
+const saveRequestModal = mongoose.model(
 	'requested_listings',
 	saveRequestSchema
 );
 
-module.exports = saveRequestModal;
+export = saveRequestModal;

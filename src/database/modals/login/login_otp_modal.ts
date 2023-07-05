@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
 	{
@@ -18,6 +18,17 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const userModal = new mongoose.model('user_datas', userSchema);
-
-module.exports = userModal;
+userSchema.index({
+	mobileNumber: 1,
+	countryCode: 1,
+});
+userSchema.index(
+	{
+		createdAt: 1,
+	},
+	{
+		expireAfterSeconds: 300, // 5 minutes
+	}
+);
+const userModal = mongoose.model('user_datas', userSchema);
+export = userModal;

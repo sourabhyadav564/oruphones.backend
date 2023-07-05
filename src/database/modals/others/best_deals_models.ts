@@ -237,6 +237,9 @@ const bestDealsSchema = new mongoose.Schema(
 				},
 			},
 		},
+		rank : {
+			type : Number,
+		},
 		cosmetic: {
 			type: {
 				0: {

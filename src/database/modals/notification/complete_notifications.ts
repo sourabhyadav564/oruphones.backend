@@ -1,10 +1,4 @@
-const mongoose = require('mongoose');
-// const moment = require("moment");
-// const bcrypt = require("bcryptjs");
-// const makeRandomString = require("../../../../utils/generate_random_string");
-
-// const now = new Date();
-// const currentDate = moment(now).format("L");
+import mongoose from 'mongoose';
 
 const notificationSchema = new mongoose.Schema(
 	{
@@ -47,9 +41,10 @@ const notificationSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const notificationModel = new mongoose.model(
+notificationSchema.index({ userUniqueId: 1 });
+const notificationModel = mongoose.model(
 	'complete_notifications',
 	notificationSchema
 );
 
-module.exports = notificationModel;
+export = notificationModel;
