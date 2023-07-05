@@ -12,12 +12,21 @@ const bestDealsModal = require('@/database/modals/others/best_deals_models');
 const generateOTP = require('@/utils/generate_otp');
 const { oruMitraCons } = require('@/utils/matrix_figures');
 const sendLoginOtp = require('@/utils/send_login_otp');
+const { sendMailUtil } = require('@/utils/mail_util');
 
 const codeStr = () => {
 	return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 
-let devNum = ['9660398594', '6375197371', '9772557936', '9649493568'];
+let devNum = [
+	'9660398594',
+	'6375197371',
+	'9772557936',
+	'9649493568',
+	'6378932535',
+	'8209049370',
+	'7976271392',
+];
 let otpNum = ['9261', '4126'];
 
 router.get('/agent/create', async (req, res) => {
@@ -623,6 +632,7 @@ router.get('/agent/oruMitra/data', async (req, res) => {
 					verifiedDate: 1,
 					status: 1,
 					deviceCondition: 1,
+					listedBy: 1,
 					listingId: 1,
 				}
 			);
@@ -646,6 +656,7 @@ router.get('/agent/oruMitra/data', async (req, res) => {
 					verifiedDate: 1,
 					status: 1,
 					deviceCondition: 1,
+					listedBy: 1,
 					listingId: 1,
 				}
 			);
@@ -1316,6 +1327,7 @@ router.get('/agent/oruMitra/list', async (req, res) => {
 						email: mitra.email,
 						address: mitra.address,
 						city: mitra.city,
+						type: mitra.type,
 						userUniqueId: mitra.userUniqueId,
 						upiId: mitra.upiId,
 						createdAt: mitra.createdAt,
@@ -1693,6 +1705,297 @@ router.get('/agent/update', async (req, res) => {
 				dataObject: {},
 			});
 		}
+	} catch (error) {
+		res.status(200).json({
+			reason: 'Internal server error',
+			statusCode: 500,
+			status: 'FAILURE',
+			dataObject: {
+				error: error,
+			},
+		});
+	}
+});
+
+router.get('/agent/sendMail/bothEarned', async (req, res) => {
+	try {
+		let payableListings = await deviceIdModal.find(
+			{
+				isExpired: false,
+				verifiedOn: {
+					$gte: new Date(new Date().getTime() - 100 * 24 * 60 * 60 * 1000),
+				},
+				payStatus: 'Y',
+			},
+			{ listingId: 1, verifiedOn: 1, attachedTo: 1 }
+		);
+
+		let paidListings = await deviceIdModal.find(
+			{
+				payStatus: 'Paid',
+			},
+			{ listingId: 1, verifiedOn: 1, attachedTo: 1 }
+		);
+
+		let allAttachedTo = payableListings.map((item) => item.attachedTo);
+		allAttachedTo = allAttachedTo.concat(
+			paidListings.map((item) => item.attachedTo)
+		);
+
+		let oruMitras = await createAgentModal.find(
+			{
+				type: ['OruMitra', 'Broker'],
+				referralCode: {
+					$in: allAttachedTo,
+				},
+			},
+			{
+				referralCode: 1,
+				name: 1,
+				mobileNumber: 1,
+				upiId: 1,
+				city: 1,
+				agentId: 1,
+			}
+		);
+
+		let oruMitraEarnings = [];
+
+		let allOruMitras = await createAgentModal.find(
+			{
+				type: ['OruMitra', 'Broker'],
+			},
+			{
+				referralCode: 1,
+				name: 1,
+				mobileNumber: 1,
+				upiId: 1,
+				city: 1,
+				agentId: 1,
+			}
+		);
+
+		for (let i = 0; i < oruMitras.length; i++) {
+			let oruMitra = oruMitras[i];
+
+			let payableListingsForThisMitra = payableListings.filter(
+				(item) => item.attachedTo == oruMitra.referralCode
+			);
+
+			let paidListingsForThisMitra = paidListings.filter(
+				(item) => item.attachedTo == oruMitra.referralCode
+			);
+
+			let payableAmount = payableListingsForThisMitra.length * 10;
+			let paidAmount = paidListingsForThisMitra.length * 10;
+
+			let totalAmount = payableAmount + paidAmount;
+
+			oruMitraEarnings.push({
+				oruMitra: oruMitra,
+				payableAmount: payableAmount,
+				payableListings: payableListingsForThisMitra,
+				paidAmount: paidAmount,
+				paidListings: paidListingsForThisMitra,
+				totalAmount: totalAmount,
+			});
+		}
+
+		let agents = await createAgentModal.find(
+			{
+				type: 'Agent',
+			},
+			{
+				referralCode: 1,
+				name: 1,
+				mobileNumber: 1,
+				upiId: 1,
+				city: 1,
+			}
+		);
+
+		let agentEarnings = [];
+
+		for (let i = 0; i < agents.length; i++) {
+			let agent = agents[i];
+
+			let oruMitrasAttachedToThisAgent = allOruMitras.filter(
+				(item) => item.agentId == agent.referralCode
+			);
+
+			let payableListingsForThisAgent = {};
+			let paidListingsForThisAgent = {};
+
+			for (let j = 0; j < oruMitrasAttachedToThisAgent.length; j++) {
+				let oruMitra = oruMitrasAttachedToThisAgent[j];
+
+				let payableListingsForThisMitra = payableListings.filter(
+					(item) => item.attachedTo == oruMitra.referralCode
+				);
+
+				let paidListingsForThisMitra = paidListings.filter(
+					(item) => item.attachedTo == oruMitra.referralCode
+				);
+
+				payableListingsForThisAgent[oruMitra.referralCode] =
+					payableListingsForThisMitra.length;
+
+				paidListingsForThisAgent[oruMitra.referralCode] =
+					paidListingsForThisMitra.length;
+			}
+			agentEarnings.push({
+				agent: agent,
+				totalOruMitras: oruMitrasAttachedToThisAgent.length,
+				payableListings: payableListingsForThisAgent,
+				paidListings: paidListingsForThisAgent,
+			});
+		}
+
+		// create a mail body
+
+		let mailBody = `
+	<html>
+    <head>
+      <style>
+        table {
+          width: 100%;
+        }
+        th, td {
+          text-align: left;
+          padding: 8px;
+		  border: 1px gray;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+          background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+        }
+      </style>
+    </head>
+    <body>
+	  <h1>Oru Mitra Earnings</h1>
+	  <table>
+	  <tr>
+	  <th>Oru Mitra Name</th>
+	  <th>Oru Mitra Mobile Number</th>
+	  <th>Oru Mitra City</th>
+	  <th>UPI ID</th>
+	  <th>Payable Amount</th>
+	  <th>Paid Amount</th>
+	  <th>Total Amount</th>
+	  </tr>
+	  `;
+		for (let i = 0; i < oruMitraEarnings.length; i++) {
+			let oruMitra = oruMitraEarnings[i];
+			mailBody += `
+			<tr>
+			<td>${oruMitra.oruMitra.name}</td>
+			<td>${oruMitra.oruMitra.mobileNumber}</td>
+			<td>${oruMitra.oruMitra.city}</td>
+			<td>${oruMitra.oruMitra.upiId}</td>
+			<td>${oruMitra.payableAmount}</td>
+			<td>${oruMitra.paidAmount}</td>
+			<td>${oruMitra.totalAmount}</td>
+			</tr>
+			`;
+		}
+		mailBody += `
+		</table>
+		<h1>Agent Earnings</h1>
+		<table>
+		<tr>
+		<th>Agent Name</th>
+		<th>Agent Mobile Number</th>
+		<th>Agent City</th>
+		<th>Total Oru Mitras</th>
+		<th>Payable Listings</th>
+		<th>Paid Listings</th>
+		</tr>
+		`;
+		for (let i = 0; i < agentEarnings.length; i++) {
+			let agent = agentEarnings[i];
+			mailBody += `
+			<tr>
+			<td>${agent.agent.name}</td>
+			<td>${agent.agent.mobileNumber}</td>
+			<td>${agent.agent.city}</td>
+			<td>${agent.totalOruMitras}</td>
+			<td>
+			<table>
+			<tr>
+			<th>Mitra</th>
+			<th>Mitra Mob Num</th>
+			<th>Payable Listings</th>
+			</tr>
+			`;
+			for (let j = 0; j < allOruMitras.length; j++) {
+				let oruMitra = allOruMitras[j];
+				if (oruMitra.agentId == agent.agent.referralCode) {
+					mailBody += `
+					<tr style="background-color: #AFE1AF;">
+					<td>${oruMitra.name}</td>
+					<td>${oruMitra.mobileNumber}</td>
+					<td>${agent.payableListings[oruMitra.referralCode]}</td>
+					</tr>
+					`;
+				}
+			}
+			mailBody += `
+			</table>
+			</td>
+			<td>
+			<table>
+			<tr>
+			<th>Mitra</th>
+			<th>Mitra Mob Num</th>
+			<th>Paid Listings</th>
+			</tr>
+			`;
+			for (let j = 0; j < allOruMitras.length; j++) {
+				let oruMitra = allOruMitras[j];
+				if (oruMitra.agentId == agent.agent.referralCode) {
+					mailBody += `
+					<tr style="background-color: #AFE1AF;">
+					<td>${oruMitra.name}</td>
+					<td>${oruMitra.mobileNumber}</td>
+					<td>${agent.paidListings[oruMitra.referralCode]}</td>
+					</tr>
+					`;
+				}
+			}
+			mailBody += `
+			</table>
+			</td>
+			</tr>
+			`;
+		}
+		mailBody += `
+		</table>
+		</body>
+		</html>
+		`;
+
+		// res.status(200).json({
+		// 	reason: 'Both earned amount fetched successfully',
+		// 	statusCode: 200,
+		// 	status: 'SUCCESS',
+		// 	dataObject: {
+		// 		oruMitraEarnings: oruMitraEarnings,
+		// 		agentEarnings: agentEarnings,
+		// 	},
+		// });
+
+		sendMailUtil('Oru Mitra Earnings', mailBody);
+
+		// send mailbody in response as a html
+		res.status(200).send(mailBody);
 	} catch (error) {
 		res.status(200).json({
 			reason: 'Internal server error',

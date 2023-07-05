@@ -37,11 +37,12 @@ const allMatrix = require('../../../utils/matrix_figures');
 const bestDealsModal = require('../../../database/modals/others/best_deals_models');
 const validUser = require('../../../middleware/valid_user');
 const createAgentModal = require('../../../database/modals/global/oru_mitra/agent_modal');
+const ImeiDataModal = require('../../../database/modals/device/imei_data');
 // const downloadImage = require("../../../utils/download_image_from_url");
 
 router.get('/listings', is_Session, async (req, res) => {
 	try {
-		const User = req.session.user;
+		const User = req.session.User;
 		const userUniqueId = User.userUniqueId; // const neededKeys = allMatrix.neededKeysForDeals;
 		// let dataObject = await saveListingModal.find({ userUniqueId }, neededKeys);
 		// dataObject.reverse();
@@ -119,7 +120,7 @@ router.get('/listings', is_Session, async (req, res) => {
 });
 
 router.post('/listing/save', is_Session, logEvent, async (req, res) => {
-	const User = req.session.user;
+	const User = req.session.User;
 	const userUniqueId = User.userUniqueId;
 	let listedBy = req.body.listedBy;
 	let associatedWith = '';
@@ -178,7 +179,6 @@ router.post('/listing/save', is_Session, logEvent, async (req, res) => {
 		const deviceRam = req.body.deviceRam;
 		let deviceWarranty = req.body.warranty;
 		let latLong = req.body.latLong;
-
 
 		const cosmetic = req.body.cosmetic;
 
@@ -376,7 +376,7 @@ router.post('/listing/save', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.user.userUniqueId;
+	const userUniqueId = req.session.User.userUniqueId;
 	const listingId = req.query.listingId;
 
 	try {
@@ -418,7 +418,7 @@ router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
 					updatedListings.status = 'Sold_Out';
 					updatedListings.notionalPercentage =
 						!updatedListings.notionalPercentage ||
-						Number.isNaN(updatedListings.notionalPercentage) ||
+						updatedListings.notionalPercentage == NaN ||
 						updatedListings.notionalPercentage.toString() == 'NaN' ||
 						updatedListings.notionalPercentage == undefined ||
 						updatedListings.notionalPercentage.toString() == 'undefined'
@@ -447,7 +447,7 @@ router.post('/listing/delete', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/update', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.user.userUniqueId;
+	const userUniqueId = req.session.User.userUniqueId;
 	const listingId = req.body.listingId;
 	const charger = req.body.charger;
 	const color = req.body.color;
@@ -456,6 +456,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 	const deviceRam = req.body.deviceRam;
 	const earphone = req.body.earphone;
 	const images = req.body.images;
+	const imei = req.body.imei;
 	const listingLocation = req.body.listingLocation;
 	const listingPrice = req.body.listingPrice;
 	const originalbox = req.body.originalbox;
@@ -463,7 +464,6 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 	const cosmetic = req.body.cosmetic;
 	let warranty = req.body.warranty;
 	let latLong = req.body.latLong;
-
 
 	try {
 		const updateListing = await saveListingModal.findOne({
@@ -479,7 +479,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 			return;
 		} else {
 			if (deviceCondition == 'Like New') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'four':
 						deviceCondition = 'Excellent';
 						break;
@@ -494,7 +494,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 						break;
 				}
 			} else if (deviceCondition == 'Excellent') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'seven':
 						deviceCondition = 'Excellent';
 						break;
@@ -544,6 +544,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 					listingLocation,
 					listingPrice,
 					originalbox,
+					imei,
 					latLong: latLong ? latLong : null,
 					recommendedPriceRange,
 					deviceStorage,
@@ -627,7 +628,7 @@ router.post('/listing/update', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/pause', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.user.userUniqueId;
+	const userUniqueId = req.session.User.userUniqueId;
 	const listingId = req.query.listingId;
 
 	try {
@@ -683,9 +684,8 @@ router.post('/listing/pause', is_Session, logEvent, async (req, res) => {
 });
 
 router.post('/listing/activate', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.user.userUniqueId;
+	const userUniqueId = req.session.User.userUniqueId;
 	const listingId = req.query.listingId;
-
 
 	try {
 		const activateListing = await saveListingModal.find({
@@ -800,8 +800,8 @@ router.get(
 	logEvent,
 	async (req, res) => {
 		try {
-			const userUniqueId = req.session.user.userUniqueId;
-	const listingId = req.query.listingId;
+			const userUniqueId = req.session.User.userUniqueId;
+			const listingId = req.query.listingId;
 
 			let isOruMitra = req.query.isOruMitra || false;
 
@@ -961,9 +961,9 @@ router.get(
 
 router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 	try {
-		const userUniqueId = req.session.user.userUniqueId;
+		const userUniqueId = req.session.User.userUniqueId;
 		const listingId = req.query.listingId;
-	
+
 		// const isValidUser = await createUserModal.find({
 		//   userUniqueId: userUniqueId,
 		// });
@@ -1002,173 +1002,177 @@ router.get('/listing/detail', is_Session, logEvent, async (req, res) => {
 	}
 });
 
-router.post('/listing/updatefordiag', is_Session, logEvent, async (req, res) => {
-	const userUniqueId = req.session.user.userUniqueId;
-	const listingId = req.body.listingId;
+router.post(
+	'/listing/updatefordiag',
+	is_Session,
+	logEvent,
+	async (req, res) => {
+		const userUniqueId = req.session.User.userUniqueId;
+		const listingId = req.body.listingId;
 
+		const recommendedPriceRange = req.body.recommendedPriceRange;
+		const deviceRam = req.body.deviceRam;
+		const listingPrice = req.body.listingPrice;
+		const deviceCondition = req.body.deviceCondition;
+		const images = req.body.images;
 
-	const recommendedPriceRange = req.body.recommendedPriceRange;
-	const deviceRam = req.body.deviceRam;
-	const listingPrice = req.body.listingPrice;
-	const deviceCondition = req.body.deviceCondition;
-	const images = req.body.images;
+		const now = new Date();
+		const dateFormat = moment(now).format('MMM Do');
 
-	const now = new Date();
-	const dateFormat = moment(now).format('MMM Do');
+		const dataToBeUpdate = {
+			// ...req.body,
+			// verified: true,
+			// status: "Active",
+			// listingDate: dateFormat,
+			// verifiedDate: dateFormat,
+			recommendedPriceRange: recommendedPriceRange,
+			deviceRam: deviceRam,
+			listingPrice: listingPrice,
+			// deviceCondition: deviceCondition,
+			images: images,
+		};
 
-	const dataToBeUpdate = {
-		// ...req.body,
-		// verified: true,
-		// status: "Active",
-		// listingDate: dateFormat,
-		// verifiedDate: dateFormat,
-		recommendedPriceRange: recommendedPriceRange,
-		deviceRam: deviceRam,
-		listingPrice: listingPrice,
-		// deviceCondition: deviceCondition,
-		images: images,
-	};
-
-	try {
-		const updateListing = await saveListingModal.findOne({
-			listingId: listingId,
-		});
-
-		if (!updateListing) {
-			res.status(200).json({
-				reason: 'Invalid listing id provided',
-				statusCode: 200,
-				status: 'SUCCESS',
+		try {
+			const updateListing = await saveListingModal.findOne({
+				listingId: listingId,
 			});
-			return;
-		} else {
-			if (updateListing.userUniqueId === userUniqueId) {
-				let dataObject = await saveListingModal.findByIdAndUpdate(
-					updateListing._id,
-					dataToBeUpdate,
-					{
-						new: true,
-					}
-				);
 
-				let dataObject2 = await bestDealsModal.findOneAndUpdate(
-					{ listingId: updateListing.listingId },
-					dataToBeUpdate,
-					{
-						new: true,
-					}
-				);
-
-				const userFromFavorite = await favoriteModal.find({
-					fav_listings: listingId,
+			if (!updateListing) {
+				res.status(200).json({
+					reason: 'Invalid listing id provided',
+					statusCode: 200,
+					status: 'SUCCESS',
 				});
+				return;
+			} else {
+				if (updateListing.userUniqueId === userUniqueId) {
+					let dataObject = await saveListingModal.findByIdAndUpdate(
+						updateListing._id,
+						dataToBeUpdate,
+						{
+							new: true,
+						}
+					);
 
-				const sendNotificationToUser = [];
-				userFromFavorite.forEach((item, index) => {
-					sendNotificationToUser.push(item.userUniqueId);
-				});
+					let dataObject2 = await bestDealsModal.findOneAndUpdate(
+						{ listingId: updateListing.listingId },
+						dataToBeUpdate,
+						{
+							new: true,
+						}
+					);
 
-				const now = new Date();
-				const currentDate = moment(now).format('MMM Do');
-
-				const string = await makeRandomString(25);
-
-				let tokenObject = await saveNotificationModel.find({
-					userUniqueId: sendNotificationToUser,
-				});
-
-				let notificationTokens = [];
-				tokenObject.forEach((item, index) => {
-					notificationTokens.push(item.tokenId);
-				});
-
-				var notification_body = {
-					registration_ids: notificationTokens,
-					notification: {
-						title: `Congratulations!!!`,
-						body: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-						sound: 'default',
-						//   click_action: "FCM_PLUGIN_ACTIVITY",
-						icon: 'fcm_push_icon',
-					},
-					data: {
-						title: `Congratulations!!!`,
-						body: {
-							source: 'ORU Phones',
-							messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-						},
-						appEventAction: 'MY_FAVORITES',
-						webEventAction: 'MY_FAVORITES',
-					},
-				};
-
-				fetch('https://fcm.googleapis.com/fcm/send', {
-					method: 'POST',
-					headers: {
-						// replace authorization key with your key
-						Authorization: 'key=' + process.env.FCM_KEY,
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(notification_body),
-				})
-					.then(function (response) {
-						// console.log(response);
-					})
-					.catch(function (error) {
-						console.error(error);
+					const userFromFavorite = await favoriteModal.find({
+						fav_listings: listingId,
 					});
 
-				//Save notification to database
-				let notificationData = {
-					appEventAction: 'MY_FAVORITES',
-					webEventAction: 'MY_FAVORITES',
-					messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
-					notificationId: string,
-					createdDate: currentDate,
-				};
+					const sendNotificationToUser = [];
+					userFromFavorite.forEach((item, index) => {
+						sendNotificationToUser.push(item.userUniqueId);
+					});
 
-				sendNotificationToUser.forEach(async (user, index) => {
-					let dataToBeSave = {
-						userUniqueId: user,
-						notification: [notificationData],
+					const now = new Date();
+					const currentDate = moment(now).format('MMM Do');
+
+					const string = await makeRandomString(25);
+
+					let tokenObject = await saveNotificationModel.find({
+						userUniqueId: sendNotificationToUser,
+					});
+
+					let notificationTokens = [];
+					tokenObject.forEach((item, index) => {
+						notificationTokens.push(item.tokenId);
+					});
+
+					var notification_body = {
+						registration_ids: notificationTokens,
+						notification: {
+							title: `Congratulations!!!`,
+							body: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+							sound: 'default',
+							//   click_action: "FCM_PLUGIN_ACTIVITY",
+							icon: 'fcm_push_icon',
+						},
+						data: {
+							title: `Congratulations!!!`,
+							body: {
+								source: 'ORU Phones',
+								messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+							},
+							appEventAction: 'MY_FAVORITES',
+							webEventAction: 'MY_FAVORITES',
+						},
 					};
 
-					const notificationObject = await notificationModel.findOne({
-						userUniqueId: user,
+					fetch('https://fcm.googleapis.com/fcm/send', {
+						method: 'POST',
+						headers: {
+							// replace authorization key with your key
+							Authorization: 'key=' + process.env.FCM_KEY,
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify(notification_body),
+					})
+						.then(function (response) {
+							// console.log(response);
+						})
+						.catch(function (error) {
+							console.error(error);
+						});
+
+					//Save notification to database
+					let notificationData = {
+						appEventAction: 'MY_FAVORITES',
+						webEventAction: 'MY_FAVORITES',
+						messageContent: `${updateListing.marketingName} that is in your favourites has been verified by the seller.`,
+						notificationId: string,
+						createdDate: currentDate,
+					};
+
+					sendNotificationToUser.forEach(async (user, index) => {
+						let dataToBeSave = {
+							userUniqueId: user,
+							notification: [notificationData],
+						};
+
+						const notificationObject = await notificationModel.findOne({
+							userUniqueId: user,
+						});
+
+						if (!notificationObject) {
+							const saveNotification = new notificationModel(dataToBeSave);
+							let dataObject = await saveNotification.save();
+						} else {
+							const updateNotification =
+								await notificationModel.findByIdAndUpdate(
+									notificationObject._id,
+									{ $push: { notification: notificationData } },
+									{ new: true }
+								);
+						}
 					});
 
-					if (!notificationObject) {
-						const saveNotification = new notificationModel(dataToBeSave);
-						let dataObject = await saveNotification.save();
-					} else {
-						const updateNotification =
-							await notificationModel.findByIdAndUpdate(
-								notificationObject._id,
-								{ $push: { notification: notificationData } },
-								{ new: true }
-							);
-					}
-				});
-
-				res.status(200).json({
-					reason: 'Listing updated successfully',
-					statusCode: 200,
-					status: 'SUCCESS',
-					dataObject,
-				});
-			} else {
-				res.status(200).json({
-					reason: 'You are not authorized to update this listing',
-					statusCode: 200,
-					status: 'SUCCESS',
-				});
+					res.status(200).json({
+						reason: 'Listing updated successfully',
+						statusCode: 200,
+						status: 'SUCCESS',
+						dataObject,
+					});
+				} else {
+					res.status(200).json({
+						reason: 'You are not authorized to update this listing',
+						statusCode: 200,
+						status: 'SUCCESS',
+					});
+				}
 			}
+		} catch (error) {
+			console.log(error);
+			res.status(400).json(error);
 		}
-	} catch (error) {
-		console.log(error);
-		res.status(400).json(error);
 	}
-});
+);
 
 router.post(
 	'/listing/detailwithuserinfo',
@@ -1177,7 +1181,7 @@ router.post(
 	async (req, res) => {
 		const listingid = req.query.listingid;
 		const isOtherVendor = req.query.isOtherVendor;
-		const userUniqueId = req.session.user.userUniqueId;
+		const userUniqueId = req.session.User.userUniqueId;
 		let isLimited = req.query.isLimited || 'false';
 
 		switch (isLimited) {
@@ -1675,7 +1679,7 @@ router.post(
 
 router.get('/listing/bydeviceid', is_Session, logEvent, async (req, res) => {
 	const deviceId = req.query.deviceId;
-	const userUniqueId = req.session.user.userUniqueId;
+	const userUniqueId = req.session.User.userUniqueId;
 	const modelData = req.query.modelData;
 
 	try {
@@ -1733,6 +1737,97 @@ router.get('/listing/bydeviceid', is_Session, logEvent, async (req, res) => {
 		}
 	} catch (error) {
 		console.log(error);
+		res.status(400).json(error);
+	}
+});
+
+router.post('/listing/imeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const {
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		} = req.body;
+
+		// save this data in ImeiDataModal
+		const saveImeiData = new ImeiDataModal({
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		});
+
+		const saveImeiDataResult = await saveImeiData.save();
+
+		res.status(200).json({
+			reason: 'Imei data saved successfully',
+			statusCode: 200,
+			status: 'SUCCESS',
+		});
+	} catch (error) {
+		res.status(400).json(error);
+	}
+});
+
+router.get('/listing/getImeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const { userUniqueId } = req.query;
+
+		const isValidUser = await createUserModal.find({
+			userUniqueId: userUniqueId,
+		});
+
+		if (!isValidUser) {
+			res.status(200).json({
+				reason: 'Invalid user unique id provided',
+				statusCode: 200,
+				status: 'INVALID',
+			});
+			return;
+		} else {
+			const getImeiData = await ImeiDataModal.find(
+				{
+					userUniqueId: userUniqueId,
+				},
+				{
+					imei: 1,
+					status: 1,
+					manufacturer: 1,
+					model: 1,
+					deviceType: 1,
+					brand: 1,
+					listingId: 1,
+					deviceUniqueId: 1,
+				}
+			);
+
+			// remove duplicate imei data
+			let dataObject = [];
+			getImeiData.forEach((item) => {
+				if (!dataObject.some((item2) => item2.imei === item.imei)) {
+					dataObject.push(item);
+				}
+			});
+
+			res.status(200).json({
+				reason: 'Imei data fetched successfully',
+				statusCode: 200,
+				status: 'SUCCESS',
+				dataObject: dataObject,
+			});
+		}
+	} catch (error) {
 		res.status(400).json(error);
 	}
 });

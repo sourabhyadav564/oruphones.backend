@@ -24,10 +24,18 @@ const { sendMailUtil } = require('@/utils/mail_util');
 //   return Math.random().toString(36).substring(2, 8).toUpperCase();
 // };
 
-const maxLimit = 100;
-const minLimit = 70;
+// const maxLimit = 100;
+const limit = 100;
 
-let devNum = ['9660398594', '6375197371', '9772557936', '9649493568'];
+let devNum = [
+	'9660398594',
+	'6375197371',
+	'9772557936',
+	'9649493568',
+	'6378932535',
+	'8209049370',
+	'7976271392',
+];
 let otpNum = ['9261', '4126'];
 
 router.get('/listing/agent/create', async (req, res) => {
@@ -601,254 +609,108 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 		});
 
 		if (user) {
-			let totalListings = await olxScrappedModal.find(
-				{
-					assignedTo: uuid,
-					locality: {
-						$nin: [null, ''],
+			let otherLiveListings = await olxScrappedModal.countDocuments({
+				$or: [
+					{
+						status: {
+							$in: ['Live', 'Contacted', null],
+						},
 					},
-				},
-				{
-					_id: 1,
-					price: 1,
-					make: 1,
-					chatLink: 1,
-					status: 1,
-					link: 1,
-					userName: 1,
-				}
+					{
+						status: {
+							$exists: false,
+						},
+					},
+				],
+			});
+
+			let liveListings = await olxScrappedModal
+				.find({
+					assignedTo: uuid,
+					status: 'Live',
+				})
+				.sort({ location: 1 });
+
+			let contactedListings = await olxScrappedModal
+				.find({
+					assignedTo: uuid,
+					status: 'Contacted',
+				})
+				.sort({ location: 1 });
+			console.log(
+				'liveListings',
+				liveListings.length,
+				contactedListings.length
 			);
-
-			if (totalListings.length < minLimit) {
-				// assign latest 100 listings to the agent which are not assigned to anyone
-				let newListings = await olxScrappedModal
-					.find(
-						{
-							assignedTo: null,
-							locality: {
-								$nin: [null, ''],
-							},
-						},
-						{
-							_id: 1,
-							price: 1,
-							make: 1,
-							chatLink: 1,
-							status: 1,
-							link: 1,
-							userName: 1,
-						}
-					)
-					.sort({ createdAt: -1 })
-					.limit(maxLimit);
-
-				// shuffle the array
-				// newListings = shuffle(newListings);
-
-				if (newListings.length < minLimit) {
-					let assignedlistings = await olxScrappedModal.find(
-						{
-							// assignedTo: {
-							//   $ne: null,
-							// },
-							// status: "Live",
-							// status can be Live or null
-							$or: [
-								{
-									status: 'Live',
-								},
-								{
-									status: null,
-								},
-							],
-							locality: {
-								$nin: [null, ''],
-							},
-						},
-						{
-							_id: 1,
-							assignedTo: 1,
-							status: 1,
-						}
-					);
-
-					// if assignedTo is null then assign it to the given agent
-
-					let tempAssignedListings = [];
-
-					for (let i = 0; i < assignedlistings.length; i++) {
-						let listing = assignedlistings[i];
-						if (listing.assignedTo != null) {
-							tempAssignedListings.push(listing);
-						} else {
-							listing.assignedTo = uuid;
-							tempAssignedListings.push(listing);
-						}
-					}
-
-					let alreadyAsignedCountListings = {};
-
-					for (let i = 0; i < assignedlistings.length; i++) {
-						let listing = assignedlistings[i];
-						if (alreadyAsignedCountListings[listing.assignedTo]) {
-							alreadyAsignedCountListings[listing.assignedTo] =
-								alreadyAsignedCountListings[listing.assignedTo] + 1;
-						} else {
-							alreadyAsignedCountListings[listing.assignedTo] = 1;
-						}
-					}
-
-					let agents = assignedlistings.map((item) => item.assignedTo);
-					// add the given agent to the agents array
-					if (agents.indexOf(uuid) == -1) {
-						agents.push(uuid);
-					}
-
-					let uniqueAgents = [...new Set(agents)];
-
-					let totalAgents = uniqueAgents.length;
-
-					let listingsPerAgent = Math.floor(
-						assignedlistings.length / totalAgents
-					);
-
-					let remainder = assignedlistings.length % totalAgents;
-
-					let agentListings = [];
-
-					let unAssignedListings = [];
-
-					for (let i = 0; i < uniqueAgents.length; i++) {
-						let agent = uniqueAgents[i];
-						let agentListing = await assignedlistings.filter(
-							(item) => item.assignedTo == agent
-						);
-						for (let j = 0; j < agentListing.length; j++) {
-							try {
-								let listing = agentListing[j];
-
-								let thisAgentLimit = Math.min(
-									alreadyAsignedCountListings[agent] || listingsPerAgent,
-									listingsPerAgent
-								);
-
-								if (j < thisAgentLimit) {
-									let agentData = await agentListings.find(
-										(item) => item.agent == agent
-									);
-
-									if (agentData?.listings?.length > 0) {
-										agentData.listings.push(listing);
-									} else {
-										agentListings.push({
-											agent: agent,
-											listings: [listing],
-										});
-									}
-								} else {
-									unAssignedListings.push(listing);
-								}
-							} catch (error) {}
-						}
-					}
-
-					// assign the unassigned listings to the agents
-
-					for (let i = 0; i < unAssignedListings.length; i++) {
-						let listing = unAssignedListings[i];
-
-						for (let j = 0; j < uniqueAgents.length; j++) {
-							let agentUuid = uniqueAgents[j];
-
-							let countAgentListings = await agentListings.find(
-								(item) => item.agent == agentUuid
-							);
-
-							countAgentListings = countAgentListings?.listings?.length || 0;
-
-							let thisAgentLimit = Math.min(
-								alreadyAsignedCountListings[agentUuid] || listingsPerAgent,
-								listingsPerAgent
-							);
-
-							if (countAgentListings < thisAgentLimit) {
-								let agentData = await agentListings.find(
-									(item) => item.agent == agentUuid
-								);
-
-								if (agentData?.listings?.length > 0) {
-									agentData.listings.push(listing);
-								} else {
-									agentListings.push({
-										agent: agentUuid,
-										listings: [listing],
-									});
-								}
-							} else {
-								continue;
-							}
-						}
-					}
-
-					// put the remaining unassigned listings in the given agent's list
-
-					let agentData = await agentListings.find(
-						(item) => item.agent == uuid
-					);
-
-					if (agentData?.listings?.length > 0) {
-						agentData.listings = agentData.listings.concat(unAssignedListings);
-					} else {
-						agentListings.push({
-							agent: uuid,
-							listings: unAssignedListings,
-						});
-					}
-
-					// update the listings in db
-					let allUpdatableListings = [];
-
-					for (let i = 0; i < agentListings.length; i++) {
-						let agent = agentListings[i];
-						let listings = agent.listings;
-						// let agentList = [];
-
-						for (let j = 0; j < listings.length; j++) {
-							let listing = listings[j];
-
-							if (listing.assignedTo != agent.agent) {
-								let updatableListing = {
-									_id: listing._id,
-									assignedTo: agent.agent,
-									status: 'Live',
-								};
-
-								allUpdatableListings.push(updatableListing);
-							}
-						}
-					}
-
-					// use bulk write to update all the listings
-					let bulkWrite = await olxScrappedModal.bulkWrite(
-						allUpdatableListings.map((item) => {
-							return {
-								updateOne: {
-									filter: { _id: item._id },
-									update: {
-										$set: { assignedTo: item.assignedTo, status: 'Live' },
-									},
-								},
-							};
-						})
-					);
-
-					newListings = await olxScrappedModal
+			if (liveListings.length + contactedListings.length < limit) {
+				let listingLimit =
+					limit - (liveListings.length + contactedListings.length);
+				console.log('listingLimit', listingLimit);
+				// let cityWithMostListings = await olxScrappedModal.aggregate([
+				// 	{
+				// 		$match: {
+				// 			assignedTo: null,
+				// 			status: 'Live',
+				// 		},
+				// 	},
+				// 	{
+				// 		$group: {
+				// 			_id: '$location',
+				// 			count: { $sum: 1 },
+				// 		},
+				// 	},
+				// 	{
+				// 		$sort: {
+				// 			count: -1,
+				// 		},
+				// 	},
+				// ]);
+				if (listingLimit > 0) {
+					let newLiveListings = await olxScrappedModal
 						.find(
 							{
-								assignedTo: uuid,
-								locality: {
-									$nin: [null, ''],
-								},
+								$and: [
+									{
+										$or: [
+											{
+												status: 'Live',
+											},
+											{
+												status: {
+													$exists: false,
+												},
+											},
+											{
+												status: null,
+											},
+										],
+									},
+									{
+										$or: [
+											{
+												assignedTo: null,
+											},
+											{
+												assignedTo: {
+													$exists: false,
+												},
+											},
+										],
+									},
+									// {
+									// 	$or: [
+									// 		{
+									// 			previouslyAssignedTo: { $nin: [uuid] },
+									// 		},
+									// 		{
+									// 			previouslyAssignedTo: {
+									// 				$exists: false,
+									// 			},
+									// 		},
+									// 	],
+									// },
+								],
+								// location: cityWithMostListings[0]._id,
 							},
 							{
 								_id: 1,
@@ -858,73 +720,238 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 								status: 1,
 								link: 1,
 								userName: 1,
+								location: 1,
 							}
 						)
-						.sort({ createdAt: -1 })
-						.limit(maxLimit);
-
-					console.log('In Last, time: ', new Date().toLocaleString('en-IN'));
-				} else if (newListings.length > 0) {
-					let allUpdatableListings = [];
-
-					let listingsLimit = maxLimit - totalListings.length;
-
-					if (newListings.length > listingsLimit) {
-						newListings = newListings.slice(0, listingsLimit);
-					}
-
-					for (let i = 0; i < newListings.length; i++) {
-						// let updateListing = await olxScrappedModal.findOneAndUpdate(
-						//   { _id: newListings[i]._id },
-						//   { $set: { assignedTo: uuid, status: "Live" } }
-						// );
-
-						let updatableListing = {
-							_id: newListings[i]._id,
-							assignedTo: uuid,
+						.limit(listingLimit);
+					console.log('newLiveListings', newLiveListings.length);
+					if (newLiveListings.length < listingLimit) {
+						let agents = await olxScrappedModal.distinct('assignedTo', {
 							status: 'Live',
-						};
+							assignedTo: { $ne: null },
+						});
 
-						allUpdatableListings.push(updatableListing);
-					}
+						if (!agents.includes(uuid)) {
+							agents.push(uuid);
+						}
 
-					let bulkWrite = await olxScrappedModal.bulkWrite(
-						allUpdatableListings.map((item) => {
-							return {
-								updateOne: {
-									filter: { _id: item._id },
-									update: {
-										$set: { assignedTo: item.assignedTo, status: 'Live' },
+						let listingPerAgent =
+							Math.floor(otherLiveListings / agents.length) > limit
+								? limit
+								: Math.floor(otherLiveListings / agents.length);
+
+						if (
+							liveListings.length +
+								newLiveListings.length +
+								contactedListings.length <
+							listingPerAgent
+						) {
+							let agentTotalListings =
+								liveListings.length + contactedListings.length;
+
+							let agentLimit = listingPerAgent - agentTotalListings;
+
+							if (agentLimit > 0) {
+								let agentAssignedLiveListings = await olxScrappedModal
+									.find(
+										{
+											previouslyAssignedTo: { $nin: [uuid] },
+											$and: [
+												{
+													assignedTo: {
+														$ne: null,
+													},
+												},
+												{
+													assignedTo: {
+														$ne: uuid,
+													},
+												},
+												{
+													$or: [
+														{
+															status: 'Live',
+														},
+														{
+															status: null,
+														},
+														{
+															status: {
+																$exists: false,
+															},
+														},
+													],
+												},
+												{
+													$or: [
+														{
+															previouslyAssignedTo: { $nin: [uuid] },
+														},
+														{
+															previouslyAssignedTo: {
+																$exists: false,
+															},
+														},
+													],
+												},
+											],
+											// location: cityWithMostListings[0]._id,
+										},
+										{
+											_id: 1,
+											price: 1,
+											make: 1,
+											chatLink: 1,
+											status: 1,
+											link: 1,
+											userName: 1,
+											location: 1,
+										}
+									)
+									.limit(agentLimit - newLiveListings.length);
+								console.log(
+									'agentAssignedLiveListings',
+									agentAssignedLiveListings.length
+								);
+								newLiveListings = [
+									...newLiveListings,
+									...agentAssignedLiveListings,
+								];
+
+								// newLiveListings = newLiveListings.sort({ location: 1 });
+								// newLiveListings = newLiveListings.sort((a, b) => {
+								// 	if (a.location < b.location) {
+								// 		return -1;
+								// 	}
+								// 	if (a.location > b.location) {
+								// 		return 1;
+								// 	}
+								// 	return 0;
+								// });
+							}
+						}
+
+						let abc = await newLiveListings.map(async (listing) => {
+							await olxScrappedModal.updateOne(
+								{ _id: listing._id },
+
+								{
+									assignedTo: uuid,
+									status: 'Live',
+								}
+							);
+						});
+
+						liveListings = [...newLiveListings, ...liveListings];
+
+						// liveListings = liveListings.sort({ location: 1 });
+
+						// above code is not working it is giving error The comparison function must be either a function or undefined
+						liveListings = liveListings.sort((a, b) => {
+							if (a.location < b.location) {
+								return -1;
+							}
+							if (a.location > b.location) {
+								return 1;
+							}
+							return 0;
+						});
+
+						res.status(200).json({
+							reason: 'Listings fetched successfully2',
+							statusCode: 200,
+							status: 'SUCCESS',
+							dataObject: {
+								liveListings: liveListings,
+								contactedListings: contactedListings,
+							},
+						});
+						return;
+					} else {
+						let bulkwrite = await olxScrappedModal.bulkWrite(
+							newLiveListings.map((listing) => {
+								return {
+									updateOne: {
+										filter: { _id: listing._id },
+										update: {
+											assignedTo: uuid,
+											status: 'Live',
+										},
 									},
-								},
-							};
-						})
-					);
-				}
+								};
+							})
+						);
 
-				let contactedListings = await totalListings.filter(
-					(item) => item.status == 'Contacted'
-				);
+						// merge both old and new listings
+						liveListings = [...liveListings, ...newLiveListings];
+						// liveListings = liveListings.sort({ location: 1 });
+						liveListings = liveListings.sort((a, b) => {
+							if (a.location < b.location) {
+								return -1;
+							}
+							if (a.location > b.location) {
+								return 1;
+							}
+							return 0;
+						});
+						res.status(200).json({
+							reason: 'Listings fetched successfully1',
+							statusCode: 200,
+							status: 'SUCCESS',
+							dataObject: {
+								liveListings: liveListings,
+								contactedListings: contactedListings,
+							},
+						});
+					}
+				} else {
+					res.status(200).json({
+						reason: 'Listings fetched successfully',
+						statusCode: 200,
+						status: 'SUCCESS',
+						dataObject: {
+							liveListings: liveListings,
+							contactedListings: contactedListings,
+						},
+					});
+				}
+			} else if (liveListings.length > limit - contactedListings.length) {
+				let removedListings = await liveListings.map(async (listing, index) => {
+					if (index >= limit - contactedListings.length) {
+						liveListings.splice(index, 1);
+						await olxScrappedModal.updateOne(
+							{ _id: listing._id },
+							{
+								assignedTo: null,
+								status: 'Live',
+							}
+						);
+					}
+				});
+
+				// liveListings = liveListings.sort({ location: 1 });
+				liveListings = liveListings.sort((a, b) => {
+					if (a.location < b.location) {
+						return -1;
+					}
+					if (a.location > b.location) {
+						return 1;
+					}
+					return 0;
+				});
 
 				res.status(200).json({
-					reason: 'Listings fetched successfully',
+					reason: 'Listings fetched successfully3',
 					statusCode: 200,
 					status: 'SUCCESS',
 					dataObject: {
-						liveListings: newListings,
+						liveListings: liveListings,
 						contactedListings: contactedListings,
 					},
 				});
 			} else {
-				let liveListings = await totalListings.filter(
-					(item) => item.status == 'Live'
-				);
-				let contactedListings = await totalListings.filter(
-					(item) => item.status == 'Contacted'
-				);
-
 				res.status(200).json({
-					reason: 'Listings fetched successfully',
+					reason: 'Listings fetched successfully0',
 					statusCode: 200,
 					status: 'SUCCESS',
 					dataObject: {
@@ -935,6 +962,7 @@ router.get('/listing/agent/getBothList', async (req, res) => {
 			}
 		}
 	} catch (error) {
+		console.log(error);
 		res.status(200).json({
 			reason: 'Internal server error',
 			statusCode: 500,
@@ -1096,15 +1124,59 @@ router.get('/listing/agent/validateNumber', async (req, res) => {
 						});
 					}
 				} else {
-					res.status(200).json({
-						reason: 'ORU user found',
-						statusCode: 200,
-						status: 'SUCCESS',
-						dataObject: {
-							listing: {},
-							allowNum: false,
-						},
-					});
+					let limitExceeded =
+						(await saveListingModal.find().countDocuments({
+							uuid,
+							verified: false,
+							status: 'Active',
+						})) >= 5;
+
+					if (limitExceeded) {
+						try {
+							// create dynamic string for response message reason on basis of limitExceeded and duplicated value
+
+							let message = limitExceeded
+								? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
+								  'This user have already exceeded your quota of unverified listings at ORU !'
+								: duplicated
+								? // ? "Added Successfully but Paused because This exact listing already present!"
+								  'This user have already listed same device at ORU for sell !'
+								: 'Listing saved successfully';
+
+							res.status(201).json({
+								// reason: "Listing saved successfully",
+								reason: message,
+								statusCode: 201,
+								status: 'SUCCESS',
+								type: limitExceeded
+									? 'Unverified Listings Limit Exceeded'
+									: duplicated
+									? 'Duplicate Listing'
+									: '',
+								dataObject: dataObject,
+							});
+							return;
+						} catch (error) {
+							res.status(200).json({
+								reason: 'Internal server error',
+								statusCode: 500,
+								status: 'FAILURE',
+								dataObject: {
+									error: error,
+								},
+							});
+						}
+					} else {
+						res.status(200).json({
+							reason: 'ORU user found',
+							statusCode: 200,
+							status: 'SUCCESS',
+							dataObject: {
+								listing: {},
+								allowNum: false,
+							},
+						});
+					}
 				}
 			} else {
 				// find the listing
@@ -1194,7 +1266,15 @@ router.get('/listing/agent/release', async (req, res) => {
 				_id: new mongoose.Types.ObjectId(listingId),
 				assignedTo: uuid,
 			},
-			{ $set: { assignedTo: null, status: 'Live' } }
+			{
+				$set: {
+					assignedTo: null,
+					status: 'Live',
+				},
+				$push: {
+					previouslyAssignedTo: uuid,
+				},
+			}
 		);
 
 		if (updateListing) {
@@ -1397,23 +1477,14 @@ router.post('/listing/agent/submit', async (req, res) => {
 				fullImage: image,
 			};
 
-			let limitExceeded =
+			let duplicated =
 				(await saveListingModal.find().countDocuments({
 					userUniqueId,
+					marketingName,
+					deviceStorage,
+					deviceRam,
 					verified: false,
-					status: 'Active',
-				})) >= 5;
-
-			// stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
-			let duplicated = limitExceeded
-				? limitExceeded
-				: (await saveListingModal.find().countDocuments({
-						userUniqueId,
-						marketingName,
-						deviceStorage,
-						deviceRam,
-						verified: false,
-				  })) >= 1;
+				})) >= 1;
 
 			const data = {
 				charger,
@@ -1428,7 +1499,8 @@ router.post('/listing/agent/submit', async (req, res) => {
 				images,
 				imei,
 				listingLocation,
-				listingPrice: parseInt(listingPrice.toString()),
+				listingPrice: listingPrice.toString(),
+				listingNumPrice: parseInt(listingPrice.toString()),
 				make,
 				marketingName,
 				mobileNumber,
@@ -1443,103 +1515,88 @@ router.post('/listing/agent/submit', async (req, res) => {
 				listingDate: dateFormat,
 				warranty: deviceWarranty,
 				cosmetic,
-				status: limitExceeded || duplicated ? 'Paused' : 'Active',
+				status: duplicated ? 'Paused' : 'Active',
 				agent: agentId,
 				latLong: latLong,
 				storeId: '001',
+				listingState: state,
+				listingLocality: area ? area : null,
 			};
 
+			data.location = {
+				coordinates: [latLong.longitude, latLong.latitude],
+			};
+
+			// stop user to save duplicate activated listing on basis of mobileNumber, marketingName, storage & ram
+
+			let message = duplicated
+				? 'You have already listed same device at ORU for sell !\nYou can go to my listing page and select edit option, if you want to modify your existing listing.\n\nOR\n\nYou can download the app and verify this device.'
+				: 'Listing saved successfully';
 			let dataObject = {};
+			if (!duplicated) {
+				const modalInfo = new saveListingModal(data);
+				dataObject = await modalInfo.save();
 
-			try {
-				if (!limitExceeded && !duplicated) {
-					const modalInfo = new saveListingModal(data);
-					dataObject = await modalInfo.save();
+				let ssdata = {
+					userUniqueId: req.body.agentUuId,
+					image: req.body.ssImage,
+					model: marketingName,
+					mobileNumber: mobileNumber,
+				};
 
-					let ssdata = {
-						userUniqueId: req.body.agentUuId,
-						image: req.body.ssImage,
-						model: marketingName,
-						mobileNumber: mobileNumber,
-					};
+				const imgData = new imageMapModal({
+					originalId: originalId,
+					listingId: dataObject.listingId,
+				});
+				const imgDataObject = await imgData.save();
 
-					const imgData = new imageMapModal({
-						originalId: originalId,
-						listingId: dataObject.listingId,
-					});
-					const imgDataObject = await imgData.save();
+				const ssModalInfo = new olxSSModal(ssdata);
+				const ssDataObject = await ssModalInfo.save();
 
-					const ssModalInfo = new olxSSModal(ssdata);
-					const ssDataObject = await ssModalInfo.save();
+				let newData = {
+					...data,
+					notionalPercentage: -999999,
+					status: duplicated ? 'Sold_Out' : 'Active',
+					imagePath:
+						(images.length > 0
+							? images[0].thumbImage || images[0].fullImage
+							: '') ||
+						(defaultImage.fullImage != '' ? defaultImage.fullImage : ''),
+					listingId: dataObject.listingId,
+					listingDate: moment(now).format('MMM Do'),
+				};
 
-					let newData = {
-						...data,
-						notionalPercentage: -999999,
-						status: limitExceeded || duplicated ? 'Sold_Out' : 'Active',
-						imagePath:
-							(images.length > 0
-								? images[0].thumbImage || images[0].fullImage
-								: '') ||
-							(defaultImage.fullImage != '' ? defaultImage.fullImage : ''),
-						listingId: dataObject.listingId,
-						listingDate: moment(now).format('MMM Do'),
-					};
-
-					const tempModelInfo = new bestDealsModal(newData);
-					if (tempModelInfo.make != null) {
-						const tempDataObject = await tempModelInfo.save();
-					}
-
-					await sendingSms(
-						'daily',
-						mobileNumber,
-						userUniqueId,
-						listedBy,
-						marketingName
-					);
-
-					// delete the listing
-					let listingId = req.body.objId;
-
-					let deleted = await olxScrappedModal.deleteOne({
-						_id: new mongoose.Types.ObjectId(listingId),
-					});
+				const tempModelInfo = new bestDealsModal(newData);
+				if (tempModelInfo.make != null) {
+					const tempDataObject = await tempModelInfo.save();
 				}
 
-				// create dynamic string for response message reason on basis of limitExceeded and duplicated value
+				await sendingSms(
+					'daily',
+					mobileNumber,
+					userUniqueId,
+					listedBy,
+					marketingName
+				);
 
-				let message = limitExceeded
-					? // ? "Added Successfully but Paused because 5 listing Limit exceeded!"
-					  'This user have already exceeded your quota of unverified listings at ORU !'
-					: duplicated
-					? // ? "Added Successfully but Paused because This exact listing already present!"
-					  'This user have already listed same device at ORU for sell !'
-					: 'Listing saved successfully';
+				// delete the listing
+				let listingId = req.body.objId;
 
-				res.status(201).json({
-					// reason: "Listing saved successfully",
-					reason: message,
-					statusCode: 201,
-					status: 'SUCCESS',
-					type: limitExceeded
-						? 'Unverified Listings Limit Exceeded'
-						: duplicated
-						? 'Duplicate Listing'
-						: '',
-					dataObject: dataObject,
-				});
-				return;
-			} catch (error) {
-				res.status(200).json({
-					reason: 'Internal server error',
-					statusCode: 500,
-					status: 'FAILURE',
-					dataObject: {
-						error: error,
-					},
+				let deleted = await olxScrappedModal.deleteOne({
+					_id: new mongoose.Types.ObjectId(listingId),
 				});
 			}
+			res.status(201).json({
+				reason: message,
+				statusCode: 201,
+				status: 'SUCCESS',
+				type: duplicated ? 'Duplicate Listing' : '',
+				dataObject: dataObject,
+			});
 		} else {
+			olxScrappedModal.deleteOne({
+				_id: req.body.id,
+			});
 			res.status(200).json({
 				reason: 'Invalid user unique id provided',
 				statusCode: 200,
