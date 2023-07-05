@@ -1,9 +1,11 @@
 import activate from './activate';
+import add from './add';
 import deleteListing from './delete';
 import getSellerNumber from './getSellerNumber';
 import listings from './listings';
 import pause from './pause';
 import sendVerification from './sendVerification';
+import update from './update';
 import filterController from '@/controllers/listing/filter';
 import makes from '@/controllers/listing/makes';
 import models from '@/controllers/listing/models';
@@ -12,8 +14,6 @@ import redisClient from '@/database/redis';
 import { NextFunction, Request, Response } from 'express';
 import { PipelineStage } from 'mongoose';
 import { z } from 'zod';
-import update from './update';
-import add from './add';
 
 const validator = z.object({
 	locality: z.string().min(0).max(100).optional(),
@@ -36,26 +36,30 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 			return;
 		}
 
+
 		const filter = {
 			$or: [
 				...(locality
 					? [
 							{
 								listingLocality: locality,
-								listingState: state,
-								listingLocation: city,
 							},
+					  ]
+					: []),
+				...(city
+					? [
 							{
 								listingLocation: city,
+							},
+					  ]
+					: []),
+				...(state
+					? [
+							{
 								listingState: state,
 							},
 					  ]
-					: [
-							{
-								listingLocation: city,
-								listingState: state,
-							},
-					  ]),
+					: []),
 				{
 					listingLocation: 'India',
 				},
@@ -122,11 +126,12 @@ async function topSellingHome(req: Request, res: Response, next: NextFunction) {
 					rank: 1,
 				},
 			},
-
+			...(count ? [{ $limit: count }] : [{ $limit: 10 }]),
 			{ $project: returnFilter },
 		];
 
-		let topSelling = await Listing.aggregate(pipeline).limit(count).exec();
+		let topSelling = await Listing.aggregate(pipeline);
+		// console.log(topSelling);
 
 		// check if top selling is empty
 		if (topSelling.length < count) {
@@ -150,5 +155,5 @@ export default {
 	deleteListing,
 	pause,
 	update,
-	add
+	add,
 };
