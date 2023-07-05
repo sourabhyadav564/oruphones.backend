@@ -140,6 +140,8 @@ const getThirdPartyVendors = async (model_name, make, page) => {
 			make:
 				element.model_name == null ? '--' : element.model_name.split(' ')[0],
 			listingPrice: element.price == null ? '--' : element.price.toString(),
+			listingNumPrice:
+				element.price == null ? 0 : parseInt(element.price.toString()),
 			deviceStorage:
 				element.storage === '0 GB' ||
 				element.storage === '--' ||

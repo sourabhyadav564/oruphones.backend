@@ -32,6 +32,7 @@ const allMatrix = require('@/utils/matrix_figures');
 const bestDealsModal = require('@/database/modals/others/best_deals_models');
 const validUser = require('@/middleware/valid_user');
 const createAgentModal = require('@/database/modals/global/oru_mitra/agent_modal');
+const ImeiDataModal = require('@/database/modals/device/imei_data');
 // const downloadImage = require("@/utils/download_image_from_url");
 
 router.get('/listings', validUser, logEvent, async (req, res) => {
@@ -424,7 +425,7 @@ router.post('/listing/delete', validUser, logEvent, async (req, res) => {
 					updatedListings.status = 'Sold_Out';
 					updatedListings.notionalPercentage =
 						!updatedListings.notionalPercentage ||
-						Number.isNaN(updatedListings.notionalPercentage) ||
+						updatedListings.notionalPercentage == NaN ||
 						updatedListings.notionalPercentage.toString() == 'NaN' ||
 						updatedListings.notionalPercentage == undefined ||
 						updatedListings.notionalPercentage.toString() == 'undefined'
@@ -465,6 +466,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 	let listingLocation = req.body.listingLocation;
 	const listingPrice = req.body.listingPrice;
 	const originalbox = req.body.originalbox;
+	const imei = req.body.imei;
 	const recommendedPriceRange = req.body.recommendedPriceRange;
 	const cosmetic = req.body.cosmetic;
 	let warranty = req.body.warranty;
@@ -490,7 +492,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 			return;
 		} else {
 			if (deviceCondition == 'Like New') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'four':
 						deviceCondition = 'Excellent';
 						break;
@@ -505,7 +507,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 						break;
 				}
 			} else if (deviceCondition == 'Excellent') {
-				switch (deviceWarranty) {
+				switch (warranty) {
 					case 'seven':
 						deviceCondition = 'Excellent';
 						break;
@@ -555,6 +557,7 @@ router.post('/listing/update', validUser, logEvent, async (req, res) => {
 					listingLocation,
 					listingPrice,
 					originalbox,
+					imei,
 					latLong: latLong ? latLong : null,
 					recommendedPriceRange,
 					deviceStorage,
@@ -1755,6 +1758,98 @@ router.get('/listing/bydeviceid', validUser, logEvent, async (req, res) => {
 		}
 	} catch (error) {
 		console.log(error);
+		res.status(400).json(error);
+	}
+});
+
+router.post('/listing/imeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const {
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		} = req.body;
+
+		// save this data in ImeiDataModal
+		const saveImeiData = new ImeiDataModal({
+			imei,
+			status,
+			manufacturer,
+			model,
+			deviceType,
+			brand,
+			listingId,
+			deviceUniqueId,
+			userUniqueId,
+		});
+
+		const saveImeiDataResult = await saveImeiData.save();
+
+		res.status(200).json({
+			reason: 'Imei data saved successfully',
+			statusCode: 200,
+			status: 'SUCCESS',
+		});
+	} catch (error) {
+		res.status(400).json(error);
+	}
+});
+
+router.get('/listing/getImeiData', validUser, logEvent, async (req, res) => {
+	try {
+		const { userUniqueId } = req.query;
+
+		const isValidUser = await createUserModal.find({
+			userUniqueId: userUniqueId,
+		});
+
+		if (!isValidUser) {
+			res.status(200).json({
+				reason: 'Invalid user unique id provided',
+				statusCode: 200,
+				status: 'INVALID',
+			});
+			return;
+		} else {
+			const getImeiData = await ImeiDataModal.find(
+				{
+					userUniqueId: userUniqueId,
+				},
+				{
+					imei: 1,
+					status: 1,
+					manufacturer: 1,
+					model: 1,
+					deviceType: 1,
+					brand: 1,
+					listingId: 1,
+					deviceUniqueId: 1,
+				}
+			);
+
+			// remove duplicate imei data
+			let dataObject = [];
+			getImeiData.forEach((item) => {
+				if (!dataObject.some((item2) => item2.imei === item.imei)) {
+					dataObject.push(item);
+				}
+			});
+
+			res.status(200).json({
+				reason: 'Imei data fetched successfully',
+				statusCode: 200,
+				status: 'SUCCESS',
+				dataObject: dataObject,
+			});
+			return;
+		}
+	} catch (error) {
 		res.status(400).json(error);
 	}
 });
