@@ -7,7 +7,7 @@ router.get("/listings/best/nearme", async (req, res) => {
   const location = req.query.location;
   let page = req.query.pageNumber;
   page = parseInt(page.toString());
-  const User = req.session.User;
+  const User = req.session.user;
   
   let userUniqueId = "Guest";
   if(User){
@@ -32,7 +32,7 @@ router.get("/listings/best/topselling", async (req, res) => {
   let page = req.query.pageNumber;
   let count = req.body.count;
   page = parseInt(page.toString());
-  const User = req.session.User;
+  const User = req.session.user;
 
   
   let userUniqueId = "Guest";

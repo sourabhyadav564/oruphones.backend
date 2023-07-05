@@ -4,7 +4,6 @@ import Listings from '@/database/modals/others/best_deals_models';
 import rankedListings from '@/database/modals/others/test_scrapped_models';
 import { Request, Response, NextFunction } from 'express';
 
-
 async function getSimilarWithExternalVendors(
 	req: Request,
 	res: Response,
@@ -30,7 +29,8 @@ async function getSimilarWithExternalVendors(
 				deviceCondition: listing.deviceCondition,
 			}),
 			...(listing.deviceStorage && { deviceStorage: listing.deviceStorage }),
-			...(listing.make!=='Apple' && listing.deviceRam && { deviceRam: listing.deviceRam }),
+			...(listing.make !== 'Apple' &&
+				listing.deviceRam && { deviceRam: listing.deviceRam }),
 		};
 		let rankedFilterObj = {
 			model_name: {
@@ -42,6 +42,10 @@ async function getSimilarWithExternalVendors(
 			storage: parseInt(listing?.deviceStorage!.replace('GB', '').trim()),
 			type: ['buy', 'Buy'],
 			mobiru_condition: listing?.deviceCondition,
+			...(listing?.make !== 'Apple' &&
+				listing?.deviceRam && {
+					ram: parseInt(listing?.deviceRam!.replace('GB', '').trim()),
+				}),
 			// isOtherVendor: "Y",
 		};
 		let returnFilter = {
@@ -67,7 +71,7 @@ async function getSimilarWithExternalVendors(
 			cosmetic: 1,
 			isOtherVendor: 1,
 			make: 1,
-			listingLocality : 1
+			listingLocality: 1,
 		};
 		// Find top 3 bestDeals
 		let bestDeals6 = await Listings.find(filterObj)

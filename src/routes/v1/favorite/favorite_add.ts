@@ -236,5 +236,4 @@ router.post(
 	}
 );
 
-export default router;
-module.exports = router;
+export = router;

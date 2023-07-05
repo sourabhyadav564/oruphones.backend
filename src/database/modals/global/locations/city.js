@@ -31,5 +31,7 @@ const citySchema = new mongoose.Schema(
 );
 
 const cityAreaModal = new mongoose.model('area_cities', citySchema);
+citySchema.index({ id: 1, name :1 });
+
 
 module.exports = cityAreaModal;

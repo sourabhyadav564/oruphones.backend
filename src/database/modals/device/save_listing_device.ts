@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const latLongSchema = new mongoose.Schema({
 	type: {
@@ -155,9 +155,6 @@ const saveListingSchema = new mongoose.Schema(
 			type: String,
 			// default: Date.now(),
 		},
-		recommendedPriceRange: {
-			type: String,
-		},
 		deviceRam: {
 			type: String,
 		},
@@ -262,15 +259,12 @@ const saveListingSchema = new mongoose.Schema(
 );
 
 saveListingSchema.pre('save', async function (next) {
-	this.listingId = this._id;
+	this.listingId = this._id.toString();
 	next();
 });
 
 saveListingSchema.index({ location: '2dsphere' });
 
-const saveListingModal = new mongoose.model(
-	'saved_listings',
-	saveListingSchema
-);
+const saveListingModal = mongoose.model('saved_listings', saveListingSchema);
 
-module.exports = saveListingModal;
+export = saveListingModal;

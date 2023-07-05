@@ -22,5 +22,7 @@ const stateSchema = new mongoose.Schema(
 );
 
 const stateAreaModal = new mongoose.model('area_states', stateSchema);
+stateSchema.index({ id: 1, name :1 });
+
 
 module.exports = stateAreaModal;

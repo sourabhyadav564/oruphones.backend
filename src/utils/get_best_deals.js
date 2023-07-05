@@ -541,7 +541,15 @@ const getBestDeals = async (
 
 						fineData.push(...fakeData);
 
-						collectData(fineData);
+						let uniqueFineData = [];
+
+						fineData.forEach((item3, index3) => {
+							item3.rank = index3 + 1;
+
+							uniqueFineData.push(item3);
+						});
+
+						collectData(uniqueFineData);
 						// fs.writeFileSync(
 						//   `updatedBestDeals.json`,
 						//   JSON.stringify(fineData, null, 2)

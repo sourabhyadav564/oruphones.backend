@@ -18,7 +18,7 @@ const getThirdPartyVendors = require("../../../utils/third_party_listings");
 router.get("/listings/category", logEvent, async (req, res) => {
   const location = req.query.location;
   const category = req.query.category;
-  const User = req.session.User;
+  const User = req.session.user;
 
   let userUniqueId = "Guest";
   if(User){

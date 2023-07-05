@@ -22,7 +22,15 @@ const createUserModal = require('@/database/modals/login/login_create_user');
 //   apiSecret: "ApasBxeJHAuzso7f",
 // });
 
-let devNum = ['9660398594', '6375197371', '9772557936', '9649493568'];
+let devNum = [
+	'9660398594',
+	'6375197371',
+	'9772557936',
+	'9649493568',
+	'6378932535',
+	'8209049370',
+	'7976271392',
+];
 let otpNum = ['9261', '4126'];
 
 router.post('/otp/generate', logEvent, async (req, res) => {

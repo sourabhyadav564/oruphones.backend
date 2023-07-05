@@ -1,5 +1,4 @@
 import express, { Request } from 'express';
-import '../../../database/connection';
 import logEvent from '../../../middleware/event_logging';
 import validUser from '../../../middleware/valid_user';
 import { getFileStream, s3 } from '../../../s3_2';

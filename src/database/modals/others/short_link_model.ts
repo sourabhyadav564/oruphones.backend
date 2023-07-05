@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const linkSchema = new mongoose.Schema(
 	{
@@ -14,6 +14,6 @@ const linkSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-const shortLinkModal = new mongoose.model('short_links', linkSchema);
-
-module.exports = shortLinkModal;
+linkSchema.index({ unKey: 1 }, { unique: true });
+const shortLinkModal = mongoose.model('short_links', linkSchema);
+export = shortLinkModal;

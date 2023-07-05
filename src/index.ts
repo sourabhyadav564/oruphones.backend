@@ -1,4 +1,5 @@
 import errorHandler from '@/middleware/errorHandler';
+import eventLogger from '@/middleware/eventLogger';
 import buyersVerficationRoutes from '@/routes/v1/device/buyers_verification_routes';
 import bestDealCompletedRoute from '@/routes/v1/device/complete_best_deal_routes';
 import externalSourcePriceRoutes from '@/routes/v1/device/get_external_source_data_routes';
@@ -7,16 +8,16 @@ import saveModalRoute from '@/routes/v1/device/save_listing_routes';
 import getBatteryTestRoutes from '@/routes/v1/diagnostics/battery_test_routes';
 import diagnosticsConfigRoute from '@/routes/v1/diagnostics/diagnostics_config_routes';
 import favoriteRoute from '@/routes/v1/favorite/favorite_add';
+import agentOlxDashboard from '@/routes/v1/global/agent_olx';
+import agentRoute from '@/routes/v1/global/agent_store';
 import citiesRoute from '@/routes/v1/global/cities_route';
 import addContactUsRoute from '@/routes/v1/global/contact_us_route';
-import agentRoute from '@/routes/v1/global/agent_store';
+import dashboard from '@/routes/v1/global/dashboard';
 import getInfoTemplateRoutes from '@/routes/v1/global/get_info_template_routes';
 import logEventInfoRoute from '@/routes/v1/global/log_event_info_routes';
 import searchSuggestionRoute from '@/routes/v1/global/search_filter_routes';
 import shareLinkRoute from '@/routes/v1/global/share_link_route';
 import addSubscriptionRoute from '@/routes/v1/global/subscription_routes';
-import dashboard from '@/routes/v1/global/dashboard';
-import agentOlxDashboard from '@/routes/v1/global/agent_olx';
 import bestDealHomeRoute from '@/routes/v1/home/best_deal_home_routes';
 import listingByMakeRoute from '@/routes/v1/home/listings_by_make_routes';
 import searchListingRoute from '@/routes/v1/home/search_listing_routes';
@@ -47,11 +48,7 @@ import getBatteryTestRoutes2 from '@/routes/v2/diagnostics/battery_test_routes';
 import diagnosticsConfigRoute2 from '@/routes/v2/diagnostics/diagnostics_config_routes';
 import favoriteRoutes2 from '@/routes/v2/favorite/favorite_add';
 import recommendedPrice from '@/routes/v2/global/recommended_price';
-
-
 import bestDealHomeRoutes2 from '@/routes/v2/home/best_deal_home_routes';
-import brandRoute2 from '@/routes/v2/master/master_brand_routes';
-
 import listingsByMakeRoutes2 from '@/routes/v2/home/listings_by_make';
 import searchListingRoute2 from '@/routes/v2/home/search_listing_route';
 import shopByCategoryRoutes2 from '@/routes/v2/home/shop_by_category_routes';
@@ -61,20 +58,17 @@ import loginOtpRoutes2 from '@/routes/v2/login/login_otp_routes';
 import loginUserRoutes2 from '@/routes/v2/login/login_user_routes';
 import getQuestionRoute from '@/routes/v2/master/get_question_route';
 import marketingNameByModelRoutes from '@/routes/v2/master/marketing_name_by_model_routes';
+import brandRoute2 from '@/routes/v2/master/master_brand_routes';
 import notificationRoutes2 from '@/routes/v2/notification/notification_save_token_routes';
 import predictimage from '@/routes/v2/predict_image';
 import s3images from '@/routes/v2/s3images';
+// import session from '@/routes/v2/session/createsession';
 //v2-import routes
 import testRoutes2 from '@/routes/v2/test_routes';
 import app from '@/setup';
+import session from '@/utils/sessionStore';
 
 const port = process.env.PORT || 5000;
-
-app.get('/', (req, res) => {
-	res.status(200).json({
-		message: 'Backend Testing Server Running Successfully',
-	});
-});
 
 app.use('/api/v1', testRoute);
 app.use('/api/v1/master', brandRoute);
@@ -92,7 +86,7 @@ app.use('/api/v1/global', recommendedPriceRoute);
 app.use('/api/v1/global', shareLinkRoute);
 app.use('/api/v1/global', getInfoTemplateRoutes);
 app.use('/api/v1/global', dashboard);
-app.use("/api/v1/global", agentOlxDashboard);
+app.use('/api/v1/global', agentOlxDashboard);
 app.use('/api/v1/home', bestDealHomeRoute);
 app.use('/api/v1/home', listingByMakeRoute);
 app.use('/api/v1/home', topSellingModelRoute);
@@ -118,6 +112,7 @@ app.use('/api/v1/wordpress', wordpressRoute);
 //v2
 
 app.use('/api', testRoutes2);
+// app.use('/api/v2',session)
 app.use('/api/v2/master', brandRoute2);
 app.use('/api/v2/login', loginOtpRoutes2);
 app.use('/api/v2/login', loginUserRoutes2);
@@ -142,6 +137,8 @@ app.use('/api/v2/api', diagnosticsConfigRoute2);
 app.use('/api/v2/api', getBatteryTestRoutes2);
 // app.use('/api/v2/images', predictimage);
 
+app.use(session);
+// app.use(eventLogger);
 app.use(router);
 app.use(errorHandler);
 app.listen(port, () => {

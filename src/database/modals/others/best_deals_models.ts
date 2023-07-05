@@ -253,6 +253,18 @@ const bestDealsSchema = new mongoose.Schema(
 		associatedWith: {
 			type: String,
 		},
+		vendorId: {
+			type: String,
+		},
+		vendorLink: {
+			type: String,
+		},
+		vendorLogo: {
+			type: String,
+		},
+		displayOrder: {
+			type: Number,
+		},
 	},
 	{ timestamps: true }
 );
