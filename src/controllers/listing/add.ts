@@ -3,14 +3,13 @@ import bestDealsModal from '@/database/modals/others/best_deals_models';
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
-
 const validator = z.object({
 	make: z.string().min(1).max(255),
 	marketingName: z.string().min(1).max(255),
 	model: z.string().min(1).max(255),
 	charger: z.string().min(1).max(255),
 	earphone: z.string().min(1).max(255),
-	originalBox: z.string().min(1).max(255),
+	originalbox: z.string().min(1).max(255),
 	deviceCondition: z.string().min(1).max(255),
 	deviceStorage: z.string().min(1).max(255),
 	deviceRam: z.string().min(1).max(255),
@@ -29,6 +28,7 @@ const validator = z.object({
 		'1': z.string().min(1).max(255),
 		'2': z.string().min(1).max(255),
 	}),
+	platform: z.string().min(1).max(255),
 });
 
 export type AddListingBody = z.infer<typeof validator>;
@@ -67,21 +67,31 @@ export default async function addListing(
 		await Promise.all([
 			saveListingModal.create({
 				...body,
-				latLong: undefined,
-				location: [body.latlong.longitude, body.latlong.latitude],
+				location: {
+					type: 'Point',
+					coordinates: [body.latlong.longitude, body.latlong.latitude],
+				},
 				userUniqueId: req.session.user?.userUniqueId,
+				listedBy: req.session.user?.userName,
 				verified: false,
 				status: 'Active',
 			}),
 			bestDealsModal.create({
 				...body,
-				latLong: undefined,
-				location: [body.latlong.longitude, body.latlong.latitude],
+				location: {
+					type: 'Point',
+					coordinates: [body.latlong.longitude, body.latlong.latitude],
+				},
 				userUniqueId: req.session.user?.userUniqueId,
+				listedBy: req.session.user?.userName,
 				verified: false,
 				status: 'Active',
 			}),
 		]);
+		// respond with success
+		res.status(200).json({
+			message: 'Listing added successfully',
+		});
 	} catch (error) {
 		next(error);
 	}
